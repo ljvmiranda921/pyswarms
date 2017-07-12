@@ -91,7 +91,7 @@ class GBestPSO(SwarmBase):
 
 			# Print to console
 			if i % print_step == 0:
-				cli_print('Iteration %s/%s, cost: %s' & 
+				cli_print('Iteration %s/%s, cost: %s' %
 					(i+1, iters, self.gbest_cost), verbose, 1)
 
 			# Save current costs and positions in dictionary
