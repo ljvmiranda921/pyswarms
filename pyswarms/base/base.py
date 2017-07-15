@@ -50,26 +50,14 @@ class SwarmBase(object):
 			- **kwargs: a dictionary containing various kwargs for a 
 				specific optimization technique
 		"""
-
-		# Convenience attributes
+		# Initialize primary swarm attributes
 		self.n_particles = n_particles
 		self.dims = dims
 		self.bounds = bounds
+		self.swarm_size = (n_particles, dims)
 
-		# Broadcast the bounds and initialize the swarm 
-		if bounds is not None:
-			self.min_bounds = np.repeat(bounds[0][np.newaxis,:], n_particles, axis=0)
-			self.max_bounds = np.repeat(bounds[1][np.newaxis,:], n_particles, axis=0)
-			self.pos = np.random.uniform(low=self.min_bounds, high=self.max_bounds, size=(n_particles,dims))
-		else:
-			self.pos = np.random.uniform(size=(n_particles,dims))
-
-		# Initialize the global best of the swarm. 
-		self.gbest_cost = np.inf
-		self.gbest_pos = None
-
-		# Initialize the personal best of each particle.
-		self.pbest_pos = self.pos
+		# Initialize resettable attributes
+		self.reset()
 
 		# List of kwargs
 		self.kwargs = kwargs
@@ -93,3 +81,26 @@ class SwarmBase(object):
 			- NotImplementedError: This is an abstract method.
 		"""
 		raise NotImplementedError("SwarmBase::optimize()")
+
+	def reset(self):
+		"""Resets the attributes of the optimizer. 
+		
+		All variables/atributes that will be re-initialized when this 
+		method is called should be defined here. Note that this method
+		can be called twice: (1) during initialization, and (2) when
+		this is called from an instance.
+
+		"""
+		# Broadcast the bounds and initialize the swarm 
+		if self.bounds is not None:
+			self.min_bounds = np.repeat(self.bounds[0][np.newaxis,:], 
+										self.n_particles, 
+										axis=0)
+			self.max_bounds = np.repeat(self.bounds[1][np.newaxis,:], 
+										self.n_particles, 
+										axis=0)
+			self.pos = np.random.uniform(low=self.min_bounds, 
+										high=self.max_bounds, 
+										size=self.swarm_size)
+		else:
+			self.pos = np.random.uniform(size=self.swarm_size)
