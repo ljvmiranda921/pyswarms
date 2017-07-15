@@ -43,8 +43,8 @@ class GBestPSO(SwarmBase):
 		"""
 		super(GBestPSO, self).__init__(n_particles, dims, bounds, **kwargs)
 
-		# Initialize velocity vectors 
-		self.velocity = np.random.rand(n_particles, dims)
+		# Initialize the resettable attributes
+		self.reset()
 
 		# Invoke assertions
 		self.assertions()
@@ -67,6 +67,7 @@ class GBestPSO(SwarmBase):
 				best histories, and the best solution searched during 
 				the optimization process.
 		"""
+		# Initialize history lists
 		gbest_cost_hist = []
 		gbest_pos_hist = []
 
@@ -108,6 +109,22 @@ class GBestPSO(SwarmBase):
 			'global_best_pos_hist': gbest_pos_hist
 			}
 	
+	def reset(self):
+		"""Resets the attributes of the optimizer."""
+		
+		super(GBestPSO, self).reset()
+
+		# Initialize velocity vectors 
+		self.velocity = np.random.random_sample(size=self.swarm_size)
+
+		# Initialize the global best of the swarm
+		self.gbest_cost = np.inf 
+		self.gbest_pos = None
+
+		# Initialize the personal best of each particle
+		self.pbest_pos = self.pos
+
+
 
 	def _update_velocity_position(self):
 		"""Updates the velocity and position of the swarm. 
@@ -116,13 +133,15 @@ class GBestPSO(SwarmBase):
 		self.pos. This function is being called by the 
 		self.optimize() method
 		"""
-
+		
 		# Define the hyperparameters from kwargs dictionary
 		c1, c2, m = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['m']
 
 		# Compute for cognitive and social terms
-		cognitive = (c1 * np.random.uniform(0,1,[self.n_particles,self.dims])) * (self.pbest_pos - self.pos)
-		social = (c2 * np.random.uniform(0,1,[self.n_particles,self.dims])) * (self.gbest_pos - self.pos)
+		cognitive = (c1 * np.random.uniform(0,1,self.swarm_size)
+					* (self.pbest_pos - self.pos))
+		social = (c2 * np.random.uniform(0,1,self.swarm_size)
+					* (self.gbest_pos - self.pos))
 		self.velocity = (m * self.velocity) + cognitive + social
 
 		# Update position and store it in a temporary variable
@@ -131,7 +150,8 @@ class GBestPSO(SwarmBase):
 
 		if self.bounds is not None:
 			# Create a mask depending on the set boundaries
-			b = np.all(self.min_bounds <= temp, axis=1) * np.all(temp <= self.max_bounds, axis=1)
+			b = (np.all(self.min_bounds <= temp, axis=1) 
+				* np.all(temp <= self.max_bounds, axis=1))
 			# Broadcast the mask
 			b = np.repeat(b[:,np.newaxis], self.dims, axis=1) 
 			# Use the mask to finally guide position update
