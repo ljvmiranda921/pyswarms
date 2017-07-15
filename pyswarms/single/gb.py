@@ -1,5 +1,5 @@
 import numpy as np
-from ..base.base import SwarmBase
+from ..base import SwarmBase
 from ..utils.console_utils import *
 
 class GBestPSO(SwarmBase):
@@ -9,13 +9,16 @@ class GBestPSO(SwarmBase):
 	solution using a position-velocity update method.
 
 	Algorithm adapted from,
-	
-	@Book{Engelbrecht:CI,
-		title={Computational Intelligence: An Introduction},
-		author={A. Engelbrecht},
-		publisher={John Wiley and Sons, Ltd.}
-		year={2007}
+
+	@InProceedings{Kennedy1995,
+		author={J.Kennedy and R.C. Eberhart},
+		title={Particle Swarm Optimization},
+		book={Proceedings of the IEEE International Joint Conference 
+			on Neural Networks},
+		pages={1942-1948},
+		year={1995}
 	}
+	
 	"""
 	def assertions(self):
 		"""Assertion method to check various inputs."""
@@ -63,14 +66,9 @@ class GBestPSO(SwarmBase):
 			- verbose: verbosity setting
 		
 		Returns:
-			- a dictionary containing the global best and personal 
-				best histories, and the best solution searched during 
-				the optimization process.
+			- (tuple) the global best cost and the global best 
+				position.
 		"""
-		# Initialize history lists
-		gbest_cost_hist = []
-		gbest_pos_hist = []
-
 		for i in range(iters):
 			# Compute cost for current position and personal best
 			current_cost = f(self.pos)
@@ -95,19 +93,11 @@ class GBestPSO(SwarmBase):
 				cli_print('Iteration %s/%s, cost: %s' %
 					(i+1, iters, self.gbest_cost), verbose, 1)
 
-			# Save current costs and positions in dictionary
-			gbest_cost_hist.append(self.gbest_cost)
-			gbest_pos_hist.append(self.gbest_pos)
-
 			# Perform velocity and position updates
 			self._update_velocity_position()
 
-		return {
-			'global_best': self.gbest_cost,
-			'global_best_pos': self.gbest_pos,
-			'global_best_hist': gbest_cost_hist,
-			'global_best_pos_hist': gbest_pos_hist
-			}
+		return (self.gbest_cost, self.gbest_pos)
+
 	
 	def reset(self):
 		"""Resets the attributes of the optimizer."""
