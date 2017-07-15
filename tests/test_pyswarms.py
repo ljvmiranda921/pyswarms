@@ -7,7 +7,6 @@
 import unittest
 from click.testing import CliRunner
 
-from pyswarms import pyswarms
 from pyswarms import cli
 
 
