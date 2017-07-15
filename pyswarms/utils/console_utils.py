@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+""" console_utils.py: various tools for printing into console """
+
 def cli_print(msg, v, t):
 	"""Helper function to print console output
 

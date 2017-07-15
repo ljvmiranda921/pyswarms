@@ -1,8 +1,13 @@
+# -*- coding: utf-8 -*-
+
+""" bs.py: base class for single-objective PSO """
+
 import numpy as np 
 
 
 class SwarmBase(object):
-	"""Base class for all Particle Swarm Optimization implementations.
+	"""Base class for single-objective Particle Swarm Optimization 
+	implementations.
 
 	Note that all methods here are abstract and raises a 
 	NotImplementedError when not used. When defining your own swarm, 
@@ -29,6 +34,8 @@ class SwarmBase(object):
 		"""Assertion method to check various inputs."""
 		if self.bounds is not None:
 			assert len(self.bounds) == 2, "bounds must be of size 2."
+			assert (self.bounds[1] > self.bounds[0]).all(), "all values \
+							of max bounds should be greater than min bounds"
 			assert self.bounds[0].shape == self.bounds[1].shape, "unequal bound shapes"
 			assert self.bounds[0].shape == self.dims.shape, "bounds must be the same size as dims."
 
