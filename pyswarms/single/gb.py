@@ -1,6 +1,10 @@
+# -*- coding: utf-8 -*-
+
+""" gb.py: global-best partical swarm optimization algorithm """
+
 import numpy as np
 from ..base import SwarmBase
-from ..utils.console_utils import *
+from ..utils.console_utils import cli_print
 
 class GBestPSO(SwarmBase):
 	"""A global-best Particle Swarm Optimization (PSO) algorithm. 

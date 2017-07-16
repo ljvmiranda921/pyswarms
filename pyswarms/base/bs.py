@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+""" bs.py: base class for single-objective PSO """
+
 import numpy as np 
 
 
