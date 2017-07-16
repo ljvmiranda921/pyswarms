@@ -18,7 +18,9 @@ PySwarms
      :alt: Updates
 
 
-A Python-based Particle Swarm Optimization (PSO) library.
+PySwarms is a simple Python-based Particle Swarm Optimization (PSO) library. It offers an array of
+single-objective and multi-objective PSO algorithms, various objective functions to test your optimizer,
+and an API for analyzing optimizer performance. 
 
 
 * Free software: MIT license
@@ -28,13 +30,24 @@ A Python-based Particle Swarm Optimization (PSO) library.
 Features
 --------
 
-* TODO
+1. Particle Swarm Optimizers
+	
+	a. Single-Objective PSO
+		* Global-best 
+		* Personal-best
+	b. Multi-Objective PSO *(Coming soon)*
+
+2. Objective Functions for single-objective and multi-objective problems
+3. Performance analysis API *(Coming soon)*
 
 Credits
 ---------
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+This project was inspired by the pyswarm_ module that performs PSO with constrained support. 
+The package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
+.. _pyswarm: https://github.com/tisimst/pyswarm
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
 
