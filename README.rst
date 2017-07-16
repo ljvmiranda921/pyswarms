@@ -33,8 +33,10 @@ Features
 1. Particle Swarm Optimizers
 	
 	a. Single-Objective PSO
+
 		* Global-best 
 		* Personal-best
+		
 	b. Multi-Objective PSO *(Coming soon)*
 
 2. Objective Functions for single-objective and multi-objective problems
