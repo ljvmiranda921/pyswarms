@@ -34,6 +34,7 @@ Features
     Choose from various PSO implementations to optimize a given problem. Different flavors exist 
     for this task, ranging from single-objective optimization to multi-objective ones. Classical
     techniques, such as global-best and personal-best are also implemented.
+    
     a. Single-Objective PSO
         Single-objective optimizers attempt to find the global optima given a single objective
         function. These functions tend to take an array of values and returns the fitness 
