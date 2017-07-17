@@ -31,31 +31,24 @@ Features
 --------
 
 1. **Particle Swarm Optimization**
-
-Choose from various PSO implementations to optimize a given problem. Different flavors exist 
-for this task, ranging from single-objective optimization to multi-objective ones. Classical
-techniques, such as global-best and personal-best are also implemented.
-    
-a. Single-Objective PSO
-
-Single-objective optimizers attempt to find the global optima given a single objective
-function. These functions tend to take an array of values and returns the fitness 
-corresponding those values. 
-
-* Global-best 
-* Personal-best
-        
-b. Multi-Objective PSO *(Coming soon)*
+    Choose from various PSO implementations to optimize a given problem. Different flavors exist 
+    for this task, ranging from single-objective optimization to multi-objective ones. Classical
+    techniques, such as global-best and personal-best are also implemented.
+    a. Single-Objective PSO
+        Single-objective optimizers attempt to find the global optima given a single objective
+        function. These functions tend to take an array of values and returns the fitness 
+        corresponding those values. 
+            * Global-best 
+            * Personal-best    
+    b. Multi-Objective PSO *(Coming soon)*
 
 2. **Objective Functions for single-objective and multi-objective problems**
-
-Test your optimizer by having it search for optimum values in different objective functions. 
-Standard functions such as Sphere, Rastrigin's, and Ackley's are implemented. 
+    Test your optimizer by having it search for optimum values in different objective functions. 
+    Standard functions such as Sphere, Rastrigin's, and Ackley's are implemented. 
 
 3. **Performance analysis API** *(Coming soon)*
-
-Analyze how your optimizer works: visualize the position over iterations, generate error
-plots, and perform grid search on your hyperparameters using this easy API.
+    Analyze how your optimizer works: visualize the position over iterations, generate error
+    plots, and perform grid search on your hyperparameters using this easy API.
 
 Dependencies
 -------------
