@@ -39,9 +39,10 @@ Features
         Single-objective optimizers attempt to find the global optima given a single objective
         function. These functions tend to take an array of values and returns the fitness 
         corresponding those values.
-         
-            * Global-best 
-            * Personal-best    
+
+        * Global-best 
+        * Personal-best    
+        
     b. Multi-Objective PSO *(Coming soon)*
 
 2. **Objective Functions for single-objective and multi-objective problems**
