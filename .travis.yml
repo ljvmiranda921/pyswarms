@@ -21,12 +21,10 @@ deploy:
     python: 2.7
     repo: ljvmiranda921/pyswarms
     tags: true
-install: pip install -U tox-travis
+install: 
+  - "pip install -U tox-travis"
 language: python
 python:
-- 3.5
-- 3.4
-- 3.3
-- 2.7
-- 2.6
+  - 3.5
+  - 3.4
 script: tox

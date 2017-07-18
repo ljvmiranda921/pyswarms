@@ -20,7 +20,7 @@ PySwarms
 
 PySwarms is a simple Python-based Particle Swarm Optimization (PSO) library. It offers an array of
 single-objective and multi-objective PSO algorithms, various objective functions to test your optimizer,
-and an API for analyzing optimizer performance. 
+and an API for analyzing optimizer performance.
 
 
 * Free software: MIT license
@@ -29,39 +29,19 @@ and an API for analyzing optimizer performance.
 
 Features
 --------
-
-1. **Particle Swarm Optimization**
-    Choose from various PSO implementations to optimize a given problem. Different flavors exist 
-    for this task, ranging from single-objective optimization to multi-objective ones. Classical
-    techniques, such as global-best and personal-best are also implemented.
-    
-    a. Single-Objective PSO
-        Single-objective optimizers attempt to find the global optima given a single objective
-        function. These functions tend to take an array of values and returns the fitness 
-        corresponding those values.
-
-        * Global-best 
-        * Personal-best    
-        
-    b. Multi-Objective PSO *(Coming soon)*
-
-2. **Objective Functions for single-objective and multi-objective problems**
-    Test your optimizer by having it search for optimum values in different objective functions. 
-    Standard functions such as Sphere, Rastrigin's, and Ackley's are implemented. 
-
-3. **Performance analysis API** *(Coming soon)*
-    Analyze how your optimizer works: visualize the position over iterations, generate error
-    plots, and perform grid search on your hyperparameters using this easy API.
+* High-level module for Particle Swarm Optimization
+* Test optimizers using various objective functions
+* (For Devs): Highly-extensible API for implementing your own techniques
 
 Dependencies
 -------------
-* Python 3.X
-* Numpy 
+* Python 3.4 and above
+* numpy >= 1.10.4
+* scipy >= 0.17.0
 
 Credits
 ---------
-
-This project was inspired by the pyswarm_ module that performs PSO with constrained support.   
+This project was inspired by the pyswarm_ module that performs PSO with constrained support.
 The package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
 .. _pyswarm: https://github.com/tisimst/pyswarm

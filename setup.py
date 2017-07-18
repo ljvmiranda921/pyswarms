@@ -12,8 +12,8 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'Click>=6.0',
-    # TODO: put package requirements here
+    'scipy>=0.17.0',
+    'numpy>=1.10.4',
 ]
 
 setup_requirements = [
@@ -21,7 +21,8 @@ setup_requirements = [
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
+    'scipy>=0.17.0',
+    'numpy>=1.10.4',
 ]
 
 setup(
@@ -33,11 +34,6 @@ setup(
     author_email='ljvmiranda@gmail.com',
     url='https://github.com/ljvmiranda921/pyswarms',
     packages=find_packages(include=['pyswarms']),
-    entry_points={
-        'console_scripts': [
-            'pyswarms=pyswarms.cli:main'
-        ]
-    },
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",
@@ -48,11 +44,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
