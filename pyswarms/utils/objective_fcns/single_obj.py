@@ -49,7 +49,6 @@ def sphere_func(x):
     
     return j
 
-
 def rastrigin_func(x):
     """Rastrigin objective function.
 
@@ -70,7 +69,6 @@ def rastrigin_func(x):
     
     return j
 
-
 def ackley_func(x):
     """Ackley's objective function.
 
@@ -78,7 +76,7 @@ def ackley_func(x):
     domain of [-32, 32]
 
     Inputs:
-        - x: (numpy.ndarray) set of inputs of shape: 
+        - x: (numpy.ndarray) set of inputs of shape:
             (n_particles, dims)
     Returns: 
         - j: computed cost
@@ -98,11 +96,11 @@ def rosenbrock_func(x):
     """Rosenbrock objective function.
 
     Also known as the Rosenbrock's valley or Rosenbrock's banana
-    function. Has a global minimum of np.ones(dims) where dims 
+    function. Has a global minimum of np.ones(dims) where dims
     is x.shape[1]. The search domain is [-inf, inf].
 
     Inputs:
-        - x: (numpy.ndarray) set of inputs of shape: 
+        - x: (numpy.ndarray) set of inputs of shape:
             (n_particles, dims)
     Returns: 
         - j: computed cost

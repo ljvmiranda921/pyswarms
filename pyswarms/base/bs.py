@@ -72,7 +72,6 @@ class SwarmBase(object):
         # Invoke assertions
         self.assertions()
 
-
     def optimize(self, f, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
 
@@ -90,24 +89,24 @@ class SwarmBase(object):
         raise NotImplementedError("SwarmBase::optimize()")
 
     def reset(self):
-        """Resets the attributes of the optimizer. 
+        """Resets the attributes of the optimizer.
         
-        All variables/atributes that will be re-initialized when this 
+        All variables/atributes that will be re-initialized when this
         method is called should be defined here. Note that this method
         can be called twice: (1) during initialization, and (2) when
         this is called from an instance.
 
         """
-        # Broadcast the bounds and initialize the swarm 
+        # Broadcast the bounds and initialize the swarm
         if self.bounds is not None:
-            self.min_bounds = np.repeat(self.bounds[0][np.newaxis,:], 
-                                        self.n_particles, 
+            self.min_bounds = np.repeat(self.bounds[0][np.newaxis,:],
+                                        self.n_particles,
                                         axis=0)
-            self.max_bounds = np.repeat(self.bounds[1][np.newaxis,:], 
-                                        self.n_particles, 
+            self.max_bounds = np.repeat(self.bounds[1][np.newaxis,:],
+                                        self.n_particles,
                                         axis=0)
-            self.pos = np.random.uniform(low=self.min_bounds, 
-                                        high=self.max_bounds, 
+            self.pos = np.random.uniform(low=self.min_bounds,
+                                        high=self.max_bounds,
                                         size=self.swarm_size)
         else:
             self.pos = np.random.uniform(size=self.swarm_size)

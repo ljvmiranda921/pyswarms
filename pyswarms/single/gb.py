@@ -56,7 +56,6 @@ class GBestPSO(SwarmBase):
         # Invoke assertions
         self.assertions()
 
-
     def optimize(self, f, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
 
@@ -116,8 +115,6 @@ class GBestPSO(SwarmBase):
 
         # Initialize the personal best of each particle
         self.pbest_pos = self.pos
-
-
 
     def _update_velocity_position(self):
         """Updates the velocity and position of the swarm.
