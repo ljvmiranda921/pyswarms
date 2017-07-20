@@ -34,8 +34,7 @@ class SwarmBase(object):
         """Assertion method to check various inputs."""
         if self.bounds is not None:
             assert len(self.bounds) == 2, "bounds must be of size 2."
-            assert (self.bounds[1] > self.bounds[0]).all(), "all values \
-                            of max bounds should be greater than min bounds"
+            assert (self.bounds[1] > self.bounds[0]).all(), "all values of max bounds should be greater than min bounds"
             assert self.bounds[0].shape == self.bounds[1].shape, "unequal bound shapes"
             assert self.bounds[0].shape == self.dims.shape, "bounds must be the same size as dims."
 
