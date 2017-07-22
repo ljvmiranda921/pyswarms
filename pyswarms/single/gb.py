@@ -94,11 +94,12 @@ class GBestPSO(SwarmBase):
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                    (i+1, iters, self.gbest_cost), verbose, 1)
+                    (i+1, iters, self.gbest_cost), verbose, 2)
 
             # Perform velocity and position updates
             self._update_velocity_position()
 
+        end_report(self.gbest_cost, self.gbest_pos, verbose)
         return (self.gbest_cost, self.gbest_pos)
 
     def reset(self):
