@@ -18,10 +18,7 @@ PySwarms
      :alt: Updates
 
 
-PySwarms is a simple Python-based Particle Swarm Optimization (PSO) library. It offers an array of
-single-objective and multi-objective PSO algorithms, various objective functions to test your optimizer,
-and an API for analyzing optimizer performance.
-
+PySwarms is a simple, Python-based, Particle Swarm Optimization (PSO) library. 
 
 * Free software: MIT license
 * Documentation: https://pyswarms.readthedocs.io.
