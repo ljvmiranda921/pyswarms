@@ -46,7 +46,7 @@ def sphere_func(x):
         - j: computed cost
     """
     j = (x**2).sum(axis=1)
-    
+
     return j
 
 def rastrigin_func(x):
@@ -66,7 +66,7 @@ def rastrigin_func(x):
     
     n = x.shape[1]
     j = 10 * n + (x**2 - 10 * np.cos(2 * np.pi * x)).sum(axis=1) 
-    
+
     return j
 
 def ackley_func(x):
@@ -85,10 +85,10 @@ def ackley_func(x):
             Rastrigin function must be within [-32, 32]."
 
     n = x.shape[1]
-    j = -20 * np.exp(-0.2 * np.sqrt((1/n) * x**2))
+    j = (-20 * np.exp(-0.2 * np.sqrt((1/n) * x**2))
         - np.exp((1/n) * np.cos(2 * np.pi * x))
         + 20
-        + np.exp(1)
+        + np.exp(1))
 
     return j
 
@@ -106,7 +106,7 @@ def rosenbrock_func(x):
         - j: computed cost
     """
     i = x.shape[0]
-    j = 100 * np.square(x[1:] - x[:i-1]**2)
-        + x[:i-1]**2
+    j = (100 * np.square(x[1:] - x[:i-1]**2)
+        + x[:i-1]**2)
 
     return j
