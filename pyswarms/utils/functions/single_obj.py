@@ -63,7 +63,7 @@ def rastrigin_func(x):
     """
     assert np.logical_and(x >= -5.12, x <= 5.12).all(), "Input for \
             Rastrigin function must be within [-5.12, 5.12]."
-    
+
     d = x.shape[1]
     j = 10.0 * d + (x**2.0 - 10.0 * np.cos(2.0 * np.pi * x)).sum(axis=1) 
 
