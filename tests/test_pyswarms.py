@@ -8,18 +8,19 @@ import unittest
 import numpy as np
 
 # Import from package
-from pyswarms.utils.objective_fcns import single_obj as so
+from pyswarms.utils.functions import single_obj as fx
 
 class TestSingleObj(unittest.TestCase):
     """Tests all single-objective functions."""
 
     def setUp(self):
-        """Set up test swarm."""
+        """Set up test fixtures."""
+        # Test swarm
         self.x = np.array([[0,0],[0,0],[0,0]])
 
     def test_sphere(self):
         """Test sphere function."""
-        assert fx.sphere_func(self.x) == np.array([0,0,0])
+        assert fx.sphere_func(self.x).all() == np.array([0,0,0]).all()
 
 if __name__ == '__main__':
     unittest.main()
