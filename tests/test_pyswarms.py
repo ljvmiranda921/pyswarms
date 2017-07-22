@@ -16,19 +16,21 @@ class TestSingleObj(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         # Test swarm with size=3, dimensions=2
-        self.x = np.zeros([3,2])
+        self.input = np.zeros([3,2])
+        # Target value
+        self.target = np.zeros(3)
 
     def test_sphere(self):
         """Test sphere function."""
-        assert fx.sphere_func(self.x).all() == np.array([0,0,0]).all()
+        assert fx.sphere_func(self.input).all() == self.target.all()
 
     def test_rastrigin(self):
         """Test rastrigin function."""
-        assert fx.rastrigin_func(self.x).all() == np.array([0,0,0]).all()
+        assert fx.rastrigin_func(self.input).all() == self.target.all()
 
     def test_ackley(self):
         """Test ackley function."""
-        assert fx.ackley_func(self.x).all() == np.array([0,0,0]).all()
+        assert np.isclose(fx.ackley_func(self.input), self.target).all()
 
     def test_rosenbrock(self):
         """Test rosenbrock function."""
