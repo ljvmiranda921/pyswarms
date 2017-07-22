@@ -26,7 +26,5 @@ class TestSingleObj(unittest.TestCase):
         """Test rastrigin function."""
         assert fx.rastrigin_func(self.x).all() == np.array([0,0,0]).all()
 
-    
-
 if __name__ == '__main__':
     unittest.main()
