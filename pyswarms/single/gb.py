@@ -12,16 +12,12 @@ class GBestPSO(SwarmBase):
     It takes a set of candidate solutions, and tries to find the best
     solution using a position-velocity update method.
 
-    Algorithm adapted from,
+    .. note:: This algorithm was adapted from the earlier works of J.
+        Kennedy and R.C. Eberhart in Particle Swarm Optimization [1]_
 
-    @InProceedings{Kennedy1995,
-        author={J.Kennedy and R.C. Eberhart},
-        title={Particle Swarm Optimization},
-        book={Proceedings of the IEEE International Joint Conference
-            on Neural Networks},
-        pages={1942-1948},
-        year={1995}
-    }
+    .. [1] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
+        Proceedings of the IEEE International Joint Conference on Neural
+        Networks, pp. 1942-1948, 1995.
 
     """
     def assertions(self):
@@ -38,15 +34,22 @@ class GBestPSO(SwarmBase):
         initializes a velocity component by sampling from a random
         distribution with range [0,1].
 
-        Inputs:
-            - bounds: (np.ndarray, np.ndarray)  a tuple of np.ndarrays
-                where the first entry is the minimum bound while the
-                second entry is the maximum bound. Each array must be
-                of shape (dims,).
-            - **kwargs: (dictionary) containing the following keys:
-                * c1: cognitive parameter
-                * c2: social parameter
-                * m: momentum parameter
+        Parameters
+        ----------
+        bounds : tuple of np.ndarray, optional (default is None)
+            a tuple of size 2 where the first entry is the minimum bound
+            while the second entry is the maximum bound. Each array must
+            be of shape (dims,).
+        **kwargs : dict
+            Keyword argument that must contain the following dictionary
+            keys:
+                * c1 : float
+                    cognitive parameter
+                * c2 : float
+                    social parameter
+                * m : float
+                    momentum parameter
+
         """
         super(GBestPSO, self).__init__(n_particles, dims, bounds, **kwargs)
 
@@ -62,15 +65,23 @@ class GBestPSO(SwarmBase):
         Performs the optimization to evaluate the objective
         function `f` for a number of iterations `iter.`
 
-        Inputs:
-            - f: (method) objective function to be evaluated
-            - iters: (int) nb. of iterations
-            - print_step: amount of steps for printing into console.
-            - verbose: verbosity setting
+        Parameters
+        ----------
+        f : function
+            objective function to be evaluated
+        iters : int 
+            number of iterations 
+        print_step : int
+            amount of steps for printing into console
+            (the default is 1).
+        verbose : int
+            verbosity setting (the default is 1).
 
-        Returns:
-            - (tuple) the global best cost and the global best
-                position.
+        Returns
+        -------
+        tuple
+            the global best cost and the global best position.
+
         """
         for i in range(iters):
             # Compute cost for current position and personal best
@@ -94,11 +105,12 @@ class GBestPSO(SwarmBase):
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                    (i+1, iters, self.gbest_cost), verbose, 1)
+                    (i+1, iters, self.gbest_cost), verbose, 2)
 
             # Perform velocity and position updates
             self._update_velocity_position()
 
+        end_report(self.gbest_cost, self.gbest_pos, verbose)
         return (self.gbest_cost, self.gbest_pos)
 
     def reset(self):
