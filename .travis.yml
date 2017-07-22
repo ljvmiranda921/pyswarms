@@ -21,10 +21,6 @@ deploy:
     python: 2.7
     repo: ljvmiranda921/pyswarms
     tags: true
-virtualenv:
-  system_site_packages: true
-before_install:
-  - sudo apt-get install -qq python-numpy python-scipy
 install: 
   - "pip install -U tox-travis"
 language: python

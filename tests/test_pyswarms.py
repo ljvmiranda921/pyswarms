@@ -22,5 +22,11 @@ class TestSingleObj(unittest.TestCase):
         """Test sphere function."""
         assert fx.sphere_func(self.x).all() == np.array([0,0,0]).all()
 
+    def test_rastrigin(self):
+        """Test rastrigin function."""
+        assert fx.rastrigin_func(self.x).all() == np.array([0,0,0]).all()
+
+    
+
 if __name__ == '__main__':
     unittest.main()
