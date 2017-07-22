@@ -3,31 +3,23 @@
 
 """Tests for `pyswarms` package."""
 
-
+# Import modules
 import unittest
-from click.testing import CliRunner
+import numpy as np
 
-from pyswarms import cli
+# Import from package
+from pyswarms.utils.objective_fcns import single_obj as so
 
-
-class TestPyswarms(unittest.TestCase):
-    """Tests for `pyswarms` package."""
+class TestSingleObj(unittest.TestCase):
+    """Tests all single-objective functions."""
 
     def setUp(self):
-        """Set up test fixtures, if any."""
+        """Set up test swarm."""
+        self.x = np.array([[0,0],[0,0],[0,0]])
 
-    def tearDown(self):
-        """Tear down test fixtures, if any."""
+    def test_sphere(self):
+        """Test sphere function."""
+        assert fx.sphere_func(self.x) == np.array([0,0,0])
 
-    def test_000_something(self):
-        """Test something."""
-
-    def test_command_line_interface(self):
-        """Test the CLI."""
-        runner = CliRunner()
-        result = runner.invoke(cli.main)
-        assert result.exit_code == 0
-        assert 'pyswarms.cli.main' in result.output
-        help_result = runner.invoke(cli.main, ['--help'])
-        assert help_result.exit_code == 0
-        assert '--help  Show this message and exit.' in help_result.output
+if __name__ == '__main__':
+    unittest.main()
