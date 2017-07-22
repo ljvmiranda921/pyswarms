@@ -15,8 +15,8 @@ class TestSingleObj(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        # Test swarm
-        self.x = np.array([[0,0],[0,0],[0,0]])
+        # Test swarm with size=3, dimensions=2
+        self.x = np.zeros([3,2])
 
     def test_sphere(self):
         """Test sphere function."""
@@ -26,6 +26,13 @@ class TestSingleObj(unittest.TestCase):
         """Test rastrigin function."""
         assert fx.rastrigin_func(self.x).all() == np.array([0,0,0]).all()
 
+    def test_ackley(self):
+        """Test ackley function."""
+        assert fx.ackley_func(self.x).all() == np.array([0,0,0]).all()
+
+    def test_rosenbrock(self):
+        """Test rosenbrock function."""
+        assert fx.rosenbrock_func(np.ones([3,2])).all() == np.array([0,0,0]).all()
 
 if __name__ == '__main__':
     unittest.main()
