@@ -27,21 +27,28 @@ class SwarmBase(object):
 
     If you wish to pattern your update rules to the original PSO by 
     Eberhant et al., simply check the global best and local best
-    implementations in this package
+    implementations in this package.
+
+    .. note:: Regarding `**kwargs`, it is highly recommended to include
+        parameters used in position and velocity updates as keyword
+        arguments. For parameters that affect the topology of the swarm,
+        it may be much better to have them as positional arguments.
 
     See Also
     --------
     swarms.standard.pso.GBestPSO: global-best PSO implementation
     swarms.standard.pso.LBestPSO: local-best PSO implementation
-
     """
     def assertions(self):
         """Assertion method to check various inputs."""
+
+        # Check setting of bounds
         if self.bounds is not None:
+            assert type(self.bounds) == tuple, "bound must be a tuple."
             assert len(self.bounds) == 2, "bounds must be of size 2."
-            assert (self.bounds[1] > self.bounds[0]).all(), "all values of max bounds should be greater than min bounds"
             assert self.bounds[0].shape == self.bounds[1].shape, "unequal bound shapes"
-            assert self.bounds[0].shape == self.dims.shape, "bounds must be the same size as dims."
+            assert self.bounds[0].shape[0] == self.bounds[1].shape[0] == self.dims, "bounds must be the same size as dims."
+            assert (self.bounds[1] > self.bounds[0]).all(), "all values of max bounds should be greater than min bounds"
 
     def __init__(self, n_particles, dims, bounds=None, **kwargs):
         """Initializes the swarm. 
@@ -64,22 +71,19 @@ class SwarmBase(object):
         **kwargs: dict
             a dictionary containing various kwargs for a specific 
             optimization technique
-
         """
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dims = dims
         self.bounds = bounds
         self.swarm_size = (n_particles, dims)
-
-        # Initialize resettable attributes
-        self.reset()
-
-        # List of kwargs
         self.kwargs = kwargs
 
         # Invoke assertions
         self.assertions()
+
+        # Initialize resettable attributes
+        self.reset()
 
     def optimize(self, f, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
@@ -93,17 +97,15 @@ class SwarmBase(object):
             objective function to be evaluated
         iters : int 
             number of iterations 
-        print_step : int
-            amount of steps for printing into console
-            (the default is 1).
-        verbose : int
-            verbosity setting (the default is 1).
+        print_step : int (the default is 1)
+            amount of steps for printing into console.
+        verbose : int (the default is 1)
+            verbosity setting.
 
         Raises
         ------
         NotImplementedError
             When this method is not implemented.
-
         """
         raise NotImplementedError("SwarmBase::optimize()")
 
@@ -115,6 +117,19 @@ class SwarmBase(object):
         can be called twice: (1) during initialization, and (2) when
         this is called from an instance.
 
+        It is recommended to keep the number resettable
+        attributes at a minimum. This is to prevent spamming the same
+        object instance with various swarm definitions.
+
+        Normally, we would like to keep each swarm definitions as atomic
+        as possible, where each type of swarm is contained in its own
+        instance. Thus, the following attributes are the only ones
+        recommended to be resettable:
+            * Swarm position matrix (self.pos)
+            * Velocity matrix (self.pos)
+            * Best scores and positions (gbest_cost, gbest_pos, etc.)
+
+        Otherwise, consider using positional arguments.
         """
         # Broadcast the bounds and initialize the swarm
         if self.bounds is not None:
