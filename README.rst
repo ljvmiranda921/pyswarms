@@ -54,8 +54,8 @@ To use PySwarms in your project,
 
     import pyswarms
 
-Suppose you want to find the minima of :math: `f(x) = x^2` using global best PSO, simply import the
-built-in :code:`pyswarms.utils.functions.sphere_func()` and the necessary optimizer:
+Suppose you want to find the minima of :math:`f(x) = x^2` using global best PSO, simply import the 
+built-in sphere function, :code:`pyswarms.utils.functions.sphere_func()`, and the necessary optimizer:
 
 .. code-block:: python
 
@@ -71,6 +71,7 @@ built-in :code:`pyswarms.utils.functions.sphere_func()` and the necessary optimi
     # Perform optimization
     stats = optimizer.optimize(sphere_func, iters=100)
 
+More examples can be seen in the :code:`./examples` folder.
 
 Credits
 ---------
