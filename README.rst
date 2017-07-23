@@ -36,6 +36,42 @@ Dependencies
 * numpy >= 1.10.4
 * scipy >= 0.17.0
 
+Installation
+-------------
+To install PySwarms, run this command in your terminal:
+
+.. code-block:: console
+
+    $ pip install pyswarms
+
+This is the preferred method to install PySwarms, as it will always install the most recent stable release.
+
+Basic Usage
+------------
+To use PySwarms in your project,
+
+.. code-block:: python
+
+    import pyswarms
+
+Suppose you want to find the minima of :math: `f(x) = x^2` using global best PSO, simply import the
+built-in :code:`pyswarms.utils.functions.sphere_func()` and the necessary optimizer:
+
+.. code-block:: python
+
+    from pyswarms.single import GBestPSO
+    from pyswarms.utils.functions import sphere_func
+
+    # Set-up hyperparameters
+    options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
+
+    # Call instance of PSO
+    optimizer = GBestPSO(n_particles=10, dims=2, **options)
+
+    # Perform optimization
+    stats = optimizer.optimize(sphere_func, iters=100)
+
+
 Credits
 ---------
 This project was inspired by the pyswarm_ module that performs PSO with constrained support.
