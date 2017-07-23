@@ -37,11 +37,14 @@ class SwarmBase(object):
     """
     def assertions(self):
         """Assertion method to check various inputs."""
+
+        # Check setting of bounds
         if self.bounds is not None:
+            assert type(self.bounds) == tuple, "bound must be a tuple."
             assert len(self.bounds) == 2, "bounds must be of size 2."
-            assert (self.bounds[1] > self.bounds[0]).all(), "all values of max bounds should be greater than min bounds"
             assert self.bounds[0].shape == self.bounds[1].shape, "unequal bound shapes"
-            assert self.bounds[0].shape == self.dims.shape, "bounds must be the same size as dims."
+            assert self.bounds[0].shape[0] == self.bounds[1].shape[0] == self.dims, "bounds must be the same size as dims."
+            assert (self.bounds[1] > self.bounds[0]).all(), "all values of max bounds should be greater than min bounds"
 
     def __init__(self, n_particles, dims, bounds=None, **kwargs):
         """Initializes the swarm. 
@@ -71,15 +74,13 @@ class SwarmBase(object):
         self.dims = dims
         self.bounds = bounds
         self.swarm_size = (n_particles, dims)
-
-        # Initialize resettable attributes
-        self.reset()
-
-        # List of kwargs
         self.kwargs = kwargs
 
         # Invoke assertions
         self.assertions()
+
+        # Initialize resettable attributes
+        self.reset()
 
     def optimize(self, f, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.

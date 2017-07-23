@@ -4,7 +4,7 @@
 
 import numpy as np
 from ..base import SwarmBase
-from ..utils.console_utils import cli_print
+from ..utils.console_utils import cli_print, end_report
 
 class GBestPSO(SwarmBase):
     """A global-best Particle Swarm Optimization (PSO) algorithm.
@@ -22,7 +22,7 @@ class GBestPSO(SwarmBase):
     """
     def assertions(self):
         """Assertion method to check various inputs."""
-
+        super(GBestPSO, self).assertions()
         assert 'c1' in self.kwargs, "Missing c1 key in kwargs."
         assert 'c2' in self.kwargs, "Missing c2 key in kwargs."
         assert 'm' in self.kwargs, "Missing m key in kwargs."
@@ -53,11 +53,10 @@ class GBestPSO(SwarmBase):
         """
         super(GBestPSO, self).__init__(n_particles, dims, bounds, **kwargs)
 
-        # Initialize the resettable attributes
-        self.reset()
-
         # Invoke assertions
         self.assertions()
+        # Initialize the resettable attributes
+        self.reset()
 
     def optimize(self, f, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
