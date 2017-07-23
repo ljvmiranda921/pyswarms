@@ -2,20 +2,6 @@
 
 """single_obj.py: collection of single-objective functions
 
-Currently implements:
-
-1. Multi-dimensional Objs
-    - objective functions that can be computed along any
-        given number of dimensions.
-    1.1. Sphere function (Convex), `sphere_func()`
-    1.2. Rastrigin function, `rastrigin_func()`
-    1.3. Ackley's function, `ackley_func()`
-    1.4. Rosenbrock's function, `rosenbrock_func()`
-
-2. Two-dimensional Objs
-    - objective functions that are only computed within
-        two dimensions.
-
 All objective functions obj_func() must accept a (numpy.ndarray)
 with shape (n_particles, dims). Thus, each row represents a 
 particle, and each column represents its position on a specific
@@ -39,11 +25,16 @@ def sphere_func(x):
     Has a global minimum at 0 and with a search domain of
         [-inf, inf]
 
-    Inputs:
-        - x: (numpy.ndarray) set of inputs of shape: 
-            (n_particles, dims)
-    Returns: 
-        - j: computed cost
+    Parameters
+    ----------
+    x : numpy.ndarray 
+        set of inputs of shape (n_particles, dims)
+
+    Returns
+    -------
+    numpy.ndarray 
+        computed cost of size (n_particles, )
+
     """
     j = (x**2.0).sum(axis=1)
 
@@ -55,11 +46,16 @@ def rastrigin_func(x):
     Has a global minimum at f(0,0,...,0) with a search
     domain of -[-5.12, 5.12]
 
-    Inputs:
-        - x: (numpy.ndarray) set of inputs of shape: 
-            (n_particles, dims)
-    Returns: 
-        - j: computed cost
+    Parameters
+    ----------
+    x : numpy.ndarray 
+        set of inputs of shape (n_particles, dims)
+
+    Returns
+    -------
+    numpy.ndarray 
+        computed cost of size (n_particles, )
+
     """
     assert np.logical_and(x >= -5.12, x <= 5.12).all(), "Input for \
             Rastrigin function must be within [-5.12, 5.12]."
@@ -75,11 +71,16 @@ def ackley_func(x):
     Has a global minimum at f(0,0,...,0) with a search
     domain of [-32, 32]
 
-    Inputs:
-        - x: (numpy.ndarray) set of inputs of shape:
-            (n_particles, dims)
-    Returns: 
-        - j: computed cost
+    Parameters
+    ----------
+    x : numpy.ndarray 
+        set of inputs of shape (n_particles, dims)
+
+    Returns
+    -------
+    numpy.ndarray 
+        computed cost of size (n_particles, )
+
     """
     assert np.logical_and(x >= -32, x <= 32).all(), "Input for \
             Rastrigin function must be within [-32, 32]."
@@ -99,11 +100,16 @@ def rosenbrock_func(x):
     function. Has a global minimum of np.ones(dims) where dims
     is x.shape[1]. The search domain is [-inf, inf].
 
-    Inputs:
-        - x: (numpy.ndarray) set of inputs of shape:
-            (n_particles, dims)
-    Returns: 
-        - j: computed cost
+    Parameters
+    ----------
+    x : numpy.ndarray 
+        set of inputs of shape (n_particles, dims)
+
+    Returns
+    -------
+    numpy.ndarray 
+        computed cost of size (n_particles, )
+
     """
     j = (100 * np.square(x[:,1:] - x[:,:-1]**2.0)
         + (1.0 - x[:,:-1]) ** 2.0)

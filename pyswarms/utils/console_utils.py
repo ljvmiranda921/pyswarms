@@ -5,10 +5,15 @@
 def cli_print(message, verbosity, threshold):
     """Helper function to print console output
 
-    Inputs:
-        - message: message as string
-        - verbosity: verbosity setting of the user
-        - threshold: threshold for printing
+    Parameters
+    ----------
+    message : str
+        the message to be printed into the console
+    verbosity : int
+        verbosity setting of the user
+    threshold : int
+        threshold for printing
+
     """
     if verbosity >= threshold:
         print(message)
@@ -19,10 +24,15 @@ def end_report(cost, pos, verbosity)
     """Helper function to print a simple report at the end of the
     run. This always has a threshold of 1.
 
-    Inputs:
-        - cost: final cost from the optimization procedure.
-        - pos: best position found
-        - verbosity: verbosity setting of the user.
+    Parameters
+    ----------
+    cost : float
+        final cost from the optimization procedure.
+    pos : numpy.ndarray or list
+        best position found
+    verbosity : int
+        verbosity setting of the user.
+
     """
     if verbosity >= 1:
         print('================================\n \
