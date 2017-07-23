@@ -13,9 +13,9 @@ class SwarmBase(object):
     NotImplementedError when not used. When defining your own swarm, 
     create another class,
 
-        > class MySwarm(SwarmBaseClass):
-        >     def __init__(self):
-        >        super(MySwarm, self).__init__()
+    >>> class MySwarm(SwarmBaseClass):
+    >>>     def __init__(self):
+    >>>        super(MySwarm, self).__init__()
 
     and define all the necessary methods needed for your 
     implementation.
@@ -26,8 +26,13 @@ class SwarmBase(object):
     structure.
 
     If you wish to pattern your update rules to the original PSO by 
-    Eberhant et al., simply check the swarms.standard.pso.GBestPSO and 
-    swarms.standard.pso.LBestPSO classes that were implemented.
+    Eberhant et al., simply check the global best and local best
+    implementations in this package
+
+    See Also
+    --------
+    swarms.standard.pso.GBestPSO: global-best PSO implementation
+    swarms.standard.pso.LBestPSO: local-best PSO implementation
 
     """
     def assertions(self):
@@ -46,15 +51,20 @@ class SwarmBase(object):
         positions of the particles are sampled from a uniform 
         distribution.
 
-        Inputs:
-            - n_particles: (int) number of particles in the swarm.
-            - dims: (int) number of dimensions in the space.
-            - bounds: (np.ndarray, np.ndarray)  a tuple of np.ndarrays 
-                where the first entry is the minimum bound while the 
-                second entry is the maximum bound. Each array must be 
-                of shape (dims,).
-            - **kwargs: a dictionary containing various kwargs for a 
-                specific optimization technique
+        Attributes
+        ----------
+        n_particles : int
+            number of particles in the swarm.
+        dims : int
+            number of dimensions in the space.
+        bounds : tuple of numpy.ndarray
+            a tuple of size 2 where the first entry is the minimum bound
+            while the second entry is the maximum bound. Each array must
+            be of shape (dims,).
+        **kwargs: dict
+            a dictionary containing various kwargs for a specific 
+            optimization technique
+
         """
         # Initialize primary swarm attributes
         self.n_particles = n_particles
@@ -77,13 +87,23 @@ class SwarmBase(object):
         Performs the optimization to evaluate the objective 
         function `f` for a number of iterations `iter.`
 
-        Inputs:
-            - f: (method) objective function to be evaluated
-            - iters: (int) nb. of iterations 
-            - print_step: amount of steps for printing into console.
-            - verbose: verbosity setting
-        Raises:
-            - NotImplementedError: This is an abstract method.
+        Parameters
+        ----------
+        f : function
+            objective function to be evaluated
+        iters : int 
+            number of iterations 
+        print_step : int
+            amount of steps for printing into console
+            (the default is 1).
+        verbose : int
+            verbosity setting (the default is 1).
+
+        Raises
+        ------
+        NotImplementedError
+            When this method is not implemented.
+
         """
         raise NotImplementedError("SwarmBase::optimize()")
 
