@@ -2,7 +2,10 @@
 
 """ gb.py: global-best partical swarm optimization algorithm """
 
+# Import modules
 import numpy as np
+
+# Import from package
 from ..base import SwarmBase
 from ..utils.console_utils import cli_print, end_report
 
@@ -96,7 +99,7 @@ class GBestPSO(SwarmBase):
             # Create 1-D mask then update pbest_cost
             m = (current_cost < pbest_cost)
             pbest_cost = np.where(~m, pbest_cost, current_cost)
-            # Create 2-D mask
+            # Create 2-D mask to update positions
             _m = np.repeat(m[:,np.newaxis], self.dims, axis=1)
             self.pbest_pos = np.where(~_m, self.pbest_pos, self.pos)
 
@@ -138,7 +141,6 @@ class GBestPSO(SwarmBase):
         self.pos. This function is being called by the
         self.optimize() method
         """
-
         # Define the hyperparameters from kwargs dictionary
         c1, c2, m = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['m']
 
