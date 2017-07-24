@@ -27,13 +27,17 @@ class SwarmBase(object):
 
     If you wish to pattern your update rules to the original PSO by 
     Eberhant et al., simply check the global best and local best
-    implementations in this package
+    implementations in this package.
+
+    .. note:: Regarding `**kwargs`, it is highly recommended to include
+        parameters used in position and velocity updates as keyword
+        arguments. For parameters that affect the topology of the swarm,
+        it may be much better to have them as positional arguments.
 
     See Also
     --------
     swarms.standard.pso.GBestPSO: global-best PSO implementation
     swarms.standard.pso.LBestPSO: local-best PSO implementation
-
     """
     def assertions(self):
         """Assertion method to check various inputs."""
@@ -67,7 +71,6 @@ class SwarmBase(object):
         **kwargs: dict
             a dictionary containing various kwargs for a specific 
             optimization technique
-
         """
         # Initialize primary swarm attributes
         self.n_particles = n_particles
@@ -94,17 +97,15 @@ class SwarmBase(object):
             objective function to be evaluated
         iters : int 
             number of iterations 
-        print_step : int
-            amount of steps for printing into console
-            (the default is 1).
-        verbose : int
-            verbosity setting (the default is 1).
+        print_step : int (the default is 1)
+            amount of steps for printing into console.
+        verbose : int (the default is 1)
+            verbosity setting.
 
         Raises
         ------
         NotImplementedError
             When this method is not implemented.
-
         """
         raise NotImplementedError("SwarmBase::optimize()")
 
@@ -116,6 +117,19 @@ class SwarmBase(object):
         can be called twice: (1) during initialization, and (2) when
         this is called from an instance.
 
+        It is recommended to keep the number resettable
+        attributes at a minimum. This is to prevent spamming the same
+        object instance with various swarm definitions.
+
+        Normally, we would like to keep each swarm definitions as atomic
+        as possible, where each type of swarm is contained in its own
+        instance. Thus, the following attributes are the only ones
+        recommended to be resettable:
+            * Swarm position matrix (self.pos)
+            * Velocity matrix (self.pos)
+            * Best scores and positions (gbest_cost, gbest_pos, etc.)
+
+        Otherwise, consider using positional arguments.
         """
         # Broadcast the bounds and initialize the swarm
         if self.bounds is not None:

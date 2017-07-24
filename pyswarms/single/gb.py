@@ -10,19 +10,23 @@ class GBestPSO(SwarmBase):
     """A global-best Particle Swarm Optimization (PSO) algorithm.
 
     It takes a set of candidate solutions, and tries to find the best
-    solution using a position-velocity update method.
+    solution using a position-velocity update method. Uses a 
+    star-topology where each particle is attracted to the best 
+    performing particle.
 
     .. note:: This algorithm was adapted from the earlier works of J.
         Kennedy and R.C. Eberhart in Particle Swarm Optimization [1]_
 
     .. [1] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
         Proceedings of the IEEE International Joint Conference on Neural
-        Networks, pp. 1942-1948, 1995.
+        Networks, 1995, pp. 1942-1948.
 
     """
     def assertions(self):
         """Assertion method to check various inputs."""
         super(GBestPSO, self).assertions()
+
+        # Assert keyword arguments
         assert 'c1' in self.kwargs, "Missing c1 key in kwargs."
         assert 'c2' in self.kwargs, "Missing c2 key in kwargs."
         assert 'm' in self.kwargs, "Missing m key in kwargs."
@@ -34,8 +38,12 @@ class GBestPSO(SwarmBase):
         initializes a velocity component by sampling from a random
         distribution with range [0,1].
 
-        Parameters
+        Attributes
         ----------
+        n_particles : int
+            number of particles in the swarm.
+        dims : int
+            number of dimensions in the space.
         bounds : tuple of np.ndarray, optional (default is None)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
@@ -49,7 +57,6 @@ class GBestPSO(SwarmBase):
                     social parameter
                 * m : float
                     momentum parameter
-
         """
         super(GBestPSO, self).__init__(n_particles, dims, bounds, **kwargs)
 
@@ -70,17 +77,15 @@ class GBestPSO(SwarmBase):
             objective function to be evaluated
         iters : int 
             number of iterations 
-        print_step : int
-            amount of steps for printing into console
-            (the default is 1).
-        verbose : int
-            verbosity setting (the default is 1).
+        print_step : int (the default is 1)
+            amount of steps for printing into console.
+        verbose : int  (the default is 1)
+            verbosity setting.
 
         Returns
         -------
         tuple
             the global best cost and the global best position.
-
         """
         for i in range(iters):
             # Compute cost for current position and personal best
@@ -114,7 +119,6 @@ class GBestPSO(SwarmBase):
 
     def reset(self):
         """Resets the attributes of the optimizer."""
-
         super(GBestPSO, self).reset()
 
         # Initialize velocity vectors
