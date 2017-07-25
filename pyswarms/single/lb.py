@@ -2,11 +2,13 @@
 
 """ lb.py: local-best partical swarm optimization algorithm """
 
+# Import modules
 import numpy as np 
+from scipy.spatial import cKDTree
+
+# Import from package
 from ..base import SwarmBase
 from ..utils.console_utils import cli_print, end_report
-
-accepted_neighborhoods = ['random', 'dist']
 
 class LBestPSO(SwarmBase):
     """A local-best Particle Swarm Optimization algorithm.
@@ -16,9 +18,10 @@ class LBestPSO(SwarmBase):
     However, it uses a ring topology, thus making the particles 
     attracted to its corresponding neighborhood.
 
-    In this implementation, a neighbor is selected via two means: (1) by
-    random, and (2) by closest distance. For #2, the Euclidean distance
-    is computed. Empirically, this is much slower.
+    In this implementation, a neighbor is selected via a k-D tree
+    imported from scipy. Distance are computed with either
+    the L1 or L2 distance. The nearest-neighbours are then queried from
+    this k-D tree.
 
     .. note:: This algorithm was adapted from one of the earlier works
         of J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
@@ -41,11 +44,11 @@ class LBestPSO(SwarmBase):
         assert 'c2' in self.kwargs, "Missing c2 key in kwargs."
         assert 'm' in self.kwargs, "Missing m key in kwargs."
 
-        assert self.n_neighbors <= self.n_particles, "No. of neighbors must be less than or equal no. of particles"
-        assert neighborhood in accepted_neighborhoods, "Non-understandable neighborhood type"
+        assert 0 <= self.k <= self.n_particles, "No. of neighbors must be between 0 and no. of particles"
+        assert self.p in [1,2], "p-value should either be 1 (for L1/Minkowski) or 2 (for L2/Euclidean)."
 
     def __init__(self, n_particles, dims, bounds=None, 
-        n_neighbors=1, neighborhood='random', **kwargs):
+        k=1, p=2, **kwargs):
         """Initializes the swarm.
 
         Takes the same attributes as SwarmBase, but also initializes
@@ -62,10 +65,11 @@ class LBestPSO(SwarmBase):
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape (dims,).
-        n_neighbors: int (default is 1, must be less than n_particles)
+        k: int (default is 1, must be less than n_particles)
             number of neighbors to be considered.
-        neighborhood: str {'random', 'dist'}, (default is 'random')
-            type of neighbors to be searched.
+        p: int {1,2} (default is 2) 
+            the Minkowski p-norm to use. 1 is the sum-of-absolute values
+            (or L1 distance) while 2 is the Euclidean (or L2) distance.
         **kwargs : dict
             Keyword argument that must contain the following dictionary
             keys:
@@ -76,11 +80,12 @@ class LBestPSO(SwarmBase):
                 * m : float
                     momentum parameter
         """
-        super(LBestPSO, self).__init__(n_particles, dims, bounds, **kwargs)
 
         # Store n_neighbors and neighborhood type
-        self.n_neighbors = n_neighbors
-        self.neighborhood = neighborhood
+        self.k = k
+        self.p = p
+        
+        super(LBestPSO, self).__init__(n_particles, dims, bounds, **kwargs)
 
         # Invoke assertions
         self.assertions()
@@ -110,7 +115,67 @@ class LBestPSO(SwarmBase):
             the local best cost and the local best position among the
             swarm.
         """
-        pass
+        for i in range(iters):
+            # Compute cost for current position and personal best
+            current_cost = f(self.pos)
+            pbest_cost = f(self.pbest_pos)
+
+            # Update personal bests if the current position is better
+            # Create a 1-D mask then update pbest_cost
+            m = (current_cost < pbest_cost)
+            pbest_cost = np.where(~m, pbest_cost, current_cost)
+            # Create a 2-D mask to update positions
+            _m = np.repeat(m[:, np.newaxis], self.dims, axis=1)
+            self.pbest_pos = np.where(~_m, self.pbest_pos, self.pos)
+
+            # Obtain the indices of the best position for each
+            # neighbour-space, and get the local best cost and
+            # local best positions from it.
+            nmin_idx = self._get_neighbors(current_cost)
+            self.lbest_cost = current_cost[nmin_idx]
+            self.lbest_pos  = self.pos[nmin_idx]
+
+            # Print to console
+            if i % print_step == 0:
+                cli_print('Iteration %s/%s, cost: %s' %
+                    (i+1, iters, np.min(self.lbest_cost)), verbose, 2)
+
+            # Perform position velocity update
+            self._update_velocity_position()
+
+
+    def _get_neighbors(self, current_cost):
+        """Helper function to obtain the best position found in the
+        neighborhood. This uses the cKDTree method from scipy to ob-
+        tain the nearest neighbours
+        
+        Parameters
+        ----------
+        current_cost : numpy.ndarray of size (n_particles, )
+            the cost incurred at the current position. Will be used for
+            mapping the obtained indices to its actual cost.
+
+        Returns
+        -------
+        array of size (n_particles, ) dtype=int64
+            indices containing the best particles for each particle's
+            neighbour-space that have the lowest cost
+        """
+        # Use cKDTree to get the indices of the nearest neighbors
+        tree = cKDTree(self.pos)
+        _, idx = tree.query(self.pos, p=self.p, k=self.k)
+
+        # Map the computed costs to the neighbour indices and take the
+        # argmin. If k-neighbors is equal to 1, then the swarm acts
+        # independently of each other. 
+        if self.k == 1:
+            # The minimum index is itself, no mapping needed.
+            best_neighbor = current_cost[idx][:,np.newaxis].argmin(axis=1)
+        else:
+            idx_min = current_cost[idx].argmin(axis=1)
+            best_neighbor = idx[np.arange(len(idx)), idx_min]
+
+        return best_neighbor
 
     def reset(self):
         """Resets the attributes of the optimizer."""
@@ -133,4 +198,26 @@ class LBestPSO(SwarmBase):
         self.pos. This function is being called by the
         self.optimize() method
         """
-        pass
+        # Define the hyperparameters from kwargs dictionary
+        c1, c2, m = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['m']
+
+        # Compute for cognitive and social terms
+        cognitive = (c1 * np.random.uniform(0,1,self.swarm_size)
+                    * (self.pbest_pos - self.pos))
+        social = (c2 * np.random.uniform(0,1,self.swarm_size)
+                    * (self.lbest_pos - self.pos))
+        self.velocity = (m * self.velocity) + cognitive + social
+
+        # Update position and store it in a temporary variable
+        temp = self.pos.copy()
+        temp += self.velocity
+
+        if self.bounds is not None:
+            # Create a mask depending on the set boundaries
+            b = (np.all(self.min_bounds <= temp, axis=1)
+                * np.all(temp <= self.max_bounds, axis=1))
+            # Broadcast the mask
+            b = np.repeat(b[:,np.newaxis], self.dims, axis=1)
+            # Use the mask to finally guide position update
+            temp = np.where(~b, self.pos, temp)
+        self.pos = temp
