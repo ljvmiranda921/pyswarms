@@ -33,7 +33,8 @@ Implement Features
 ~~~~~~~~~~~~~~~~~~
 
 Look through the GitHub issues for features. Anything tagged with "enhancement"
-and "help wanted" is open to whoever wants to implement it.
+and "help wanted" is open to whoever wants to implement it. Those that are
+tagged with "first-timers-only" is suitable for those getting started in open-source software.
 
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
