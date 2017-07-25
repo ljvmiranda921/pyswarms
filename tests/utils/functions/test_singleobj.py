@@ -12,7 +12,7 @@ from pyswarms.utils.functions import single_obj as fx
 
 
 class TestSingleObj(unittest.TestCase):
-    """Tests all single-objective functions."""
+    """Base class for testing single-objective functions."""
 
     def setUp(self):
         """Set up test fixtures."""
@@ -20,6 +20,9 @@ class TestSingleObj(unittest.TestCase):
         self.input = np.zeros([3,2])
         # Target value
         self.target = np.zeros(3)
+
+class ExpectedMinima(TestSingleObj):
+    """Test if a function outputs a minima if fed with expected argmin."""
 
     def test_sphere(self):
         """Tests sphere function."""
@@ -36,6 +39,9 @@ class TestSingleObj(unittest.TestCase):
     def test_rosenbrock(self):
         """Tests rosenbrock function."""
         self.assertEqual(fx.rosenbrock_func(np.ones([3,2])).all(), np.array([0,0,0]).all())
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
