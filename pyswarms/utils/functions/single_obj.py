@@ -111,3 +111,85 @@ def rosenbrock_func(x):
         + (1.0 - x[:,:-1]) ** 2.0)
 
     return j.ravel()
+
+
+# TODO: Implement Beale's Function
+def beale_func(x):
+    """Beale objective function.
+
+    Only takes two dimensions and has a global minimum at f([0,3.5])
+    Its domain is bounded between [-4.5, 4.5]
+
+    Parameters
+    ----------
+    x : numpy.ndarray 
+        set of inputs of shape (n_particles, dims)
+
+    Returns
+    -------
+    numpy.ndarray 
+        computed cost of size (n_particles, )
+    """
+    assert np.logical_and(x >= -4.5, x <= 4.5).all(), "Input for \
+            Beale function must be within [-4.5, 4.5]."
+    assert x.shape[1] == 2, "Only takes two-dimensional input."
+
+    # TODO: Write actual function here
+    
+    # TODO: Change this part by returning the actual value when
+    # you compute x.
+    return np.array([0,0,0])
+
+# TODO: Implement Goldstein-Price's Function
+def goldstein_func(x):
+    """Goldstein-Price's objective function.
+
+    Only takes two dimensions and has a global minimum at f([0,-1])
+    Its domain is bounded between [-2, 2]
+
+    Parameters
+    ----------
+    x : numpy.ndarray 
+        set of inputs of shape (n_particles, dims)
+
+    Returns
+    -------
+    numpy.ndarray 
+        computed cost of size (n_particles, )
+    """
+    assert np.logical_and(x >= -2, x <= 2).all(), "Input for \
+            Goldstein-Price function must be within [-4.5, 4.5]."
+    assert x.shape[1] == 2, "Only takes two-dimensional input."
+
+    # TODO: Write actual function here
+    
+    # TODO: Change this part by returning the actual value when
+    # you compute x.
+    return np.array([3,3,3])
+
+# TODO: Implement Goldstein-Price's Function
+def booth_func(x):
+    """Booth's objective function.
+
+    Only takes two dimensions and has a global minimum at f([1,3])
+    Its domain is bounded between [-10, 10]
+
+    Parameters
+    ----------
+    x : numpy.ndarray 
+        set of inputs of shape (n_particles, dims)
+
+    Returns
+    -------
+    numpy.ndarray 
+        computed cost of size (n_particles, )
+    """
+    assert np.logical_and(x >= -10, x <= 10).all(), "Input for \
+            Booth function must be within [-10, 10]."
+    assert x.shape[1] == 2, "Only takes two-dimensional input."
+
+    # TODO: Write actual function here
+    
+    # TODO: Change this part by returning the actual value when
+    # you compute x.
+    return np.array([0,0,0])
