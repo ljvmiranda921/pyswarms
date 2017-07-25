@@ -34,7 +34,6 @@ def sphere_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
-
     """
     j = (x**2.0).sum(axis=1)
 
@@ -55,7 +54,6 @@ def rastrigin_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
-
     """
     assert np.logical_and(x >= -5.12, x <= 5.12).all(), "Input for \
             Rastrigin function must be within [-5.12, 5.12]."
@@ -80,7 +78,6 @@ def ackley_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
-
     """
     assert np.logical_and(x >= -32, x <= 32).all(), "Input for \
             Rastrigin function must be within [-32, 32]."
@@ -109,9 +106,8 @@ def rosenbrock_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
-
     """
     j = (100 * np.square(x[:,1:] - x[:,:-1]**2.0)
         + (1.0 - x[:,:-1]) ** 2.0)
 
-    return j
+    return j.ravel()
