@@ -34,21 +34,21 @@ class Instantiation(Base):
         check_c1 = {'c2':0.7, 'm':0.5}
         check_c2 = {'c1':0.5, 'm':0.5}
         check_m = {'c1':0.5, 'c2':0.7}
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(KeyError):
             optimizer = LBestPSO(5,2,**check_c1)
             optimizer = LBestPSO(5,2,**check_c2)
             optimizer = LBestPSO(5,2,**check_m)
 
     def test_bound_size_fail(self):
         """Tests if exception is thrown when bound length is not 2"""
-        bounds = (np.array([-5,-5]))
-        with self.assertRaises(AssertionError):
+        bounds = tuple(np.array([-5,-5]))
+        with self.assertRaises(IndexError):
             optimizer = LBestPSO(5,2, bounds, **self.options)
 
     def test_bound_type_fail(self):
         """Tests if exception is thrown when bound type is not tuple"""
         bounds = [np.array([-5,-5]), np.array([5,5])]
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(TypeError):
             optimizer = LBestPSO(5,2, bounds, **self.options)
 
     def test_bound_maxmin_fail(self):
@@ -56,7 +56,7 @@ class Instantiation(Base):
         wrong."""
         bounds_1 = (np.array([5,5]), np.array([-5,-5]))
         bounds_2 = (np.array([5,-5]), np.array([-5,5]))
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             optimizer = LBestPSO(5,2, bounds_1, **self.options)
             optimizer = LBestPSO(5,2, bounds_2, **self.options)
 
@@ -64,27 +64,27 @@ class Instantiation(Base):
         """Tests if exception is thrown when bounds are of unequal 
         shapes."""
         bounds = (np.array([-5,-5,-5]), np.array([5,5]))
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(IndexError):
             optimizer = LBestPSO(5,2, bounds, **self.options)
 
     def test_bound_shape_dims_fail(self):
         """Tests if exception is thrown when bound shape is not equal
         to dims."""
         bounds = (np.array([-5,-5,-5]), np.array([5,5,5]))
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(IndexError):
             optimizer = LBestPSO(5,2, bounds, **self.options)
 
     def test_k_fail(self):
         """Tests if exception is thrown when feeding an invalid k."""
         k_less_than_min = -1
         k_more_than_max = 6
-        with self.assertRaises(AssertionError):
-            optimizer = LBestPSO(5,2, k_less_than_min, **self.options)
-            optimizer = LBestPSO(5,2, k_more_than_max, **self.options)
+        with self.assertRaises(ValueError):
+            optimizer = LBestPSO(5,2, self.safe_bounds, k_less_than_min, **self.options)
+            optimizer = LBestPSO(5,2, self.safe_bounds, k_more_than_max, **self.options)
 
     def test_p_fail(self):
         """Tests if exception is thrown when feeding an invalid p."""
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             optimizer = LBestPSO(5,2, p=5, **self.options)
 
 class Methods(Base):

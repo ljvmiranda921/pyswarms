@@ -36,16 +36,30 @@ class LBestPSO(SwarmBase):
         Symposium on Micromachine and Human Science, 1995, pp. 39–43.
     """
     def assertions(self):
-        """Assertion method to check various inputs."""
+        """Assertion method to check various inputs.
+
+        Raises
+        ------
+        KeyError
+            When one of the required dictionary keys is missing.
+        ValueError
+            When the number of neighbors is not within the range
+                [0, n_particles].
+            When the p-value is not in the list of values [1,2].
+        """
         super(LBestPSO, self).assertions()
 
-        # Assert keyword arguments
-        assert 'c1' in self.kwargs, "Missing c1 key in kwargs."
-        assert 'c2' in self.kwargs, "Missing c2 key in kwargs."
-        assert 'm' in self.kwargs, "Missing m key in kwargs."
+        if 'c1' not in self.kwargs:
+            raise KeyError('Missing c1 key in kwargs.')
+        if 'c2' not in self.kwargs:
+            raise KeyError('Missing c2 key in kwargs.')
+        if 'm' not in self.kwargs:
+            raise KeyError('Missing m key in kwargs.')
 
-        assert 0 <= self.k <= self.n_particles, "No. of neighbors must be between 0 and no. of particles"
-        assert self.p in [1,2], "p-value should either be 1 (for L1/Minkowski) or 2 (for L2/Euclidean)."
+        if not 0 <= self.k <= self.n_particles:
+            raise ValueError('No. of neighbors must be between 0 and no. of particles.')
+        if not self.p in [1,2]:
+            raise ValueError('p-value should either be 1 (for L1/Minkowski) or 2 (for L2/Euclidean).')
 
     def __init__(self, n_particles, dims, bounds=None, 
         k=1, p=2, **kwargs):
