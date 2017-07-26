@@ -26,13 +26,21 @@ class GBestPSO(SwarmBase):
 
     """
     def assertions(self):
-        """Assertion method to check various inputs."""
+        """Assertion method to check various inputs.
+
+        Raises
+        ------
+        KeyError
+            When one of the required dictionary keys is missing.
+        """
         super(GBestPSO, self).assertions()
 
-        # Assert keyword arguments
-        assert 'c1' in self.kwargs, "Missing c1 key in kwargs."
-        assert 'c2' in self.kwargs, "Missing c2 key in kwargs."
-        assert 'm' in self.kwargs, "Missing m key in kwargs."
+        if 'c1' not in self.kwargs:
+            raise KeyError('Missing c1 key in kwargs.')
+        if 'c2' not in self.kwargs:
+            raise KeyError('Missing c2 key in kwargs.')
+        if 'm' not in self.kwargs:
+            raise KeyError('Missing m key in kwargs.')
 
     def __init__(self, n_particles, dims, bounds=None, **kwargs):
         """Initializes the swarm. 
