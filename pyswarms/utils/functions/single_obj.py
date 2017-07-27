@@ -131,12 +131,13 @@ def beale_func(x):
     assert x.shape[1] == 2, "Only takes two-dimensional input."
     assert np.logical_and(x >= -4.5, x <= 4.5).all(), "Input for Beale function must be within [-4.5, 4.5]."
 
-    # TODO: Write actual function here
-    
-    # TODO: Change this part by returning the actual value when
-    # you compute x.
-    dummy = np.array([0,0,0]) # defined just to not break the tests
-    return dummy
+    x_ = x[:,0]
+    y_ = x[:,1]
+    j = (1.5 - x_ + x_ * y_)**2.0 + \
+           (2.25 - x_ + x_ * y_**2.0)**2.0 + \
+           (2.625 - x_ + x_ * y_**3.0)**2.0
+
+    return j
 
 # TODO: Implement Goldstein-Price's Function
 def goldstein_func(x):
