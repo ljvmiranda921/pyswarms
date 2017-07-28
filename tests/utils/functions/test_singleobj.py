@@ -33,40 +33,51 @@ class InputBoundFail(TestSingleObj):
         """Test rastrigin bound exception"""
         x = - np.random.uniform(low=6,high=100,size=(3,2))
         x_ = np.random.uniform(low=6,high=100,size=(3,2))
+
         with self.assertRaises(AssertionError):
             fx.rastrigin_func(x)
+
+        with self.assertRaises(AssertionError):
             fx.rastrigin_func(x_)
 
     def test_ackley_bound_fail(self):
         """Test ackley bound exception"""
         x = - np.random.uniform(low=32,high=100,size=(3,2))
         x_ = np.random.uniform(low=32,high=100,size=(3,2))
+
         with self.assertRaises(AssertionError):
             fx.ackley_func(x)
+        with self.assertRaises(AssertionError):
             fx.ackley_func(x_)
 
     def test_beale_bound_fail(self):
         """Test beale bound exception"""
         x = - np.random.uniform(low=4.6666,high=100,size=(3,2))
         x_ = np.random.uniform(low=4.6666,high=100,size=(3,2))
+
         with self.assertRaises(AssertionError):
             fx.beale_func(x)
+        with self.assertRaises(AssertionError):
             fx.beale_func(x_)
 
     def test_goldstein_bound_fail(self):
         """Test goldstein bound exception"""
         x = - np.random.uniform(low=2.00001,high=100,size=(3,2))
         x_ = np.random.uniform(low=2.00001,high=100,size=(3,2))
+
         with self.assertRaises(AssertionError):
             fx.goldstein_func(x)
+        with self.assertRaises(AssertionError):
             fx.goldstein_func(x_)
 
     def test_booth_bound_fail(self):
         """Test booth bound exception"""
         x = - np.random.uniform(low=11.00001,high=100,size=(3,2))
         x_ = np.random.uniform(low=11.00001,high=100,size=(3,2))
+
         with self.assertRaises(AssertionError):
             fx.booth_func(x)
+        with self.assertRaises(AssertionError):
             fx.booth_func(x_)
 
     def test_bukin6_bound_fail(self):
@@ -74,33 +85,42 @@ class InputBoundFail(TestSingleObj):
         x = - np.random.uniform(low=15.001,high=100,size=(3,2))
         x_ =  np.random.uniform(low=-5.001,high=-3.001,size=(3,2))
         x_1 =  np.random.uniform(low=-3.001,high=-100,size=(3,2))
+
         with self.assertRaises(AssertionError):
             fx.bukin6_func(x)
+        with self.assertRaises(AssertionError):
             fx.bukin6_func(x_)
+        with self.assertRaises(AssertionError):
             fx.bukin6_func(x_1)
 
     def test_matyas_bound_fail(self):
         """Test matyas bound exception"""
         x = - np.random.uniform(low=10.001,high=100,size=(3,2))
         x_ = np.random.uniform(low=10.001,high=100,size=(3,2))
+
         with self.assertRaises(AssertionError):
             fx.matyas_func(x)
+        with self.assertRaises(AssertionError):
             fx.matyas_func(x_)
 
     def test_levi_bound_fail(self):
         """Test levi bound exception"""
         x = - np.random.uniform(low=10.001,high=100,size=(3,2))
         x_ = np.random.uniform(low=10.001,high=100,size=(3,2))
+
         with self.assertRaises(AssertionError):
             fx.levi_func(x)
+        with self.assertRaises(AssertionError):
             fx.levi_func(x_)
 
     def test_schaffer2_bound_fail(self):
         """Test schaffer2 bound exception"""
         x = - np.random.uniform(low=100.001,high=1000,size=(3,2))
         x_ = np.random.uniform(low=100.001,high=1000,size=(3,2))
+
         with self.assertRaises(AssertionError):
             fx.schaffer2_func(x)
+        with self.assertRaises(AssertionError):
             fx.schaffer2_func(x_)
 
 class InputDimFail(TestSingleObj):
