@@ -133,9 +133,9 @@ def beale_func(x):
 
     x_ = x[:,0]
     y_ = x[:,1]
-    j = (1.5 - x_ + x_ * y_)**2.0 + \
-           (2.25 - x_ + x_ * y_**2.0)**2.0 + \
-           (2.625 - x_ + x_ * y_**3.0)**2.0
+    j = ((1.5 - x_ + x_ * y_)**2.0
+        + (2.25 - x_ + x_ * y_**2.0)**2.0
+        + (2.625 - x_ + x_ * y_**3.0)**2.0)
 
     return j
 
@@ -159,12 +159,14 @@ def goldstein_func(x):
     assert x.shape[1] == 2, "Only takes two-dimensional input."
     assert np.logical_and(x >= -2, x <= 2).all(), "Input for Goldstein-Price function must be within [-4.5, 4.5]."
 
-    # TODO: Write actual function here
-    
-    # TODO: Change this part by returning the actual value when
-    # you compute x.
-    dummy = np.array([3,3,3]) # defined just to not break the tests
-    return dummy
+    x_ = x[:,0]
+    y_ = x[:,1]
+    j = ((1 + (x_ + y_ + 1)**2.0
+        * (19 - 14*x_ + 3*x_**2.0 - 14*y_ + 6*x_*y_ + 3*y_**2.0))
+        * (30 + (2*x_ - 3 * y_)**2.0
+        * (18 - 32*x_ + 12*x_**2.0 + 48*y_ - 36*x_*y_ + 27*y_**2.0)))
+
+    return j
 
 # TODO: Implement Goldstein-Price's Function
 def booth_func(x):
@@ -186,12 +188,11 @@ def booth_func(x):
     assert x.shape[1] == 2, "Only takes two-dimensional input."
     assert np.logical_and(x >= -10, x <= 10).all(), "Input for Booth function must be within [-10, 10]."
 
-    # TODO: Write actual function here
-    
-    # TODO: Change this part by returning the actual value when
-    # you compute x.
-    dummy = np.array([0,0,0]) # defined just to not break the tests
-    return dummy
+    x_ = x[:,0]
+    y_ = x[:,1]
+    j = (x_ + 2 * y_ - 7)**2.0 + (2 * x_ + y_ - 5)**2.0
+
+    return j
 
 # TODO: Implement Bukin Function no. 6
 def bukin6_func(x):
@@ -216,12 +217,11 @@ def bukin6_func(x):
     assert np.logical_and(x[:,0] >= -15, x[:,0] <= -5).all(), "First column should be within [-15, -5]"
     assert np.logical_and(x[:,1] >= -3, x[:,1] <= 3).all(), "Second column should be within [-3, 3]"
 
-    # TODO: Write actual function here
+    x_ = x[:,0]
+    y_ = x[:,1]
+    j = 100 * np.sqrt(np.absolute(y_**2.0 - 0.01*x_**2.0)) + 0.01 * np.absolute(x_ + 10)
 
-    # TODO: Change this part by returning the actual value when
-    # you compute x.
-    dummy = np.array([0,0,0]) # defined just to not break the tests
-    return dummy
+    return j
 
 def matyas_func(x):
     """Matyas objective function
@@ -242,13 +242,11 @@ def matyas_func(x):
     assert x.shape[1] == 2, "Only takes two-dimensional input."
     assert np.logical_and(x >= -10, x <= 10).all(), "Input should be within [-10, 10]"
 
+    x_ = x[:,0]
+    y_ = x[:,1]
+    j = 0.26 * (x_**2.0 + y_**2.0) - 0.48 * x_ * y_
 
-    # TODO: Write actual function here
-
-    # TODO: Change this part by returning the actual value when
-    # you compute x.
-    dummy = np.array([0,0,0]) # defined just to not break the tests
-    return dummy
+    return j
 
 def levi_func(x):
     """Levi objective function
@@ -269,12 +267,22 @@ def levi_func(x):
     assert x.shape[1] == 2, "Only takes two-dimensional input."
     assert np.logical_and(x >= -10, x <= 10).all(), "Input should be within [-10, 10]"
 
-    # TODO: Write actual function here
+    mask = np.full(x.shape, False)
+    mask[:,-1] = True
+    masked_x = np.ma.array(x, mask=mask)
 
-    # TODO: Change this part by returning the actual value when
-    # you compute x.
-    dummy = np.array([0,0,0]) # defined just to not break the tests
-    return dummy
+    w_ = 1 + (x - 1) / 4
+    masked_w_ = np.ma.array(w_, mask=mask)
+    d_ = x.shape[1] - 1
+
+    j = (np.sin(np.pi * w_[:,0])**2.0
+        + ((masked_x - 1)**2.0).sum(axis=1)
+        * (1 + 10 * np.sin(np.pi * (masked_w_).sum(axis=1) + 1)**2.0)
+        + (w_[:,d_] - 1)**2.0
+        * (1 + np.sin(2 * np.pi * w_[:,d_])**2.0 ))
+          
+
+    return j
 
 def schaffer2_func(x):
     """Schaffer N.2 objective function
@@ -295,9 +303,10 @@ def schaffer2_func(x):
     assert x.shape[1] == 2, "Only takes two-dimensional input."
     assert np.logical_and(x >= -100, x <= 100).all(), "Input should be within [-10, 10]"
 
-    # TODO: Write actual function here
+    x_ = x[:,0]
+    y_ = x[:,1]
+    j = (0.5
+        + ((np.sin(x_**2.0 - y_**2.0)**2.0 - 0.5)
+        / ((1 + 0.001 * (x_**2.0 + y_**2.0))**2.0)))
 
-    # TODO: Change this part by returning the actual value when
-    # you compute x.
-    dummy = np.array([0,0,0]) # defined just to not break the tests
-    return dummy
+    return j
