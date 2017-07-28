@@ -18,7 +18,7 @@ PySwarms
      :alt: Updates
 
 
-PySwarms is a simple, Python-based, Particle Swarm Optimization (PSO) library. 
+PySwarms is a simple, Python-based, Particle Swarm Optimization (PSO) library.
 
 * Free software: MIT license
 * Documentation: https://pyswarms.readthedocs.io.
@@ -52,26 +52,25 @@ To use PySwarms in your project,
 
 .. code-block:: python
 
-    import pyswarms
+    import pyswarms as ps
 
 Suppose you want to find the minima of :math:`f(x) = x^2` using global best PSO, simply import the 
 built-in sphere function, :code:`pyswarms.utils.functions.sphere_func()`, and the necessary optimizer:
 
 .. code-block:: python
 
-    from pyswarms.single import GBestPSO
+    import pyswarms as ps
     from pyswarms.utils.functions import sphere_func
 
     # Set-up hyperparameters
     options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
 
     # Call instance of PSO
-    optimizer = GBestPSO(n_particles=10, dims=2, **options)
+    optimizer = ps.GBestPSO(n_particles=10, dims=2, **options)
 
     # Perform optimization
     stats = optimizer.optimize(sphere_func, iters=100)
 
-More examples can be seen in the :code:`./examples` folder.
 
 Credits
 ---------

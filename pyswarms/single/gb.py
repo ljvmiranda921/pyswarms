@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-""" gb.py: global-best partical swarm optimization algorithm """
+""" gb.py: global-best particle swarm optimization algorithm """
 
 # Import modules
 import numpy as np
@@ -17,8 +17,8 @@ class GBestPSO(SwarmBase):
     star-topology where each particle is attracted to the best 
     performing particle.
 
-    .. note:: This algorithm was adapted from the earlier works of J.
-        Kennedy and R.C. Eberhart in Particle Swarm Optimization [1]_
+    This algorithm was adapted from the earlier works of J. Kennedy and
+    R.C. Eberhart in Particle Swarm Optimization [1]_
 
     .. [1] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
         Proceedings of the IEEE International Joint Conference on Neural
@@ -45,9 +45,9 @@ class GBestPSO(SwarmBase):
     def __init__(self, n_particles, dims, bounds=None, **kwargs):
         """Initializes the swarm. 
 
-        Takes the same attributes as SwarmBase, but also
+        Takes the same attributes as :code:`SwarmBase`, but also
         initializes a velocity component by sampling from a random
-        distribution with range [0,1].
+        distribution with range :code:`[0,1]`.
 
         Attributes
         ----------
@@ -55,10 +55,10 @@ class GBestPSO(SwarmBase):
             number of particles in the swarm.
         dims : int
             number of dimensions in the space.
-        bounds : tuple of np.ndarray, optional (default is None)
+        bounds : tuple of np.ndarray, optional (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
-            be of shape (dims,).
+            be of shape :code:`(dims,)`.
         **kwargs : dict
             Keyword argument that must contain the following dictionary
             keys:
@@ -80,7 +80,7 @@ class GBestPSO(SwarmBase):
         """Optimizes the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
-        function `f` for a number of iterations `iter.`
+        function :code:`f` for a number of iterations :code:`iter.`
 
         Parameters
         ----------
@@ -145,9 +145,9 @@ class GBestPSO(SwarmBase):
     def _update_velocity_position(self):
         """Updates the velocity and position of the swarm.
 
-        Specifically, it updates the attributes self.velocity and
-        self.pos. This function is being called by the
-        self.optimize() method
+        Specifically, it updates the attributes :code:`self.velocity`
+        and :code:`self.pos`. This function is being called by the
+        :code:`self.optimize()` method
         """
         # Define the hyperparameters from kwargs dictionary
         c1, c2, m = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['m']
