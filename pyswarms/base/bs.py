@@ -40,15 +40,32 @@ class SwarmBase(object):
     swarms.standard.pso.LBestPSO: local-best PSO implementation
     """
     def assertions(self):
-        """Assertion method to check various inputs."""
+        """Assertion method to check various inputs.
+        
+        Raises
+        ------
+        TypeError
+            When the `bounds` is not of type tuple
+        IndexError
+            When the `bounds` is not of size 2.
+            When the arrays in `bounds` is not of equal size.
+            When the shape of `bounds` is not the same as `dims`.
+        ValueError
+            When the value of `bounds[1]` is less than `bounds[0]`.
+        """
 
         # Check setting of bounds
         if self.bounds is not None:
-            assert type(self.bounds) == tuple, "bound must be a tuple."
-            assert len(self.bounds) == 2, "bounds must be of size 2."
-            assert self.bounds[0].shape == self.bounds[1].shape, "unequal bound shapes"
-            assert self.bounds[0].shape[0] == self.bounds[1].shape[0] == self.dims, "bounds must be the same size as dims."
-            assert (self.bounds[1] > self.bounds[0]).all(), "all values of max bounds should be greater than min bounds"
+            if not type(self.bounds) == tuple:
+                raise TypeError('Variable `bound` must be a tuple.')
+            if not len(self.bounds) == 2:
+                raise IndexError('Variable `bound` must be of size 2.')
+            if not self.bounds[0].shape == self.bounds[1].shape:
+                raise IndexError('Arrays in `bound` must be of equal shapes')
+            if not self.bounds[0].shape[0] == self.bounds[1].shape[0] == self.dims:
+                raise IndexError('Variable `bound` must be the shape as dims.')
+            if not (self.bounds[1] > self.bounds[0]).all():
+                raise ValueError('Values of `bounds[1]` must be greater than `bounds[0]`.')
 
     def __init__(self, n_particles, dims, bounds=None, **kwargs):
         """Initializes the swarm. 

@@ -1,2 +1,5 @@
-""" Package for various objective functions """
-from .single_obj import *
+"""
+The `pyswarms.utils.functions` module implements various test functions
+for optimization.
+"""
+

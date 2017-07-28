@@ -54,8 +54,15 @@ def rastrigin_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
+
+    Raises
+    ------
+    ValueError
+        When the input is out of bounds with respect to the function
+        domain
     """
-    assert np.logical_and(x >= -5.12, x <= 5.12).all(), "Input for Rastrigin function must be within [-5.12, 5.12]."
+    if not np.logical_and(x >= -5.12, x <= 5.12).all():
+        raise ValueError('Input for Rastrigin function must be within [-5.12, 5.12].')
 
     d = x.shape[1]
     j = 10.0 * d + (x**2.0 - 10.0 * np.cos(2.0 * np.pi * x)).sum(axis=1) 
@@ -77,8 +84,15 @@ def ackley_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
+
+    Raises
+    ------
+    ValueError
+        When the input is out of bounds with respect to the function
+        domain
     """
-    assert np.logical_and(x >= -32, x <= 32).all(), "Input for Rastrigin function must be within [-32, 32]."
+    if not np.logical_and(x >= -32, x <= 32).all():
+        raise ValueError('Input for Ackley function must be within [-32, 32].')
 
     d = x.shape[1]
     j = (-20.0 * np.exp(-0.2 * np.sqrt((1/d) * (x**2).sum(axis=1)))
@@ -110,8 +124,6 @@ def rosenbrock_func(x):
 
     return j.ravel()
 
-
-# TODO: Implement Beale's Function
 def beale_func(x):
     """Beale objective function.
 
@@ -127,9 +139,20 @@ def beale_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
+
+    Raises
+    ------
+    IndexError
+        When the input dimensions is greater than what the function
+        allows
+    ValueError
+        When the input is out of bounds with respect to the function
+        domain
     """
-    assert x.shape[1] == 2, "Only takes two-dimensional input."
-    assert np.logical_and(x >= -4.5, x <= 4.5).all(), "Input for Beale function must be within [-4.5, 4.5]."
+    if not x.shape[1] == 2:
+        raise IndexError('Beale function only takes two-dimensional input.')
+    if not np.logical_and(x >= -4.5, x <= 4.5).all():
+        raise ValueError('Input for Beale function must be within [-4.5, 4.5].')
 
     x_ = x[:,0]
     y_ = x[:,1]
@@ -139,7 +162,6 @@ def beale_func(x):
 
     return j
 
-# TODO: Implement Goldstein-Price's Function
 def goldstein_func(x):
     """Goldstein-Price's objective function.
 
@@ -155,9 +177,20 @@ def goldstein_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
+
+    Raises
+    ------
+    IndexError
+        When the input dimensions is greater than what the function
+        allows
+    ValueError
+        When the input is out of bounds with respect to the function
+        domain
     """
-    assert x.shape[1] == 2, "Only takes two-dimensional input."
-    assert np.logical_and(x >= -2, x <= 2).all(), "Input for Goldstein-Price function must be within [-4.5, 4.5]."
+    if not x.shape[1] == 2:
+        raise IndexError('Goldstein function only takes two-dimensional input.')
+    if not np.logical_and(x >= -2, x <= 2).all():
+        raise ValueError('Input for Goldstein-Price function must be within [-2, 2].')
 
     x_ = x[:,0]
     y_ = x[:,1]
@@ -168,7 +201,6 @@ def goldstein_func(x):
 
     return j
 
-# TODO: Implement Goldstein-Price's Function
 def booth_func(x):
     """Booth's objective function.
 
@@ -184,9 +216,20 @@ def booth_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
+
+    Raises
+    ------
+    IndexError
+        When the input dimensions is greater than what the function
+        allows
+    ValueError
+        When the input is out of bounds with respect to the function
+        domain
     """
-    assert x.shape[1] == 2, "Only takes two-dimensional input."
-    assert np.logical_and(x >= -10, x <= 10).all(), "Input for Booth function must be within [-10, 10]."
+    if not x.shape[1] == 2:
+        raise IndexError('Booth function only takes two-dimensional input.')
+    if not np.logical_and(x >= -10, x <= 10).all():
+        raise ValueError('Input for Booth function must be within [-10, 10].')
 
     x_ = x[:,0]
     y_ = x[:,1]
@@ -194,7 +237,6 @@ def booth_func(x):
 
     return j
 
-# TODO: Implement Bukin Function no. 6
 def bukin6_func(x):
     """Bukin N. 6 Objective Function
 
@@ -212,10 +254,22 @@ def bukin6_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
+
+    Raises
+    ------
+    IndexError
+        When the input dimensions is greater than what the function
+        allows
+    ValueError
+        When the input is out of bounds with respect to the function
+        domain
     """
-    assert x.shape[1] == 2, "Only takes two-dimensional input."
-    assert np.logical_and(x[:,0] >= -15, x[:,0] <= -5).all(), "First column should be within [-15, -5]"
-    assert np.logical_and(x[:,1] >= -3, x[:,1] <= 3).all(), "Second column should be within [-3, 3]"
+    if not x.shape[1] == 2:
+        raise IndexError('Bukin N. 6 function only takes two-dimensional input.')
+    if not  np.logical_and(x[:,0] >= -15, x[:,0] <= -5).all():
+        raise ValueError('x-coord for Bukin N. 6 function must be within [-15, -5].')
+    if not  np.logical_and(x[:,1] >= -3, x[:,1] <= 3).all():
+        raise ValueError('y-coord for Bukin N. 6 function must be within [-3, 3].')
 
     x_ = x[:,0]
     y_ = x[:,1]
@@ -238,10 +292,21 @@ def matyas_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
+        
+    Raises
+    ------
+    IndexError
+        When the input dimensions is greater than what the function
+        allows
+    ValueError
+        When the input is out of bounds with respect to the function
+        domain
     """
-    assert x.shape[1] == 2, "Only takes two-dimensional input."
-    assert np.logical_and(x >= -10, x <= 10).all(), "Input should be within [-10, 10]"
-
+    if not x.shape[1] == 2:
+        raise IndexError('Matyas function only takes two-dimensional input.')
+    if not np.logical_and(x >= -10, x <= 10).all():
+        raise ValueError('Input for Matyas function must be within [-10, 10].')
+        
     x_ = x[:,0]
     y_ = x[:,1]
     j = 0.26 * (x_**2.0 + y_**2.0) - 0.48 * x_ * y_
@@ -263,9 +328,20 @@ def levi_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
+
+    Raises
+    ------
+    IndexError
+        When the input dimensions is greater than what the function
+        allows
+    ValueError
+        When the input is out of bounds with respect to the function
+        domain
     """
-    assert x.shape[1] == 2, "Only takes two-dimensional input."
-    assert np.logical_and(x >= -10, x <= 10).all(), "Input should be within [-10, 10]"
+    if not x.shape[1] == 2:
+        raise IndexError('Levi function only takes two-dimensional input.')
+    if not np.logical_and(x >= -10, x <= 10).all():
+        raise ValueError('Input for Levi function must be within [-10, 10].')
 
     mask = np.full(x.shape, False)
     mask[:,-1] = True
@@ -281,7 +357,6 @@ def levi_func(x):
         + (w_[:,d_] - 1)**2.0
         * (1 + np.sin(2 * np.pi * w_[:,d_])**2.0 ))
           
-
     return j
 
 def schaffer2_func(x):
@@ -299,9 +374,20 @@ def schaffer2_func(x):
     -------
     numpy.ndarray 
         computed cost of size (n_particles, )
+
+    Raises
+    ------
+    IndexError
+        When the input dimensions is greater than what the function
+        allows
+    ValueError
+        When the input is out of bounds with respect to the function
+        domain
     """
-    assert x.shape[1] == 2, "Only takes two-dimensional input."
-    assert np.logical_and(x >= -100, x <= 100).all(), "Input should be within [-10, 10]"
+    if not x.shape[1] == 2:
+        raise IndexError('Schaffer N. 2 function only takes two-dimensional input.')
+    if not np.logical_and(x >= -100, x <= 100).all():
+        raise ValueError('Input for Schaffer function must be within [-100, 100].')
 
     x_ = x[:,0]
     y_ = x[:,1]
