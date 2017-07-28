@@ -2,13 +2,14 @@
 Usage
 =====
 
-To use PySwarms in a project::
+To use PySwarms in your project,
+
+.. code-block:: python
 
     import pyswarms as ps
 
-
-Basic Usage
-------------
+Optimizing a function
+----------------------
 Suppose you want to find the minima of :math:`f(x) = x^2` using global best PSO, simply import the 
 built-in sphere function, :code:`pyswarms.utils.functions.sphere_func()`, and the necessary optimizer:
 
