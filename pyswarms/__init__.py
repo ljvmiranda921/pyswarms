@@ -5,3 +5,5 @@
 __author__ = """Lester James V. Miranda"""
 __email__ = 'ljvmiranda@gmail.com'
 __version__ = '0.1.0'
+
+from pyswarms.single import *
