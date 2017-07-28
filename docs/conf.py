@@ -23,13 +23,14 @@ import os
 #sys.path.insert(0, os.path.abspath('.'))
 
 # Get the project root dir, which is the parent dir of this
-cwd = os.getcwd()
-project_root = os.path.dirname(cwd)
+#cwd = os.getcwd()
+#project_root = os.path.dirname(cwd)
 
 # Insert the project root dir as the first element in the PYTHONPATH.
 # This lets us ensure that the source package is imported, and that its
 # version is used.
-sys.path.insert(0, project_root)
+#sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.abspath('../'))
 
 import pyswarms
 
@@ -40,7 +41,7 @@ import pyswarms
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon', 'sphinx.ext.mathjax']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -144,9 +145,15 @@ html_theme = 'default'
 # "default.css".
 html_static_path = ['_static']
 
+html_context = {
+    'css_files': [
+        '_static/theme_overrides.css',  # overrides for wide tables in RTD theme
+        ],
+    }
+
 # If not '', a 'Last updated on:' timestamp is inserted at every page
 # bottom, using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -195,7 +202,7 @@ htmlhelp_basename = 'pyswarmsdoc'
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
-    #'papersize': 'letterpaper',
+    'papersize': 'a4paper',
 
     # The font size ('10pt', '11pt' or '12pt').
     #'pointsize': '10pt',
@@ -258,8 +265,8 @@ texinfo_documents = [
      u'PySwarms Documentation',
      u'Lester James V. Miranda',
      'pyswarms',
-     'One line description of project.',
-     'Miscellaneous'),
+     'PySwarms is a simple, Python-based, Particle Swarm Optimization (PSO) library.',
+     'Research'),
 ]
 
 # Documents to append as an appendix to all manuals.

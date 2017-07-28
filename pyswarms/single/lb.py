@@ -19,13 +19,12 @@ class LBestPSO(SwarmBase):
     attracted to its corresponding neighborhood.
 
     In this implementation, a neighbor is selected via a k-D tree
-    imported from scipy. Distance are computed with either
+    imported from :code:`scipy`. Distance are computed with either
     the L1 or L2 distance. The nearest-neighbours are then queried from
     this k-D tree.
 
-    .. note:: This algorithm was adapted from one of the earlier works
-        of J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
-        [1]_ [2]_
+    This algorithm was adapted from one of the earlier works of
+    J. Kennedy and R.C. Eberhart in Particle Swarm Optimization [1]_ [2]_
 
     .. [1] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
         Proceedings of the IEEE International Joint Conference on Neural
@@ -44,8 +43,8 @@ class LBestPSO(SwarmBase):
             When one of the required dictionary keys is missing.
         ValueError
             When the number of neighbors is not within the range
-                [0, n_particles].
-            When the p-value is not in the list of values [1,2].
+                :code:`[0, n_particles]`.
+            When the p-value is not in the list of values :code:`[1,2]`.
         """
         super(LBestPSO, self).assertions()
 
@@ -67,7 +66,7 @@ class LBestPSO(SwarmBase):
 
         Takes the same attributes as SwarmBase, but also initializes
         a velocity component by sampling from a random distribution
-        with range [0,1].
+        with range :code:`[0,1]`.
 
         Attributes
         ----------
@@ -78,8 +77,8 @@ class LBestPSO(SwarmBase):
         bounds : tuple of np.ndarray, optional (default is None)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
-            be of shape (dims,).
-        k: int (default is 1, must be less than n_particles)
+            be of shape :code:`(dims,)`.
+        k: int (default is 1, must be less than :code:`n_particles`)
             number of neighbors to be considered.
         p: int {1,2} (default is 2) 
             the Minkowski p-norm to use. 1 is the sum-of-absolute values
@@ -110,7 +109,7 @@ class LBestPSO(SwarmBase):
         """Optimizes the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
-        function `f` for a number of iterations `iter.`
+        function :code:`f` for a number of iterations :code:`iter.`
 
         Parameters
         ----------
@@ -160,8 +159,8 @@ class LBestPSO(SwarmBase):
 
     def _get_neighbors(self, current_cost):
         """Helper function to obtain the best position found in the
-        neighborhood. This uses the cKDTree method from scipy to ob-
-        tain the nearest neighbours
+        neighborhood. This uses the cKDTree method from :code:`scipy`
+        to obtain the nearest neighbours
         
         Parameters
         ----------
@@ -208,9 +207,9 @@ class LBestPSO(SwarmBase):
     def _update_velocity_position(self):
         """Updates the velocity and position of the swarm.
 
-        Specifically, it updates the attributes self.velocity and
-        self.pos. This function is being called by the
-        self.optimize() method
+        Specifically, it updates the attributes :code:`self.velocity`
+        and :code:`self.pos`. This function is being called by the
+        :code:`self.optimize()` method
         """
         # Define the hyperparameters from kwargs dictionary
         c1, c2, m = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['m']

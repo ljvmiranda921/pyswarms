@@ -5,9 +5,12 @@ Credits
 Development Lead
 ----------------
 
-* Lester James V. Miranda <ljvmiranda@gmail.com>
+* Lester James V. Miranda <ljvmiranda@gmail.com> 
 
 Contributors
 ------------
 
-None yet. Why not be the first?
+* `@Carl-K`_
+
+
+.. _`@Carl-K`: https://github.com/Carl-K
