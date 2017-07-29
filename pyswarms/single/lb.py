@@ -1,6 +1,66 @@
 # -*- coding: utf-8 -*-
 
-""" lb.py: local-best partical swarm optimization algorithm """
+r"""
+A Local-best Particle Swarm Optimization (lbest PSO) algorithm.
+
+Similar to global-best PSO, it takes a set of candidate solutions,
+and finds the best solution using a position-velocity update method.
+However, it uses a ring topology, thus making the particles 
+attracted to its corresponding neighborhood.
+
+The position update can be defined as:
+
+.. math::
+
+   x_{i}(t+1) = x_{i}(t) + v_{i}(t+1)
+
+Where the position at the current timestep :math:`t` is updated using
+the computed velocity at :math:`t+1`. Furthermore, the velocity update
+is defined as:
+
+.. math::
+
+   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)] + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
+
+However, in local-best PSO, a particle doesn't compare itself to the
+overall performance of the swarm. Instead, it looks at the performance
+of its nearest-neighbours, and compares itself with them. In general,
+this kind of topology takes much more time to converge, but has a more
+powerful explorative feature.
+
+In this implementation, a neighbor is selected via a k-D tree
+imported from :code:`scipy`. Distance are computed with either
+the L1 or L2 distance. The nearest-neighbours are then queried from
+this k-D tree.
+
+An example usage is as follows:
+
+.. code-block:: python
+
+    import pyswarms as ps
+    from pyswarms.utils.functions import single_obj as fx
+
+    # Set-up hyperparameters
+    options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
+
+    # Call instance of LBestPSO with a neighbour-size of 3 determined by
+    # the L2 (p=2) distance.
+    optimizer = ps.single.LBestPSO(n_particles=10, dims=2, k=3, p=2, **options)
+
+    # Perform optimization
+    stats = optimizer.optimize(fx.sphere_func, iters=100)
+
+This algorithm was adapted from one of the earlier works of
+J. Kennedy and R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_ [MHS1995]
+
+.. [IJCNN1995] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
+    Proceedings of the IEEE International Joint Conference on Neural
+    Networks, 1995, pp. 1942-1948.
+
+.. [MHS1995] J. Kennedy and R.C. Eberhart, "A New Optimizer using Particle
+    Swarm Theory,"  in Proceedings of the Sixth International 
+    Symposium on Micromachine and Human Science, 1995, pp. 39–43.
+"""
 
 # Import modules
 import numpy as np 
@@ -11,29 +71,7 @@ from ..base import SwarmBase
 from ..utils.console_utils import cli_print, end_report
 
 class LBestPSO(SwarmBase):
-    """A local-best Particle Swarm Optimization algorithm.
 
-    Similar to global-best PSO, it takes a set of candidate solutions,
-    and finds the best solution using a position-velocity update method.
-    However, it uses a ring topology, thus making the particles 
-    attracted to its corresponding neighborhood.
-
-    In this implementation, a neighbor is selected via a k-D tree
-    imported from :code:`scipy`. Distance are computed with either
-    the L1 or L2 distance. The nearest-neighbours are then queried from
-    this k-D tree.
-
-    This algorithm was adapted from one of the earlier works of
-    J. Kennedy and R.C. Eberhart in Particle Swarm Optimization [1]_ [2]_
-
-    .. [1] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
-        Proceedings of the IEEE International Joint Conference on Neural
-        Networks, 1995, pp. 1942-1948.
-
-    .. [2] J. Kennedy and R.C. Eberhart, "A New Optimizer using Particle
-        Swarm Theory,"  in Proceedings of the Sixth International 
-        Symposium on Micromachine and Human Science, 1995, pp. 39–43.
-    """
     def assertions(self):
         """Assertion method to check various inputs.
 
@@ -156,6 +194,17 @@ class LBestPSO(SwarmBase):
             # Perform position velocity update
             self._update_velocity_position()
 
+        # Because we have multiple neighbor spaces, we are reporting the
+        # local-best for each neighbour, thus giving us multiple values 
+        # for the local-best cost and positions. What we'll do is that
+        # we are going to obtain only the minimum of all these local
+        # positions and then report it.
+
+        self.best_neighbor_cost = np.argmin(self.lbest_cost)
+        self.best_neighbor_pos = self.lbest_pos[self.best_neighbor_cost]
+
+        end_report(self.best_neighbor_cost, self.best_neighbor_pos, verbose)
+        return (self.best_neighbor_cost, self.best_neighbor_pos)
 
     def _get_neighbors(self, current_cost):
         """Helper function to obtain the best position found in the

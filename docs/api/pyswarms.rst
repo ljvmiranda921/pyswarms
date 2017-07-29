@@ -2,9 +2,7 @@ PySwarms package
 =================
 
 .. automodule:: pyswarms
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
 
 Base Classes
 ------------

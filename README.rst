@@ -66,7 +66,7 @@ built-in sphere function, :code:`pyswarms.utils.functions.sphere_func()`, and th
     options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
 
     # Call instance of PSO
-    optimizer = ps.GBestPSO(n_particles=10, dims=2, **options)
+    optimizer = ps.single.GBestPSO(n_particles=10, dims=2, **options)
 
     # Perform optimization
     stats = optimizer.optimize(sphere_func, iters=100)
