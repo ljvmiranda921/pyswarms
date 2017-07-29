@@ -1,6 +1,57 @@
 # -*- coding: utf-8 -*-
 
-""" gb.py: global-best particle swarm optimization algorithm """
+r"""
+A Global-best Particle Swarm Optimization (gbest PSO) algorithm.
+
+It takes a set of candidate solutions, and tries to find the best
+solution using a position-velocity update method. Uses a 
+star-topology where each particle is attracted to the best 
+performing particle.
+
+The position update can be defined as:
+
+.. math::
+
+   x_{i}(t+1) = x_{i}(t) + v_{i}(t+1)
+
+Where the position at the current timestep :math:`t` is updated using
+the computed velocity at :math:`t+1`. Furthermore, the velocity update
+is defined as:
+
+.. math::
+
+   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)] + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
+
+Here, :math:`c1` and :math:`c2` are the cognitive and social parameters
+respectively. They control the particle's behavior in choosing how to
+react given two choices: (1) to follow its *personal best* or (2) follow
+the swarm's *global best* position. Overall, this dictates if the swarm
+is explorative or exploitative in nature. In addition, a parameter
+:math:`m` controls the inertia of the swarm's movement. 
+
+An example usage is as follows:
+
+.. code-block:: python
+
+    import pyswarms as ps
+    from pyswarms.utils.functions import sphere_func
+
+    # Set-up hyperparameters
+    options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
+
+    # Call instance of GBestPSO
+    optimizer = ps.single.GBestPSO(n_particles=10, dims=2, **options)
+
+    # Perform optimization
+    stats = optimizer.optimize(sphere_func, iters=100)
+
+This algorithm was adapted from the earlier works of J. Kennedy and
+R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
+
+.. [IJCNN1995] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
+    Proceedings of the IEEE International Joint Conference on Neural
+    Networks, 1995, pp. 1942-1948.
+"""
 
 # Import modules
 import numpy as np
@@ -10,21 +61,7 @@ from ..base import SwarmBase
 from ..utils.console_utils import cli_print, end_report
 
 class GBestPSO(SwarmBase):
-    """A global-best Particle Swarm Optimization (PSO) algorithm.
 
-    It takes a set of candidate solutions, and tries to find the best
-    solution using a position-velocity update method. Uses a 
-    star-topology where each particle is attracted to the best 
-    performing particle.
-
-    This algorithm was adapted from the earlier works of J. Kennedy and
-    R.C. Eberhart in Particle Swarm Optimization [1]_
-
-    .. [1] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
-        Proceedings of the IEEE International Joint Conference on Neural
-        Networks, 1995, pp. 1942-1948.
-
-    """
     def assertions(self):
         """Assertion method to check various inputs.
 
@@ -55,7 +92,7 @@ class GBestPSO(SwarmBase):
             number of particles in the swarm.
         dims : int
             number of dimensions in the space.
-        bounds : tuple of np.ndarray, optional (default is :code:`None`)
+        bounds : tuple of :code:`np.ndarray`, optional (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dims,)`.

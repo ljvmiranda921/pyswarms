@@ -14,6 +14,12 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Examples
+
+   Use-cases <examples/usecases>
+
+.. toctree::
+   :maxdepth: 2
    :caption: Developer's Guide
 
    contributing

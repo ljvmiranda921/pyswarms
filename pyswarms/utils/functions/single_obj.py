@@ -2,14 +2,14 @@
 
 """single_obj.py: collection of single-objective functions
 
-All objective functions obj_func() must accept a (numpy.ndarray)
-with shape (n_particles, dims). Thus, each row represents a 
-particle, and each column represents its position on a specific
-dimension of the search-space.
+All objective functions :code:`obj_func()` must accept a
+:code:`(numpy.ndarray)` with shape :code:`(n_particles, dims)`.
+Thus, each row represents a  particle, and each column represents its
+position on a specific dimension of the search-space.
 
-In this context, obj_func() must return an array j of size
-(n_particles, ) that contains all the computed fitness for
-each particle. 
+In this context, :code:`obj_func()` must return an array :code:`j`
+of size :code:`(n_particles, )` that contains all the computed fitness
+for each particle. 
 
 Whenever you make changes to this file via an implementation
 of a new objective function, be sure to perform unittesting
@@ -22,18 +22,18 @@ import numpy as np
 def sphere_func(x):
     """Sphere objective function.
 
-    Has a global minimum at 0 and with a search domain of
-        [-inf, inf]
+    Has a global minimum at :code:`0` and with a search domain of
+        :code:`[-inf, inf]`
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
     """
     j = (x**2.0).sum(axis=1)
 
@@ -42,18 +42,18 @@ def sphere_func(x):
 def rastrigin_func(x):
     """Rastrigin objective function.
 
-    Has a global minimum at f(0,0,...,0) with a search
-    domain of -[-5.12, 5.12]
+    Has a global minimum at :code:`f(0,0,...,0)` with a search
+    domain of :code:`[-5.12, 5.12]`
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
 
     Raises
     ------
@@ -72,18 +72,18 @@ def rastrigin_func(x):
 def ackley_func(x):
     """Ackley's objective function.
 
-    Has a global minimum at f(0,0,...,0) with a search
+    Has a global minimum at :code:`f(0,0,...,0)` with a search
     domain of [-32, 32]
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
 
     Raises
     ------
@@ -106,18 +106,19 @@ def rosenbrock_func(x):
     """Rosenbrock objective function.
 
     Also known as the Rosenbrock's valley or Rosenbrock's banana
-    function. Has a global minimum of np.ones(dims) where dims
-    is x.shape[1]. The search domain is [-inf, inf].
+    function. Has a global minimum of :code:`np.ones(dims)` where 
+    :code:`dims` is :code:`x.shape[1]`. The search domain is
+    :code:`[-inf, inf]`.
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
     """
     j = (100 * np.square(x[:,1:] - x[:,:-1]**2.0)
         + (1.0 - x[:,:-1]) ** 2.0)
@@ -127,18 +128,18 @@ def rosenbrock_func(x):
 def beale_func(x):
     """Beale objective function.
 
-    Only takes two dimensions and has a global minimum at f([0,3.5])
-    Its domain is bounded between [-4.5, 4.5]
+    Only takes two dimensions and has a global minimum at 
+    :code:`f([0,3.5])` Its domain is bounded between :code:`[-4.5, 4.5]`
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
 
     Raises
     ------
@@ -166,18 +167,18 @@ def beale_func(x):
 def goldstein_func(x):
     """Goldstein-Price's objective function.
 
-    Only takes two dimensions and has a global minimum at f([0,-1])
-    Its domain is bounded between [-2, 2]
+    Only takes two dimensions and has a global minimum at 
+    :code:`f([0,-1])`. Its domain is bounded between :code:`[-2, 2]`
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
 
     Raises
     ------
@@ -206,18 +207,18 @@ def goldstein_func(x):
 def booth_func(x):
     """Booth's objective function.
 
-    Only takes two dimensions and has a global minimum at f([1,3])
-    Its domain is bounded between [-10, 10]
+    Only takes two dimensions and has a global minimum at 
+    :code:`f([1,3])`. Its domain is bounded between :code:`[-10, 10]`
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
 
     Raises
     ------
@@ -243,20 +244,20 @@ def booth_func(x):
 def bukin6_func(x):
     """Bukin N. 6 Objective Function
 
-    Only takes two dimensions and has a global minimum at f([-10,1])
-    Its coordinates are bounded by:
-        x[:,0] must be within [-15, -5]
-        x[:,1] must be within [-3, 3]
+    Only takes two dimensions and has a global minimum at 
+    :code:`f([-10,1])`. Its coordinates are bounded by:
+        * x[:,0] must be within [-15, -5]
+        * x[:,1] must be within [-3, 3]
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
 
     Raises
     ------
@@ -283,47 +284,42 @@ def bukin6_func(x):
 def matyas_func(x):
     """Matyas objective function
 
-    Only takes two dimensions and has a global minimum at f([0,0])
-    Its coordinates are bounded within [-10,10]
+    Only takes two dimensions and has a global minimum at
+    :code:`f([0,0])`. Its coordinates are bounded within
+    :code:`[-10,10]`.
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
     """
-<<<<<<< HEAD
     if not x.shape[1] == 2:
         raise IndexError('Matyas function only takes two-dimensional input.')
     if not np.logical_and(x >= -10, x <= 10).all():
         raise ValueError('Input for Matyas function must be within [-10, 10].')
-=======
-    x_ = x[:,0]
-    y_ = x[:,1]
-    j = 0.26 * (x_**2.0 + y_**2.0) - 0.48 * x_ * y_
->>>>>>> f5649c5... implemented all single-objective functions
 
     return j
 
 def levi_func(x):
     """Levi objective function
 
-    Only takes two dimensions and has a global minimum at f([1,1])
-    Its coordinates are bounded within [-10,10]
+    Only takes two dimensions and has a global minimum at
+    :code:`f([1,1])`. Its coordinates are bounded within
+    :code:`[-10,10]`.
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
 
     Raises
     ------
@@ -359,18 +355,19 @@ def levi_func(x):
 def schaffer2_func(x):
     """Schaffer N.2 objective function
 
-    Only takes two dimensions and has a global minimum at f([0,0])
-    Its coordinates are bounded within [-100,100]
+    Only takes two dimensions and has a global minimum at
+    :code:`f([0,0])`. Its coordinates are bounded within
+    :code:`[-100,100]`.
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape (n_particles, dims)
+        set of inputs of shape :code:`(n_particles, dims)`
 
     Returns
     -------
     numpy.ndarray 
-        computed cost of size (n_particles, )
+        computed cost of size :code:`(n_particles, )`
 
     Raises
     ------
