@@ -8,7 +8,7 @@ History
 * First release on PyPI.
 
 0.1.1 (2017-7-25)
-------------------
+~~~~~~~~~~~~~~~~~
 
 * Bug fixes
 * Implemented Local Best PSO

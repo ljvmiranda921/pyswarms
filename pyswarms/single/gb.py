@@ -34,7 +34,7 @@ An example usage is as follows:
 .. code-block:: python
 
     import pyswarms as ps
-    from pyswarms.utils.functions import sphere_func
+    from pyswarms.utils.functions import single_obj as fx
 
     # Set-up hyperparameters
     options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
@@ -43,7 +43,7 @@ An example usage is as follows:
     optimizer = ps.single.GBestPSO(n_particles=10, dims=2, **options)
 
     # Perform optimization
-    stats = optimizer.optimize(sphere_func, iters=100)
+    stats = optimizer.optimize(fx.sphere_func, iters=100)
 
 This algorithm was adapted from the earlier works of J. Kennedy and
 R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.

@@ -1,0 +1,17 @@
+.wy-menu-vertical header, .wy-menu-vertical p.caption {
+	color: gold;
+}
+
+.wy-menu-vertical a {
+	color: white;
+}
+
+.wy-side-nav-search 
+{
+	color: #cacaca;
+	background: #074E68
+}
+
+.wy-side-nav-search input[type=text] {
+	border-color: rgba(7, 78, 104, 0.83);
+}
