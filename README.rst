@@ -60,7 +60,7 @@ built-in sphere function, :code:`pyswarms.utils.functions.sphere_func()`, and th
 .. code-block:: python
 
     import pyswarms as ps
-    from pyswarms.utils.functions import sphere_func
+    from pyswarms.utils.functions import single_obj as fx
 
     # Set-up hyperparameters
     options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
@@ -69,7 +69,7 @@ built-in sphere function, :code:`pyswarms.utils.functions.sphere_func()`, and th
     optimizer = ps.single.GBestPSO(n_particles=10, dims=2, **options)
 
     # Perform optimization
-    stats = optimizer.optimize(sphere_func, iters=100)
+    stats = optimizer.optimize(fx.sphere_func, iters=100)
 
 
 Credits

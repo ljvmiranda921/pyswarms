@@ -152,6 +152,11 @@ html_theme = 'default'
 # "default.css".
 html_static_path = ['_static']
 
+def setup(app):
+    # overrides for wide tables in RTD theme
+    app.add_stylesheet('theme_overrides.css') # path relative to static
+
+
 # If not '', a 'Last updated on:' timestamp is inserted at every page
 # bottom, using the given strftime format.
 html_last_updated_fmt = '%b %d, %Y'

@@ -32,11 +32,17 @@ def end_report(cost, pos, verbosity):
         best position found
     verbosity : int
         verbosity setting of the user.
-
     """
-    template = ("================================\n"
-                "Optimization finished!\n"
-                "Final cost: %.3f\n"
-                "Best value: %s\n") % (cost, list(pos))
+    
+    # Cuts the length of the best position if it's too long
+    if len(list(pos)) > 3:
+        out = (6 * '{:3f} ' + '...').format(*list(pos))
+    else:
+        out = list(pos)
+
+    template = ('================================\n'
+                'Optimization finished!\n'
+                'Final cost: {:06.4f}\n'
+                'Best value: {}\n').format(cost, out)
     if verbosity >= 1:
         print(template)
