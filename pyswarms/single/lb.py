@@ -95,7 +95,7 @@ class LBestPSO(SwarmBase):
 
         if not 0 <= self.k <= self.n_particles:
             raise ValueError('No. of neighbors must be between 0 and no. of particles.')
-        if not self.p in [1,2]:
+        if self.p not in [1,2]:
             raise ValueError('p-value should either be 1 (for L1/Minkowski) or 2 (for L2/Euclidean).')
 
     def __init__(self, n_particles, dims, bounds=None, 
