@@ -6,3 +6,4 @@ If you wish to check the actual Jupyter Notebooks, please go to this `link <http
 .. toctree::
 
    basic_optimization
+   train_neural_network
