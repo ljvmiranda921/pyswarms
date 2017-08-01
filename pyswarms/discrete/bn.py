@@ -1,65 +1,54 @@
 # -*- coding: utf-8 -*-
 
 r"""
-A Local-best Particle Swarm Optimization (lbest PSO) algorithm.
+A Binary Particle Swarm Optimization (binary PSO) algorithm.
 
-Similar to global-best PSO, it takes a set of candidate solutions,
-and finds the best solution using a position-velocity update method.
-However, it uses a ring topology, thus making the particles 
-attracted to its corresponding neighborhood.
+It takes a set of candidate solutions, and tries to find the best
+solution using a position-velocity update method. Unlike
+:mod:`pyswarms.single.gb` and :mod:`pyswarms.single.lb`, this technique
+is often applied to discrete binary problems such as job-shop scheduling,
+sequencing, and the like.
 
-The position update can be defined as:
-
-.. math::
-
-   x_{i}(t+1) = x_{i}(t) + v_{i}(t+1)
-
-Where the position at the current timestep :math:`t` is updated using
-the computed velocity at :math:`t+1`. Furthermore, the velocity update
-is defined as:
+The update rule for the velocity is still similar, as shown in the
+proceeding equation:
 
 .. math::
 
    v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)] + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
 
-However, in local-best PSO, a particle doesn't compare itself to the
-overall performance of the swarm. Instead, it looks at the performance
-of its nearest-neighbours, and compares itself with them. In general,
-this kind of topology takes much more time to converge, but has a more
-powerful explorative feature.
+For the velocity update rule, a particle compares its current position
+with respect to its neighbours. The nearest neighbours are being
+determined by a kD-tree given a distance metric, similar to local-best
+PSO. However, this whole behavior can be modified into a global-best PSO
+by changing the nearest neighbours equal to the number of particles in
+the swarm. In this case, all particles see each other, and thus a global
+best particle can be established.
 
-In this implementation, a neighbor is selected via a k-D tree
-imported from :code:`scipy`. Distance are computed with either
-the L1 or L2 distance. The nearest-neighbours are then queried from
-this k-D tree.
+In addition, one notable change for binary PSO is that the position
+update rule is now decided upon by the following case expression:
 
-An example usage is as follows:
+.. math::
 
-.. code-block:: python
+   X_{ij}(t+1) = \left\{\begin{array}{lr}
+        0, & \text{if } \text{rand() } \geq S(v_{ij}(t+1))\\
+        1, & \text{if } \text{rand() } < S(v_{ij}(t+1))
+        \end{array}\right\}
 
-    import pyswarms as ps
-    from pyswarms.utils.functions import single_obj as fx
+Where the function :math:`S(x)` is the sigmoid function defined as:
 
-    # Set-up hyperparameters
-    options = {'c1': 0.5, 'c2': 0.3, 'm': 0.9, 'k': 3, 'p': 2}
+.. math::
 
-    # Call instance of LBestPSO with a neighbour-size of 3 determined by
-    # the L2 (p=2) distance.
-    optimizer = ps.single.LBestPSO(n_particles=10, dims=2, **options)
+   S(x) = \dfrac{1}{1 + e^{-x}}
 
-    # Perform optimization
-    stats = optimizer.optimize(fx.sphere_func, iters=100)
+This enables the algorithm to output binary positions rather than
+a stream of continuous values as seen in global-best or local-best PSO.
 
-This algorithm was adapted from one of the earlier works of
-J. Kennedy and R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_ [MHS1995]
+This algorithm was adapted from the standard Binary PSO work of J. Kennedy and
+R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
 
-.. [IJCNN1995] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
-    Proceedings of the IEEE International Joint Conference on Neural
-    Networks, 1995, pp. 1942-1948.
-
-.. [MHS1995] J. Kennedy and R.C. Eberhart, "A New Optimizer using Particle
-    Swarm Theory,"  in Proceedings of the Sixth International 
-    Symposium on Micromachine and Human Science, 1995, pp. 39–43.
+.. [SMC1997] J. Kennedy and R.C. Eberhart, "A discrete binary version of
+    particle swarm algorithm," Proceedings of the IEEE International
+    Conference on Systems, Man, and Cybernetics, 1997.
 """
 
 # Import modules
@@ -67,11 +56,11 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 # Import from package
-from ..base import SwarmBase
+from ..base import DiscreteSwarmBase
 from ..utils.console_utils import cli_print, end_report
 
-class LBestPSO(SwarmBase):
-
+class BinaryPSO(DiscreteSwarmBase):
+    
     def assertions(self):
         """Assertion method to check various inputs.
 
@@ -84,7 +73,7 @@ class LBestPSO(SwarmBase):
                 :code:`[0, n_particles]`.
             When the p-value is not in the list of values :code:`[1,2]`.
         """
-        super(LBestPSO, self).assertions()
+        super(BinaryPSO, self).assertions()
 
         if not all (key in self.kwargs for key in ('k', 'p')):
             raise KeyError('Missing either k or p in kwargs')
@@ -93,7 +82,7 @@ class LBestPSO(SwarmBase):
         if self.p not in [1,2]:
             raise ValueError('p-value should either be 1 (for L1/Minkowski) or 2 (for L2/Euclidean).')
 
-    def __init__(self, n_particles, dims, bounds=None, v_clamp=None, **kwargs):
+    def __init__(self, n_particles, dims, v_clamp=None, **kwargs):
         """Initializes the swarm.
 
         Attributes
@@ -102,10 +91,6 @@ class LBestPSO(SwarmBase):
             number of particles in the swarm.
         dims : int
             number of dimensions in the space.
-        bounds : tuple of np.ndarray, optional (default is None)
-            a tuple of size 2 where the first entry is the minimum bound
-            while the second entry is the maximum bound. Each array must
-            be of shape :code:`(dims,)`.
         v_clamp : tuple (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It 
@@ -127,10 +112,11 @@ class LBestPSO(SwarmBase):
                     sum-of-absolute values (or L1 distance) while 2 is 
                     the Euclidean (or L2) distance.
         """
+        binary = True
         # Assign k-neighbors and p-value as attributes
         self.k, self.p = kwargs['k'], kwargs['p']
         # Initialize parent class
-        super(LBestPSO, self).__init__(n_particles, dims, bounds, v_clamp, **kwargs)
+        super(BinaryPSO, self).__init__(n_particles, dims, binary, v_clamp, **kwargs)
         # Invoke assertions
         self.assertions()
         # Initialize the resettable attributes
@@ -231,7 +217,7 @@ class LBestPSO(SwarmBase):
 
     def reset(self):
         """Resets the attributes of the optimizer."""
-        super(LBestPSO, self).reset()
+        super(BinaryPSO, self).reset()
 
         # Initialize the local best of the swarm
         self.lbest_cost = np.inf
@@ -274,16 +260,19 @@ class LBestPSO(SwarmBase):
         the instantiated object. It is called by the 
         :code:`self.optimize()` method.
         """
-        # Update position and store it in a temporary variable
-        temp = self.pos.copy()
-        temp += self.velocity
+        self.pos = (np.random.random_sample(size=self.swarm_size) < self._sigmoid(self.velocity)) * 1
 
-        if self.bounds is not None:
-            # Create a mask depending on the set boundaries
-            b = (np.all(self.min_bounds <= temp, axis=1)
-                * np.all(temp <= self.max_bounds, axis=1))
-            # Broadcast the mask
-            b = np.repeat(b[:,np.newaxis], self.dims, axis=1)
-            # Use the mask to finally guide position update
-            temp = np.where(~b, self.pos, temp)
-        self.pos = temp
+    def _sigmoid(self, x):
+        """Helper sigmoid function.
+        
+        Inputs
+        ------
+        x : numpy.ndarray
+            Input vector to compute the sigmoid from
+
+        Returns
+        -------
+        numpy.ndarray 
+            Output sigmoid computation
+        """
+        return 1 / (1 + np.exp(x))

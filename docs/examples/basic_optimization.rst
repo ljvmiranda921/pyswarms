@@ -90,10 +90,10 @@ Now, let's try this one using local-best PSO:
 .. code-block:: python
 
     # Set-up hyperparameters
-    options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
+    options = {'c1': 0.5, 'c2': 0.3, 'w': 0.9, 'k': 2, 'p': 2}
     
     # Call instance of PSO
-    lbest_pso = ps.single.LBestPSO(n_particles=10, dims=2, k=2,p=2, **options)
+    lbest_pso = ps.single.LBestPSO(n_particles=10, dims=2, **options)
     
     # Perform optimization
     cost, pos = lbest_pso.optimize(fx.sphere_func, print_step=100, iters=1000, verbose=3)
