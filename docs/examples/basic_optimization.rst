@@ -52,7 +52,7 @@ several variables at once.
 .. code-block:: python
 
     # Set-up hyperparameters
-    options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
+    options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
     
     # Call instance of PSO
     gbest_pso = ps.single.GBestPSO(n_particles=10, dims=2, **options)
@@ -90,7 +90,7 @@ Now, let's try this one using local-best PSO:
 .. code-block:: python
 
     # Set-up hyperparameters
-    options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
+    options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
     
     # Call instance of PSO
     lbest_pso = ps.single.LBestPSO(n_particles=10, dims=2, k=2,p=2, **options)
@@ -158,7 +158,7 @@ constant.
 .. code-block:: python
 
     # Initialize swarm
-    options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
+    options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
     
     # Call instance of PSO with bounds argument
     optimizer = ps.single.GBestPSO(n_particles=10, dims=2, bounds=bounds, **options)

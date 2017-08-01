@@ -1,41 +1,44 @@
 # -*- coding: utf-8 -*-
 
-""" :code:`bs.py`: base class for single-objective PSO """
+r"""
+Base class for single-objective Particle Swarm Optimization 
+implementations.
 
-import numpy as np 
-
-
-class SwarmBase(object):
-    """Base class for single-objective Particle Swarm Optimization 
-    implementations.
-
-    All methods here are abstract and raises a :code:`NotImplementedError` 
-    when not used. When defining your own swarm implementation,
-    create another class,
+All methods here are abstract and raises a :code:`NotImplementedError` 
+when not used. When defining your own swarm implementation,
+create another class,
 
     >>> class MySwarm(SwarmBaseClass):
     >>>     def __init__(self):
     >>>        super(MySwarm, self).__init__()
 
-    and define all the necessary methods needed.
+and define all the necessary methods needed.
 
-    Take note that there is no velocity nor position update in this
-    base class. This enables this class to accommodate any variation
-    of the position or velocity update, without enforcing a specific
-    structure. As a guide, check the global best and local best
-    implementations in this package.
+Take note that there is no velocity nor position update in this
+base class. This enables this class to accommodate any variation
+of the position or velocity update, without enforcing a specific
+structure. As a guide, check the global best and local best
+implementations in this package.
 
-    .. note:: Regarding :code:`**kwargs`, it is highly recommended to
-        include parameters used in position and velocity updates as
-        keyword arguments. For parameters that affect the topology of
-        the swarm, it may be much better to have them as positional
-        arguments.
+.. note:: Regarding :code:`**kwargs`, it is highly recommended to
+    include parameters used in position and velocity updates as
+    keyword arguments. For parameters that affect the topology of
+    the swarm, it may be much better to have them as positional
+    arguments.
 
-    See Also
-    --------
-    :mod:`pyswarms.single.gb`: global-best PSO implementation
-    :mod:`pyswarms.single.lb`: local-best PSO implementation
-    """
+See Also
+--------
+:mod:`pyswarms.single.gb`: global-best PSO implementation
+:mod:`pyswarms.single.lb`: local-best PSO implementation
+"""
+
+
+
+import numpy as np 
+
+
+class SwarmBase(object):
+
     def assertions(self):
         """Assertion method to check various inputs.
         
@@ -55,17 +58,26 @@ class SwarmBase(object):
         # Check setting of bounds
         if self.bounds is not None:
             if not type(self.bounds) == tuple:
-                raise TypeError('Variable `bound` must be a tuple.')
+                raise TypeError('Parameter `bound` must be a tuple.')
             if not len(self.bounds) == 2:
-                raise IndexError('Variable `bound` must be of size 2.')
+                raise IndexError('Parameter `bound` must be of size 2.')
             if not self.bounds[0].shape == self.bounds[1].shape:
                 raise IndexError('Arrays in `bound` must be of equal shapes')
             if not self.bounds[0].shape[0] == self.bounds[1].shape[0] == self.dims:
-                raise IndexError('Variable `bound` must be the shape as dims.')
+                raise IndexError('Parameter `bound` must be the shape as dims.')
             if not (self.bounds[1] > self.bounds[0]).all():
                 raise ValueError('Values of `bounds[1]` must be greater than `bounds[0]`.')
 
-    def __init__(self, n_particles, dims, bounds=None, **kwargs):
+        # Check clamp settings
+        if self.v_clamp is not None:
+            if not type(self.v_clamp) == tuple:
+                raise TypeError('Parameter `v_clamp` must be a tuple')
+            if not len(self.v_clamp) == 2:
+                raise IndexError('Parameter `v_clamp` must be of size 2')
+            if not self.v_clamp[0] < self.v_clamp[1]:
+                raise ValueError('Make sure that v_clamp is in the form (v_min, v_max)')
+
+    def __init__(self, n_particles, dims, bounds=None, v_clamp=None, **kwargs):
         """Initializes the swarm. 
 
         Creates a :code:`numpy.ndarray` of positions depending on the
@@ -83,6 +95,10 @@ class SwarmBase(object):
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dims,)`.
+        v_clamp : tuple (default is :code:`None`)
+            a tuple of size 2 where the first entry is the minimum velocity
+            and the second entry is the maximum velocity. It 
+            sets the limits for velocity clamping. 
         **kwargs: dict
             a dictionary containing various keyword arguments for a
             specific optimization technique
@@ -91,6 +107,7 @@ class SwarmBase(object):
         self.n_particles = n_particles
         self.dims = dims
         self.bounds = bounds
+        self.v_clamp = v_clamp
         self.swarm_size = (n_particles, dims)
         self.kwargs = kwargs
 
@@ -159,3 +176,12 @@ class SwarmBase(object):
                                         size=self.swarm_size)
         else:
             self.pos = np.random.uniform(size=self.swarm_size)
+
+        # Initialize velocity vectors
+        if self.v_clamp is not None:
+            v_min, v_max = self.v_clamp[0], self.v_clamp[1]
+            self.velocity = ((v_max - v_min) 
+                            * np.random.random_sample(size=self.swarm_size) 
+                            + v_min)
+        else:
+            self.velocity = np.random.random_sample(size=self.swarm_size)
