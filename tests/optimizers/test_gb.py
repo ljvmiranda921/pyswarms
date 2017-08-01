@@ -35,7 +35,9 @@ class Instantiation(Base):
         check_m = {'c1':0.5, 'c2':0.7}
         with self.assertRaises(KeyError):
             optimizer = GBestPSO(5,2,**check_c1)
+        with self.assertRaises(KeyError):
             optimizer = GBestPSO(5,2,**check_c2)
+        with self.assertRaises(KeyError):
             optimizer = GBestPSO(5,2,**check_m)
 
     def test_bound_size_fail(self):

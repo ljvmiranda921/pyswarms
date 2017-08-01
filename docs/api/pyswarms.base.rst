@@ -7,8 +7,8 @@ pyswarms.base package
 Submodules
 ----------
 
-pyswarms.base.bs module
-------------------------
+pyswarms.base module
+--------------------
 
 .. automodule:: pyswarms.base.bs
    :members:
@@ -17,3 +17,9 @@ pyswarms.base.bs module
    :private-members:
    :special-members: __init__
 
+.. automodule:: pyswarms.base.dbs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
+   :special-members: __init__

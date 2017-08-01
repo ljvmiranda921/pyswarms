@@ -1,1 +1,11 @@
-""" Discrete optimization package  for `pyswarms` """
+"""
+The :mod:`pyswarms.discrete` module implements various techniques in
+discrete optimization. These are techniques that can be applied to a
+discrete search-space.
+"""
+
+from .bn import BinaryPSO
+
+__all__ = [
+    "BinaryPSO"
+    ]

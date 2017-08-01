@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 
 # Import from package
-from pyswarms.single import LBestPSO
+from pyswarms.discrete import BinaryPSO
 from pyswarms.utils.functions.single_obj import sphere_func
 
 class Base(unittest.TestCase):
@@ -20,8 +20,6 @@ class Base(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures"""
         self.options = {'c1':0.5, 'c2':0.7, 'w':0.5, 'k': 2, 'p': 2}
-        self.safe_bounds = (np.array([-5,-5]), np.array([5,5]))
-
 
 class Instantiation(Base):
     """Tests all aspects of instantiation
@@ -37,51 +35,15 @@ class Instantiation(Base):
         check_k = {'c1':0.5, 'c2':0.7, 'w':0.5, 'p': 2}
         check_p = {'c1':0.5, 'c2':0.7, 'w':0.5, 'k': 2}
         with self.assertRaises(KeyError):
-            optimizer = LBestPSO(5,2,**check_c1)
+            optimizer = BinaryPSO(5,2,**check_c1)
         with self.assertRaises(KeyError):
-            optimizer = LBestPSO(5,2,**check_c2)
+            optimizer = BinaryPSO(5,2,**check_c2)
         with self.assertRaises(KeyError):
-            optimizer = LBestPSO(5,2,**check_m)
+            optimizer = BinaryPSO(5,2,**check_m)
         with self.assertRaises(KeyError):
-            optimizer = LBestPSO(5,2,**check_k)
+            optimizer = BinaryPSO(5,2,**check_k)
         with self.assertRaises(KeyError):
-            optimizer = LBestPSO(5,2,**check_p)
-
-    def test_bound_size_fail(self):
-        """Tests if exception is thrown when bound length is not 2"""
-        bounds = tuple(np.array([-5,-5]))
-        with self.assertRaises(IndexError):
-            optimizer = LBestPSO(5,2, bounds, **self.options)
-
-    def test_bound_type_fail(self):
-        """Tests if exception is thrown when bound type is not tuple"""
-        bounds = [np.array([-5,-5]), np.array([5,5])]
-        with self.assertRaises(TypeError):
-            optimizer = LBestPSO(5,2, bounds, **self.options)
-
-    def test_bound_maxmin_fail(self):
-        """Tests if exception is thrown when min max of the bound is
-        wrong."""
-        bounds_1 = (np.array([5,5]), np.array([-5,-5]))
-        bounds_2 = (np.array([5,-5]), np.array([-5,5]))
-        with self.assertRaises(ValueError):
-            optimizer = LBestPSO(5,2, bounds_1, **self.options)
-        with self.assertRaises(ValueError):
-            optimizer = LBestPSO(5,2, bounds_2, **self.options)
-
-    def test_bound_shapes_fail(self):
-        """Tests if exception is thrown when bounds are of unequal 
-        shapes."""
-        bounds = (np.array([-5,-5,-5]), np.array([5,5]))
-        with self.assertRaises(IndexError):
-            optimizer = LBestPSO(5,2, bounds, **self.options)
-
-    def test_bound_shape_dims_fail(self):
-        """Tests if exception is thrown when bound shape is not equal
-        to dims."""
-        bounds = (np.array([-5,-5,-5]), np.array([5,5,5]))
-        with self.assertRaises(IndexError):
-            optimizer = LBestPSO(5,2, bounds, **self.options)
+            optimizer = BinaryPSO(5,2,**check_p)
 
     def test_k_fail(self):
         """Tests if exception is thrown when feeding an invalid k."""
@@ -89,33 +51,33 @@ class Instantiation(Base):
         k_more_than_max = {'c1':0.5, 'c2':0.7, 'w':0.5, 'k':6, 'p':2}
 
         with self.assertRaises(ValueError):
-            optimizer = LBestPSO(5,2, self.safe_bounds, **k_less_than_min)
+            optimizer = BinaryPSO(5,2,**k_less_than_min)
         with self.assertRaises(ValueError):
-            optimizer = LBestPSO(5,2, self.safe_bounds, **k_more_than_max)
+            optimizer = BinaryPSO(5,2,**k_more_than_max)
 
     def test_p_fail(self):
         """Tests if exception is thrown when feeding an invalid p."""
         p_fail = {'c1':0.5, 'c2':0.7, 'w':0.5, 'k':2, 'p':5}
         with self.assertRaises(ValueError):
-            optimizer = LBestPSO(5,2, **p_fail)
+            optimizer = BinaryPSO(5,2, **p_fail)
 
     def test_vclamp_type_fail(self):
         """Tests if exception is thrown when v_clamp is not a tuple."""
         v_clamp = [1,3]
         with self.assertRaises(TypeError):
-            optimizer = LBestPSO(5,2,v_clamp=v_clamp, **self.options)
+            optimizer = BinaryPSO(5,2,v_clamp=v_clamp, **self.options)
 
     def test_vclamp_shape_fail(self):
         """Tests if exception is thrown when v_clamp is not equal to 2"""
         v_clamp = (1,1,1)
         with self.assertRaises(IndexError):
-            optimizer = LBestPSO(5,2,v_clamp=v_clamp, **self.options)
+            optimizer = BinaryPSO(5,2,v_clamp=v_clamp, **self.options)
 
     def test_vclamp_minmax_fail(self):
         """Tests if exception is thrown when v_clamp's minmax is wrong"""
         v_clamp = (3,2)
         with self.assertRaises(ValueError):
-            optimizer = LBestPSO(5,2,v_clamp=v_clamp, **self.options)
+            optimizer = BinaryPSO(5,2,v_clamp=v_clamp, **self.options)
 
 class Methods(Base):
     """Tests all aspects of the class methods
@@ -127,7 +89,7 @@ class Methods(Base):
     def test_reset(self):
         """Tests if the reset method resets the attributes required"""
         # Perform a simple optimization
-        optimizer = LBestPSO(5,2, **self.options)
+        optimizer = BinaryPSO(5,2, **self.options)
         optimizer.optimize(sphere_func, 100, verbose=0)
         # Reset the attributes
         optimizer.reset()
@@ -140,7 +102,7 @@ class Run(Base):
 
     def test_run(self):
         """Perform a single run."""
-        optimizer = LBestPSO(10,2, **self.options)
+        optimizer = BinaryPSO(10,2, **self.options)
         try:
             optimizer.optimize(sphere_func, 1000, verbose=0)
             trigger = True

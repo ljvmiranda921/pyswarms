@@ -15,3 +15,10 @@ __email__ = 'ljvmiranda@gmail.com'
 __version__ = '0.1.1'
 
 from .single import gb, lb
+from .discrete import bn
+
+__all__ = [
+    'gb',
+    'lb',
+    'bn'
+    ]
