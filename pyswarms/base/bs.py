@@ -8,17 +8,14 @@ All methods here are abstract and raises a :code:`NotImplementedError`
 when not used. When defining your own swarm implementation,
 create another class,
 
-    >>> class MySwarm(SwarmBaseClass):
+    >>> class MySwarm(SwarmBase):
     >>>     def __init__(self):
     >>>        super(MySwarm, self).__init__()
 
 and define all the necessary methods needed.
 
-Take note that there is no velocity nor position update in this
-base class. This enables this class to accommodate any variation
-of the position or velocity update, without enforcing a specific
-structure. As a guide, check the global best and local best
-implementations in this package.
+As a guide, check the global best and local best implementations in this
+package.
 
 .. note:: Regarding :code:`**kwargs`, it is highly recommended to
     include parameters used in position and velocity updates as
@@ -76,6 +73,10 @@ class SwarmBase(object):
                 raise IndexError('Parameter `v_clamp` must be of size 2')
             if not self.v_clamp[0] < self.v_clamp[1]:
                 raise ValueError('Make sure that v_clamp is in the form (v_min, v_max)')
+
+        # Required keys in keyword arguments
+        if not all (key in self.kwargs for key in ('c1', 'c2', 'w')):
+            raise KeyError('Missing either c1, c2, or w in kwargs')
 
     def __init__(self, n_particles, dims, bounds=None, v_clamp=None, **kwargs):
         """Initializes the swarm. 
@@ -140,6 +141,26 @@ class SwarmBase(object):
             When this method is not implemented.
         """
         raise NotImplementedError("SwarmBase::optimize()")
+
+    def _update_velocity(self):
+        """Updates the velocity matrix.
+
+        Raises
+        ------
+        NotImplementedError
+            When this method is not implemented.
+        """
+        raise NotImplementedError("SwarmBase::_update_velocity()")
+
+    def _update_position(self):
+        """Updates the position matrix.
+
+        Raises
+        ------
+        NotImplementedError
+            When this method is not implemented.
+        """
+        raise NotImplementedError("SwarmBase::_update_position()")
 
     def reset(self):
         """Resets the attributes of the optimizer.

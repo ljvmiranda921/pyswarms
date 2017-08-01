@@ -72,15 +72,9 @@ class GBestPSO(SwarmBase):
         """
         super(GBestPSO, self).assertions()
 
-        if not all (key in self.kwargs for key in ('c1', 'c2', 'w')):
-            raise KeyError('Missing either c1, c2, or w in kwargs')
-        
+
     def __init__(self, n_particles, dims, bounds=None, v_clamp=None, **kwargs):
         """Initializes the swarm. 
-
-        Takes the same attributes as :code:`SwarmBase`, but also
-        initializes a velocity component by sampling from a random
-        distribution with range :code:`[0,1]`.
 
         Attributes
         ----------
@@ -160,7 +154,8 @@ class GBestPSO(SwarmBase):
                     (i+1, iters, self.gbest_cost), verbose, 2)
 
             # Perform velocity and position updates
-            self._update_velocity_position()
+            self._update_velocity()
+            self._update_position()
 
         end_report(self.gbest_cost, self.gbest_pos, verbose)
         return (self.gbest_cost, self.gbest_pos)
@@ -176,18 +171,17 @@ class GBestPSO(SwarmBase):
         # Initialize the personal best of each particle
         self.pbest_pos = self.pos
 
-    def _update_velocity_position(self):
-        """Updates the velocity and position of the swarm.
+    def _update_velocity(self):
+        """Updates the velocity matrix of the swarm.
 
-        Specifically, it updates the attributes :code:`self.velocity`
-        and :code:`self.pos`. This function is being called by the
-        :code:`self.optimize()` method
+        This method updates the attribute :code:`self.velocity` of
+        the instantiated object. It is called by the 
+        :code:`self.optimize()` method.
         """
         # Define the hyperparameters from kwargs dictionary
         c1, c2, w = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['w']
 
-        # Compute for cognitive and social terms and store it to a
-        # temporary velocity variable to be clamped later on
+        # Compute for cognitive and social terms
         cognitive = (c1 * np.random.uniform(0,1,self.swarm_size)
                     * (self.pbest_pos - self.pos))
         social = (c2 * np.random.uniform(0,1,self.swarm_size)
@@ -204,6 +198,13 @@ class GBestPSO(SwarmBase):
         else:
             self.velocity = temp_velocity
 
+    def _update_position(self):
+        """Updates the position matrix of the swarm.
+
+        This method updates the attribute :code:`self.pos` of
+        the instantiated object. It is called by the 
+        :code:`self.optimize()` method.
+        """
         # Update position and store it in a temporary variable
         temp = self.pos.copy()
         temp += self.velocity

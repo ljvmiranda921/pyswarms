@@ -123,5 +123,20 @@ class Methods(Base):
         self.assertEqual(optimizer.lbest_cost, np.inf)
         self.assertIsNone(optimizer.lbest_pos)
 
+class Run(Base):
+    """Perform a single run of the algorithm to see if something breaks."""
+
+    def test_run(self):
+        """Perform a single run."""
+        optimizer = LBestPSO(10,2, **self.options)
+        try:
+            optimizer.optimize(sphere_func, 1000, verbose=0)
+            trigger = True
+        except:
+            print('Execution failed.')
+            trigger = False
+
+        self.assertTrue(trigger)
+
 if __name__ == '__main__':
     unittest.main()

@@ -7,5 +7,7 @@ objective function that can be optimized in a continuous space.
 from .gb import GBestPSO
 from .lb import LBestPSO
 
-__all__ = ["GBestPSO",
-        "LBestPSO"]
+__all__ = [
+    "GBestPSO",
+    "LBestPSO"
+    ]
