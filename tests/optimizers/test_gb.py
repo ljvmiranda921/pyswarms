@@ -19,7 +19,7 @@ class Base(unittest.TestCase):
     """
     def setUp(self):
         """Set up test fixtures"""
-        self.options = {'c1':0.5, 'c2':0.7, 'm':0.5}
+        self.options = {'c1':0.5, 'c2':0.7, 'w':0.5}
         self.safe_bounds = (np.array([-5,-5]), np.array([5,5]))
 
 class Instantiation(Base):
@@ -30,8 +30,8 @@ class Instantiation(Base):
     """
     def test_keyword_check_fail(self):
         """Tests if exceptions are thrown when keywords are missing"""
-        check_c1 = {'c2':0.7, 'm':0.5}
-        check_c2 = {'c1':0.5, 'm':0.5}
+        check_c1 = {'c2':0.7, 'w':0.5}
+        check_c2 = {'c1':0.5, 'w':0.5}
         check_m = {'c1':0.5, 'c2':0.7}
         with self.assertRaises(KeyError):
             optimizer = GBestPSO(5,2,**check_c1)
@@ -73,6 +73,24 @@ class Instantiation(Base):
         bounds = (np.array([-5,-5,-5]), np.array([5,5,5]))
         with self.assertRaises(IndexError):
             optimizer = GBestPSO(5,2, bounds, **self.options)
+
+    def test_vclamp_type_fail(self):
+        """Tests if exception is thrown when v_clamp is not a tuple."""
+        v_clamp = [1,3]
+        with self.assertRaises(TypeError):
+            optimizer = GBestPSO(5,2,v_clamp=v_clamp, **self.options)
+
+    def test_vclamp_shape_fail(self):
+        """Tests if exception is thrown when v_clamp is not equal to 2"""
+        v_clamp = (1,1,1)
+        with self.assertRaises(IndexError):
+            optimizer = GBestPSO(5,2,v_clamp=v_clamp, **self.options)
+
+    def test_vclamp_minmax_fail(self):
+        """Tests if exception is thrown when v_clamp's minmax is wrong"""
+        v_clamp = (3,2)
+        with self.assertRaises(ValueError):
+            optimizer = GBestPSO(5,2,v_clamp=v_clamp, **self.options)
 
 class Methods(Base):
     """Tests all aspects of the class methods

@@ -27,7 +27,7 @@ respectively. They control the particle's behavior in choosing how to
 react given two choices: (1) to follow its *personal best* or (2) follow
 the swarm's *global best* position. Overall, this dictates if the swarm
 is explorative or exploitative in nature. In addition, a parameter
-:math:`m` controls the inertia of the swarm's movement. 
+:math:`w` controls the inertia of the swarm's movement. 
 
 An example usage is as follows:
 
@@ -72,14 +72,10 @@ class GBestPSO(SwarmBase):
         """
         super(GBestPSO, self).assertions()
 
-        if 'c1' not in self.kwargs:
-            raise KeyError('Missing c1 key in kwargs.')
-        if 'c2' not in self.kwargs:
-            raise KeyError('Missing c2 key in kwargs.')
-        if 'm' not in self.kwargs:
-            raise KeyError('Missing m key in kwargs.')
-
-    def __init__(self, n_particles, dims, bounds=None, **kwargs):
+        if not all (key in self.kwargs for key in ('c1', 'c2', 'w')):
+            raise KeyError('Missing either c1, c2, or w in kwargs')
+        
+    def __init__(self, n_particles, dims, bounds=None, v_clamp=None, **kwargs):
         """Initializes the swarm. 
 
         Takes the same attributes as :code:`SwarmBase`, but also
@@ -96,6 +92,10 @@ class GBestPSO(SwarmBase):
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dims,)`.
+        v_clamp : tuple (default is :code:`None`)
+            a tuple of size 2 where the first entry is the minimum velocity
+            and the second entry is the maximum velocity. It 
+            sets the limits for velocity clamping. 
         **kwargs : dict
             Keyword argument that must contain the following dictionary
             keys:
@@ -103,10 +103,10 @@ class GBestPSO(SwarmBase):
                     cognitive parameter
                 * c2 : float
                     social parameter
-                * m : float
-                    momentum parameter
+                * w : float
+                    inertia parameter
         """
-        super(GBestPSO, self).__init__(n_particles, dims, bounds, **kwargs)
+        super(GBestPSO, self).__init__(n_particles, dims, bounds, v_clamp, **kwargs)
 
         # Invoke assertions
         self.assertions()
@@ -169,9 +169,6 @@ class GBestPSO(SwarmBase):
         """Resets the attributes of the optimizer."""
         super(GBestPSO, self).reset()
 
-        # Initialize velocity vectors
-        self.velocity = np.random.random_sample(size=self.swarm_size)
-
         # Initialize the global best of the swarm
         self.gbest_cost = np.inf
         self.gbest_pos = None
@@ -187,14 +184,25 @@ class GBestPSO(SwarmBase):
         :code:`self.optimize()` method
         """
         # Define the hyperparameters from kwargs dictionary
-        c1, c2, m = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['m']
+        c1, c2, w = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['w']
 
-        # Compute for cognitive and social terms
+        # Compute for cognitive and social terms and store it to a
+        # temporary velocity variable to be clamped later on
         cognitive = (c1 * np.random.uniform(0,1,self.swarm_size)
                     * (self.pbest_pos - self.pos))
         social = (c2 * np.random.uniform(0,1,self.swarm_size)
                     * (self.gbest_pos - self.pos))
-        self.velocity = (m * self.velocity) + cognitive + social
+        temp_velocity = (w * self.velocity) + cognitive + social
+
+        # Create a mask to clamp the velocities
+        if self.v_clamp is not None:
+            # Create a mask depending on the set boundaries
+            v_min, v_max = self.v_clamp[0], self.v_clamp[1]
+            _b = np.logical_and(temp_velocity >= v_min, temp_velocity <= v_max)
+            # Use the mask to finally clamp the velocities
+            self.velocity = np.where(~_b, self.velocity, temp_velocity)
+        else:
+            self.velocity = temp_velocity
 
         # Update position and store it in a temporary variable
         temp = self.pos.copy()

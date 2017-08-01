@@ -86,19 +86,15 @@ class LBestPSO(SwarmBase):
         """
         super(LBestPSO, self).assertions()
 
-        if 'c1' not in self.kwargs:
-            raise KeyError('Missing c1 key in kwargs.')
-        if 'c2' not in self.kwargs:
-            raise KeyError('Missing c2 key in kwargs.')
-        if 'm' not in self.kwargs:
-            raise KeyError('Missing m key in kwargs.')
+        if not all (key in self.kwargs for key in ('c1', 'c2', 'w')):
+            raise KeyError('Missing either c1, c2, or w in kwargs')
 
         if not 0 <= self.k <= self.n_particles:
             raise ValueError('No. of neighbors must be between 0 and no. of particles.')
         if self.p not in [1,2]:
             raise ValueError('p-value should either be 1 (for L1/Minkowski) or 2 (for L2/Euclidean).')
 
-    def __init__(self, n_particles, dims, bounds=None, 
+    def __init__(self, n_particles, dims, bounds=None, v_clamp=None,
         k=1, p=2, **kwargs):
         """Initializes the swarm.
 
@@ -116,6 +112,10 @@ class LBestPSO(SwarmBase):
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dims,)`.
+        v_clamp : tuple (default is :code:`None`)
+            a tuple of size 2 where the first entry is the minimum velocity
+            and the second entry is the maximum velocity. It 
+            sets the limits for velocity clamping. 
         k: int (default is 1, must be less than :code:`n_particles`)
             number of neighbors to be considered.
         p: int {1,2} (default is 2) 
@@ -128,15 +128,15 @@ class LBestPSO(SwarmBase):
                     cognitive parameter
                 * c2 : float
                     social parameter
-                * m : float
-                    momentum parameter
+                * w : float
+                    inertia parameter
         """
 
         # Store n_neighbors and neighborhood type
         self.k = k
         self.p = p
-        
-        super(LBestPSO, self).__init__(n_particles, dims, bounds, **kwargs)
+
+        super(LBestPSO, self).__init__(n_particles, dims, bounds, v_clamp, **kwargs)
 
         # Invoke assertions
         self.assertions()
@@ -243,9 +243,6 @@ class LBestPSO(SwarmBase):
         """Resets the attributes of the optimizer."""
         super(LBestPSO, self).reset()
 
-        # Initialize velocity vectors
-        self.velocity = np.random.random_sample(size=self.swarm_size)
-
         # Initialize the local best of the swarm
         self.lbest_cost = np.inf
         self.lbest_pos = None
@@ -261,14 +258,24 @@ class LBestPSO(SwarmBase):
         :code:`self.optimize()` method
         """
         # Define the hyperparameters from kwargs dictionary
-        c1, c2, m = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['m']
+        c1, c2, w = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['w']
 
         # Compute for cognitive and social terms
         cognitive = (c1 * np.random.uniform(0,1,self.swarm_size)
                     * (self.pbest_pos - self.pos))
         social = (c2 * np.random.uniform(0,1,self.swarm_size)
                     * (self.lbest_pos - self.pos))
-        self.velocity = (m * self.velocity) + cognitive + social
+        temp_velocity = (w * self.velocity) + cognitive + social
+
+        # Create a mask to clamp the velocities
+        if self.v_clamp is not None:
+            # Create a mask depending on the set boundaries
+            v_min, v_max = self.v_clamp[0], self.v_clamp[1]
+            _b = np.logical_and(temp_velocity >= v_min, temp_velocity <= v_max)
+            # Use the mask to finally clamp the velocities
+            self.velocity = np.where(~_b, self.velocity, temp_velocity)
+        else:
+            self.velocity = temp_velocity
 
         # Update position and store it in a temporary variable
         temp = self.pos.copy()

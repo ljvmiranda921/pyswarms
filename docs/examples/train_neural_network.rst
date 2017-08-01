@@ -178,7 +178,7 @@ parameters arbitrarily.
 .. code-block:: python
 
     # Initialize swarm
-    options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
+    options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
     
     # Call instance of PSO with bounds argument
     dims = (4 * 20) + (20 * 3) + 20 + 3 
