@@ -86,9 +86,6 @@ class LBestPSO(SwarmBase):
         """
         super(LBestPSO, self).assertions()
 
-        if not all (key in self.kwargs for key in ('c1', 'c2', 'w')):
-            raise KeyError('Missing either c1, c2, or w in kwargs')
-
         if not 0 <= self.k <= self.n_particles:
             raise ValueError('No. of neighbors must be between 0 and no. of particles.')
         if self.p not in [1,2]:
@@ -97,10 +94,6 @@ class LBestPSO(SwarmBase):
     def __init__(self, n_particles, dims, bounds=None, v_clamp=None,
         k=1, p=2, **kwargs):
         """Initializes the swarm.
-
-        Takes the same attributes as SwarmBase, but also initializes
-        a velocity component by sampling from a random distribution
-        with range :code:`[0,1]`.
 
         Attributes
         ----------
@@ -131,7 +124,6 @@ class LBestPSO(SwarmBase):
                 * w : float
                     inertia parameter
         """
-
         # Store n_neighbors and neighborhood type
         self.k = k
         self.p = p
@@ -192,14 +184,11 @@ class LBestPSO(SwarmBase):
                     (i+1, iters, np.min(self.lbest_cost)), verbose, 2)
 
             # Perform position velocity update
-            self._update_velocity_position()
+            self._update_velocity()
+            self._update_position()
 
-        # Because we have multiple neighbor spaces, we are reporting the
-        # local-best for each neighbour, thus giving us multiple values 
-        # for the local-best cost and positions. What we'll do is that
-        # we are going to obtain only the minimum of all these local
-        # positions and then report it.
-
+        # Only obtain the minimum of all these local positions and 
+        # then return it.
         self.best_neighbor_cost = np.argmin(self.lbest_cost)
         self.best_neighbor_pos = self.lbest_pos[self.best_neighbor_cost]
 
@@ -250,12 +239,12 @@ class LBestPSO(SwarmBase):
         # Initialize the personal best of each particle
         self.pbest_pos = self.pos
 
-    def _update_velocity_position(self):
-        """Updates the velocity and position of the swarm.
+    def _update_velocity(self):
+        """Updates the velocity matrix of the swarm.
 
-        Specifically, it updates the attributes :code:`self.velocity`
-        and :code:`self.pos`. This function is being called by the
-        :code:`self.optimize()` method
+        This method updates the attribute :code:`self.velocity` of
+        the instantiated object. It is called by the 
+        :code:`self.optimize()` method.
         """
         # Define the hyperparameters from kwargs dictionary
         c1, c2, w = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['w']
@@ -277,6 +266,13 @@ class LBestPSO(SwarmBase):
         else:
             self.velocity = temp_velocity
 
+    def _update_position(self):
+        """Updates the position matrix of the swarm.
+
+        This method updates the attribute :code:`self.pos` of
+        the instantiated object. It is called by the 
+        :code:`self.optimize()` method.
+        """
         # Update position and store it in a temporary variable
         temp = self.pos.copy()
         temp += self.velocity
