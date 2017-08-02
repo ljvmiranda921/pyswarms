@@ -12,15 +12,15 @@ Welcome to PySwarms's documentation!
         :alt: Documentation Status
 
 .. image:: https://landscape.io/github/ljvmiranda921/pyswarms/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/ljvmiranda921/pyswarms/master
-   :alt: Code Health
+        :target: https://landscape.io/github/ljvmiranda921/pyswarms/master
+        :alt: Code Health
 
 .. image:: https://pyup.io/repos/github/ljvmiranda921/pyswarms/shield.svg
-     :target: https://pyup.io/repos/github/ljvmiranda921/pyswarms/
-     :alt: Updates
+        :target: https://pyup.io/repos/github/ljvmiranda921/pyswarms/
+        :alt: Updates
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg   
-     :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
+        :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
 
 PySwarms is a simple, Python-based, Particle Swarm Optimization (PSO) library.
 

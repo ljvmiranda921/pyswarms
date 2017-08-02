@@ -180,7 +180,7 @@ parameters arbitrarily.
     # Initialize swarm
     options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
     
-    # Call instance of PSO with bounds argument
+    # Call instance of PSO
     dims = (4 * 20) + (20 * 3) + 20 + 3 
     optimizer = ps.single.GBestPSO(n_particles=100, dims=dims, **options)
     

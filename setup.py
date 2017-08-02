@@ -27,13 +27,13 @@ test_requirements = [
 
 setup(
     name='pyswarms',
-    version='0.1.2',
+    version='0.1.4',
     description="A Python-based Particle Swarm Optimization (PSO) library.",
     long_description=readme + '\n\n' + history,
     author="Lester James V. Miranda",
     author_email='ljvmiranda@gmail.com',
     url='https://github.com/ljvmiranda921/pyswarms',
-    packages=find_packages(include=['pyswarms']),
+    packages=find_packages(exclude=['docs', 'tests']),
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",
