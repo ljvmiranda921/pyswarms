@@ -2,16 +2,6 @@
 Features
 ========
 
-There are two ways in which optimizers are implemented in PySwarms. The first involves
-quick-and-easy implementations of classic PSO algorithms. Here, the topologies (or the way
-a swarm behaves) is hardcoded in the source code. This is useful for fast implementations that
-doesn't need prior set-up.
-
-The second involves a set of experimental classes where topology is not defined. Instead, one
-should create an object that inherits from a :code:`Topology` class, and pass it as a parameter
-in the experimental PSO classes. There are some topologies that are already implemented, but it's also possible
-to define a custom-made one. This is perfect for researchers who wanted to try out various swarm
-behaviours and movements.
 
 Single-Objective Optimizers
 ---------------------------
@@ -28,7 +18,6 @@ functions.
 
 * :mod:`pyswarms.single.lb` - classic local-best Particle Swarm Optimization algorithm with a ring-topology. Every particle compares itself only with its nearest-neighbours as computed by a distance metric.
 
-* :mod:`pyswarms.single.exp` - experimental Particle Swarm Optimization algorithm. 
 
 Discrete 
 ~~~~~~~~

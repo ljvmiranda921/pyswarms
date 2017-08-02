@@ -21,3 +21,9 @@ History
 * Implemented Binary PSO
 * More efficient API for gbest and lbest
 * Documentation and tests
+
+0.1.4 (2017-08-03)
+~~~~~~~~~~~~~~~~~
+
+* Well, this is embarassing...
+* Added a patch to fix :code:`pip` installation
