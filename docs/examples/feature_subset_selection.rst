@@ -61,12 +61,8 @@ feature subset :math:`N_f` with respect to the total number of features
 :math:`N_t`. The classifier performance can be the accuracy, F-score,
 precision, and so on.
 
-.. code:: ipython3
 
-    import sys
-    sys.path.append('../')
-
-.. code:: ipython3
+.. code-block:: python
 
     # Import modules
     import numpy as np
@@ -91,19 +87,19 @@ the distribution of the features in order to give us a qualitative
 assessment of the feature-space.
 
 For our toy dataset, we will be rigging some parameters a bit. Out of
-the 10 features, we'll have only 5 that are informative, 5 that are
+the 15 features, we'll have only 4 that are informative, 1 that are
 redundant, and 2 that are repeated. Hopefully, we get to have Binary PSO
 select those that are informative, and prune those that are redundant or
 repeated.
 
-.. code:: ipython3
+.. code-block:: python
 
     from sklearn.datasets import make_classification
     X, y = make_classification(n_samples=100, n_features=15, n_classes=3, 
                                n_informative=4, n_redundant=1, n_repeated=2, 
                                random_state=1)
 
-.. code:: ipython3
+.. code-block:: python
 
     # Plot toy dataset per feature
     df = pd.DataFrame(X)
@@ -112,8 +108,8 @@ repeated.
     sns.pairplot(df, hue='labels');
 
 
-
 .. image:: output_6_0.png
+
 
 
 As we can see, there are some features that causes the two classes to
@@ -136,7 +132,7 @@ of the feature subset divided by the total (that is, divided by 10), to
 return an error in the data. We'll now write our custom-objective
 function
 
-.. code:: ipython3
+.. code-block:: python
 
     from sklearn import linear_model
     
@@ -176,7 +172,7 @@ function
         
         return j
 
-.. code:: ipython3
+.. code-block:: python
 
     def f(x, alpha=0.88):
         """Higher-level method to do classification in the 
@@ -207,7 +203,7 @@ hyperparameters are also set arbitrarily. Moreso, we'll also be setting
 the distance metric as 2 (truth is, it's not really relevant because
 each particle will see one another).
 
-.. code:: ipython3
+.. code-block:: python
 
     # Initialize swarm, arbitrary
     options = {'c1': 0.5, 'c2': 0.5, 'w':0.9, 'k': 30, 'p':2}
@@ -244,7 +240,7 @@ We can then train the classifier using the positions found by running
 another instance of logistic regression. We can compare the performance
 when we're using the full set of features
 
-.. code:: ipython3
+.. code-block:: python
 
     # Create two instances of LogisticRegression
     classfier = linear_model.LogisticRegression()
@@ -265,7 +261,7 @@ when we're using the full set of features
 .. parsed-literal::
 
     Subset performance: 0.680
-    
+
 
 Another important advantage that we have is that we were able to reduce
 the features (or do dimensionality reduction) on our data. This can save
@@ -275,23 +271,13 @@ and may in fact speed up our classification.
 
 Let's plot the feature subset that we have:
 
-.. code:: ipython3
+.. code-block:: python
 
     # Plot toy dataset per feature
     df1 = pd.DataFrame(X_selected_features)
     df1['labels'] = pd.Series(y)
     
     sns.pairplot(df1, hue='labels')
-
-
-
-
-.. parsed-literal::
-
-    <seaborn.axisgrid.PairGrid at 0x1975d4da400>
-
-
-
 
 .. image:: output_17_1.png
 
