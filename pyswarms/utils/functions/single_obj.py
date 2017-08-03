@@ -302,6 +302,10 @@ def matyas_func(x):
     if not np.logical_and(x >= -10, x <= 10).all():
         raise ValueError('Input for Matyas function must be within [-10, 10].')
 
+    x_ = x[:,0]
+    y_ = x[:,1]
+    j = 0.26 * (x_**2.0 + y_**2.0) - 0.48 * x_ * y_
+
     return j
 
 def levi_func(x):
