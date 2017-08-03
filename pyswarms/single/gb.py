@@ -37,7 +37,7 @@ An example usage is as follows:
     from pyswarms.utils.functions import single_obj as fx
 
     # Set-up hyperparameters
-    options = {'c1': 0.5, 'c2': 0.3, 'm':0.9}
+    options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
 
     # Call instance of GBestPSO
     optimizer = ps.single.GBestPSO(n_particles=10, dims=2, **options)
