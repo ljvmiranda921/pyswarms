@@ -4,9 +4,11 @@ PySwarms
 
 .. image:: https://badge.fury.io/py/pyswarms.svg
         :target: https://badge.fury.io/py/pyswarms
+        :alt: PyPI Version
 
 .. image:: https://img.shields.io/travis/ljvmiranda921/pyswarms.svg
         :target: https://travis-ci.org/ljvmiranda921/pyswarms
+        :alt: Build Status
 
 .. image:: https://readthedocs.org/projects/pyswarms/badge/?version=latest
         :target: https://pyswarms.readthedocs.io/en/latest/?badge=latest
@@ -22,9 +24,9 @@ PySwarms
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg   
         :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
+        :alt: License
 
-
-PySwarms is a simple, Python-based, Particle Swarm Optimization (PSO) library.
+PySwarms is a an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
 * Free software: MIT license
 * Documentation: https://pyswarms.readthedocs.io.
@@ -34,7 +36,7 @@ Features
 --------
 * High-level module for Particle Swarm Optimization
 * Test optimizers using various objective functions
-* (For Devs): Highly-extensible API for implementing your own techniques
+* (For Devs and Researchers): Highly-extensible API for implementing your own techniques
 
 Dependencies
 -------------
@@ -51,6 +53,18 @@ To install PySwarms, run this command in your terminal:
     $ pip install pyswarms
 
 This is the preferred method to install PySwarms, as it will always install the most recent stable release.
+
+In case you want to install the bleeding-edge version, clone this repo:
+
+.. code-block:: console
+
+    $ git clone https://github.com/ljvmiranda921/pyswarms.git
+
+and then run
+
+.. code-block:: console
+
+    $ python setup.py install
 
 Basic Usage
 ------------
@@ -87,4 +101,7 @@ The package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypacka
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 
-
+Others
+------
+Like it? Love it? Leave us a star on [Github](https://github.com/ljvmiranda921/pyswarms) to
+show your appreciation! 

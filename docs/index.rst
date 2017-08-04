@@ -3,9 +3,11 @@ Welcome to PySwarms's documentation!
 
 .. image:: https://badge.fury.io/py/pyswarms.svg
         :target: https://badge.fury.io/py/pyswarms
+        :alt: PyPI Version
 
 .. image:: https://img.shields.io/travis/ljvmiranda921/pyswarms.svg
         :target: https://travis-ci.org/ljvmiranda921/pyswarms
+        :alt: Build Status
 
 .. image:: https://readthedocs.org/projects/pyswarms/badge/?version=latest
         :target: https://pyswarms.readthedocs.io/en/latest/?badge=latest
@@ -21,8 +23,9 @@ Welcome to PySwarms's documentation!
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg   
         :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
+        :alt: License
 
-PySwarms is a simple, Python-based, Particle Swarm Optimization (PSO) library.
+PySwarms is a an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
 * Free software: MIT license
 * Github repository: https://github.com/ljvmiranda921/pyswarms
@@ -58,6 +61,7 @@ Launching pad
    :caption: Developer's Guide
 
    contributing
+   contributing.optimizer
    API Documentation <api/pyswarms>
 
 Indices and tables
