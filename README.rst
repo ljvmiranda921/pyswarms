@@ -1,6 +1,8 @@
-========
-PySwarms
-========
+.. image:: docs/pyswarms-header.png
+        :alt: PySwarms Logo
+        :align: center
+
+------------
 
 .. image:: https://badge.fury.io/py/pyswarms.svg
         :target: https://badge.fury.io/py/pyswarms
@@ -34,9 +36,11 @@ PySwarms is a an extensible research toolkit for particle swarm optimization (PS
 
 Features
 --------
-* High-level module for Particle Swarm Optimization
+* High-level module for Particle Swarm Optimization. For a list of all optimizers, check this_ link.
 * Test optimizers using various objective functions
 * (For Devs and Researchers): Highly-extensible API for implementing your own techniques
+
+.. _this: https://pyswarms.readthedocs.io/en/latest/features.html
 
 Dependencies
 -------------
@@ -91,9 +95,8 @@ built-in sphere function, :code:`pyswarms.utils.functions.sphere_func()`, and th
     # Perform optimization
     stats = optimizer.optimize(fx.sphere_func, iters=100)
 
-
 Credits
----------
+-------
 This project was inspired by the pyswarm_ module that performs PSO with constrained support.
 The package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
@@ -103,5 +106,6 @@ The package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypacka
 
 Others
 ------
-Like it? Love it? Leave us a star on [Github](https://github.com/ljvmiranda921/pyswarms) to
-show your appreciation! 
+Like it? Love it? Leave us a star on Github_ to show your appreciation! 
+
+.. _Github: https://github.com/ljvmiranda921/pyswarms

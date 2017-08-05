@@ -1,3 +1,7 @@
+.. image:: pyswarms-header.png
+        :alt: PySwarms Logo
+        :align: center
+
 Welcome to PySwarms's documentation!
 ======================================
 
