@@ -45,7 +45,7 @@ An example usage is as follows:
 
     # Call instance of LBestPSO with a neighbour-size of 3 determined by
     # the L2 (p=2) distance.
-    optimizer = ps.single.LBestPSO(n_particles=10, dimensions=2, **options)
+    optimizer = ps.single.LocalBestPSO(n_particles=10, dimensions=2, options=options)
 
     # Perform optimization
     stats = optimizer.optimize(fx.sphere_func, iters=100)

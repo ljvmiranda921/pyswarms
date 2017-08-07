@@ -180,7 +180,7 @@ function
         
         Inputs
         ------
-        x: numpy.ndarray of shape (n_particles, dims)
+        x: numpy.ndarray of shape (n_particles, dimensions)
             The swarm that will perform the search
             
         Returns
@@ -209,9 +209,9 @@ each particle will see one another).
     options = {'c1': 0.5, 'c2': 0.5, 'w':0.9, 'k': 30, 'p':2}
     
     # Call instance of PSO
-    dims = 15 # dimensions should be the number of features
+    dimensions = 15 # dimensions should be the number of features
     optimizer.reset()
-    optimizer = ps.discrete.BinaryPSO(n_particles=30, dims=dims, **options)
+    optimizer = ps.discrete.BinaryPSO(n_particles=30, dimensions=dimensions, options=options)
     
     # Perform optimization
     cost, pos = optimizer.optimize(f, print_step=100, iters=1000, verbose=2)

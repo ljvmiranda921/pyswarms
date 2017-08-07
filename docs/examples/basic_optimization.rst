@@ -8,11 +8,6 @@ single-objective functions using the global-best optimizer in
 ``pyswarms.single.LBestPSO``. This aims to demonstrate the basic
 capabilities of the library when applied to benchmark problems.
 
-.. code:: ipython3
-
-    import sys
-    sys.path.append('../')
-
 .. code-block:: python
 
     # Import modules
@@ -55,28 +50,28 @@ several variables at once.
     options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
     
     # Call instance of PSO
-    gbest_pso = ps.single.GBestPSO(n_particles=10, dims=2, **options)
+    optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options)
     
     # Perform optimization
-    cost, pos = gbest_pso.optimize(fx.sphere_func, print_step=100, iters=1000, verbose=3)
+    cost, pos = optimizer.optimize(fx.sphere_func, print_step=100, iters=1000, verbose=3)
 
 
 .. parsed-literal::
 
-    Iteration 1/1000, cost: 0.0035824017918
-    Iteration 101/1000, cost: 1.02538653288e-08
-    Iteration 201/1000, cost: 9.95696087972e-13
-    Iteration 301/1000, cost: 8.22034343822e-16
-    Iteration 401/1000, cost: 3.7188438887e-19
-    Iteration 501/1000, cost: 1.23935292549e-25
-    Iteration 601/1000, cost: 6.03016193248e-28
-    Iteration 701/1000, cost: 3.70755768681e-34
-    Iteration 801/1000, cost: 2.64385328058e-37
-    Iteration 901/1000, cost: 1.76488833461e-40
+    Iteration 1/1000, cost: 0.215476174296
+    Iteration 101/1000, cost: 5.26998280059e-07
+    Iteration 201/1000, cost: 1.31313801471e-11
+    Iteration 301/1000, cost: 1.63948780036e-15
+    Iteration 401/1000, cost: 2.72294062778e-19
+    Iteration 501/1000, cost: 3.69002488955e-22
+    Iteration 601/1000, cost: 3.13387805277e-27
+    Iteration 701/1000, cost: 1.65106278625e-30
+    Iteration 801/1000, cost: 6.95403958989e-35
+    Iteration 901/1000, cost: 1.33520105208e-41
     ================================
     Optimization finished!
-    Final cost: 0.000
-    Best value: [-6.5732265560180066e-24, -7.4004230063696789e-22]
+    Final cost: 0.0000
+    Best value: [9.4634973546019334e-23, 1.7011045174312443e-22]
     
     
 
@@ -90,31 +85,31 @@ Now, let's try this one using local-best PSO:
 .. code-block:: python
 
     # Set-up hyperparameters
-    options = {'c1': 0.5, 'c2': 0.3, 'w': 0.9, 'k': 2, 'p': 2}
+    options = {'c1': 0.5, 'c2': 0.3, 'w':0.9, 'k': 2, 'p': 2}
     
     # Call instance of PSO
-    lbest_pso = ps.single.LBestPSO(n_particles=10, dims=2, **options)
+    optimizer = ps.single.LocalBestPSO(n_particles=10, dimensions=2, options=options)
     
     # Perform optimization
-    cost, pos = lbest_pso.optimize(fx.sphere_func, print_step=100, iters=1000, verbose=3)
+    cost, pos = optimizer.optimize(fx.sphere_func, print_step=100, iters=1000, verbose=3)
 
 
 .. parsed-literal::
 
-    Iteration 1/1000, cost: 0.190175474818
-    Iteration 101/1000, cost: 1.14470953523e-06
-    Iteration 201/1000, cost: 6.79485221069e-11
-    Iteration 301/1000, cost: 1.00691597113e-14
-    Iteration 401/1000, cost: 2.98301783945e-18
-    Iteration 501/1000, cost: 2.13856158282e-20
-    Iteration 601/1000, cost: 5.49351926815e-25
-    Iteration 701/1000, cost: 1.7673389214e-29
-    Iteration 801/1000, cost: 1.83082804473e-33
-    Iteration 901/1000, cost: 1.75920918448e-36
+    Iteration 1/1000, cost: 0.0573032190292
+    Iteration 101/1000, cost: 8.92699853837e-07
+    Iteration 201/1000, cost: 4.56513550671e-10
+    Iteration 301/1000, cost: 2.35083665314e-16
+    Iteration 401/1000, cost: 8.09981989467e-20
+    Iteration 501/1000, cost: 2.58846774519e-22
+    Iteration 601/1000, cost: 3.33919326611e-26
+    Iteration 701/1000, cost: 2.15052800954e-30
+    Iteration 801/1000, cost: 1.09638832057e-33
+    Iteration 901/1000, cost: 3.92671836329e-38
     ================================
     Optimization finished!
-    Final cost: 3.000
-    Best value: [-8.2344756213578705e-21, -2.6563827831876976e-20]
+    Final cost: 0.0000
+    Best value: [1.4149803165668767e-21, -9.9189063589743749e-24]
     
     
 
@@ -161,7 +156,7 @@ constant.
     options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
     
     # Call instance of PSO with bounds argument
-    optimizer = ps.single.GBestPSO(n_particles=10, dims=2, bounds=bounds, **options)
+    optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options, bounds=bounds)
     
     # Perform optimization
     cost, pos = optimizer.optimize(fx.rastrigin_func, print_step=100, iters=1000, verbose=3)
@@ -169,10 +164,10 @@ constant.
 
 .. parsed-literal::
 
-    Iteration 1/1000, cost: 10.3592595923
-    Iteration 101/1000, cost: 0.00381030608321
-    Iteration 201/1000, cost: 1.31982446305e-07
-    Iteration 301/1000, cost: 1.16529008665e-11
+    Iteration 1/1000, cost: 6.93571097813
+    Iteration 101/1000, cost: 0.00614705911661
+    Iteration 201/1000, cost: 7.22876336567e-09
+    Iteration 301/1000, cost: 5.89750470681e-13
     Iteration 401/1000, cost: 0.0
     Iteration 501/1000, cost: 0.0
     Iteration 601/1000, cost: 0.0
@@ -181,6 +176,7 @@ constant.
     Iteration 901/1000, cost: 0.0
     ================================
     Optimization finished!
-    Final cost: 0.000
-    Best value: [8.9869507154871327e-10, -2.7262405947023504e-09]
+    Final cost: 0.0000
+    Best value: [-6.763954278218746e-11, 2.4565912679296225e-09]
+    
 

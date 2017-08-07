@@ -155,7 +155,7 @@ compute ``forward_prop()`` to the whole swarm:
         
         Inputs
         ------
-        x: numpy.ndarray of shape (n_particles, dims)
+        x: numpy.ndarray of shape (n_particles, dimensions)
             The swarm that will perform the search
             
         Returns
@@ -181,8 +181,8 @@ parameters arbitrarily.
     options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
     
     # Call instance of PSO
-    dims = (4 * 20) + (20 * 3) + 20 + 3 
-    optimizer = ps.single.GBestPSO(n_particles=100, dims=dims, **options)
+    dimensions = (4 * 20) + (20 * 3) + 20 + 3 
+    optimizer = ps.single.GlobalBestPSO(n_particles=100, dimensions=dimensions, options=options)
     
     # Perform optimization
     cost, pos = optimizer.optimize(f, print_step=100, iters=1000, verbose=3)
@@ -190,20 +190,20 @@ parameters arbitrarily.
 
 .. parsed-literal::
 
-    Iteration 1/1000, cost: 1.11338932053
-    Iteration 101/1000, cost: 0.0541135752532
-    Iteration 201/1000, cost: 0.0468046270747
-    Iteration 301/1000, cost: 0.0434828849533
-    Iteration 401/1000, cost: 0.0358833340106
-    Iteration 501/1000, cost: 0.0312474981647
-    Iteration 601/1000, cost: 0.0150869267541
-    Iteration 701/1000, cost: 0.01267166403
-    Iteration 801/1000, cost: 0.00632312205821
-    Iteration 901/1000, cost: 0.00194080306565
+    Iteration 1/1000, cost: 1.09858937026
+    Iteration 101/1000, cost: 0.0516382653768
+    Iteration 201/1000, cost: 0.0416398234107
+    Iteration 301/1000, cost: 0.0399519086999
+    Iteration 401/1000, cost: 0.0396579575634
+    Iteration 501/1000, cost: 0.0394155032472
+    Iteration 601/1000, cost: 0.0388702854787
+    Iteration 701/1000, cost: 0.0386106261126
+    Iteration 801/1000, cost: 0.0384067695633
+    Iteration 901/1000, cost: 0.0370548470526
     ================================
     Optimization finished!
-    Final cost: 0.0015
-    Best value: -0.356506 0.441392 -0.605476 0.620517 -0.156904 0.206396 ...
+    Final cost: 0.0362
+    Best value: 0.170569 -4.586860 -0.726267 -3.602894 0.085438 -3.167099 ...
     
     
 
@@ -265,6 +265,6 @@ get the mean.
 
 .. parsed-literal::
 
-    1.0
+    0.98666666666666669
 
 

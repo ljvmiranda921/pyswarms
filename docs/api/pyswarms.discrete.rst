@@ -6,10 +6,10 @@ pyswarms.discrete package
 Submodules
 ----------
 
-pyswarms.discrete.bn module
----------------------------
+pyswarms.discrete.binary module
+--------------------------------
 
-.. automodule:: pyswarms.discrete.bn
+.. automodule:: pyswarms.discrete.binary
    :members:
    :undoc-members:
    :show-inheritance:

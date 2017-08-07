@@ -6,19 +6,19 @@ pyswarms.single package
 Submodules
 ----------
 
-pyswarms.single.gb module
---------------------------
+pyswarms.single.global_best module
+----------------------------------
 
-.. automodule:: pyswarms.single.gb
+.. automodule:: pyswarms.single.global_best
    :members:
    :undoc-members:
    :show-inheritance:
    :special-members: __init__
 
-pyswarms.single.lb module
---------------------------
+pyswarms.single.local_best module
+---------------------------------
 
-.. automodule:: pyswarms.single.lb
+.. automodule:: pyswarms.single.local_best
    :members:
    :undoc-members:
    :show-inheritance:
