@@ -75,29 +75,29 @@ class BinaryPSO(DiscreteSwarmBase):
         """
         super(BinaryPSO, self).assertions()
 
-        if not all (key in self.kwargs for key in ('k', 'p')):
-            raise KeyError('Missing either k or p in kwargs')
+        if not all (key in self.options for key in ('k', 'p')):
+            raise KeyError('Missing either k or p in options')
         if not 0 <= self.k <= self.n_particles:
             raise ValueError('No. of neighbors must be between 0 and no. of particles.')
         if self.p not in [1,2]:
             raise ValueError('p-value should either be 1 (for L1/Minkowski) or 2 (for L2/Euclidean).')
 
-    def __init__(self, n_particles, dims, v_clamp=None, **kwargs):
+    def __init__(self, n_particles, dimensions, options, velocity_clamp=None):
         """Initializes the swarm.
 
         Attributes
         ----------
         n_particles : int
             number of particles in the swarm.
-        dims : int
+        dimensions : int
             number of dimensions in the space.
-        v_clamp : tuple (default is :code:`None`)
+        velocity_clamp : tuple (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It 
             sets the limits for velocity clamping. 
-        **kwargs : dict
-            Keyword argument that must contain the following dictionary
-            keys:
+        options : dict with keys :code:`{'c1', 'c2', 'k', 'p'}`
+            a dictionary containing the parameters for the specific 
+            optimization technique
                 * c1 : float
                     cognitive parameter
                 * c2 : float
@@ -114,15 +114,15 @@ class BinaryPSO(DiscreteSwarmBase):
         """
         binary = True
         # Assign k-neighbors and p-value as attributes
-        self.k, self.p = kwargs['k'], kwargs['p']
+        self.k, self.p = options['k'], options['p']
         # Initialize parent class
-        super(BinaryPSO, self).__init__(n_particles, dims, binary, v_clamp, **kwargs)
+        super(BinaryPSO, self).__init__(n_particles, dimensions, binary, options, velocity_clamp)
         # Invoke assertions
         self.assertions()
         # Initialize the resettable attributes
         self.reset()
 
-    def optimize(self, f, iters, print_step=1, verbose=1):
+    def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
@@ -130,7 +130,7 @@ class BinaryPSO(DiscreteSwarmBase):
 
         Parameters
         ----------
-        f : function
+        objective_func : function
             objective function to be evaluated
         iters : int
             number of iterations
@@ -147,40 +147,40 @@ class BinaryPSO(DiscreteSwarmBase):
         """
         for i in range(iters):
             # Compute cost for current position and personal best
-            current_cost = f(self.pos)
-            pbest_cost = f(self.pbest_pos)
+            current_cost = objective_func(self.pos)
+            pbest_cost = objective_func(self.personal_best_pos)
 
             # Update personal bests if the current position is better
             # Create a 1-D mask then update pbest_cost
             m = (current_cost < pbest_cost)
             pbest_cost = np.where(~m, pbest_cost, current_cost)
             # Create a 2-D mask to update positions
-            _m = np.repeat(m[:, np.newaxis], self.dims, axis=1)
-            self.pbest_pos = np.where(~_m, self.pbest_pos, self.pos)
+            _m = np.repeat(m[:, np.newaxis], self.dimensions, axis=1)
+            self.personal_best_pos = np.where(~_m, self.personal_best_pos, self.pos)
 
             # Obtain the indices of the best position for each
             # neighbour-space, and get the local best cost and
             # local best positions from it.
             nmin_idx = self._get_neighbors(current_cost)
-            self.lbest_cost = current_cost[nmin_idx]
-            self.lbest_pos  = self.pos[nmin_idx]
+            self.best_cost = current_cost[nmin_idx]
+            self.best_pos  = self.pos[nmin_idx]
 
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                    (i+1, iters, np.min(self.lbest_cost)), verbose, 2)
+                    (i+1, iters, np.min(self.best_cost)), verbose, 2)
 
             # Perform position velocity update
             self._update_velocity()
             self._update_position()
 
-        # Only obtain the minimum of all these local positions and 
-        # then return it.
-        self.best_neighbor_cost = np.argmin(self.lbest_cost)
-        self.best_neighbor_pos = self.lbest_pos[self.best_neighbor_cost]
+        # Obtain the final best_cost and the final best_position
+        final_best_cost_arg = np.argmin(self.best_cost)
+        final_best_cost = np.min(self.best_cost)
+        final_best_pos = self.best_pos[final_best_cost_arg]
 
-        end_report(self.best_neighbor_cost, self.best_neighbor_pos, verbose)
-        return (self.best_neighbor_cost, self.best_neighbor_pos)
+        end_report(final_best_cost, final_best_pos, verbose)
+        return (final_best_cost, final_best_pos)
 
     def _get_neighbors(self, current_cost):
         """Helper function to obtain the best position found in the
@@ -215,17 +215,6 @@ class BinaryPSO(DiscreteSwarmBase):
 
         return best_neighbor
 
-    def reset(self):
-        """Resets the attributes of the optimizer."""
-        super(BinaryPSO, self).reset()
-
-        # Initialize the local best of the swarm
-        self.lbest_cost = np.inf
-        self.lbest_pos = None
-
-        # Initialize the personal best of each particle
-        self.pbest_pos = self.pos
-
     def _update_velocity(self):
         """Updates the velocity matrix of the swarm.
 
@@ -233,21 +222,21 @@ class BinaryPSO(DiscreteSwarmBase):
         the instantiated object. It is called by the 
         :code:`self.optimize()` method.
         """
-        # Define the hyperparameters from kwargs dictionary
-        c1, c2, w = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['w']
+        # Define the hyperparameters from options dictionary
+        c1, c2, w = self.options['c1'], self.options['c2'], self.options['w']
 
         # Compute for cognitive and social terms
         cognitive = (c1 * np.random.uniform(0,1,self.swarm_size)
-                    * (self.pbest_pos - self.pos))
+                    * (self.personal_best_pos - self.pos))
         social = (c2 * np.random.uniform(0,1,self.swarm_size)
-                    * (self.lbest_pos - self.pos))
+                    * (self.best_pos - self.pos))
         temp_velocity = (w * self.velocity) + cognitive + social
 
         # Create a mask to clamp the velocities
-        if self.v_clamp is not None:
+        if self.velocity_clamp is not None:
             # Create a mask depending on the set boundaries
-            v_min, v_max = self.v_clamp[0], self.v_clamp[1]
-            _b = np.logical_and(temp_velocity >= v_min, temp_velocity <= v_max)
+            min_velocity, max_velocity = self.velocity_clamp[0], self.velocity_clamp[1]
+            _b = np.logical_and(temp_velocity >= min_velocity, temp_velocity <= max_velocity)
             # Use the mask to finally clamp the velocities
             self.velocity = np.where(~_b, self.velocity, temp_velocity)
         else:

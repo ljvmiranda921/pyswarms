@@ -4,10 +4,10 @@ continuous single-objective optimization. These require only one
 objective function that can be optimized in a continuous space.
 """
 
-from .gb import GBestPSO
-from .lb import LBestPSO
+from .global_best import GlobalBestPSO
+from .local_best import LocalBestPSO
 
 __all__ = [
-    "GBestPSO",
-    "LBestPSO"
+    "GlobalBestPSO",
+    "LocalBestPSO"
     ]

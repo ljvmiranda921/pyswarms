@@ -4,7 +4,7 @@ discrete optimization. These are techniques that can be applied to a
 discrete search-space.
 """
 
-from .bn import BinaryPSO
+from .binary import BinaryPSO
 
 __all__ = [
     "BinaryPSO"

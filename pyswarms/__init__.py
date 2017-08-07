@@ -14,11 +14,11 @@ __author__ = """Lester James V. Miranda"""
 __email__ = 'ljvmiranda@gmail.com'
 __version__ = '0.1.4'
 
-from .single import gb, lb
-from .discrete import bn
+from .single import global_best, local_best
+from .discrete import binary
 
 __all__ = [
-    'gb',
-    'lb',
-    'bn'
+    'global_best',
+    'local_best',
+    'binary'
     ]

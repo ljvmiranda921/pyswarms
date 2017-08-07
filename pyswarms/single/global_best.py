@@ -39,8 +39,8 @@ An example usage is as follows:
     # Set-up hyperparameters
     options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
 
-    # Call instance of GBestPSO
-    optimizer = ps.single.GBestPSO(n_particles=10, dims=2, **options)
+    # Call instance of GlobalBestPSO
+    optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options)
 
     # Perform optimization
     stats = optimizer.optimize(fx.sphere_func, iters=100)
@@ -60,39 +60,29 @@ import numpy as np
 from ..base import SwarmBase
 from ..utils.console_utils import cli_print, end_report
 
-class GBestPSO(SwarmBase):
+class GlobalBestPSO(SwarmBase):
 
-    def assertions(self):
-        """Assertion method to check various inputs.
-
-        Raises
-        ------
-        KeyError
-            When one of the required dictionary keys is missing.
-        """
-        super(GBestPSO, self).assertions()
-
-
-    def __init__(self, n_particles, dims, bounds=None, v_clamp=None, **kwargs):
+    def __init__(self, n_particles, dimensions, options, 
+        bounds=None, velocity_clamp=None):
         """Initializes the swarm. 
 
         Attributes
         ----------
         n_particles : int
             number of particles in the swarm.
-        dims : int
+        dimensions : int
             number of dimensions in the space.
         bounds : tuple of :code:`np.ndarray`, optional (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
-            be of shape :code:`(dims,)`.
-        v_clamp : tuple (default is :code:`None`)
+            be of shape :code:`(dimensions,)`.
+        velocity_clamp : tuple (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It 
             sets the limits for velocity clamping. 
-        **kwargs : dict
-            Keyword argument that must contain the following dictionary
-            keys:
+        options : dict with keys :code:`{'c1', 'c2', 'w'}`
+            a dictionary containing the parameters for the specific 
+            optimization technique
                 * c1 : float
                     cognitive parameter
                 * c2 : float
@@ -100,14 +90,14 @@ class GBestPSO(SwarmBase):
                 * w : float
                     inertia parameter
         """
-        super(GBestPSO, self).__init__(n_particles, dims, bounds, v_clamp, **kwargs)
+        super(GlobalBestPSO, self).__init__(n_particles, dimensions, options, bounds, velocity_clamp)
 
         # Invoke assertions
         self.assertions()
         # Initialize the resettable attributes
         self.reset()
 
-    def optimize(self, f, iters, print_step=1, verbose=1):
+    def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
@@ -115,7 +105,7 @@ class GBestPSO(SwarmBase):
 
         Parameters
         ----------
-        f : function
+        objective_func : function
             objective function to be evaluated
         iters : int 
             number of iterations 
@@ -131,45 +121,38 @@ class GBestPSO(SwarmBase):
         """
         for i in range(iters):
             # Compute cost for current position and personal best
-            current_cost = f(self.pos)
-            pbest_cost = f(self.pbest_pos)
+            current_cost = objective_func(self.pos)
+            pbest_cost = objective_func(self.personal_best_pos)
 
             # Update personal bests if the current position is better
             # Create 1-D mask then update pbest_cost
             m = (current_cost < pbest_cost)
             pbest_cost = np.where(~m, pbest_cost, current_cost)
             # Create 2-D mask to update positions
-            _m = np.repeat(m[:,np.newaxis], self.dims, axis=1)
-            self.pbest_pos = np.where(~_m, self.pbest_pos, self.pos)
+            _m = np.repeat(m[:,np.newaxis], self.dimensions, axis=1)
+            self.personal_best_pos = np.where(~_m, self.personal_best_pos, self.pos)
 
             # Get the minima of the pbest and check if it's less than
             # the saved gbest
-            if np.min(pbest_cost) < self.gbest_cost:
-                self.gbest_cost = np.min(pbest_cost)
-                self.gbest_pos = self.pbest_pos[np.argmin(pbest_cost)]
+            if np.min(pbest_cost) < self.best_cost:
+                self.best_cost = np.min(pbest_cost)
+                self.best_pos = self.personal_best_pos[np.argmin(pbest_cost)]
 
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                    (i+1, iters, self.gbest_cost), verbose, 2)
+                    (i+1, iters, self.best_cost), verbose, 2)
 
             # Perform velocity and position updates
             self._update_velocity()
             self._update_position()
 
-        end_report(self.gbest_cost, self.gbest_pos, verbose)
-        return (self.gbest_cost, self.gbest_pos)
+        # Obtain the final best_cost and the final best_position
+        final_best_cost = self.best_cost.copy() # Make deep copies
+        final_best_pos = self.best_pos.copy()
 
-    def reset(self):
-        """Resets the attributes of the optimizer."""
-        super(GBestPSO, self).reset()
-
-        # Initialize the global best of the swarm
-        self.gbest_cost = np.inf
-        self.gbest_pos = None
-
-        # Initialize the personal best of each particle
-        self.pbest_pos = self.pos
+        end_report(final_best_cost, final_best_pos, verbose)
+        return (final_best_cost, final_best_pos)
 
     def _update_velocity(self):
         """Updates the velocity matrix of the swarm.
@@ -178,21 +161,21 @@ class GBestPSO(SwarmBase):
         the instantiated object. It is called by the 
         :code:`self.optimize()` method.
         """
-        # Define the hyperparameters from kwargs dictionary
-        c1, c2, w = self.kwargs['c1'], self.kwargs['c2'], self.kwargs['w']
+        # Define the hyperparameters from options dictionary
+        c1, c2, w = self.options['c1'], self.options['c2'], self.options['w']
 
         # Compute for cognitive and social terms
         cognitive = (c1 * np.random.uniform(0,1,self.swarm_size)
-                    * (self.pbest_pos - self.pos))
+                    * (self.personal_best_pos - self.pos))
         social = (c2 * np.random.uniform(0,1,self.swarm_size)
-                    * (self.gbest_pos - self.pos))
+                    * (self.best_pos - self.pos))
         temp_velocity = (w * self.velocity) + cognitive + social
 
         # Create a mask to clamp the velocities
-        if self.v_clamp is not None:
+        if self.velocity_clamp is not None:
             # Create a mask depending on the set boundaries
-            v_min, v_max = self.v_clamp[0], self.v_clamp[1]
-            _b = np.logical_and(temp_velocity >= v_min, temp_velocity <= v_max)
+            min_velocity, max_velocity = self.velocity_clamp[0], self.velocity_clamp[1]
+            _b = np.logical_and(temp_velocity >= min_velocity, temp_velocity <= max_velocity)
             # Use the mask to finally clamp the velocities
             self.velocity = np.where(~_b, self.velocity, temp_velocity)
         else:
@@ -214,7 +197,7 @@ class GBestPSO(SwarmBase):
             b = (np.all(self.min_bounds <= temp, axis=1)
                 * np.all(temp <= self.max_bounds, axis=1))
             # Broadcast the mask
-            b = np.repeat(b[:,np.newaxis], self.dims, axis=1)
+            b = np.repeat(b[:,np.newaxis], self.dimensions, axis=1)
             # Use the mask to finally guide position update
             temp = np.where(~b, self.pos, temp)
         self.pos = temp

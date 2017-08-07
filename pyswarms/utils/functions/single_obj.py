@@ -3,7 +3,7 @@
 """single_obj.py: collection of single-objective functions
 
 All objective functions :code:`obj_func()` must accept a
-:code:`(numpy.ndarray)` with shape :code:`(n_particles, dims)`.
+:code:`(numpy.ndarray)` with shape :code:`(n_particles, dimensions)`.
 Thus, each row represents a  particle, and each column represents its
 position on a specific dimension of the search-space.
 
@@ -28,7 +28,7 @@ def sphere_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -48,7 +48,7 @@ def rastrigin_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -78,7 +78,7 @@ def ackley_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -106,14 +106,14 @@ def rosenbrock_func(x):
     """Rosenbrock objective function.
 
     Also known as the Rosenbrock's valley or Rosenbrock's banana
-    function. Has a global minimum of :code:`np.ones(dims)` where 
-    :code:`dims` is :code:`x.shape[1]`. The search domain is
+    function. Has a global minimum of :code:`np.ones(dimensions)` where 
+    :code:`dimensions` is :code:`x.shape[1]`. The search domain is
     :code:`[-inf, inf]`.
 
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -134,7 +134,7 @@ def beale_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -173,7 +173,7 @@ def goldstein_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -213,7 +213,7 @@ def booth_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -252,7 +252,7 @@ def bukin6_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -291,7 +291,7 @@ def matyas_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -318,7 +318,7 @@ def levi_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
@@ -366,7 +366,7 @@ def schaffer2_func(x):
     Parameters
     ----------
     x : numpy.ndarray 
-        set of inputs of shape :code:`(n_particles, dims)`
+        set of inputs of shape :code:`(n_particles, dimensions)`
 
     Returns
     -------
