@@ -27,7 +27,7 @@ See Also
 :mod:`pyswarms.discrete.binary`: binary PSO implementation
 
 """
-
+from collections import namedtuple
 import numpy as np 
 
 class DiscreteSwarmBase(object):
@@ -95,12 +95,60 @@ class DiscreteSwarmBase(object):
         self.velocity_clamp = velocity_clamp
         self.swarm_size = (n_particles, dimensions)
         self.options = options
-
+        # Initialize named tuple for populating the history list
+        self.ToHistory = namedtuple('ToHistory', ['best_cost', 'mean_pbest_cost',
+                            'mean_neighbor_cost', 'position', 'velocity'])
         # Invoke assertions
         self.assertions()
 
         # Initialize resettable attributes
         self.reset()
+
+    def _populate_history(self, hist):
+        """Populates all history lists
+
+        The :code:`cost_history`, :code:`mean_pbest_history`, and
+        :code:`neighborhood_best` is expected to have a shape of
+        :code:`(iters,)`,on the other hand, the :code:`pos_history` 
+        and :code:`velocity_history` are expected to have a shape of
+        :code:`(iters, n_particles, dimensions)`
+
+        Parameters
+        ----------
+        hist : namedtuple
+            Must be of the same type as self.ToHistory
+        """
+        self.cost_history.append(hist.best_cost)
+        self.mean_pbest_history.append(hist.mean_pbest_cost)
+        self.mean_neighbor_history.append(hist.mean_neighbor_cost)
+        self.pos_history.append(hist.position)
+        self.velocity_history.append(hist.velocity)
+
+    @property
+    def get_cost_history(self):
+        """Get cost history"""
+        return np.array(self.cost_history)
+
+    @property
+    def get_mean_pbest_history(self):
+        """Get mean personal best history"""
+        return np.array(self.mean_pbest_history)
+
+    @property
+    def get_mean_neighbor_history(self):
+        """Get mean neighborhood cost history"""
+        return np.array(self.mean_neighbor_history)
+
+    @property
+    def get_pos_history(self):
+        """Get position history"""
+        return np.array(self.pos_history)
+
+    @property
+    def get_velocity_history(self):
+        """Get velocity history"""
+        return np.array(self.velocity_history)
+
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
@@ -168,6 +216,13 @@ class DiscreteSwarmBase(object):
 
         Otherwise, consider using positional arguments.
         """
+        # Initialize history lists
+        self.cost_history = []
+        self.mean_pbest_history = []
+        self.mean_neighbor_history = []
+        self.pos_history = []
+        self.velocity_history = []
+        
         # Generate initial position
         self.pos = np.random.random_sample(size=self.swarm_size).argsort(axis=1)
         if self.binary:

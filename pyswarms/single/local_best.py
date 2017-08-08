@@ -184,6 +184,16 @@ class LocalBestPSO(SwarmBase):
                 cli_print('Iteration %s/%s, cost: %s' %
                     (i+1, iters, np.min(self.best_cost)), verbose, 2)
 
+            # Save to history
+            hist = self.ToHistory(
+                best_cost=np.min(self.best_cost),
+                mean_pbest_cost=np.mean(pbest_cost),
+                mean_neighbor_cost=np.mean(self.best_cost),
+                position=self.pos,
+                velocity=self.velocity
+            )
+            self._populate_history(hist)
+
             # Perform position velocity update
             self._update_velocity()
             self._update_position()

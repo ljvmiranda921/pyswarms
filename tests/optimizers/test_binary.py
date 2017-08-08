@@ -20,6 +20,7 @@ class Base(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures"""
         self.options = {'c1':0.5, 'c2':0.7, 'w':0.5, 'k': 2, 'p': 2}
+        self.optimizer = BinaryPSO(10,2, options=self.options)
 
 class Instantiation(Base):
     """Tests all aspects of instantiation
@@ -102,15 +103,44 @@ class Run(Base):
 
     def test_run(self):
         """Perform a single run."""
-        optimizer = BinaryPSO(10,2, options=self.options)
         try:
-            optimizer.optimize(sphere_func, 1000, verbose=0)
+            self.optimizer.optimize(sphere_func, 1000, verbose=0)
             trigger = True
         except:
             print('Execution failed.')
             trigger = False
 
         self.assertTrue(trigger)
+
+    def test_cost_history_size(self):
+        """Check the size of the cost_history."""
+        self.optimizer.optimize(sphere_func, 1000, verbose=0)
+        cost_hist = self.optimizer.get_cost_history
+        self.assertEqual(cost_hist.shape, (1000,))
+
+    def test_mean_pbest_history_size(self):
+        """Check the size of the mean_pbest_history."""
+        self.optimizer.optimize(sphere_func, 1000, verbose=0)
+        mean_pbest_hist = self.optimizer.get_mean_pbest_history
+        self.assertEqual(mean_pbest_hist.shape, (1000,))
+
+    def test_mean_neighbor_history_size(self):
+        """Check the size of the mean neighborhood history."""
+        self.optimizer.optimize(sphere_func, 1000, verbose=0)
+        mean_neighbor_hist = self.optimizer.get_mean_neighbor_history
+        self.assertEqual(mean_neighbor_hist.shape, (1000,))
+
+    def test_pos_history_size(self):
+        """Check the size of the pos_history."""
+        self.optimizer.optimize(sphere_func, 1000, verbose=0)
+        pos_hist = self.optimizer.get_pos_history
+        self.assertEqual(pos_hist.shape, (1000, 10, 2))
+
+    def test_velocity_history_size(self):
+        """Check the size of the velocity_history."""
+        self.optimizer.optimize(sphere_func, 1000, verbose=0)
+        velocity_hist = self.optimizer.get_velocity_history
+        self.assertEqual(velocity_hist.shape, (1000, 10, 2))
 
 if __name__ == '__main__':
     unittest.main()

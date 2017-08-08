@@ -72,14 +72,6 @@ class GlobalBestPSO(SwarmBase):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        bounds : tuple of :code:`np.ndarray`, optional (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum bound
-            while the second entry is the maximum bound. Each array must
-            be of shape :code:`(dimensions,)`.
-        velocity_clamp : tuple (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It 
-            sets the limits for velocity clamping. 
         options : dict with keys :code:`{'c1', 'c2', 'w'}`
             a dictionary containing the parameters for the specific 
             optimization technique
@@ -89,6 +81,14 @@ class GlobalBestPSO(SwarmBase):
                     social parameter
                 * w : float
                     inertia parameter
+        bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
+            a tuple of size 2 where the first entry is the minimum bound
+            while the second entry is the maximum bound. Each array must
+            be of shape :code:`(dimensions,)`.
+        velocity_clamp : tuple (default is :code:`None`)
+            a tuple of size 2 where the first entry is the minimum velocity
+            and the second entry is the maximum velocity. It 
+            sets the limits for velocity clamping. 
         """
         super(GlobalBestPSO, self).__init__(n_particles, dimensions, options, bounds, velocity_clamp)
 
@@ -142,6 +142,16 @@ class GlobalBestPSO(SwarmBase):
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
                     (i+1, iters, self.best_cost), verbose, 2)
+
+            # Save to history
+            hist = self.ToHistory(
+                best_cost=self.best_cost,
+                mean_pbest_cost=np.mean(pbest_cost),
+                mean_neighbor_cost=self.best_cost,
+                position=self.pos,
+                velocity=self.velocity
+            )
+            self._populate_history(hist)
 
             # Perform velocity and position updates
             self._update_velocity()

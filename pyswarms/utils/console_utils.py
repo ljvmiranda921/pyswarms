@@ -36,7 +36,7 @@ def end_report(cost, pos, verbosity):
     
     # Cuts the length of the best position if it's too long
     if len(list(pos)) > 3:
-        out = (6 * '{:3f} ' + '...').format(*list(pos))
+        out = ('[ ' + 3 * '{:3f} ' + '...]').format(*list(pos))
     else:
         out = list(pos)
 

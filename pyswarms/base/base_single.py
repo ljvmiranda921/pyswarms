@@ -29,7 +29,8 @@ See Also
 :mod:`pyswarms.single.local_best`: local-best PSO implementation
 """
 
-import numpy as np 
+from collections import namedtuple
+import numpy as np
 
 class SwarmBase(object):
 
@@ -90,7 +91,16 @@ class SwarmBase(object):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        bounds : tuple of numpy.ndarray
+        options : dict with keys :code:`{'c1', 'c2', 'w'}`
+            a dictionary containing the parameters for the specific 
+            optimization technique
+                * c1 : float
+                    cognitive parameter
+                * c2 : float
+                    social parameter
+                * w : float
+                    inertia parameter
+        bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
@@ -98,9 +108,9 @@ class SwarmBase(object):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It 
             sets the limits for velocity clamping. 
-        options: dict
-            a dictionary containing the parameters for a specific 
-            optimization technique
+        save_history : boolean (default is :code:`False`)
+            saves various optimizer attributes :code:`[cost, position, velocity]`
+            inside a list.
         """
         # Initialize primary swarm attributes
         self.n_particles = n_particles
@@ -109,12 +119,58 @@ class SwarmBase(object):
         self.velocity_clamp = velocity_clamp
         self.swarm_size = (n_particles, dimensions)
         self.options = options
-
+        # Initialize named tuple for populating the history list
+        self.ToHistory = namedtuple('ToHistory', ['best_cost', 'mean_pbest_cost',
+                            'mean_neighbor_cost', 'position', 'velocity'])
         # Invoke assertions
         self.assertions()
-
         # Initialize resettable attributes
         self.reset()
+
+    def _populate_history(self, hist):
+        """Populates all history lists
+
+        The :code:`cost_history`, :code:`mean_pbest_history`, and
+        :code:`neighborhood_best` is expected to have a shape of
+        :code:`(iters,)`,on the other hand, the :code:`pos_history` 
+        and :code:`velocity_history` are expected to have a shape of
+        :code:`(iters, n_particles, dimensions)`
+
+        Parameters
+        ----------
+        hist : namedtuple
+            Must be of the same type as self.ToHistory
+        """
+        self.cost_history.append(hist.best_cost)
+        self.mean_pbest_history.append(hist.mean_pbest_cost)
+        self.mean_neighbor_history.append(hist.mean_neighbor_cost)
+        self.pos_history.append(hist.position)
+        self.velocity_history.append(hist.velocity)
+
+    @property
+    def get_cost_history(self):
+        """Get cost history"""
+        return np.array(self.cost_history)
+
+    @property
+    def get_mean_pbest_history(self):
+        """Get mean personal best history"""
+        return np.array(self.mean_pbest_history)
+
+    @property
+    def get_mean_neighbor_history(self):
+        """Get mean neighborhood cost history"""
+        return np.array(self.mean_neighbor_history)
+
+    @property
+    def get_pos_history(self):
+        """Get position history"""
+        return np.array(self.pos_history)
+
+    @property
+    def get_velocity_history(self):
+        """Get velocity history"""
+        return np.array(self.velocity_history)
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
@@ -182,6 +238,13 @@ class SwarmBase(object):
 
         Otherwise, consider using positional arguments.
         """
+        # Initialize history lists
+        self.cost_history = []
+        self.mean_pbest_history = []
+        self.mean_neighbor_history = []
+        self.pos_history = []
+        self.velocity_history = []
+
         # Broadcast the bounds and initialize the swarm
         if self.bounds is not None:
             self.min_bounds = np.repeat(self.bounds[0][np.newaxis,:],
