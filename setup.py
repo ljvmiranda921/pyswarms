@@ -14,6 +14,7 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'scipy>=0.17.0',
     'numpy>=1.10.4',
+    'matplotlib>=1.3.1',
 ]
 
 setup_requirements = [
@@ -23,6 +24,7 @@ setup_requirements = [
 test_requirements = [
     'scipy>=0.17.0',
     'numpy>=1.10.4',
+    'matplotlib>=1.3.1',
 ]
 
 setup(
