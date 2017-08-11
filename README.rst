@@ -39,6 +39,10 @@ Features
 * High-level module for Particle Swarm Optimization. For a list of all optimizers, check this_ link.
 * Test optimizers using various objective functions
 * (For Devs and Researchers): Highly-extensible API for implementing your own techniques
+* Easy API built on :code:`matplotlib` to create animations like these:
+
+.. image:: docs/examples/output_3d.gif
+.. image:: docs/examples/output_9_0.png
 
 .. _this: https://pyswarms.readthedocs.io/en/latest/features.html
 

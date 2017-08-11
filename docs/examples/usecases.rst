@@ -8,3 +8,4 @@ If you wish to check the actual Jupyter Notebooks, please go to this `link <http
    basic_optimization
    train_neural_network
    feature_subset_selection
+   visualization
