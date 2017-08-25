@@ -50,7 +50,7 @@ class DiscreteSwarmBase(object):
 
         # Check clamp settings
         if self.velocity_clamp is not None:
-            if not type(self.velocity_clamp) == tuple:
+            if not isinstance(self.velocity_clamp, tuple):
                 raise TypeError('Parameter `velocity_clamp` must be a tuple')
             if not len(self.velocity_clamp) == 2:
                 raise IndexError('Parameter `velocity_clamp` must be of size 2')
