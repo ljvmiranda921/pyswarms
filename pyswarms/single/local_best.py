@@ -110,7 +110,7 @@ class LocalBestPSO(SwarmBase):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It 
             sets the limits for velocity clamping. 
-        options : dict with keys :code:`{'c1', 'c2', 'k', 'p'}`
+        options : dict with keys :code:`{'c1', 'c2', 'w', 'k', 'p'}`
             a dictionary containing the parameters for the specific 
             optimization technique
                 * c1 : float
