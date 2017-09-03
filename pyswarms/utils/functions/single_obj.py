@@ -102,7 +102,7 @@ def ackley_func(x):
 
     d = x.shape[1]
     j = (-20.0 * np.exp(-0.2 * np.sqrt((1/d) * (x**2).sum(axis=1)))
-        - np.exp((1/d) * np.cos(2 * np.pi * x).sum(axis=1))
+        - np.exp((1/float(d)) * np.cos(2 * np.pi * x).sum(axis=1))
         + 20.0
         + np.exp(1))
 
