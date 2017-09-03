@@ -46,15 +46,22 @@ Features
 * Easy API built on :code:`matplotlib` to create animations like these:
 
 .. image:: docs/examples/output_3d.gif
+        :target: docs/examples/output_3d.gif
+        :width: 320 px
+        :alt: 3d particle plot
+
 .. image:: docs/examples/output_9_0.png
+        :target: docs/examples/output_9_0.png
+        :width: 320 px
+        :alt: cost history plot
 
 .. _this: https://pyswarms.readthedocs.io/en/latest/features.html
 
 Dependencies
 -------------
-* Python 3.4 and above
-* numpy >= 1.10.4
+* numpy >= 1.13.0
 * scipy >= 0.17.0
+* matplotlib >= 1.3.1
 
 Installation
 -------------
