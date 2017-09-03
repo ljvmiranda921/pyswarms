@@ -29,8 +29,12 @@ See Also
 :mod:`pyswarms.single.local_best`: local-best PSO implementation
 """
 
-from collections import namedtuple
+import os
+import yaml
+import logging
 import numpy as np
+import logging.config
+from collections import namedtuple
 
 class SwarmBase(object):
 
@@ -52,20 +56,20 @@ class SwarmBase(object):
 
         # Check setting of bounds
         if self.bounds is not None:
-            if not type(self.bounds) == tuple:
+            if not isinstance(self.bounds,tuple):
                 raise TypeError('Parameter `bound` must be a tuple.')
             if not len(self.bounds) == 2:
                 raise IndexError('Parameter `bound` must be of size 2.')
             if not self.bounds[0].shape == self.bounds[1].shape:
                 raise IndexError('Arrays in `bound` must be of equal shapes')
             if not self.bounds[0].shape[0] == self.bounds[1].shape[0] == self.dimensions:
-                raise IndexError('Parameter `bound` must be the shape as dimensions.')
+                raise IndexError('Parameter `bound` must be the same shape as dimensions.')
             if not (self.bounds[1] > self.bounds[0]).all():
                 raise ValueError('Values of `bounds[1]` must be greater than `bounds[0]`.')
 
         # Check clamp settings
         if self.velocity_clamp is not None:
-            if not type(self.velocity_clamp) == tuple:
+            if not isinstance(self.velocity_clamp,tuple):
                 raise TypeError('Parameter `velocity_clamp` must be a tuple')
             if not len(self.velocity_clamp) == 2:
                 raise IndexError('Parameter `velocity_clamp` must be of size 2')
@@ -75,6 +79,30 @@ class SwarmBase(object):
         # Required keys in options argument
         if not all (key in self.options for key in ('c1', 'c2', 'w')):
             raise KeyError('Missing either c1, c2, or w in options')
+
+    def setup_logging(self,default_path='./config/logging.yaml', 
+            default_level=logging.INFO, env_key='LOG_CFG'):
+        """Setup logging configuration
+
+        Parameters
+        ----------
+        default_path : str (default is `./config/logging.yaml`)
+            the path where the logging configuration is stored
+        default_level: logging.LEVEL (default is `logging.INFO`)
+            the default logging level
+        env_key : str
+            the environment key for accessing the setup
+        """
+        path = default_path
+        value = os.getenv(env_key, None)
+        if value:
+            path = value
+        if os.path.exists(path):
+            with open(path, 'rt') as f:
+                config = yaml.safe_load(f.read())
+            logging.config.dictConfig(config)
+        else:
+            logging.basicConfig(level=default_level)
 
     def __init__(self, n_particles, dimensions, options, 
         bounds=None, velocity_clamp=None):
@@ -112,6 +140,7 @@ class SwarmBase(object):
             saves various optimizer attributes :code:`[cost, position, velocity]`
             inside a list.
         """
+        self.setup_logging()
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dimensions = dimensions

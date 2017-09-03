@@ -24,6 +24,10 @@
         :target: https://pyup.io/repos/github/ljvmiranda921/pyswarms/
         :alt: Updates
 
+.. image:: https://img.shields.io/badge/python-2.7%2C3.4%2C3.5%2C3.6-blue.svg
+        :target: https://github.com/ljvmiranda921/pyswarms
+        :alt: Python versions
+
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg   
         :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
         :alt: License

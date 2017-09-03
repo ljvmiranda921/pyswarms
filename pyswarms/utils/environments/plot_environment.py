@@ -49,9 +49,15 @@ specific dimensions to be used, the limits of the axes, and the interval/
 speed of animation.
 """
 
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
 # Import modules
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from past.builtins import xrange
 from matplotlib import animation
 from collections import namedtuple
 from mpl_toolkits.mplot3d import Axes3D
@@ -237,7 +243,7 @@ class PlotEnvironment(object):
 
         # Perform animation
         anim = animation.FuncAnimation(fig, func=self._animate2D,
-            frames=range(n_iters), fargs=(data, plot, idx),
+            frames=xrange(n_iters), fargs=(data, plot, idx),
             interval=interval, blit=True)
         return anim
 
@@ -323,7 +329,7 @@ class PlotEnvironment(object):
 
         # Perform animation
         anim = animation.FuncAnimation(fig, func=self._animate3D,
-            frames=range(n_iters), fargs=(data, plot, idx),
+            frames=xrange(n_iters), fargs=(data, plot, idx),
             interval=interval)
         return anim
 

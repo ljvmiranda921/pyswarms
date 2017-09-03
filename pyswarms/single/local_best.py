@@ -62,9 +62,16 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_ [MHS199
     Symposium on Micromachine and Human Science, 1995, pp. 39–43.
 """
 
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
 # Import modules
-import numpy as np 
+import logging
+import numpy as np
 from scipy.spatial import cKDTree
+from past.builtins import xrange
 
 # Import from package
 from ..base import SwarmBase
@@ -102,7 +109,7 @@ class LocalBestPSO(SwarmBase):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        bounds : tuple of np.ndarray, optional (default is None)
+        bounds : tuple of np.ndarray, optional (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
@@ -127,6 +134,8 @@ class LocalBestPSO(SwarmBase):
                     sum-of-absolute values (or L1 distance) while 2 is 
                     the Euclidean (or L2) distance.
         """
+        # Initialize logger
+        self.logger = logging.getLogger(__name__)
         # Assign k-neighbors and p-value as attributes
         self.k, self.p = options['k'], options['p']
         # Initialize parent class
@@ -148,9 +157,9 @@ class LocalBestPSO(SwarmBase):
             objective function to be evaluated
         iters : int
             number of iterations
-        print_step : int (the default is 1)
+        print_step : int (default is 1)
             amount of steps for printing into console.
-        verbose : int  (the default is 1)
+        verbose : int  (default is 1)
             verbosity setting.
 
         Returns
@@ -159,7 +168,7 @@ class LocalBestPSO(SwarmBase):
             the local best cost and the local best position among the
             swarm.
         """
-        for i in range(iters):
+        for i in xrange(iters):
             # Compute cost for current position and personal best
             current_cost = objective_func(self.pos)
             pbest_cost = objective_func(self.personal_best_pos)
@@ -182,7 +191,7 @@ class LocalBestPSO(SwarmBase):
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                    (i+1, iters, np.min(self.best_cost)), verbose, 2)
+                    (i+1, iters, np.min(self.best_cost)), verbose, 2, logger=self.logger)
 
             # Save to history
             hist = self.ToHistory(
@@ -203,7 +212,7 @@ class LocalBestPSO(SwarmBase):
         final_best_cost = np.min(self.best_cost)
         final_best_pos = self.best_pos[final_best_cost_arg]
 
-        end_report(final_best_cost, final_best_pos, verbose)
+        end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
         return (final_best_cost, final_best_pos)
 
     def _get_neighbors(self, current_cost):
@@ -213,7 +222,7 @@ class LocalBestPSO(SwarmBase):
         
         Parameters
         ----------
-        current_cost : numpy.ndarray of size (n_particles, )
+        current_cost : numpy.ndarray of size :code:`(n_particles, )`
             the cost incurred at the current position. Will be used for
             mapping the obtained indices to its actual cost.
 

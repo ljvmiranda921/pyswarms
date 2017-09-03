@@ -17,6 +17,12 @@ in order to check if all functions implemented adheres to
 the design pattern stated above.
 """
 
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
+# Import modules
 import numpy as np
 
 def sphere_func(x):
@@ -96,7 +102,7 @@ def ackley_func(x):
 
     d = x.shape[1]
     j = (-20.0 * np.exp(-0.2 * np.sqrt((1/d) * (x**2).sum(axis=1)))
-        - np.exp((1/d) * np.cos(2 * np.pi * x).sum(axis=1))
+        - np.exp((1/float(d)) * np.cos(2 * np.pi * x).sum(axis=1))
         + 20.0
         + np.exp(1))
 
@@ -352,7 +358,6 @@ def levi_func(x):
         * (1 + 10 * np.sin(np.pi * (masked_w_).sum(axis=1) + 1)**2.0)
         + (w_[:,d_] - 1)**2.0
         * (1 + np.sin(2 * np.pi * w_[:,d_])**2.0 ))
-          
 
     return j
 

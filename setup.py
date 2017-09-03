@@ -12,8 +12,10 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
+    'PyYAML==3.12',
+    'future==0.16.0',
     'scipy>=0.17.0',
-    'numpy>=1.10.4',
+    'numpy>=1.13.0',
     'matplotlib>=1.3.1',
 ]
 
@@ -22,8 +24,10 @@ setup_requirements = [
 ]
 
 test_requirements = [
+    'PyYAML==3.12',
+    'future==0.16.0',
     'scipy>=0.17.0',
-    'numpy>=1.10.4',
+    'numpy>=1.13.0',
     'matplotlib>=1.3.1',
 ]
 
@@ -46,9 +50,11 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     test_suite='tests',
     tests_require=test_requirements,
