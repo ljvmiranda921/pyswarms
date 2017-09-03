@@ -2,7 +2,15 @@
 
 """ console_utils.py: various tools for printing into console """
 
-def cli_print(message, verbosity, threshold):
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
+# Import modules
+import logging
+
+def cli_print(message, verbosity, threshold, logger):
     """Helper function to print console output
 
     Parameters
@@ -13,14 +21,16 @@ def cli_print(message, verbosity, threshold):
         verbosity setting of the user
     threshold : int
         threshold for printing
+    logger : logging.getLogger
+        logger instance
 
     """
     if verbosity >= threshold:
-        print(message)
+        logger.info(message)
     else:
         pass
 
-def end_report(cost, pos, verbosity):
+def end_report(cost, pos, verbosity, logger):
     """Helper function to print a simple report at the end of the
     run. This always has a threshold of 1.
 
@@ -32,6 +42,8 @@ def end_report(cost, pos, verbosity):
         best position found
     verbosity : int
         verbosity setting of the user.
+    logger : logging.getLogger
+        logger instance
     """
     
     # Cuts the length of the best position if it's too long
@@ -45,4 +57,4 @@ def end_report(cost, pos, verbosity):
                 'Final cost: {:06.4f}\n'
                 'Best value: {}\n').format(cost, out)
     if verbosity >= 1:
-        print(template)
+        logger.info(template)
