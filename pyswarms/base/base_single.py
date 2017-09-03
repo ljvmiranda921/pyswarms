@@ -29,8 +29,12 @@ See Also
 :mod:`pyswarms.single.local_best`: local-best PSO implementation
 """
 
-from collections import namedtuple
+import os
+import yaml
+import logging
 import numpy as np
+import logging.config
+from collections import namedtuple
 
 class SwarmBase(object):
 
@@ -76,6 +80,30 @@ class SwarmBase(object):
         if not all (key in self.options for key in ('c1', 'c2', 'w')):
             raise KeyError('Missing either c1, c2, or w in options')
 
+    def setup_logging(self,default_path='./config/logging.yaml', 
+            default_level=logging.INFO, env_key='LOG_CFG'):
+        """Setup logging configuration
+
+        Parameters
+        ----------
+        default_path : str (default is `./config/logging.yaml`)
+            the path where the logging configuration is stored
+        default_level: logging.LEVEL (default is `logging.INFO`)
+            the default logging level
+        env_key : str
+            the environment key for accessing the setup
+        """
+        path = default_path
+        value = os.getenv(env_key, None)
+        if value:
+            path = value
+        if os.path.exists(path):
+            with open(path, 'rt') as f:
+                config = yaml.safe_load(f.read())
+            logging.config.dictConfig(config)
+        else:
+            logging.basicConfig(level=default_level)
+
     def __init__(self, n_particles, dimensions, options, 
         bounds=None, velocity_clamp=None):
         """Initializes the swarm. 
@@ -112,6 +140,7 @@ class SwarmBase(object):
             saves various optimizer attributes :code:`[cost, position, velocity]`
             inside a list.
         """
+        self.setup_logging()
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dimensions = dimensions

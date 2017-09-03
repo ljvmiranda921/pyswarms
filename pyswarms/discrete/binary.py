@@ -51,9 +51,16 @@ R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
     Conference on Systems, Man, and Cybernetics, 1997.
 """
 
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
 # Import modules
+import logging
 import numpy as np 
 from scipy.spatial import cKDTree
+from past.builtins import xrange
 
 # Import from package
 from ..base import DiscreteSwarmBase
@@ -112,6 +119,9 @@ class BinaryPSO(DiscreteSwarmBase):
                     sum-of-absolute values (or L1 distance) while 2 is 
                     the Euclidean (or L2) distance.
         """
+        # Initialize logger
+        self.logger = logging.getLogger(__name__)
+
         binary = True
         # Assign k-neighbors and p-value as attributes
         self.k, self.p = options['k'], options['p']
@@ -145,7 +155,7 @@ class BinaryPSO(DiscreteSwarmBase):
             the local best cost and the local best position among the
             swarm.
         """
-        for i in range(iters):
+        for i in xrange(iters):
             # Compute cost for current position and personal best
             current_cost = objective_func(self.pos)
             pbest_cost = objective_func(self.personal_best_pos)
@@ -168,7 +178,7 @@ class BinaryPSO(DiscreteSwarmBase):
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                    (i+1, iters, np.min(self.best_cost)), verbose, 2)
+                    (i+1, iters, np.min(self.best_cost)), verbose, 2, logger=self.logger)
 
             # Save to history
             hist = self.ToHistory(
@@ -189,7 +199,7 @@ class BinaryPSO(DiscreteSwarmBase):
         final_best_cost = np.min(self.best_cost)
         final_best_pos = self.best_pos[final_best_cost_arg]
 
-        end_report(final_best_cost, final_best_pos, verbose)
+        end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
         return (final_best_cost, final_best_pos)
 
     def _get_neighbors(self, current_cost):

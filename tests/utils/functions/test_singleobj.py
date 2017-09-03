@@ -3,13 +3,17 @@
 
 """Tests for `pyswarms` package."""
 
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
 # Import modules
 import unittest
 import numpy as np
 
 # Import from package
 from pyswarms.utils.functions import single_obj as fx
-
 
 class TestSingleObj(unittest.TestCase):
     """Base class for testing single-objective functions."""

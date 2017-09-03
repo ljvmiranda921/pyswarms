@@ -53,8 +53,15 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
 # Import modules
+import logging
 import numpy as np
+from past.builtins import xrange
 
 # Import from package
 from ..base import SwarmBase
@@ -92,6 +99,8 @@ class GlobalBestPSO(SwarmBase):
         """
         super(GlobalBestPSO, self).__init__(n_particles, dimensions, options, bounds, velocity_clamp)
 
+        # Initialize logger
+        self.logger = logging.getLogger(__name__)
         # Invoke assertions
         self.assertions()
         # Initialize the resettable attributes
@@ -109,9 +118,9 @@ class GlobalBestPSO(SwarmBase):
             objective function to be evaluated
         iters : int 
             number of iterations 
-        print_step : int (the default is 1)
+        print_step : int (default is 1)
             amount of steps for printing into console.
-        verbose : int  (the default is 1)
+        verbose : int  (default is 1)
             verbosity setting.
 
         Returns
@@ -119,7 +128,7 @@ class GlobalBestPSO(SwarmBase):
         tuple
             the global best cost and the global best position.
         """
-        for i in range(iters):
+        for i in xrange(iters):
             # Compute cost for current position and personal best
             current_cost = objective_func(self.pos)
             pbest_cost = objective_func(self.personal_best_pos)
@@ -141,7 +150,7 @@ class GlobalBestPSO(SwarmBase):
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                    (i+1, iters, self.best_cost), verbose, 2)
+                    (i+1, iters, self.best_cost), verbose, 2, logger=self.logger)
 
             # Save to history
             hist = self.ToHistory(
@@ -161,7 +170,7 @@ class GlobalBestPSO(SwarmBase):
         final_best_cost = self.best_cost.copy() # Make deep copies
         final_best_pos = self.best_pos.copy()
 
-        end_report(final_best_cost, final_best_pos, verbose)
+        end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
         return (final_best_cost, final_best_pos)
 
     def _update_velocity(self):
