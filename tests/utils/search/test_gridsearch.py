@@ -28,8 +28,8 @@ class TestGridSearch(unittest.TestCase):
         self.iters = 10
         self.objective_func = sphere_func
 
-    def test_optimize(self):
-        """Tests if the optimize method returns expected values."""
+    def test_search(self):
+        """Tests if the search method returns expected values."""
         g = GridSearch(self.optimizer, self.n_particles, self.dimensions,
                        self.options, self.objective_func, self.iters,
                        bounds=None, velocity_clamp=None)
@@ -37,7 +37,7 @@ class TestGridSearch(unittest.TestCase):
         minimum_best_score, minimum_best_options = g.search()
         maximum_best_score, maximum_best_options = g.search(maximum=True)
 
-        # Test method returns a dict
+        # Test search method returns a dict
         self.assertEqual(type(minimum_best_options), dict)
         self.assertEqual(type(maximum_best_options), dict)
 

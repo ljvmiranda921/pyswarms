@@ -38,3 +38,12 @@ These functions can be used as benchmark tests for assessing the performance of 
 algorithm.
 
 * :mod:`pyswarms.utils.functions.single_obj` - single-objective test functions
+
+Search
+~~~~~~
+
+These search methods can be used to compare the relative performance of hyperparameter value combinations in reducing a specified objective function. 
+
+* :mod:`pyswarms.utils.search.grid_search` - exhaustive search of optimal performance on selected objective function over cartesian products of provided hyperparameter values
+
+* :mod:`pyswarms.utils.search.random_search` - search for optimal performance on selected objective function over combinations of randomly selected hyperparameter values within specified bounds for specified number of selection iterations
