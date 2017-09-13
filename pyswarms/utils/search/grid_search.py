@@ -45,9 +45,18 @@ Parameters
 1
 """
 
-import operator as op
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
+# Import modules
 import itertools
 import numpy as np
+import operator as op
+from past.builtins import xrange
+
+# Import from package
 from pyswarms.utils.search.base_search import SearchBase
 
 class GridSearch(SearchBase):

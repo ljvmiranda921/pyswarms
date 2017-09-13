@@ -15,7 +15,7 @@ import numpy as np
 # Import from package
 from pyswarms.utils.functions import single_obj as fx
 
-class TestSingleObj(unittest.TestCase):
+class Base(unittest.TestCase):
     """Base class for testing single-objective functions."""
 
     def setUp(self):
@@ -30,7 +30,7 @@ class TestSingleObj(unittest.TestCase):
         # Target output size
         self.target_size = (self.input.shape[0], )
 
-class InputBoundFail(TestSingleObj):
+class InstantiationBound(Base):
     """Tests exception throws when fed with erroneous input."""
 
     def test_rastrigin_bound_fail(self):
@@ -127,7 +127,7 @@ class InputBoundFail(TestSingleObj):
         with self.assertRaises(ValueError):
             fx.schaffer2_func(x_)
 
-class InputDimFail(TestSingleObj):
+class InstantiationDimension(Base):
     """Tests exception throws when fed with erroneous dimension."""
 
     def test_beale_dim_fail(self):
@@ -165,7 +165,7 @@ class InputDimFail(TestSingleObj):
         with self.assertRaises(IndexError):
             fx.schaffer2_func(self.bad_input)
 
-class ExpectedOutput(TestSingleObj):
+class MethodsReturnValue(Base):
     """Tests if a function outputs a minima if fed with expected argmin."""
 
     def test_sphere_output(self):
@@ -216,7 +216,7 @@ class ExpectedOutput(TestSingleObj):
         """Test schaffer2 function output."""
         assert np.isclose(fx.schaffer2_func(self.input), self.target).all()
 
-class OutputSize(TestSingleObj):
+class MethodsReturnSize(Base):
     """Tests if the output of the function is the same as no. of particles"""
 
     def test_sphere_output_size(self):

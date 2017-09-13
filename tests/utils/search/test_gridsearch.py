@@ -3,16 +3,22 @@
 
 """ Unit testing for pyswarms.grid_search"""
 
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
 # Import modules
 import unittest
 import numpy as np
 
+# Import from package
 from pyswarms.utils.search.grid_search import GridSearch
 from pyswarms.single import LocalBestPSO
 from pyswarms.single import GlobalBestPSO
 from pyswarms.utils.functions.single_obj import sphere_func
 
-class TestGridSearch(unittest.TestCase):
+class Base(unittest.TestCase):
 
     def setUp(self):
         """Sets up test fixtures"""
@@ -24,40 +30,44 @@ class TestGridSearch(unittest.TestCase):
                         'k' : [5, 10, 15],
                         'w' : [0.9, 0.7, 0.4],
                         'p' : [1]}
-        self.bounds = (np.array([-5,-5]), np.array([5,5]))
-        self.iters = 10
-        self.objective_func = sphere_func
-
-    def test_search(self):
-        """Tests if the search method returns expected values."""
-        g = GridSearch(self.optimizer, self.n_particles, self.dimensions,
-                       self.options, self.objective_func, self.iters,
-                       bounds=None, velocity_clamp=None)
-
-        minimum_best_score, minimum_best_options = g.search()
-        maximum_best_score, maximum_best_options = g.search(maximum=True)
-
-        # Test search method returns a dict
-        self.assertEqual(type(minimum_best_options), dict)
-        self.assertEqual(type(maximum_best_options), dict)
-
-        # The scores could be equal, but for our test case the
-        # max score is greater than the min.
-        self.assertGreater(maximum_best_score, minimum_best_score)
-
-    def test_generate_grid(self):
-        """Tests if generate_grid function returns expected value."""
-        options = {'c1': [1,2],
+        self.mini_options = {'c1': [1,2],
                    'c2': 6,
                    'k': 5,
                    'w': 0.9,
                    'p': 0}
-        g = GridSearch(self.optimizer, self.n_particles, self.dimensions,
-                       options, self.objective_func, self.iters,
+        self.bounds = (np.array([-5,-5]), np.array([5,5]))
+        self.iters = 10
+        self.objective_func = sphere_func
+        self.g = GridSearch(self.optimizer, self.n_particles, self.dimensions,
+                       self.options, self.objective_func, self.iters,
                        bounds=None, velocity_clamp=None)
-        self.assertEqual(g.generate_grid(),
+        self.g_mini = GridSearch(self.optimizer, self.n_particles, self.dimensions,
+                       self.mini_options, self.objective_func, self.iters,
+                       bounds=None, velocity_clamp=None)
+
+class MethodReturnType(Base):
+
+    def test_search_min_best_options_return_type(self):
+        """Tests if best options returns a dictionary"""
+        minimum_best_score, minimum_best_options = self.g.search()
+        self.assertIsInstance(minimum_best_options, dict)
+
+    def test_search_max_best_options_return_type(self):
+        """Tests if max best options returns a dictionary"""
+        maximum_best_score, maximum_best_options = self.g.search(maximum=True)
+        self.assertIsInstance(maximum_best_options, dict)
+
+
+class MethodReturnValues(Base):
+
+    def test_search_greater_values(self):
+        """Tests if max is greater than min in sample use-case"""
+        minimum_best_score, minimum_best_options = self.g.search()
+        maximum_best_score, maximum_best_options = self.g.search(maximum=True)
+        self.assertGreater(maximum_best_score, minimum_best_score)
+
+    def test_generate_grid(self):
+        """Tests if generate_grid function returns expected value."""
+        self.assertEqual(self.g_mini.generate_grid(),
                          [{'c1': 1, 'c2': 6, 'k': 5, 'w': 0.9, 'p': 0},
                           {'c1': 2, 'c2': 6, 'k': 5, 'w': 0.9, 'p': 0}])
-
-if __name__ == '__main__':
-    unittest.main()

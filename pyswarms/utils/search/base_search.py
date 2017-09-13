@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
-
 """
 Base class for hyperparameter optimization search functions. 
 """
 
-import operator as op
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
+# Import modules
 import itertools
 import numpy as np
+import operator as op
+from past.builtins import xrange
 
 class SearchBase(object):
     def __init__(self, optimizer, n_particles, dimensions, options,

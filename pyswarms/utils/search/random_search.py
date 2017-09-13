@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 Hyperparameter random search.
 
@@ -46,13 +45,22 @@ Parameters
 9.504769054771
 """
 
-import operator as op
+# Import from __future__
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import print_function
+
+# Import modules
+import random
 import itertools
 import numpy as np
-import random
+import operator as op
+from past.builtins import xrange
+
+# Import from package
 from pyswarms.utils.search.base_search import SearchBase
 
-from past.builtins import xrange
+
 
 class RandomSearch(SearchBase):
     """Search of optimal performance on selected objective function

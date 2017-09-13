@@ -123,28 +123,31 @@ class Instantiation(Base):
         with self.assertRaises(ValueError):
             optimizer = LocalBestPSO(5,2,velocity_clamp=velocity_clamp, options=self.options)
 
-class Methods(Base):
-    """Tests all aspects of the class methods
+class MethodsStateChange(Base):
+    """Tests all state changes that resulted from method calls"""
 
-    Tests include: wrong inputs of methods, wrong return types,
-    unexpected attribute setting, and etc.
-    """
-
-    def test_reset(self):
-        """Tests if the reset method resets the attributes required"""
+    def test_reset_best_cost_inf(self):
+        """Tests if best cost is set to infinity when reset() is called"""
         # Perform a simple optimization
         optimizer = LocalBestPSO(5,2, options=self.options)
         optimizer.optimize(sphere_func, 100, verbose=0)
-        # Reset the attributes
+
         optimizer.reset()
-        # Perform testing
         self.assertEqual(optimizer.best_cost, np.inf)
+
+    def test_reset_best_pos_none(self):
+        """Tests if best pos is set to NoneType when reset() is called"""
+        # Perform a simple optimization
+        optimizer = LocalBestPSO(5,2, options=self.options)
+        optimizer.optimize(sphere_func, 100, verbose=0)
+
+        optimizer.reset()
         self.assertIsNone(optimizer.best_pos)
 
-class Run(Base):
+class RunOptimize(Base):
     """Perform a single run of the algorithm to see if something breaks."""
 
-    def test_run(self):
+    def test_run_optimize(self):
         """Perform a single run."""
         try:
             self.optimizer.optimize(sphere_func, 1000, verbose=0)
