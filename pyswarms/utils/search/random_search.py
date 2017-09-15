@@ -79,7 +79,7 @@ class RandomSearch(SearchBase):
         """
 
         # Assign attributes
-        super().__init__(optimizer, n_particles, dimensions, options,
+        super(RandomSearch, self).__init__(optimizer, n_particles, dimensions, options,
                 objective_func, iters, bounds=bounds,
                 velocity_clamp=velocity_clamp)
         self.n_selection_iters = n_selection_iters

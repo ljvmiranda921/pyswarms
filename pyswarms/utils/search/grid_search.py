@@ -68,7 +68,7 @@ class GridSearch(SearchBase):
         """Initializes the paramsearch."""
 
         # Assign attributes
-        super().__init__(optimizer, n_particles, dimensions, options,
+        super(GridSearch, self).__init__(optimizer, n_particles, dimensions, options,
                 objective_func, iters, bounds=bounds,
                 velocity_clamp=velocity_clamp)
 
