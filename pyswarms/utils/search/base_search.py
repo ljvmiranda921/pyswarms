@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Base class for hyperparameter optimization search functions. 
-"""
+"""Base class for hyperparameter optimization search functions"""
 
 # Import from __future__
 from __future__ import with_statement

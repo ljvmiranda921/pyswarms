@@ -13,21 +13,6 @@ the optimal parameters for the objective function. The search method default
 returns the minimum objective function score and hyperparameters that yield
 the minimum score, yet maximum score can also be evaluated.
 
-Parameters
-----------
-* c1 : float
-    cognitive parameter
-* c2 : float
-    social parameter
-* w : float
-    inertia parameter
-* k : int
-    number of neighbors to be considered. Must be a
-    positive integer less than `n_particles`
-* p: int {1,2}
-    the Minkowski p-norm to use. 1 is the
-    sum-of-absolute values (or L1 distance) while 2 is
-    the Euclidean (or L2) distance.
 
 >>> options = {'c1': [1, 5],
                'c2': [6, 10],
@@ -59,8 +44,6 @@ from past.builtins import xrange
 
 # Import from package
 from pyswarms.utils.search.base_search import SearchBase
-
-
 
 class RandomSearch(SearchBase):
     """Search of optimal performance on selected objective function

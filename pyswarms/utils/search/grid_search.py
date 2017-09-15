@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 Hyperparameter grid search.
 
@@ -12,22 +11,6 @@ to produce a grid of all possible combinations. These combinations are then
 tested to produce a list of objective function scores. The search method
 default returns the minimum objective function score and hyperparameters that
 yield the minimum score, yet maximum score can also be evaluated.
-
-Parameters
-----------
-* c1 : float
-    cognitive parameter
-* c2 : float
-    social parameter
-* w : float
-    inertia parameter
-* k : int
-    number of neighbors to be considered. Must be a
-    positive integer less than `n_particles`
-* p: int {1,2}
-    the Minkowski p-norm to use. 1 is the
-    sum-of-absolute values (or L1 distance) while 2 is
-    the Euclidean (or L2) distance.
 
 >>> options = {'c1': [1, 2, 3],
                'c2': [1, 2, 3],

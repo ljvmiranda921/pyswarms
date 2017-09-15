@@ -40,3 +40,4 @@ module.
 .. toctree::
 
    pyswarms.utils.functions
+   pyswarms.utils.search
