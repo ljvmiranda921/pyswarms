@@ -13,6 +13,20 @@ import operator as op
 from past.builtins import xrange
 
 class SearchBase(object):
+
+    def assertions(self):
+        """Assertion method to check :code:`optimizer` input.
+
+        Raises
+        ------
+        TypeError
+            When :code:`optimizer` does not have an `'optimize'` attribute.
+        """
+        # Check type of optimizer object
+        if not hasattr(self.optimizer, 'optimize'):
+            raise TypeError('Parameter `optimizer` must have an '
+                            '`\'optimize\'` attribute.')
+
     def __init__(self, optimizer, n_particles, dimensions, options,
                  objective_func, iters,
                  bounds=None, velocity_clamp=None):
@@ -65,6 +79,8 @@ class SearchBase(object):
         self.vclamp = velocity_clamp
         self.objective_func = objective_func
         self.iters = iters
+        # Invoke assertions
+        self.assertions()
 
     def generate_score(self, options):
         """Generates score for optimizer's performance on objective function.
@@ -73,7 +89,7 @@ class SearchBase(object):
         ----------
 
         options: dict
-            a dict of 5 hyperparameter values ('c1', 'c2', 'w', 'k', 'p' 
+            a dict with the following keys: {'c1', 'c2', 'w', 'k', 'p'}
         """
 
         #Intialize optimizer
@@ -91,9 +107,9 @@ class SearchBase(object):
         ----------
 
         maximum: bool
-            a bool defaulting to False, returning the minimum value for the 
+            a bool defaulting to False, returning the minimum value for the
             objective function. If set to True, will return the maximum value
-            for the objective function. 
+            for the objective function.
         """
 
         #Assign parameter keys
