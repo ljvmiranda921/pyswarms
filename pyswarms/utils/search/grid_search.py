@@ -54,8 +54,6 @@ class GridSearch(SearchBase):
         super(GridSearch, self).__init__(optimizer, n_particles, dimensions, options,
                 objective_func, iters, bounds=bounds,
                 velocity_clamp=velocity_clamp)
-        # invoke assertions
-        self.assertions()
 
     def generate_grid(self):
         """Generates the grid of all hyperparameter value combinations."""

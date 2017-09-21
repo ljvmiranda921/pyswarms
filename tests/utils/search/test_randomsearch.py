@@ -79,4 +79,3 @@ class MethodReturnValues(Base):
             for j in values:
                 self.assertGreaterEqual(j, self.options[i][0])
                 self.assertLessEqual(j, self.options[i][1])
-
