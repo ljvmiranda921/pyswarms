@@ -21,7 +21,7 @@ various plotting methods can now be done:
 
     # Set up optimizer
     options = {'c1':0.5, 'c2':0.3, 'w':0.9}
-    optimizer = ps.single.GlobalBestPSO(n_particles=10, dimension=2, options=options)
+    optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options)
 
     # Pass optimizer  inside the environment. You also need to pass some
     # of the required arguments on how your optimizer will be evaluated.
@@ -55,6 +55,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 # Import modules
+import logging
 import numpy as np
 import matplotlib.pyplot as plt
 from past.builtins import xrange
@@ -71,9 +72,16 @@ class PlotEnvironment(object):
         if not callable(self.objective_func):
             raise TypeError('Must pass a callable')
 
-        # Check if some attributes exist in the optimizer
-        if not (hasattr(self.optimizer,'get_cost_history') & hasattr(self.optimizer,'get_pos_history') & hasattr(self.optimizer,'get_velocity_history')):
-            raise AttributeError('Missing properties in optimizer, check pyswarms.base module')
+        # Check if getters exist in the optimizer
+        if not (hasattr(self.optimizer,'get_cost_history') 
+                & hasattr(self.optimizer,'get_pos_history') 
+                & hasattr(self.optimizer,'get_velocity_history')):
+            raise AttributeError('Missing getters in optimizer, check pyswarms.base module')
+
+        # Check if important methods exist in the optimizer
+        if not (hasattr(self.optimizer, 'optimize')
+                & hasattr(self.optimizer, 'reset')):
+            raise AttributeError('Missing methods in optimizer, check pyswarms.base module')
 
     def __init__(self, optimizer, objective_func, iters):
         """Runs the optimizer against an objective function for a number
@@ -97,10 +105,13 @@ class PlotEnvironment(object):
             The number of iterations to run the optimizer. This argument
             is passed to the :code:`optimize` method of the :code:`optimizer`.
         """
+        self.logger = logging.getLogger(__name__)
         # Store the arguments
         self.optimizer = optimizer
         self.objective_func = objective_func
         self.iters = iters
+        # Check assertions
+        self.assertions()
         # Run the optimizer
         self.optimizer.reset()
         self.status = self.optimizer.optimize(objective_func,iters,1,0)
@@ -156,7 +167,7 @@ class PlotEnvironment(object):
         ax.plot(np.arange(self.iters), mean_pbest_history, 'k--', lw=2, label='Avg. personal best cost')
         ax.plot(np.arange(self.iters), mean_neighbor_history, 'k:', lw=2, label='Avg. neighborhood cost')
 
-        # Customize plot depending on customizations
+        # Customize plot depending on parameters
         ax.set_title(title, fontsize=title_fontsize)
         ax.legend(fontsize=text_fontsize)
         ax.set_xlabel('Iterations', fontsize=text_fontsize)
