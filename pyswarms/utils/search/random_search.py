@@ -50,21 +50,6 @@ class RandomSearch(SearchBase):
     over combinations of randomly selected hyperparameter values
     within specified bounds for specified number of selection iterations."""
 
-    def assertions(self):
-        """Assertion method to check :code:`n_selection_iters` input.
-
-        Raises
-        ------
-        TypeError
-            When :code:`n_selection_iters` is not of type int
-        """
-        super(RandomSearch, self).assertions()
-
-        # Check type of n_selection_iters parameter
-        if not isinstance(self.n_selection_iters, int):
-            raise TypeError('Parameter `n_selection_iters` must be of '
-                            'type int')
-
     def __init__(self, optimizer, n_particles, dimensions, options,
                  objective_func, iters, n_selection_iters,
                  bounds=None, velocity_clamp=None):
@@ -76,14 +61,11 @@ class RandomSearch(SearchBase):
             number of iterations of random parameter selection
         """
 
-        # Assign n_selection_iters as attribute
-        self.n_selection_iters = n_selection_iters
         # Assign attributes
         super(RandomSearch, self).__init__(optimizer, n_particles, dimensions, options,
                 objective_func, iters, bounds=bounds,
                 velocity_clamp=velocity_clamp)
-        # Invoke assertions
-        self.assertions()
+        self.n_selection_iters = n_selection_iters
 
     def generate_grid(self):
         """Generates the grid of hyperparameter value combinations."""
