@@ -149,7 +149,7 @@ class PlotEnvironment(object):
 
         Returns
         -------
-        :class:`matplotlib.axes.Axes`
+        :class:`matplotlib.axes._subplots.AxesSubplot`
             The axes on which the plot was drawn.
         """
         # Get cost history from the optimizer method
@@ -216,7 +216,7 @@ class PlotEnvironment(object):
 
         Returns
         -------
-        :class:`matplotlib.animation.Animation`
+        :class:`matplotlib.animation.FuncAnimation`
             The drawn animation that can be saved to mp4 or other
             third-party tools
         """
@@ -299,7 +299,7 @@ class PlotEnvironment(object):
 
         Returns
         -------
-        :class:`matplotlib.animation.Animation`
+        :class:`matplotlib.animation.FuncAnimation`
             The drawn animation that can be saved to mp4 or other
             third-party tools
         """

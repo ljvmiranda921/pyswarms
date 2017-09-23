@@ -1,9 +1,19 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Import from __future__
 from __future__ import with_statement
 from __future__ import absolute_import
 from __future__ import print_function
+
+# Import modules
 import unittest
 import numpy as np
 from mock import Mock
+from matplotlib.axes._subplots import SubplotBase
+from matplotlib.animation import FuncAnimation
+
+# Import from package
 from pyswarms.utils.environments import PlotEnvironment
 from pyswarms.single import GlobalBestPSO
 from pyswarms.utils.functions.single_obj import sphere_func
@@ -12,7 +22,7 @@ class Base(unittest.TestCase):
 
     def setUp(self):
         """Sets up test fixtures"""
-        self.optimizer = GlobalBestPSO(n_particles=10,dimensions=2,
+        self.optimizer = GlobalBestPSO(n_particles=10,dimensions=3,
             options={'c1':0.5,'c2':0.3,'w':0.9})
         self.class_methods = [
             'get_cost_history',
@@ -20,7 +30,8 @@ class Base(unittest.TestCase):
             'get_velocity_history',
             'optimize',
             'reset']
-        self.get_specs = lambda idx: [x for i,x in enumerate(self.class_methods) if i!=idx] 
+        self.get_specs = lambda idx: [x for i,x in enumerate(self.class_methods) if i!=idx]
+        self.plt_env = PlotEnvironment(self.optimizer, sphere_func, 1000)
 
 class Instantiation(Base):
 
@@ -62,3 +73,19 @@ class Instantiation(Base):
         m = Mock(spec=self.get_specs(4))
         with self.assertRaises(AttributeError):
             plt_env = PlotEnvironment(m, sphere_func, 100)
+
+class MethodReturnTypes(Base):
+
+    def test_plot_cost_return_type(self):
+        """Test if plot_cost() returns a SubplotBase instance"""
+        # It turns out that AxesSubplot is just a factory-created class,
+        # that's why checking on it explicitly is impossible.
+        self.assertIsInstance(self.plt_env.plot_cost(), SubplotBase)
+
+    def test_plot2D_return_type(self):
+        """Test if plot_particles2D() returns a FuncAnimation instance"""
+        self.assertIsInstance(self.plt_env.plot_particles2D(), FuncAnimation)
+
+    def test_plot3D_return_type(self):
+        """Test if plot_particles3D() returns a FuncAnimation instance"""
+        self.assertIsInstance(self.plt_env.plot_particles3D(), FuncAnimation)
