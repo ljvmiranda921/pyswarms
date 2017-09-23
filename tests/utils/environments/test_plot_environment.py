@@ -7,11 +7,17 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 # Import modules
+import os
 import unittest
 import numpy as np
 from mock import Mock
+import matplotlib as mpl
 from matplotlib.axes._subplots import SubplotBase
 from matplotlib.animation import FuncAnimation
+
+# Fix for display
+if os.environ.get('DISPLAY','') == '':
+    mpl.use('Agg')
 
 # Import from package
 from pyswarms.utils.environments import PlotEnvironment
