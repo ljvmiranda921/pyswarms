@@ -22,7 +22,9 @@ deploy:
     repo: ljvmiranda921/pyswarms
     tags: true
 install: 
-  - "pip install -U tox-travis"
+  - sudo apt-get update
+  - sudo apt-get install libav-tools
+  - pip install -U tox-travis
 language: python
 python:
   - 3.6
