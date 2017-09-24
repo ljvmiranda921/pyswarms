@@ -33,6 +33,10 @@ Welcome to PySwarms's documentation!
         :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
         :alt: License
 
+.. image:: https://zenodo.org/badge/97002861.svg
+        :target: https://zenodo.org/badge/latestdoi/97002861
+        :alt: Citation
+
 PySwarms is a an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
 * Free software: MIT license

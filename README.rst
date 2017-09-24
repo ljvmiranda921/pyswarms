@@ -32,6 +32,10 @@
         :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
         :alt: License
 
+.. image:: https://zenodo.org/badge/97002861.svg
+        :target: https://zenodo.org/badge/latestdoi/97002861
+        :alt: Citation
+
 PySwarms is a an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
 * Free software: MIT license
@@ -118,6 +122,20 @@ The package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypacka
 .. _pyswarm: https://github.com/tisimst/pyswarm
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+Cite us
+--------
+Are you using PySwarms in your project or research? Please cite us!
+
+.. code-block:: bibtex
+
+    @article{PySwarms2017,
+        author = "Lester James V. Miranda",
+        year = 2017,
+        title = "PySwarms, a research-toolkit for Particle Swarm Optimization in Python",
+        doi = {10.5281/zenodo.986300},
+        url = {https://zenodo.org/badge/latestdoi/97002861}
+    }
 
 Others
 ------
