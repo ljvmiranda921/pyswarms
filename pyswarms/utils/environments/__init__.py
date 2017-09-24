@@ -5,11 +5,7 @@ better parameters
 """
 
 from .plot_environment import PlotEnvironment
-#from .search_environment import GridSearch, RandomSearch
 
 __all__ = [
     "PlotEnvironment"
-#    "GridSearch",
- #   "RandomSearch"
     ]
-

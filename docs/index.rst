@@ -9,7 +9,7 @@ Welcome to PySwarms's documentation!
         :target: https://badge.fury.io/py/pyswarms
         :alt: PyPI Version
 
-.. image:: https://img.shields.io/travis/ljvmiranda921/pyswarms.svg
+.. image:: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=master
         :target: https://travis-ci.org/ljvmiranda921/pyswarms
         :alt: Build Status
 
