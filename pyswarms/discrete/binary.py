@@ -171,9 +171,9 @@ class BinaryPSO(DiscreteSwarmBase):
             # Obtain the indices of the best position for each
             # neighbour-space, and get the local best cost and
             # local best positions from it.
-            nmin_idx = self._get_neighbors(current_cost)
-            self.best_cost = current_cost[nmin_idx]
-            self.best_pos  = self.pos[nmin_idx]
+            nmin_idx = self._get_neighbors(pbest_cost)
+            self.best_cost = pbest_cost[nmin_idx]
+            self.best_pos  = self.personal_best_pos[nmin_idx]
 
             # Print to console
             if i % print_step == 0:
@@ -202,15 +202,15 @@ class BinaryPSO(DiscreteSwarmBase):
         end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
         return (final_best_cost, final_best_pos)
 
-    def _get_neighbors(self, current_cost):
+    def _get_neighbors(self, pbest_cost):
         """Helper function to obtain the best position found in the
         neighborhood. This uses the cKDTree method from :code:`scipy`
         to obtain the nearest neighbours
         
         Parameters
         ----------
-        current_cost : numpy.ndarray of size (n_particles, )
-            the cost incurred at the current position. Will be used for
+        pbest_cost : numpy.ndarray of size (n_particles, )
+            the cost incurred at the historically best position. Will be used for
             mapping the obtained indices to its actual cost.
 
         Returns
@@ -228,9 +228,9 @@ class BinaryPSO(DiscreteSwarmBase):
         # independently of each other. 
         if self.k == 1:
             # The minimum index is itself, no mapping needed.
-            best_neighbor = current_cost[idx][:,np.newaxis].argmin(axis=1)
+            best_neighbor = pbest_cost[idx][:,np.newaxis].argmin(axis=1)
         else:
-            idx_min = current_cost[idx].argmin(axis=1)
+            idx_min = pbest_cost[idx].argmin(axis=1)
             best_neighbor = idx[np.arange(len(idx)), idx_min]
 
         return best_neighbor
