@@ -38,3 +38,9 @@ History
 * Added hyperparameter search tools: GridSearch and RandomSearch
 * Updated structure of Base classes for higher extensibility
 * More robust tests for PlotEnvironment
+
+0.1.7 (2017-09-25)
+~~~~~~~~~~~~~~~~~~
+
+* Fixed patch on :code:`local_best.py`  and :code:`binary.py`
+* Git now ignores IPython notebook checkpoints
