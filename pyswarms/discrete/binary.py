@@ -172,19 +172,23 @@ class BinaryPSO(DiscreteSwarmBase):
             # neighbour-space, and get the local best cost and
             # local best positions from it.
             nmin_idx = self._get_neighbors(current_cost)
-            self.best_cost = current_cost[nmin_idx]
-            self.best_pos  = self.pos[nmin_idx]
+            self.neighbor_best_cost = current_cost[nmin_idx]
+            self.neighbor_best_pos  = self.pos[nmin_idx]
+
+            # The best_cost is the personal_best stored in memory
+            self.best_cost = np.min(pbest_cost)
+            self.best_pos = self.personal_best_pos[np.argmin(pbest_cost)]
 
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                    (i+1, iters, np.min(self.best_cost)), verbose, 2, logger=self.logger)
+                    (i+1, iters, self.best_cost), verbose,2, logger=self.logger)
 
             # Save to history
             hist = self.ToHistory(
-                best_cost=np.min(self.best_cost),
+                best_cost=self.best_cost,
                 mean_pbest_cost=np.mean(pbest_cost),
-                mean_neighbor_cost=np.mean(self.best_cost),
+                mean_neighbor_cost=np.mean(self.neighbor_best_cost),
                 position=self.pos,
                 velocity=self.velocity
             )
@@ -195,9 +199,8 @@ class BinaryPSO(DiscreteSwarmBase):
             self._update_position()
 
         # Obtain the final best_cost and the final best_position
-        final_best_cost_arg = np.argmin(self.best_cost)
-        final_best_cost = np.min(self.best_cost)
-        final_best_pos = self.best_pos[final_best_cost_arg]
+        final_best_cost = self.best_cost.copy()
+        final_best_pos = self.best_pos.copy()
 
         end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
         return (final_best_cost, final_best_pos)
