@@ -113,11 +113,11 @@ built-in sphere function, :code:`pyswarms.utils.functions.sphere_func()`, and th
 
 .. code-block::
 
-    2017-10-03 10:12:33,859 - pyswarms.single.global_best - INFO - Iteration 1/100, cost: 0.131244226714
-    2017-10-03 10:12:33,878 - pyswarms.single.global_best - INFO - Iteration 26/100, cost: 1.60297958653e-05
-    2017-10-03 10:12:33,893 - pyswarms.single.global_best - INFO - Iteration 51/100, cost: 1.60297958653e-05
-    2017-10-03 10:12:33,906 - pyswarms.single.global_best - INFO - Iteration 76/100, cost: 2.12638727702e-06
-    2017-10-03 10:12:33,921 - pyswarms.single.global_best - INFO - ================================
+    >>> 2017-10-03 10:12:33,859 - pyswarms.single.global_best - INFO - Iteration 1/100, cost: 0.131244226714
+    >>> 2017-10-03 10:12:33,878 - pyswarms.single.global_best - INFO - Iteration 26/100, cost: 1.60297958653e-05
+    >>> 2017-10-03 10:12:33,893 - pyswarms.single.global_best - INFO - Iteration 51/100, cost: 1.60297958653e-05
+    >>> 2017-10-03 10:12:33,906 - pyswarms.single.global_best - INFO - Iteration 76/100, cost: 2.12638727702e-06
+    >>> 2017-10-03 10:12:33,921 - pyswarms.single.global_best - INFO - ================================
     Optimization finished!
     Final cost: 0.0000
     Best value: [-0.0003521098028145481, -0.00045459382339127453]
