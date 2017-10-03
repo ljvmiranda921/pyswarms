@@ -71,7 +71,7 @@ class MethodReturnValues(Base):
                          [{'c1': 1, 'c2': 6, 'k': 5, 'w': 0.9, 'p': 0},
                           {'c1': 2, 'c2': 6, 'k': 5, 'w': 0.9, 'p': 0}])
 
-class Instantiate(Base):
+class Instantiation(Base):
 
     def test_optimizer_type_fail(self):
         """Tests that :code:`optimizer` of type :code:`string` raises
