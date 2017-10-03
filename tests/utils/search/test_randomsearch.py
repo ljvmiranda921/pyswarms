@@ -80,3 +80,24 @@ class MethodReturnValues(Base):
                 self.assertGreaterEqual(j, self.options[i][0])
                 self.assertLessEqual(j, self.options[i][1])
 
+class Instantiation(Base):
+
+    def test_optimizer_type_fail(self):
+        """Test that :code:`optimizer` of type :code:`string` raises
+        :code:`TypeError`"""
+        bad_optimizer = 'LocalBestPSO'  # a string instead of a class object
+        with self.assertRaises(TypeError):
+            g = RandomSearch(bad_optimizer, self.n_particles, self.dimensions,
+                             self.options, self.objective_func, self.iters,
+                             self.n_selection_iters, bounds=None,
+                             velocity_clamp=None)
+
+    def test_n_selection_iters_type_fail(self):
+        """Test that :code:`n_selection_iters` of type :code:`float` raises
+        :code:`TypeError`"""
+        bad_n_selection_iters = 100.0  # should be an int
+        with self.assertRaises(TypeError):
+            g = RandomSearch(self.optimizer, self.n_particles, self.dimensions,
+                             self.options, self.objective_func, self.iters,
+                             bad_n_selection_iters, self.bounds,
+                             velocity_clamp=None)
