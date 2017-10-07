@@ -110,6 +110,15 @@ class DiscreteSwarmBase(object):
             a trigger to generate a binary matrix for the swarm's
             initial positions. When passed with a :code:`False` value,
             random integers from 0 to :code:`dimensions` are generated.
+        options : dict with keys :code:`{'c1', 'c2', 'w'}`
+            a dictionary containing the parameters for the specific 
+            optimization technique
+                * c1 : float
+                    cognitive parameter
+                * c2 : float
+                    social parameter
+                * w : float
+                    inertia parameter
         velocity_clamp : tuple (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It 
