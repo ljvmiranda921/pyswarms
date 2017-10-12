@@ -7,7 +7,7 @@ mock==2.0.0
 tox==2.9.1
 coverage==4.4.1
 Sphinx==1.6.4
-cryptography==2.0.3
+cryptography==2.1.1
 PyYAML==3.12
 future==0.16.0
 scipy>=0.17.0
