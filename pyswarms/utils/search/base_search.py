@@ -7,10 +7,8 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 # Import modules
-import itertools
-import numpy as np
 import operator as op
-from past.builtins import xrange
+
 
 class SearchBase(object):
 
@@ -92,11 +90,11 @@ class SearchBase(object):
             a dict with the following keys: {'c1', 'c2', 'w', 'k', 'p'}
         """
 
-        #Intialize optimizer
+        # Intialize optimizer
         f = self.optimizer(self.n_particles, self.dims, options,
-                        self.bounds, self.vclamp)
+                           self.bounds, self.vclamp)
 
-        #Return score
+        # Return score
         return f.optimize(self.objective_func, self.iters)[0]
 
     def search(self, maximum=False):
@@ -112,23 +110,20 @@ class SearchBase(object):
             for the objective function.
         """
 
-        #Assign parameter keys
-        params = self.options.keys()
-
-        #Generate the grid of all hyperparameter value combinations
+        # Generate the grid of all hyperparameter value combinations
         grid = self.generate_grid()
 
-        #Calculate scores for all hyperparameter combinations
+        # Calculate scores for all hyperparameter combinations
         scores = [self.generate_score(i) for i in grid]
 
-        #Default behavior
+        # Default behavior
         idx, self.best_score = min(enumerate(scores), key=op.itemgetter(1))
 
-        #Catches the maximum bool flag
+        # Catches the maximum bool flag
         if maximum:
-            idx, self.best_score = max(enumerate(scores), key=op.itemgetter(1))
+            idx, self.best_score = max(enumerate(scores),
+                                       key=op.itemgetter(1))
 
-        #Return optimum hyperparameter value property from grid using index
+        # Return optimum hyperparameter value property from grid using index
         self.best_options = op.itemgetter(idx)(grid)
         return self.best_score, self.best_options
-
