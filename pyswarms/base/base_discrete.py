@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 r"""
-Base class for single-objective discrete Particle Swarm Optimization 
+Base class for single-objective discrete Particle Swarm Optimization
 implementations.
 
-All methods here are abstract and raises a :code:`NotImplementedError` 
+All methods here are abstract and raises a :code:`NotImplementedError`
 when not used. When defining your own swarm implementation,
 create another class,
 
@@ -35,11 +35,12 @@ import numpy as np
 import logging.config
 from collections import namedtuple
 
+
 class DiscreteSwarmBase(object):
 
     def assertions(self):
         """Assertion method to check various inputs.
-        
+
         Raises
         ------
         TypeError
@@ -58,16 +59,18 @@ class DiscreteSwarmBase(object):
             if not isinstance(self.velocity_clamp, tuple):
                 raise TypeError('Parameter `velocity_clamp` must be a tuple')
             if not len(self.velocity_clamp) == 2:
-                raise IndexError('Parameter `velocity_clamp` must be of size 2')
+                raise IndexError('Parameter `velocity_clamp` must be of '
+                                 'size 2')
             if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-                raise ValueError('Make sure that velocity_clamp is in the form (v_min, v_max)')
+                raise ValueError('Make sure that velocity_clamp is in the '
+                                 'form (v_min, v_max)')
 
         # Required keys in options argument
-        if not all (key in self.options for key in ('c1', 'c2', 'w')):
+        if not all(key in self.options for key in ('c1', 'c2', 'w')):
             raise KeyError('Missing either c1, c2, or w in options')
 
-    def setup_logging(self, default_path='./config/logging.yaml', 
-            default_level=logging.INFO, env_key='LOG_CFG'):
+    def setup_logging(self, default_path='./config/logging.yaml',
+                      default_level=logging.INFO, env_key='LOG_CFG'):
         """Setup logging configuration
 
         Parameters
@@ -90,10 +93,9 @@ class DiscreteSwarmBase(object):
         else:
             logging.basicConfig(level=default_level)
 
-
-    def __init__(self, n_particles, dimensions, binary, options, 
-        velocity_clamp=None):
-        """Initializes the swarm. 
+    def __init__(self, n_particles, dimensions, binary, options,
+                 velocity_clamp=None):
+        """Initializes the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the
         number of particles needed and the number of dimensions.
@@ -112,10 +114,10 @@ class DiscreteSwarmBase(object):
             random integers from 0 to :code:`dimensions` are generated.
         velocity_clamp : tuple (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It 
-            sets the limits for velocity clamping. 
+            and the second entry is the maximum velocity. It
+            sets the limits for velocity clamping.
         options: dict
-            a dictionary containing the parameters for a specific 
+            a dictionary containing the parameters for a specific
             optimization technique
         """
         self.setup_logging()
@@ -127,8 +129,10 @@ class DiscreteSwarmBase(object):
         self.swarm_size = (n_particles, dimensions)
         self.options = options
         # Initialize named tuple for populating the history list
-        self.ToHistory = namedtuple('ToHistory', ['best_cost', 'mean_pbest_cost',
-                            'mean_neighbor_cost', 'position', 'velocity'])
+        self.ToHistory = namedtuple('ToHistory',
+                                    ['best_cost', 'mean_pbest_cost',
+                                     'mean_neighbor_cost', 'position',
+                                     'velocity'])
         # Invoke assertions
         self.assertions()
 
@@ -140,7 +144,7 @@ class DiscreteSwarmBase(object):
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
         :code:`neighborhood_best` is expected to have a shape of
-        :code:`(iters,)`,on the other hand, the :code:`pos_history` 
+        :code:`(iters,)`,on the other hand, the :code:`pos_history`
         and :code:`velocity_history` are expected to have a shape of
         :code:`(iters, n_particles, dimensions)`
 
@@ -180,19 +184,19 @@ class DiscreteSwarmBase(object):
         """Get velocity history"""
         return np.array(self.velocity_history)
 
-
     def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
 
-        Performs the optimization to evaluate the objective 
-        function :code:`objective_func` for a number of iterations :code:`iter.`
+        Performs the optimization to evaluate the objective
+        function :code:`objective_func` for a number of iterations
+                 :code:`iter.`
 
         Parameters
         ----------
         objective_func : function
             objective function to be evaluated
-        iters : int 
-            number of iterations 
+        iters : int
+            number of iterations
         print_step : int (the default is 1)
             amount of steps for printing into console.
         verbose : int (the default is 1)
@@ -227,7 +231,7 @@ class DiscreteSwarmBase(object):
 
     def reset(self):
         """Resets the attributes of the optimizer.
-        
+
         All variables/atributes that will be re-initialized when this
         method is defined here. Note that this method
         can be called twice: (1) during initialization, and (2) when
@@ -253,18 +257,20 @@ class DiscreteSwarmBase(object):
         self.mean_neighbor_history = []
         self.pos_history = []
         self.velocity_history = []
-        
+
         # Generate initial position
-        self.pos = np.random.random_sample(size=self.swarm_size).argsort(axis=1)
+        self.pos = np.random.random_sample(size=self.swarm_size).\
+            argsort(axis=1)
         if self.binary:
-            self.pos = np.random.randint(2,size=self.swarm_size)
+            self.pos = np.random.randint(2, size=self.swarm_size)
 
         # Initialize velocity vectors
         if self.velocity_clamp is not None:
-            min_velocity, max_velocity = self.velocity_clamp[0], self.velocity_clamp[1]
-            self.velocity = ((max_velocity - min_velocity) 
-                            * np.random.random_sample(size=self.swarm_size) 
-                            + min_velocity)
+            min_velocity, max_velocity = self.velocity_clamp[0],\
+                                         self.velocity_clamp[1]
+            self.velocity = ((max_velocity - min_velocity)
+                             * np.random.random_sample(size=self.swarm_size)
+                             + min_velocity)
         else:
             self.velocity = np.random.random_sample(size=self.swarm_size)
 

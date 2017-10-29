@@ -35,39 +35,38 @@ from __future__ import print_function
 
 # Import modules
 import itertools
-import numpy as np
-import operator as op
-from past.builtins import xrange
 
 # Import from package
 from pyswarms.utils.search.base_search import SearchBase
+
 
 class GridSearch(SearchBase):
     """Exhaustive search of optimal performance on selected objective function
     over all combinations of specified hyperparameter values."""
 
     def __init__(self, optimizer, n_particles, dimensions, options,
-                 objective_func, iters,bounds=None, velocity_clamp=None):
+                 objective_func, iters, bounds=None, velocity_clamp=None):
         """Initializes the paramsearch."""
 
         # Assign attributes
-        super(GridSearch, self).__init__(optimizer, n_particles, dimensions, options,
-                objective_func, iters, bounds=bounds,
-                velocity_clamp=velocity_clamp)
+        super(GridSearch, self).__init__(optimizer, n_particles, dimensions,
+                                         options, objective_func, iters,
+                                         bounds=bounds,
+                                         velocity_clamp=velocity_clamp)
         # invoke assertions
         self.assertions()
 
     def generate_grid(self):
         """Generates the grid of all hyperparameter value combinations."""
 
-        #Extract keys and values from options dictionary
+        # Extract keys and values from options dictionary
         params = self.options.keys()
-        items = [x if type(x) == list \
+        items = [x if type(x) == list
                  else [x] for x in list(zip(*self.options.items()))[1]]
 
-        #Create list of cartesian products of hyperparameter values from options
+        # Create list of cartesian products of hyperparameter values
+        # from options
         list_of_products = list(itertools.product(*items))
 
-        #Return list of dicts for all hyperparameter value combinations
+        # Return list of dicts for all hyperparameter value combinations
         return [dict(zip(*[params, list(x)])) for x in list_of_products]
-

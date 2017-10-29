@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 # Import modules
-import logging
+
 
 def cli_print(message, verbosity, threshold, logger):
     """Helper function to print console output
@@ -30,6 +30,7 @@ def cli_print(message, verbosity, threshold, logger):
     else:
         pass
 
+
 def end_report(cost, pos, verbosity, logger):
     """Helper function to print a simple report at the end of the
     run. This always has a threshold of 1.
@@ -45,7 +46,7 @@ def end_report(cost, pos, verbosity, logger):
     logger : logging.getLogger
         logger instance
     """
-    
+
     # Cuts the length of the best position if it's too long
     if len(list(pos)) > 3:
         out = ('[ ' + 3 * '{:3f} ' + '...]').format(*list(pos))
