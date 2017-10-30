@@ -16,14 +16,6 @@
         :target: https://pyswarms.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://landscape.io/github/ljvmiranda921/pyswarms/master/landscape.svg?style=flat
-        :target: https://landscape.io/github/ljvmiranda921/pyswarms/master
-        :alt: Code Health
-
-.. image:: https://pyup.io/repos/github/ljvmiranda921/pyswarms/shield.svg
-        :target: https://pyup.io/repos/github/ljvmiranda921/pyswarms/
-        :alt: Updates
-
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg   
         :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
         :alt: License
@@ -32,11 +24,14 @@
         :target: https://zenodo.org/badge/latestdoi/97002861
         :alt: Citation
 
+.. image:: https://badges.gitter.im/gitterHQ/gitter.png
+        :target: https://gitter.im/pyswarms/Issues
+        :alt: Gitter Chat
+
 PySwarms is an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
 * **Free software:** MIT license
 * **Documentation:** https://pyswarms.readthedocs.io.
-
 
 Features
 --------
