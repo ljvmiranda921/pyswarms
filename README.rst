@@ -24,7 +24,7 @@
         :target: https://zenodo.org/badge/latestdoi/97002861
         :alt: Citation
 
-.. image:: https://badges.gitter.im/gitterHQ/gitter.png
+.. image:: https://badges.gitter.im/Join%20Chat.svg
         :target: https://gitter.im/pyswarms/Issues
         :alt: Gitter Chat
 
