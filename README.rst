@@ -30,6 +30,8 @@
 
 PySwarms is an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
+It is intended for swarm intelligence researchers, practitioners, and students who would like a high-level interface of implementing PSO in their problems. This means that instead of writing an optimizer from scratch, one just needs to supply the necessary PSO parameters, and let PySwarms do the rest of the procedure.
+
 * **Free software:** MIT license
 * **Documentation:** https://pyswarms.readthedocs.io.
 
