@@ -30,10 +30,11 @@
 
 PySwarms is an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
-It is intended for swarm intelligence researchers, practitioners, and students who would like a high-level interface of implementing PSO in their problems. This means that instead of writing an optimizer from scratch, one just needs to supply the necessary PSO parameters, and let PySwarms do the rest of the procedure.
+It is intended for swarm intelligence researchers, practitioners, and students who would like a high-level declarative interface of implementing PSO in their problems. PySwarms both allows basic optimization with PSO and interaction with swarm optimizations. Interaction is enabled due to object primitives provided by the package for optimization. This makes PySwarms useful for researchers or students.
 
 * **Free software:** MIT license
 * **Documentation:** https://pyswarms.readthedocs.io.
+* **Python versions:** 2.7, 3.4, 3.5 and above
 
 Features
 --------
@@ -262,10 +263,10 @@ The package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypacka
 
 This is currently maintained by Lester James V. Miranda with other helpful contributors (v.0.1.7):
 
-* Carl-K
-* Siobhán Cronin
-* Andrew Jarcho
-* Charalampos Papadimitriou 
+* Carl-K (`@Carl-K <https://github.com/Carl-K>`_)
+* Siobhán Cronin (`@SioKCronin <https://github.com/SioKCronin>`_)
+* Andrew Jarcho (`@jazcap53 <https://github.com/jazcap53>`_)
+* Charalampos Papadimitriou (`@CPapadim <https://github.com/CPapadim>`_)
 
 .. _pyswarm: https://github.com/tisimst/pyswarm
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
