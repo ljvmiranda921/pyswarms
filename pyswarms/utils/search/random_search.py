@@ -36,14 +36,12 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 # Import modules
-import random
-import itertools
 import numpy as np
-import operator as op
 from past.builtins import xrange
 
 # Import from package
 from pyswarms.utils.search.base_search import SearchBase
+
 
 class RandomSearch(SearchBase):
     """Search of optimal performance on selected objective function
@@ -79,9 +77,10 @@ class RandomSearch(SearchBase):
         # Assign n_selection_iters as attribute
         self.n_selection_iters = n_selection_iters
         # Assign attributes
-        super(RandomSearch, self).__init__(optimizer, n_particles, dimensions, options,
-                objective_func, iters, bounds=bounds,
-                velocity_clamp=velocity_clamp)
+        super(RandomSearch, self).__init__(optimizer, n_particles, dimensions,
+                                           options, objective_func, iters,
+                                           bounds=bounds,
+                                           velocity_clamp=velocity_clamp)
         # Invoke assertions
         self.assertions()
 
@@ -91,11 +90,11 @@ class RandomSearch(SearchBase):
         options = dict(self.options)
         params = {}
 
-        #Remove 'p' to hold as a constant in the paramater combinations
+        # Remove 'p' to hold as a constant in the paramater combinations
         p = options.pop('p')
         params['p'] = [p for _ in xrange(self.n_selection_iters)]
 
-        #Assign generators based on parameter type
+        # Assign generators based on parameter type
         param_generators = {
             'c1': np.random.uniform,
             'c2': np.random.uniform,
@@ -103,16 +102,15 @@ class RandomSearch(SearchBase):
             'k': np.random.randint
         }
 
-        #Generate random values for hyperparameters 'c1', 'c2', 'w', and 'k'
+        # Generate random values for hyperparameters 'c1', 'c2', 'w', and 'k'
         for idx, bounds in options.items():
             params[idx] = param_generators[idx](
                               *bounds, size=self.n_selection_iters)
 
-        #Return list of dicts of hyperparameter combinations
+        # Return list of dicts of hyperparameter combinations
         return [{'c1': params['c1'][i],
                  'c2': params['c2'][i],
                  'w': params['w'][i],
                  'k': params['k'][i],
                  'p': params['p'][i]}
                 for i in xrange(self.n_selection_iters)]
-
