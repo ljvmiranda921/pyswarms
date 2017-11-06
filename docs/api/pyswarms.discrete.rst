@@ -3,9 +3,6 @@ pyswarms.discrete package
 
 .. automodule:: pyswarms.discrete
 
-Submodules
-----------
-
 pyswarms.discrete.binary module
 --------------------------------
 
