@@ -3,8 +3,6 @@ pyswarms.single package
 
 .. automodule:: pyswarms.single
 
-Submodules
-----------
 
 pyswarms.single.global_best module
 ----------------------------------

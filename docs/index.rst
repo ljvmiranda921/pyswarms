@@ -69,7 +69,13 @@ Launching pad
 
    contributing
    contributing.optimizer
-   API Documentation <api/pyswarms>
+
+.. toctree::
+   :caption: API Documentation
+
+   api/_pyswarms.base.classes
+   api/_pyswarms.optimizers
+   api/_pyswarms.utils
 
 Indices and tables
 ==================
