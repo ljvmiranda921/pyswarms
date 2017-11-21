@@ -381,8 +381,8 @@ class PlotEnvironment(object):
             iterable of artists
         """
         current_pos = data[i]
-        x, y = current_pos[:, idx.x], current_pos[:, idx.y]
-        plot.set_offsets([x, y])
+        xy = current_pos[:, (idx.x, idx.x)]
+        plot.set_offsets(xy)
         return plot,
 
     def _animate3D(self, i, data, plot, idx):
