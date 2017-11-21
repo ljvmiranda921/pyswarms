@@ -381,7 +381,7 @@ class PlotEnvironment(object):
             iterable of artists
         """
         current_pos = data[i]
-        xy = current_pos[:, (idx.x, idx.x)]
+        xy = current_pos[:, (idx.x, idx.y)]
         plot.set_offsets(xy)
         return plot,
 
