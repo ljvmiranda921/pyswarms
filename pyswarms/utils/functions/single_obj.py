@@ -141,7 +141,7 @@ def beale_func(x):
     """Beale objective function.
 
     Only takes two dimensions and has a global minimum at
-    :code:`f([0,3.5])` Its domain is bounded between :code:`[-4.5, 4.5]`
+    :code:`f([3,0.5])` Its domain is bounded between :code:`[-4.5, 4.5]`
 
     Parameters
     ----------
