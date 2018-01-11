@@ -20,8 +20,8 @@
         :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
         :alt: License
 
-.. image:: https://zenodo.org/badge/97002861.svg
-        :target: https://zenodo.org/badge/latestdoi/97002861
+.. image:: http://joss.theoj.org/papers/10.21105/joss.00433/status.svg
+        :target: https://doi.org/10.21105/joss.00433
         :alt: Citation
 
 .. image:: https://badges.gitter.im/Join%20Chat.svg
@@ -276,14 +276,19 @@ Cite us
 --------
 Are you using PySwarms in your project or research? Please cite us!
 
+* Miranda L.J., (2018). PySwarms: a research toolkit for Particle Swarm Optimization in Python. Journal of Open Source Software, 3(21), 433, https://doi.org/joss.00433
+
 .. code-block:: bibtex
 
-    @article{PySwarms2017,
-        author = "Lester James V. Miranda",
-        year = 2017,
-        title = "PySwarms, a research-toolkit for Particle Swarm Optimization in Python",
-        doi = {10.5281/zenodo.986300},
-        url = {https://zenodo.org/badge/latestdoi/97002861}
+    @article{pyswarmsJOSS2018,
+        author  = {Lester James V. Miranda},
+        title   = "{P}y{S}warms, a research-toolkit for {P}article {S}warm {O}ptimization in {P}ython",
+        journal = {Journal of Open Source Software},
+        year    = {2018},
+        volume  = {3},
+        issue   = {21},
+        doi     = {10.21105/joss.00433},
+        url     = {https://doi.org/10.21105/joss.00433}
     }
 
 Others
