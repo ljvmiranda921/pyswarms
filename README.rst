@@ -276,7 +276,7 @@ Cite us
 --------
 Are you using PySwarms in your project or research? Please cite us!
 
-* Miranda L.J., (2018). PySwarms: a research toolkit for Particle Swarm Optimization in Python. Journal of Open Source Software, 3(21), 433, https://doi.org/joss.00433
+* Miranda L.J., (2018). PySwarms: a research toolkit for Particle Swarm Optimization in Python. Journal of Open Source Software, 3(21), 433, https://doi.org/10.21105/joss.00433
 
 .. code-block:: bibtex
 
