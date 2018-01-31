@@ -276,7 +276,7 @@ Cite us
 --------
 Are you using PySwarms in your project or research? Please cite us!
 
-* Miranda L.J., (2018). PySwarms: a research toolkit for Particle Swarm Optimization in Python. Journal of Open Source Software, 3(21), 433, https://doi.org/joss.00433
+* Miranda L.J., (2018). PySwarms: a research toolkit for Particle Swarm Optimization in Python. *Journal of Open Source Software*, 3(21), 433, https://doi.org/joss.00433
 
 .. code-block:: bibtex
 
@@ -290,6 +290,12 @@ Are you using PySwarms in your project or research? Please cite us!
         doi     = {10.21105/joss.00433},
         url     = {https://doi.org/10.21105/joss.00433}
     }
+
+Projects using PySwarms
+~~~~~~~~~~~~~~~~~~~~~~~
+
+* Nandy, Abhishek, and Manisha Biswas. "Applying Python to Reinforcement Learning." *Reinforcement Learning*. Apress, Berkeley, CA, 2018. 89-128.
+* Benedetti, Marcello, et al. "A generative modeling approach for benchmarking and training shallow quantum circuits." *arXiv preprint arXiv:1801.07686* (2018).
 
 Others
 ------
