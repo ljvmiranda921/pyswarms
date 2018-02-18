@@ -16,27 +16,25 @@
         :target: https://pyswarms.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://landscape.io/github/ljvmiranda921/pyswarms/master/landscape.svg?style=flat
-        :target: https://landscape.io/github/ljvmiranda921/pyswarms/master
-        :alt: Code Health
-
-.. image:: https://pyup.io/repos/github/ljvmiranda921/pyswarms/shield.svg
-        :target: https://pyup.io/repos/github/ljvmiranda921/pyswarms/
-        :alt: Updates
-
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg   
         :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
         :alt: License
 
-.. image:: https://zenodo.org/badge/97002861.svg
-        :target: https://zenodo.org/badge/latestdoi/97002861
+.. image:: http://joss.theoj.org/papers/10.21105/joss.00433/status.svg
+        :target: https://doi.org/10.21105/joss.00433
         :alt: Citation
+
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+        :target: https://gitter.im/pyswarms/Issues
+        :alt: Gitter Chat
 
 PySwarms is an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
+It is intended for swarm intelligence researchers, practitioners, and students who would like a high-level declarative interface of implementing PSO in their problems. PySwarms both allows basic optimization with PSO and interaction with swarm optimizations. Interaction is enabled due to object primitives provided by the package for optimization. This makes PySwarms useful for researchers or students.
+
 * **Free software:** MIT license
 * **Documentation:** https://pyswarms.readthedocs.io.
-
+* **Python versions:** 2.7, 3.4, 3.5 and above
 
 Features
 --------
@@ -265,10 +263,10 @@ The package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypacka
 
 This is currently maintained by Lester James V. Miranda with other helpful contributors (v.0.1.7):
 
-* Carl-K
-* Siobhán Cronin
-* Andrew Jarcho
-* Charalampos Papadimitriou 
+* Carl-K (`@Carl-K <https://github.com/Carl-K>`_)
+* Siobhán Cronin (`@SioKCronin <https://github.com/SioKCronin>`_)
+* Andrew Jarcho (`@jazcap53 <https://github.com/jazcap53>`_)
+* Charalampos Papadimitriou (`@CPapadim <https://github.com/CPapadim>`_)
 
 .. _pyswarm: https://github.com/tisimst/pyswarm
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
@@ -278,15 +276,26 @@ Cite us
 --------
 Are you using PySwarms in your project or research? Please cite us!
 
+* Miranda L.J., (2018). PySwarms: a research toolkit for Particle Swarm Optimization in Python. *Journal of Open Source Software*, 3(21), 433, https://doi.org/joss.00433
+
 .. code-block:: bibtex
 
-    @article{PySwarms2017,
-        author = "Lester James V. Miranda",
-        year = 2017,
-        title = "PySwarms, a research-toolkit for Particle Swarm Optimization in Python",
-        doi = {10.5281/zenodo.986300},
-        url = {https://zenodo.org/badge/latestdoi/97002861}
+    @article{pyswarmsJOSS2018,
+        author  = {Lester James V. Miranda},
+        title   = "{P}y{S}warms, a research-toolkit for {P}article {S}warm {O}ptimization in {P}ython",
+        journal = {Journal of Open Source Software},
+        year    = {2018},
+        volume  = {3},
+        issue   = {21},
+        doi     = {10.21105/joss.00433},
+        url     = {https://doi.org/10.21105/joss.00433}
     }
+
+Projects using PySwarms
+~~~~~~~~~~~~~~~~~~~~~~~
+
+* Nandy, Abhishek, and Manisha Biswas. "Applying Python to Reinforcement Learning." *Reinforcement Learning*. Apress, Berkeley, CA, 2018. 89-128.
+* Benedetti, Marcello, et al. "A generative modeling approach for benchmarking and training shallow quantum circuits." *arXiv preprint arXiv:1801.07686* (2018).
 
 Others
 ------

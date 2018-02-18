@@ -17,18 +17,6 @@ Welcome to PySwarms's documentation!
         :target: https://pyswarms.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://landscape.io/github/ljvmiranda921/pyswarms/master/landscape.svg?style=flat
-        :target: https://landscape.io/github/ljvmiranda921/pyswarms/master
-        :alt: Code Health
-
-.. image:: https://pyup.io/repos/github/ljvmiranda921/pyswarms/shield.svg
-        :target: https://pyup.io/repos/github/ljvmiranda921/pyswarms/
-        :alt: Updates
-
-.. image:: https://img.shields.io/badge/python-2.7%2C3.4%2C3.5%2C3.6-blue.svg
-        :target: https://github.com/ljvmiranda921/pyswarms
-        :alt: Python versions
-
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg   
         :target: https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE
         :alt: License
@@ -37,10 +25,17 @@ Welcome to PySwarms's documentation!
         :target: https://zenodo.org/badge/latestdoi/97002861
         :alt: Citation
 
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+        :target: https://gitter.im/pyswarms/Issues
+        :alt: Gitter Chat
+
 PySwarms is a an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
-* Free software: MIT license
-* Github repository: https://github.com/ljvmiranda921/pyswarms
+It is intended for swarm intelligence researchers, practitioners, and students who would like a high-level declarative interface of implementing PSO in their problems. PySwarms both allows basic optimization with PSO and interaction with swarm optimizations. Interaction is enabled due to object primitives provided by the package for optimization. This makes PySwarms useful for researchers or students.
+
+* **Free software:** MIT license
+* **Github repository:** https://github.com/ljvmiranda921/pyswarms
+* **Python versions:** 2.7, 3.4, 3.5 and above
 
 Launching pad
 -------------
@@ -74,7 +69,13 @@ Launching pad
 
    contributing
    contributing.optimizer
-   API Documentation <api/pyswarms>
+
+.. toctree::
+   :caption: API Documentation
+
+   api/_pyswarms.base.classes
+   api/_pyswarms.optimizers
+   api/_pyswarms.utils
 
 Indices and tables
 ==================

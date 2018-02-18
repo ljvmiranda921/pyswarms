@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 r"""
-Base class for single-objective Particle Swarm Optimization 
+Base class for single-objective Particle Swarm Optimization
 implementations.
 
-All methods here are abstract and raises a :code:`NotImplementedError` 
+All methods here are abstract and raises a :code:`NotImplementedError`
 when not used. When defining your own swarm implementation,
 create another class,
 
@@ -36,11 +36,12 @@ import numpy as np
 import logging.config
 from collections import namedtuple
 
+
 class SwarmBase(object):
 
     def assertions(self):
         """Assertion method to check various inputs.
-        
+
         Raises
         ------
         TypeError
@@ -56,32 +57,37 @@ class SwarmBase(object):
 
         # Check setting of bounds
         if self.bounds is not None:
-            if not isinstance(self.bounds,tuple):
+            if not isinstance(self.bounds, tuple):
                 raise TypeError('Parameter `bound` must be a tuple.')
             if not len(self.bounds) == 2:
                 raise IndexError('Parameter `bound` must be of size 2.')
             if not self.bounds[0].shape == self.bounds[1].shape:
                 raise IndexError('Arrays in `bound` must be of equal shapes')
-            if not self.bounds[0].shape[0] == self.bounds[1].shape[0] == self.dimensions:
-                raise IndexError('Parameter `bound` must be the same shape as dimensions.')
+            if not self.bounds[0].shape[0] == self.bounds[1].shape[0] == \
+                    self.dimensions:
+                raise IndexError('Parameter `bound` must be the same shape '
+                                 'as dimensions.')
             if not (self.bounds[1] > self.bounds[0]).all():
-                raise ValueError('Values of `bounds[1]` must be greater than `bounds[0]`.')
+                raise ValueError('Values of `bounds[1]` must be greater than '
+                                 '`bounds[0]`.')
 
         # Check clamp settings
         if self.velocity_clamp is not None:
-            if not isinstance(self.velocity_clamp,tuple):
+            if not isinstance(self.velocity_clamp, tuple):
                 raise TypeError('Parameter `velocity_clamp` must be a tuple')
             if not len(self.velocity_clamp) == 2:
-                raise IndexError('Parameter `velocity_clamp` must be of size 2')
+                raise IndexError('Parameter `velocity_clamp` must be of '
+                                 'size 2')
             if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-                raise ValueError('Make sure that velocity_clamp is in the form (min, max)')
+                raise ValueError('Make sure that velocity_clamp is in the '
+                                 'form (min, max)')
 
         # Required keys in options argument
-        if not all (key in self.options for key in ('c1', 'c2', 'w')):
+        if not all(key in self.options for key in ('c1', 'c2', 'w')):
             raise KeyError('Missing either c1, c2, or w in options')
 
-    def setup_logging(self,default_path='./config/logging.yaml', 
-            default_level=logging.INFO, env_key='LOG_CFG'):
+    def setup_logging(self, default_path='./config/logging.yaml',
+                      default_level=logging.INFO, env_key='LOG_CFG'):
         """Setup logging configuration
 
         Parameters
@@ -104,9 +110,9 @@ class SwarmBase(object):
         else:
             logging.basicConfig(level=default_level)
 
-    def __init__(self, n_particles, dimensions, options, 
-        bounds=None, velocity_clamp=None):
-        """Initializes the swarm. 
+    def __init__(self, n_particles, dimensions, options,
+                 bounds=None, velocity_clamp=None):
+        """Initializes the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the
         number of particles needed and the number of dimensions.
@@ -120,7 +126,7 @@ class SwarmBase(object):
         dimensions : int
             number of dimensions in the space.
         options : dict with keys :code:`{'c1', 'c2', 'w'}`
-            a dictionary containing the parameters for the specific 
+            a dictionary containing the parameters for the specific
             optimization technique
                 * c1 : float
                     cognitive parameter
@@ -146,8 +152,10 @@ class SwarmBase(object):
         self.swarm_size = (n_particles, dimensions)
         self.options = options
         # Initialize named tuple for populating the history list
-        self.ToHistory = namedtuple('ToHistory', ['best_cost', 'mean_pbest_cost',
-                            'mean_neighbor_cost', 'position', 'velocity'])
+        self.ToHistory = namedtuple('ToHistory',
+                                    ['best_cost', 'mean_pbest_cost',
+                                     'mean_neighbor_cost', 'position',
+                                     'velocity'])
         # Invoke assertions
         self.assertions()
         # Initialize resettable attributes
@@ -158,7 +166,7 @@ class SwarmBase(object):
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
         :code:`neighborhood_best` is expected to have a shape of
-        :code:`(iters,)`,on the other hand, the :code:`pos_history` 
+        :code:`(iters,)`,on the other hand, the :code:`pos_history`
         and :code:`velocity_history` are expected to have a shape of
         :code:`(iters, n_particles, dimensions)`
 
@@ -201,15 +209,16 @@ class SwarmBase(object):
     def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
 
-        Performs the optimization to evaluate the objective 
-        function :code:`objective_func` for a number of iterations :code:`iter.`
+        Performs the optimization to evaluate the objective
+        function :code:`objective_func` for a number of iterations
+        :code:`iter.`
 
         Parameters
         ----------
         objective_func : function
             objective function to be evaluated
-        iters : int 
-            number of iterations 
+        iters : int
+            number of iterations
         print_step : int (the default is 1)
             amount of steps for printing into console.
         verbose : int (the default is 1)
@@ -244,7 +253,7 @@ class SwarmBase(object):
 
     def reset(self):
         """Resets the attributes of the optimizer.
-        
+
         All variables/atributes that will be re-initialized when this
         method is defined here. Note that this method
         can be called twice: (1) during initialization, and (2) when
@@ -273,24 +282,25 @@ class SwarmBase(object):
 
         # Broadcast the bounds and initialize the swarm
         if self.bounds is not None:
-            self.min_bounds = np.repeat(self.bounds[0][np.newaxis,:],
+            self.min_bounds = np.repeat(self.bounds[0][np.newaxis, :],
                                         self.n_particles,
                                         axis=0)
-            self.max_bounds = np.repeat(self.bounds[1][np.newaxis,:],
+            self.max_bounds = np.repeat(self.bounds[1][np.newaxis, :],
                                         self.n_particles,
                                         axis=0)
             self.pos = np.random.uniform(low=self.min_bounds,
-                                        high=self.max_bounds,
-                                        size=self.swarm_size)
+                                         high=self.max_bounds,
+                                         size=self.swarm_size)
         else:
             self.pos = np.random.uniform(size=self.swarm_size)
 
         # Initialize velocity vectors
         if self.velocity_clamp is not None:
-            min_velocity, max_velocity = self.velocity_clamp[0], self.velocity_clamp[1]
-            self.velocity = ((max_velocity - min_velocity) 
-                            * np.random.random_sample(size=self.swarm_size) 
-                            + min_velocity)
+            min_velocity, max_velocity = self.velocity_clamp[0], \
+                                         self.velocity_clamp[1]
+            self.velocity = ((max_velocity - min_velocity)
+                             * np.random.random_sample(size=self.swarm_size)
+                             + min_velocity)
         else:
             self.velocity = np.random.random_sample(size=self.swarm_size)
 
