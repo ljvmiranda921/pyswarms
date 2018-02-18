@@ -49,7 +49,7 @@ class SwarmBase(object):
         IndexError
             When the :code:`bounds` is not of size 2.
             When the arrays in :code:`bounds` is not of equal size.
-            When the shape of :code:`bounds` is not the same as `dimensions`.
+            When the shape of :code:`bounds` is not the same as :code:`dimensions`.
         ValueError
             When the value of :code:`bounds[1]` is less than
             :code:`bounds[0]`.
@@ -140,11 +140,8 @@ class SwarmBase(object):
             be of shape :code:`(dimensions,)`.
         velocity_clamp : tuple (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
-        save_history : boolean (default is :code:`False`)
-            saves various optimizer attributes
-            :code:`[cost, position, velocity]` inside a list.
+            and the second entry is the maximum velocity. It 
+            sets the limits for velocity clamping. 
         """
         self.setup_logging()
         # Initialize primary swarm attributes
