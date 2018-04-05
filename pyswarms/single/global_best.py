@@ -72,7 +72,7 @@ from ..utils.console_utils import cli_print, end_report
 class GlobalBestPSO(SwarmBase):
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None):
+                 bounds=None, velocity_clamp=None, guess=None, ftol=-np.inf):
         """Initializes the swarm.
 
         Attributes
@@ -98,9 +98,15 @@ class GlobalBestPSO(SwarmBase):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
+        guess : list (default is :code:`None`)
+            a list of size :code:`dimensions`
+        ftol : float
+            relative error in objective_func(best_pos) acceptable for
+            convergence
         """
         super(GlobalBestPSO, self).__init__(n_particles, dimensions, options,
-                                            bounds, velocity_clamp)
+                                            bounds, velocity_clamp,
+                                            guess, ftol)
 
         # Initialize logger
         self.logger = logging.getLogger(__name__)
@@ -166,6 +172,10 @@ class GlobalBestPSO(SwarmBase):
                 velocity=self.velocity
             )
             self._populate_history(hist)
+
+            # Verify stop criteria based on the relative acceptable cost ftol
+            if np.min(self.best_cost) < self.ftol:
+                break
 
             # Perform velocity and position updates
             self._update_velocity()
