@@ -205,9 +205,9 @@ class RunOptimize(Base):
         accordingly."""
         # Perform a simple optimization
         optimizer = LocalBestPSO(5,2, options=self.options, ftol=1e-1)
-        optimizer.optimize(sphere_func, 2000, verbose=0)
+        optimizer.optimize(sphere_func, 4000, verbose=0)
         cost_hist = optimizer.get_cost_history
-        self.assertNotEqual(cost_hist.shape, (2000, ))
+        self.assertNotEqual(cost_hist.shape, (4000, ))
 
 if __name__ == '__main__':
     unittest.main()
