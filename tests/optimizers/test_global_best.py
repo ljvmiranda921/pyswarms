@@ -69,7 +69,7 @@ class Instantiation(Base):
             optimizer = GlobalBestPSO(5,2,bounds=bounds_2,options=self.options)
 
     def test_bound_shapes_fail(self):
-        """Tests if exception is thrown when bounds are of unequal 
+        """Tests if exception is thrown when bounds are of unequal
         shapes."""
         bounds = (np.array([-5,-5,-5]), np.array([5,5]))
         with self.assertRaises(IndexError):
@@ -99,6 +99,18 @@ class Instantiation(Base):
         velocity_clamp = (3,2)
         with self.assertRaises(ValueError):
             optimizer = GlobalBestPSO(5,2,velocity_clamp=velocity_clamp,options=self.options)
+
+    def test_guess_type_fail(self):
+        """Tests if exception is thrown when guess is not a list."""
+        guess = (0.1,1.5)
+        with self.assertRaises(TypeError):
+            optimizer = GlobalBestPSO(5,2,guess=guess,options=self.options)
+    def test_guess_shape_fail(self):
+        """Tests if exception is thrown when guess dimension is not equal
+        to dimensions"""
+        guess = [1.5, 3.2, 2.5]
+        with self.assertRaises(IndexError):
+            optimizer = GlobalBestPSO(5,2,guess=guess,options=self.options)
 
 class MethodsStateChange(Base):
     """Tests all state changes that resulted from method calls"""
@@ -164,6 +176,15 @@ class RunOptimize(Base):
         self.optimizer.optimize(sphere_func, 1000, verbose=0)
         velocity_hist = self.optimizer.get_velocity_history
         self.assertEqual(velocity_hist.shape, (1000, 10, 2))
+
+    def test_ftol_effect(self):
+        """Check if setting ftol breaks the optimization process
+        accordingly."""
+        # Perform a simple optimization
+        optimizer = GlobalBestPSO(5,2, options=self.options, ftol=1e-1)
+        optimizer.optimize(sphere_func, 1000, verbose=0)
+        cost_hist = optimizer.get_cost_history
+        self.assertNotEqual(cost_hist.shape, (1000, ))
 
 if __name__ == '__main__':
     unittest.main()
