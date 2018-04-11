@@ -205,7 +205,7 @@ class RunOptimize(Base):
         """Check if setting ftol breaks the optimization process
         accordingly."""
         # Perform a simple optimization
-        optimizer = LocalBestPSO(5,2, options=self.options, ftol=1e-1)
+        optimizer = LocalBestPSO(10,2, options=self.options, ftol=1e-1)
         optimizer.optimize(sphere_func, 5000, verbose=0)
         cost_hist = optimizer.get_cost_history
         self.assertNotEqual(cost_hist.shape, (5000, ))

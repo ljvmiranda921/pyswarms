@@ -84,11 +84,14 @@ class SwarmBase(object):
 
         # Check setting of init_pos
         if self.init_pos is not None:
-            if not isinstance(self.init_pos, list):
-                raise TypeError('Parameter `init_pos` must be a list')
+            if not (isinstance(self.init_pos, list) or isinstance(self.init_pos, np.ndarray)):
+                raise TypeError('Parameter `init_pos` must be an array (list or numpy array)')
             if not len(self.init_pos) == self.dimensions:
                 raise IndexError('Parameter `init_pos` must be the same shape '
                                  'as dimensions.')
+            if isinstance(self.init_pos, np.ndarray) and self.init_pos.ndim != 1:
+                raise ValueError('Parameter `init_pos` must have a 1d array')
+
 
         # Required keys in options argument
         if not all(key in self.options for key in ('c1', 'c2', 'w')):
@@ -151,7 +154,7 @@ class SwarmBase(object):
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
         init_pos : list (default is :code:`None`)
-            a list of size :code:`dimensions`
+            an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for convergence
 
