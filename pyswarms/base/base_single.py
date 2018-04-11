@@ -82,12 +82,12 @@ class SwarmBase(object):
                 raise ValueError('Make sure that velocity_clamp is in the '
                                  'form (min, max)')
 
-        # Check setting of guess
-        if self.guess is not None:
-            if not isinstance(self.guess, list):
-                raise TypeError('Parameter `guess` must be a list')
-            if not len(self.guess) == self.dimensions:
-                raise IndexError('Parameter `guess` must be the same shape '
+        # Check setting of init_pos
+        if self.init_pos is not None:
+            if not isinstance(self.init_pos, list):
+                raise TypeError('Parameter `init_pos` must be a list')
+            if not len(self.init_pos) == self.dimensions:
+                raise IndexError('Parameter `init_pos` must be the same shape '
                                  'as dimensions.')
 
         # Required keys in options argument
@@ -119,7 +119,7 @@ class SwarmBase(object):
             logging.basicConfig(level=default_level)
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, guess=None, ftol=-np.inf):
+                 bounds=None, velocity_clamp=None, init_pos=None, ftol=-np.inf):
         """Initializes the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the
@@ -150,7 +150,7 @@ class SwarmBase(object):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        guess : list (default is :code:`None`)
+        init_pos : list (default is :code:`None`)
             a list of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for convergence
@@ -164,7 +164,7 @@ class SwarmBase(object):
         self.velocity_clamp = velocity_clamp
         self.swarm_size = (n_particles, dimensions)
         self.options = options
-        self.guess = guess
+        self.init_pos = init_pos
         self.ftol = ftol
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple('ToHistory',
@@ -303,8 +303,8 @@ class SwarmBase(object):
             self.max_bounds = np.repeat(self.bounds[1][np.newaxis, :],
                                         self.n_particles,
                                         axis=0)
-            if self.guess is not None:
-                self.pos = self.guess * np.random.uniform(low=self.min_bounds,
+            if self.init_pos is not None:
+                self.pos = self.init_pos * np.random.uniform(low=self.min_bounds,
                                          high=self.max_bounds,
                                          size=self.swarm_size)
             else:
@@ -312,8 +312,8 @@ class SwarmBase(object):
                                          high=self.max_bounds,
                                          size=self.swarm_size)
         else:
-            if self.guess is not None:
-                self.pos = self.guess * np.random.uniform(size=self.swarm_size)
+            if self.init_pos is not None:
+                self.pos = self.init_pos * np.random.uniform(size=self.swarm_size)
             else:
                 self.pos = np.random.uniform(size=self.swarm_size)
 
