@@ -123,17 +123,18 @@ class Instantiation(Base):
         with self.assertRaises(ValueError):
             optimizer = LocalBestPSO(5,2,velocity_clamp=velocity_clamp, options=self.options)
 
-    def test_guess_type_fail(self):
-        """Tests if exception is thrown when guess is not a list."""
-        guess = (0.1,1.5)
+    def test_init_pos_type_fail(self):
+        """Tests if exception is thrown when init_pos is not a list."""
+        init_pos = (0.1,1.5)
         with self.assertRaises(TypeError):
-            optimizer = LocalBestPSO(5,2,guess=guess,options=self.options)
-    def test_guess_shape_fail(self):
-        """Tests if exception is thrown when guess dimension is not equal
+            optimizer = LocalBestPSO(5, 2, init_pos=init_pos, options=self.options)
+
+    def test_init_pos_shape_fail(self):
+        """Tests if exception is thrown when init_pos dimension is not equal
         to dimensions"""
-        guess = [1.5, 3.2, 2.5]
+        init_pos = [1.5, 3.2, 2.5]
         with self.assertRaises(IndexError):
-            optimizer = LocalBestPSO(5,2,guess=guess,options=self.options)
+            optimizer = LocalBestPSO(5, 2, init_pos=init_pos, options=self.options)
 
 class MethodsStateChange(Base):
     """Tests all state changes that resulted from method calls"""
