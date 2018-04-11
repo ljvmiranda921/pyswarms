@@ -124,7 +124,7 @@ class LocalBestPSO(SwarmBase):
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
         init_pos : list (default is :code:`None`)
-            a list of size :code:`dimensions`
+            an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
