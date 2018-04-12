@@ -224,6 +224,7 @@ class LocalBestPSO(SwarmBase):
             relative_measure = self.ftol*(1 + np.abs(best_cost_yet_found))
             if np.abs(np.min(self.best_cost) - best_cost_yet_found) < relative_measure:
                 break
+            
             # Perform position velocity update
             self._update_velocity()
             self._update_position()
