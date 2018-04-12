@@ -106,7 +106,7 @@ class LocalBestPSO(SwarmBase):
                              'or 2 (for L2/Euclidean).')
 
     def __init__(self, n_particles, dimensions, options, bounds=None,
-                 velocity_clamp=None):
+                 velocity_clamp=None, init_pos=None, ftol=-np.inf):
         """Initializes the swarm.
 
         Attributes
@@ -123,6 +123,11 @@ class LocalBestPSO(SwarmBase):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
+        init_pos : list (default is :code:`None`)
+            an array of size :code:`dimensions`
+        ftol : float
+            relative error in objective_func(best_pos) acceptable for
+            convergence
         options : dict with keys :code:`{'c1', 'c2', 'w', 'k', 'p'}`
             a dictionary containing the parameters for the specific
             optimization technique
@@ -146,7 +151,7 @@ class LocalBestPSO(SwarmBase):
         self.k, self.p = options['k'], options['p']
         # Initialize parent class
         super(LocalBestPSO, self).__init__(n_particles, dimensions, options,
-                                           bounds, velocity_clamp)
+                                           bounds, velocity_clamp, init_pos, ftol)
         # Invoke assertions
         self.assertions()
         # Initialize the resettable attributes
@@ -212,6 +217,9 @@ class LocalBestPSO(SwarmBase):
             )
             self._populate_history(hist)
 
+            # Verify stop criteria based on the relative acceptable cost ftol
+            if np.min(self.best_cost) < self.ftol:
+                break
             # Perform position velocity update
             self._update_velocity()
             self._update_position()

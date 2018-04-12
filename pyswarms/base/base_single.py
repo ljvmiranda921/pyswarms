@@ -82,6 +82,17 @@ class SwarmBase(object):
                 raise ValueError('Make sure that velocity_clamp is in the '
                                  'form (min, max)')
 
+        # Check setting of init_pos
+        if self.init_pos is not None:
+            if not (isinstance(self.init_pos, list) or isinstance(self.init_pos, np.ndarray)):
+                raise TypeError('Parameter `init_pos` must be an array (list or numpy array)')
+            if not len(self.init_pos) == self.dimensions:
+                raise IndexError('Parameter `init_pos` must be the same shape '
+                                 'as dimensions.')
+            if isinstance(self.init_pos, np.ndarray) and self.init_pos.ndim != 1:
+                raise ValueError('Parameter `init_pos` must have a 1d array')
+
+
         # Required keys in options argument
         if not all(key in self.options for key in ('c1', 'c2', 'w')):
             raise KeyError('Missing either c1, c2, or w in options')
@@ -111,7 +122,7 @@ class SwarmBase(object):
             logging.basicConfig(level=default_level)
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None):
+                 bounds=None, velocity_clamp=None, init_pos=None, ftol=-np.inf):
         """Initializes the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the
@@ -140,8 +151,13 @@ class SwarmBase(object):
             be of shape :code:`(dimensions,)`.
         velocity_clamp : tuple (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It 
-            sets the limits for velocity clamping. 
+            and the second entry is the maximum velocity. It
+            sets the limits for velocity clamping.
+        init_pos : list (default is :code:`None`)
+            an array of size :code:`dimensions`
+        ftol : float
+            relative error in objective_func(best_pos) acceptable for convergence
+
         """
         self.setup_logging()
         # Initialize primary swarm attributes
@@ -151,6 +167,8 @@ class SwarmBase(object):
         self.velocity_clamp = velocity_clamp
         self.swarm_size = (n_particles, dimensions)
         self.options = options
+        self.init_pos = init_pos
+        self.ftol = ftol
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple('ToHistory',
                                     ['best_cost', 'mean_pbest_cost',
@@ -288,11 +306,19 @@ class SwarmBase(object):
             self.max_bounds = np.repeat(self.bounds[1][np.newaxis, :],
                                         self.n_particles,
                                         axis=0)
-            self.pos = np.random.uniform(low=self.min_bounds,
+            if self.init_pos is not None:
+                self.pos = self.init_pos * np.random.uniform(low=self.min_bounds,
+                                         high=self.max_bounds,
+                                         size=self.swarm_size)
+            else:
+                self.pos = np.random.uniform(low=self.min_bounds,
                                          high=self.max_bounds,
                                          size=self.swarm_size)
         else:
-            self.pos = np.random.uniform(size=self.swarm_size)
+            if self.init_pos is not None:
+                self.pos = self.init_pos * np.random.uniform(size=self.swarm_size)
+            else:
+                self.pos = np.random.uniform(size=self.swarm_size)
 
         # Initialize velocity vectors
         if self.velocity_clamp is not None:
