@@ -142,6 +142,9 @@ class GlobalBestPSO(SwarmBase):
             current_cost = objective_func(self.pos)
             pbest_cost = objective_func(self.personal_best_pos)
 
+            # Store current best cost found
+            best_cost_yet_found = self.best_cost
+
             # Update personal bests if the current position is better
             # Create 1-D mask then update pbest_cost
             m = (current_cost < pbest_cost)
@@ -174,7 +177,8 @@ class GlobalBestPSO(SwarmBase):
             self._populate_history(hist)
 
             # Verify stop criteria based on the relative acceptable cost ftol
-            if np.min(self.best_cost) < self.ftol:
+            relative_measure = self.ftol*(1 + np.abs(best_cost_yet_found))
+            if np.abs(self.best_cost - best_cost_yet_found) < relative_measure:
                 break
 
             # Perform velocity and position updates
