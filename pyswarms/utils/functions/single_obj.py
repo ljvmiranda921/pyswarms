@@ -131,12 +131,10 @@ def rosenbrock_func(x):
     numpy.ndarray
         computed cost of size :code:`(n_particles, )`
     """
-    j = []
-    for e in x:
-        r = np.sum(100*(e[1:] - e[:-1]**2.0)**2 + (1-e[:-1])**2.0, axis=0)
-        j.append(r)
 
-    return np.array(j)
+    r = np.sum(100*(x.T[1:] - x.T[:-1]**2.0)**2 + (1-x.T[:-1])**2.0, axis=0)
+
+    return r
 
 
 def beale_func(x):
