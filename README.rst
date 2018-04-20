@@ -267,6 +267,8 @@ This is currently maintained by Lester James V. Miranda with other helpful contr
 * Siobhán Cronin (`@SioKCronin <https://github.com/SioKCronin>`_)
 * Andrew Jarcho (`@jazcap53 <https://github.com/jazcap53>`_)
 * Charalampos Papadimitriou (`@CPapadim <https://github.com/CPapadim>`_)
+* Mamady Nabé (`@mamadyonline <https://github.com/mamadyonline>`_)
+* Erik (`@slek120 <https://github.com/slek120>`_)
 
 .. _pyswarm: https://github.com/tisimst/pyswarm
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
@@ -291,11 +293,12 @@ Are you using PySwarms in your project or research? Please cite us!
         url     = {https://doi.org/10.21105/joss.00433}
     }
 
-Projects using PySwarms
-~~~~~~~~~~~~~~~~~~~~~~~
+Projects citing PySwarms
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-* Nandy, Abhishek, and Manisha Biswas. "Applying Python to Reinforcement Learning." *Reinforcement Learning*. Apress, Berkeley, CA, 2018. 89-128.
-* Benedetti, Marcello, et al. "A generative modeling approach for benchmarking and training shallow quantum circuits." *arXiv preprint arXiv:1801.07686* (2018).
+* Nandy, Abhishek, and Manisha Biswas., "Applying Python to Reinforcement Learning." *Reinforcement Learning*. Apress, Berkeley, CA, 2018. 89-128.
+* Benedetti, Marcello, et al., "A generative modeling approach for benchmarking and training shallow quantum circuits." *arXiv preprint arXiv:1801.07686* (2018).
+* Vrbančič et al., "NiaPy: Python microframework for building nature-inspired algorithms." Journal of Open Source Software, 3(23), 613, https://doi.org/10.21105/joss.00613
 
 Others
 ------

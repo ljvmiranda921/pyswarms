@@ -69,3 +69,24 @@ History
 
 .. _33: https://github.com/ljvmiranda921/pyswarms/issues/33
 .. _34: https://github.com/ljvmiranda921/pyswarms/pull/34
+
+0.1.8 (2018-01-11)
+~~~~~~~~~~~~~~~~~~
+
+* PySwarms is now published on the Journal of Open Source Software (JOSS)! You can check the review here_. In addition, you can also find our paper in this link_. Thanks a lot to `@kyleniemeyer <https://github.com/kyleniemeyer>`_ and `@stsievert <https://github.com/stsievert>`_ for the thoughtful reviews and comments.
+
+.. _here: https://github.com/openjournals/joss-reviews/issues/433
+.. _link: http://joss.theoj.org/papers/235299884212b9223bce909631e3938b
+
+0.1.9 (2018-04-20)
+~~~~~~~~~~~~~~~~~~
+
+* You can now set the initial position wherever you want (PR# 93_).
+* Quick-fix for the rosenbrock function (PR# 98_).
+* Tolerance can now be set to break during iteration (PR# 100_).
+
+Thanks for all the wonderful Pull Requests, `@mamadyonline <https://github.com/mamadyonline>`_!
+
+.. _93: https://github.com/ljvmiranda921/pyswarms/pull/93
+.. _98: https://github.com/ljvmiranda921/pyswarms/pull/98
+.. _100: https://github.com/ljvmiranda921/pyswarms/pull/100

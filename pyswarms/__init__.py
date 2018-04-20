@@ -12,7 +12,7 @@ is very extensible to accommodate other PSO variations.
 
 __author__ = """Lester James V. Miranda"""
 __email__ = 'ljvmiranda@gmail.com'
-__version__ = '0.1.5'
+__version__ = '0.1.9'
 
 from .single import global_best, local_best
 from .discrete import binary
