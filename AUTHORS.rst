@@ -17,14 +17,17 @@ Development Lead
 Contributors
 ------------
 
-* `@Carl-K`_
+* Carl-K (`@Carl-K`_)
 * Siobhán K Cronin (`@SioKCronin`_)
 * Andrew Jarcho (`@jazcap53`_)
 * Charalampos Papadimitriou (`@CPapadim`_)
-
+* Mamady Nabé (`@mamadyonline`_)
+* Erik (`@slek120`_)
 
 .. _`@ljvmiranda921`: https://github.com/ljvmiranda921
 .. _`@Carl-K`: https://github.com/Carl-K
 .. _`@SioKCronin`: https://github.com/SioKCronin
 .. _`@jazcap53`: https://github.com/jazcap53
 .. _`@CPapadim`: https://github.com/CPapadim
+.. _`@mamadyonline`: https://github.com/mamadyonline
+.. _`@slek120`: https://github.com/slek120
