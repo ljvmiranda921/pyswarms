@@ -18,6 +18,7 @@ requirements = [
     'numpy>=1.13.0',
     'matplotlib>=1.3.1',
     'mock==2.0.0',
+    'pytest==3.2.1'
 ]
 
 setup_requirements = [
@@ -31,6 +32,7 @@ test_requirements = [
     'numpy>=1.13.0',
     'matplotlib>=1.3.1',
     'mock==2.0.0',
+    'pytest==3.2.1'
 ]
 
 setup(
