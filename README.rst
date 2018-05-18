@@ -30,7 +30,21 @@
 
 PySwarms is an extensible research toolkit for particle swarm optimization (PSO) in Python.
 
-It is intended for swarm intelligence researchers, practitioners, and students who would like a high-level declarative interface of implementing PSO in their problems. PySwarms both allows basic optimization with PSO and interaction with swarm optimizations. Interaction is enabled due to object primitives provided by the package for optimization. This makes PySwarms useful for researchers or students.
+It is intended for swarm intelligence researchers, practitioners, and students who would prefer a high-level declarative interface for implementing PSO in their problems. PySwarms enables basic optimization with PSO and interaction with swarm optimizations. Check out more features below!
+
++------------+------------+-------------------------------+
+| Branch     | Status     | Description                   |
++============+============+===============================+
+| master     | |master|   | Stable, official PyPI version |
++------------+------------+-------------------------------+
+| development| |dev|      | Bleeding-edge, experimental   |
++------------+------------+-------------------------------+
+
+.. |dev| image:: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=development
+    :target: https://travis-ci.org/ljvmiranda921/pyswarms
+
+.. |master| image:: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=master
+        :target: https://travis-ci.org/ljvmiranda921/pyswarms
 
 * **Free software:** MIT license
 * **Documentation:** https://pyswarms.readthedocs.io.
@@ -67,12 +81,13 @@ In case you want to install the bleeding-edge version, clone this repo:
 
 .. code-block:: console
 
-    $ git clone https://github.com/ljvmiranda921/pyswarms.git
+    $ git clone -b development https://github.com/ljvmiranda921/pyswarms.git
 
 and then run
 
 .. code-block:: console
 
+    $ cd pyswarms
     $ python setup.py install
 
 Basic Usage
