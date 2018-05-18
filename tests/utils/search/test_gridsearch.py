@@ -1,9 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # Import modules
 import pytest
-import numpy as np
-
-# Import from package
-from pyswarms.utils.search.grid_search import GridSearch
 
 @pytest.mark.parametrize('maximum', [True, False])
 def test_search_best_options_return_type(grid, maximum):

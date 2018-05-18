@@ -1,6 +1,5 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-"""Tests for `pyswarms` package."""
 
 # Import modules
 import pytest
