@@ -20,7 +20,7 @@ from pyswarms.utils.functions.single_obj import sphere_func
 
 @pytest.fixture
 def mock_pso():
-
+    """Returns a function that mocks a PSO class with missing attributes"""
     def _mock_pso(index):
         class_methods = [
             'get_cost_history',
@@ -29,14 +29,12 @@ def mock_pso():
             'optimize',
             'reset'
         ]
-
         get_specs = lambda idx: [x for i,x in enumerate(class_methods) if i != idx]
-
         return Mock(spec=get_specs(index))
-
     return _mock_pso
 
 @pytest.fixture
 def plot_environment():
+    """Returns a PlotEnvironment instance"""
     optimizer = GlobalBestPSO(10, 3, options={'c1': 0.5, 'c2': 0.3, 'w': 0.9})
     return PlotEnvironment(optimizer, sphere_func, 1000)

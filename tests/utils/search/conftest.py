@@ -14,6 +14,7 @@ from pyswarms.utils.functions.single_obj import sphere_func
 
 @pytest.fixture
 def grid():
+    """Returns a GridSearch instance"""
     options = {'c1': [1, 2, 3],
                'c2': [1, 2, 3],
                'k' : [5, 10, 15],
@@ -24,6 +25,7 @@ def grid():
 
 @pytest.fixture
 def grid_mini():
+    """Returns a Gridsearch instance with a smaller search-space"""
     options = {'c1': [1, 2],
                'c2': 6,
                'k' : 5,
