@@ -106,7 +106,7 @@ class LocalBestPSO(SwarmBase):
                              'or 2 (for L2/Euclidean).')
 
     def __init__(self, n_particles, dimensions, options, bounds=None,
-                 velocity_clamp=None, init_pos=None, ftol=-np.inf):
+                 velocity_clamp=None, init_pos=1.00, ftol=-np.inf):
         """Initializes the swarm.
 
         Attributes

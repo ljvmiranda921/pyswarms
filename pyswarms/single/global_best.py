@@ -72,7 +72,7 @@ from ..utils.console_utils import cli_print, end_report
 class GlobalBestPSO(SwarmBase):
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, init_pos=None, ftol=-np.inf):
+                 bounds=None, velocity_clamp=None, init_pos=1.00, ftol=-np.inf):
         """Initializes the swarm.
 
         Attributes
