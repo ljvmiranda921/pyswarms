@@ -74,13 +74,13 @@ class SwarmBase(object):
                                  '`bounds[0]`.')
 
         # Check clamp settings
-        print(self.velocity_clamp)
-        if not len(self.velocity_clamp) == 2:
-            raise IndexError('Parameter `velocity_clamp` must be of '
-                                'size 2')
-        if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-            raise ValueError('Make sure that velocity_clamp is in the '
-                                'form (min, max)')
+        if hasattr(self.velocity_clamp, '__iter__'):
+            if not len(self.velocity_clamp) == 2:
+                raise IndexError('Parameter `velocity_clamp` must be of '
+                                    'size 2')
+            if not self.velocity_clamp[0] < self.velocity_clamp[1]:
+                raise ValueError('Make sure that velocity_clamp is in the '
+                                    'form (min, max)')
 
         # Check setting of init_pos
         if isinstance(self.init_pos, (list, np.ndarray)):
@@ -120,7 +120,7 @@ class SwarmBase(object):
             logging.basicConfig(level=default_level)
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=(0,1), init_pos=1.0, ftol=-np.inf):
+                 bounds=None, velocity_clamp=None, init_pos=1.0, ftol=-np.inf):
         """Initializes the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the

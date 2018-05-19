@@ -45,7 +45,7 @@ class GridSearch(SearchBase):
     over all combinations of specified hyperparameter values."""
 
     def __init__(self, optimizer, n_particles, dimensions, options,
-                 objective_func, iters, bounds=None, velocity_clamp=None):
+                 objective_func, iters, bounds=None, velocity_clamp=(0,1)):
         """Initializes the paramsearch."""
 
         # Assign attributes

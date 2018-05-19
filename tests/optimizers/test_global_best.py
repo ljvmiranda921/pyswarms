@@ -47,13 +47,6 @@ def test_bound_type_exception(bounds, options):
     with pytest.raises(TypeError):
         GlobalBestPSO(5,2, options=options, bounds=bounds)
 
-@pytest.mark.parametrize('velocity_clamp', [[1, 3],np.array([1, 3])])
-def test_vclamp_type_exception(velocity_clamp, options):
-    """Tests if exception is raised when velocity_clamp type is not a
-    tuple"""
-    with pytest.raises(TypeError):
-        GlobalBestPSO(5, 2, velocity_clamp=velocity_clamp, options=options)
-
 @pytest.mark.parametrize('velocity_clamp', [(1,1,1), (2,3,1)])
 def test_vclamp_shape_exception(velocity_clamp, options):
     """Tests if exception is raised when velocity_clamp's size is not equal

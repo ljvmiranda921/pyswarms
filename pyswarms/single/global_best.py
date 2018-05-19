@@ -66,6 +66,7 @@ from past.builtins import xrange
 
 # Import from package
 from ..base import SwarmBase
+from ..backend import (update_pbest, update_gbest, update_velocity)
 from ..utils.console_utils import cli_print, end_report
 
 
@@ -144,21 +145,16 @@ class GlobalBestPSO(SwarmBase):
 
             # Store current best cost found
             best_cost_yet_found = self.best_cost
-            
+
             # Update personal bests if the current position is better
-            # Create 1-D mask then update pbest_cost
-            m = (current_cost < pbest_cost)
-            pbest_cost = np.where(~m, pbest_cost, current_cost)
-            # Create 2-D mask to update positions
-            _m = np.repeat(m[:, np.newaxis], self.dimensions, axis=1)
-            self.personal_best_pos = np.where(~_m, self.personal_best_pos,
-                                              self.pos)
+            p = {'pbest_pos' : self.personal_best_pos, 'pbest_cost' : pbest_cost,
+                'pos' : self.pos, 'cost' : current_cost}
+            self.personal_best_pos, pbest_cost = update_pbest(**p)
 
             # Get the minima of the pbest and check if it's less than
-            # the saved gbest
+            # the saved global best
             if np.min(pbest_cost) < self.best_cost:
-                self.best_cost = np.min(pbest_cost)
-                self.best_pos = self.personal_best_pos[np.argmin(pbest_cost)]
+                self.best_pos, self.best_cost = update_gbest(self.personal_best_pos, pbest_cost)
 
             # Print to console
             if i % print_step == 0:
@@ -182,7 +178,11 @@ class GlobalBestPSO(SwarmBase):
                 break
 
             # Perform velocity and position updates
-            self._update_velocity()
+            v = {'velocity' : self.velocity, 'clamp' : self.velocity_clamp,
+                 'pos' : self.pos, 'pbest_pos' : self.personal_best_pos,
+                'best_pos' : self.best_pos, 'c1' : self.options['c1'],
+                'c2' : self.options['c2'], 'w' : self.options['w']}
+            self.velocity = update_velocity(**v)
             self._update_position()
 
         # Obtain the final best_cost and the final best_position
@@ -192,35 +192,6 @@ class GlobalBestPSO(SwarmBase):
         end_report(final_best_cost, final_best_pos, verbose,
                    logger=self.logger)
         return final_best_cost, final_best_pos
-
-    def _update_velocity(self):
-        """Updates the velocity matrix of the swarm.
-
-        This method updates the attribute :code:`self.velocity` of
-        the instantiated object. It is called by the
-        :code:`self.optimize()` method.
-        """
-        # Define the hyperparameters from options dictionary
-        c1, c2, w = self.options['c1'], self.options['c2'], self.options['w']
-
-        # Compute for cognitive and social terms
-        cognitive = (c1 * np.random.uniform(0, 1, self.swarm_size)
-                     * (self.personal_best_pos - self.pos))
-        social = (c2 * np.random.uniform(0, 1, self.swarm_size)
-                     * (self.best_pos - self.pos))
-        temp_velocity = (w * self.velocity) + cognitive + social
-
-        # Create a mask to clamp the velocities
-        if self.velocity_clamp is not None:
-            # Create a mask depending on the set boundaries
-            min_velocity, max_velocity = self.velocity_clamp[0], \
-                                         self.velocity_clamp[1]
-            _b = np.logical_and(temp_velocity >= min_velocity,
-                                temp_velocity <= max_velocity)
-            # Use the mask to finally clamp the velocities
-            self.velocity = np.where(~_b, self.velocity, temp_velocity)
-        else:
-            self.velocity = temp_velocity
 
     def _update_position(self):
         """Updates the position matrix of the swarm.

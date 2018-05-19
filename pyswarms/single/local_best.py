@@ -119,7 +119,7 @@ class LocalBestPSO(SwarmBase):
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
-        velocity_clamp : tuple (default is :code:`None`)
+        velocity_clamp : tuple (default is :code:`(0,1)`)
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.

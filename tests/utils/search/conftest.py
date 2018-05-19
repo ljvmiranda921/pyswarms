@@ -22,7 +22,7 @@ def grid():
                'w' : [0.9, 0.7, 0.4],
                'p' : [1]}
     return GridSearch(LocalBestPSO, n_particles=40,
-        dimensions=20, options=options, objective_func=sphere_func, iters=10, bounds=None, velocity_clamp=None)
+        dimensions=20, options=options, objective_func=sphere_func, iters=10, bounds=None)
 
 @pytest.fixture
 def grid_mini():
@@ -33,7 +33,7 @@ def grid_mini():
                'w' : 0.9,
                'p' : 0}
     return GridSearch(LocalBestPSO, n_particles=40,
-        dimensions=20, options=options, objective_func=sphere_func, iters=10, bounds=None, velocity_clamp=None)
+        dimensions=20, options=options, objective_func=sphere_func, iters=10, bounds=None)
 
 @pytest.fixture
 def random_unbounded():
@@ -43,7 +43,7 @@ def random_unbounded():
                'k' : [11, 15],
                'w' : [0.4, 0.9],
                'p' : 1}
-    return RandomSearch(LocalBestPSO, n_particles=40, dimensions=20, options=options, objective_func=sphere_func, iters=10, n_selection_iters=100, bounds=None, velocity_clamp=None)
+    return RandomSearch(LocalBestPSO, n_particles=40, dimensions=20, options=options, objective_func=sphere_func, iters=10, n_selection_iters=100, bounds=None)
 
 @pytest.fixture
 def random_bounded():
@@ -54,4 +54,4 @@ def random_bounded():
                'k' : [11, 15],
                'w' : [0.4, 0.9],
                'p' : 1}
-    return RandomSearch(LocalBestPSO, n_particles=40, dimensions=20, options=options, objective_func=sphere_func, iters=10, n_selection_iters=100, bounds=bounds, velocity_clamp=None)
+    return RandomSearch(LocalBestPSO, n_particles=40, dimensions=20, options=options, objective_func=sphere_func, iters=10, n_selection_iters=100, bounds=bounds)
