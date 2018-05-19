@@ -82,7 +82,7 @@ def test_vclamp_maxmin_exception(velocity_clamp, options):
         LocalBestPSO(5, 2, velocity_clamp=velocity_clamp, options=options)
 
 @pytest.mark.parametrize('err, init_pos',
-    [(IndexError, [1.5, 3.2, 2.5]), (TypeError, (0.1, 1.5))])
+    [(IndexError, [1.5, 3.2, 2.5])])
 def test_init_pos_exception(err, init_pos, options):
     """Tests if exception is thrown when init_pos is not a list or of different shape"""
     with pytest.raises(err):
