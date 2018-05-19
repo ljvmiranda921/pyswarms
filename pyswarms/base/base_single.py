@@ -36,6 +36,8 @@ import numpy as np
 import logging.config
 from collections import namedtuple
 
+# Import from package
+from ..backend import (generate_swarm, generate_velocity)
 
 class SwarmBase(object):
 
@@ -72,20 +74,16 @@ class SwarmBase(object):
                                  '`bounds[0]`.')
 
         # Check clamp settings
-        if self.velocity_clamp is not None:
-            if not isinstance(self.velocity_clamp, tuple):
-                raise TypeError('Parameter `velocity_clamp` must be a tuple')
-            if not len(self.velocity_clamp) == 2:
-                raise IndexError('Parameter `velocity_clamp` must be of '
-                                 'size 2')
-            if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-                raise ValueError('Make sure that velocity_clamp is in the '
-                                 'form (min, max)')
+        print(self.velocity_clamp)
+        if not len(self.velocity_clamp) == 2:
+            raise IndexError('Parameter `velocity_clamp` must be of '
+                                'size 2')
+        if not self.velocity_clamp[0] < self.velocity_clamp[1]:
+            raise ValueError('Make sure that velocity_clamp is in the '
+                                'form (min, max)')
 
         # Check setting of init_pos
-        if self.init_pos is not None:
-            if not (isinstance(self.init_pos, list) or isinstance(self.init_pos, np.ndarray)):
-                raise TypeError('Parameter `init_pos` must be an array (list or numpy array)')
+        if isinstance(self.init_pos, (list, np.ndarray)):
             if not len(self.init_pos) == self.dimensions:
                 raise IndexError('Parameter `init_pos` must be the same shape '
                                  'as dimensions.')
@@ -122,7 +120,7 @@ class SwarmBase(object):
             logging.basicConfig(level=default_level)
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, init_pos=None, ftol=-np.inf):
+                 bounds=None, velocity_clamp=(0,1), init_pos=1.0, ftol=-np.inf):
         """Initializes the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the
@@ -298,37 +296,15 @@ class SwarmBase(object):
         self.pos_history = []
         self.velocity_history = []
 
-        # Broadcast the bounds and initialize the swarm
-        if self.bounds is not None:
-            self.min_bounds = np.repeat(self.bounds[0][np.newaxis, :],
-                                        self.n_particles,
-                                        axis=0)
-            self.max_bounds = np.repeat(self.bounds[1][np.newaxis, :],
-                                        self.n_particles,
-                                        axis=0)
-            if self.init_pos is not None:
-                self.pos = self.init_pos * np.random.uniform(low=self.min_bounds,
-                                         high=self.max_bounds,
-                                         size=self.swarm_size)
-            else:
-                self.pos = np.random.uniform(low=self.min_bounds,
-                                         high=self.max_bounds,
-                                         size=self.swarm_size)
-        else:
-            if self.init_pos is not None:
-                self.pos = self.init_pos * np.random.uniform(size=self.swarm_size)
-            else:
-                self.pos = np.random.uniform(size=self.swarm_size)
+        # Initialize the swarm
+        self.pos = generate_swarm(n_particles=self.n_particles,
+                                  dimensions=self.dimensions, bounds=self.bounds,
+                                  init_pos=self.init_pos)
 
         # Initialize velocity vectors
-        if self.velocity_clamp is not None:
-            min_velocity, max_velocity = self.velocity_clamp[0], \
-                                         self.velocity_clamp[1]
-            self.velocity = ((max_velocity - min_velocity)
-                             * np.random.random_sample(size=self.swarm_size)
-                             + min_velocity)
-        else:
-            self.velocity = np.random.random_sample(size=self.swarm_size)
+        self.velocity = generate_velocity(n_particles=self.n_particles,
+                                          dimensions=self.dimensions,
+                                          clamp=self.velocity_clamp)
 
         # Initialize the best cost of the swarm
         self.best_cost = np.inf
