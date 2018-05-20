@@ -55,23 +55,19 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
-# Import from __future__
-from __future__ import with_statement
-from __future__ import absolute_import
-from __future__ import print_function
+# Import from stdlib
+import logging
 
 # Import modules
-import logging
 import numpy as np
-from past.builtins import xrange
 
 # Import from package
-from ..base import SwarmBase
-from ..backend import (update_pbest, update_gbest, update_velocity, update_position)
+from ..base import SwarmOptimizer
+from ..backend.operators import (update_pbest, update_gbest, update_velocity, update_position)
 from ..utils.console_utils import cli_print, end_report
 
 
-class GlobalBestPSO(SwarmBase):
+class GlobalBestPSO(SwarmOptimizer):
 
     def __init__(self, n_particles, dimensions, options,
                  bounds=None, velocity_clamp=None, init_pos=1.00, ftol=-np.inf):
@@ -139,48 +135,38 @@ class GlobalBestPSO(SwarmBase):
         tuple
             the global best cost and the global best position.
         """
-        for i in xrange(iters):
+        for i in range(iters):
             # Compute cost for current position and personal best
-            current_cost = objective_func(self.pos)
-            pbest_cost = objective_func(self.personal_best_pos)
-            best_cost_yet_found = self.best_cost
-            self.personal_best_pos, pbest_cost = update_pbest(pbest_pos=self.personal_best_pos,
-                                                              pbest_cost=pbest_cost,
-                                                              pos=self.pos,
-                                                              cost=current_cost)
+            self.swarm.current_cost = objective_func(self.swarm.position)
+            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos)
+            self.swarm.pbest_pos, self.swarm.pbest_cost = update_pbest(self.swarm)
+            best_cost_yet_found = self.swarm.best_cost
             # Get minima of pbest and check if it's less than gbest
-            if np.min(pbest_cost) < self.best_cost:
-                self.best_pos, self.best_cost = update_gbest(pbest_pos=self.personal_best_pos,
-                                                             pbest_cost=pbest_cost)
+            if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
+                self.swarm.best_pos, self.swarm.best_cost = update_gbest(self.swarm)
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                          (i+1, iters, self.best_cost), verbose, 2,
+                          (i+1, iters, self.swarm.best_cost), verbose, 2,
                           logger=self.logger)
             # Save to history
-            hist = self.ToHistory(best_cost=self.best_cost,
-                                  mean_pbest_cost=np.mean(pbest_cost),
-                                  mean_neighbor_cost=self.best_cost,
-                                  position=self.pos,
-                                  velocity=self.velocity)
+            hist = self.ToHistory(best_cost=self.swarm.best_cost,
+                                  mean_pbest_cost=np.mean(self.swarm.pbest_cost),
+                                  mean_neighbor_cost=self.swarm.best_cost,
+                                  position=self.swarm.position,
+                                  velocity=self.swarm.velocity)
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol*(1 + np.abs(best_cost_yet_found))
-            if np.abs(self.best_cost - best_cost_yet_found) < relative_measure:
+            if np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure:
                 break
             # Perform velocity and position updates
-            self.velocity = update_velocity(velocity=self.velocity,
-                                            clamp=self.velocity_clamp,
-                                            pos=self.pos,
-                                            pbest_pos=self.personal_best_pos,
-                                            best_pos=self.best_pos,
-                                            c1=self.options['c1'],
-                                            c2=self.options['c2'],
-                                            w=self.options['w'])
-            self.pos = update_position(velocity=self.velocity, position=self.pos, bounds=self.bounds)
+            self.swarm.velocity = update_velocity(self.swarm, self.velocity_clamp)
+            self.swarm.position = update_position(self.swarm, self.bounds)
         # Obtain the final best_cost and the final best_position
-        final_best_cost = self.best_cost.copy()
-        final_best_pos = self.best_pos.copy()
+        final_best_cost = self.swarm.best_cost.copy()
+        final_best_pos = self.swarm.best_pos.copy()
         # Write report in log and return final cost and position
         end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
         return (final_best_cost, final_best_pos)
+

@@ -64,23 +64,19 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
     Symposium on Micromachine and Human Science, 1995, pp. 39–43.
 """
 
-# Import from __future__
-from __future__ import with_statement
-from __future__ import absolute_import
-from __future__ import print_function
+# Import from stdlib
+import logging
 
 # Import modules
-import logging
 import numpy as np
-from scipy.spatial import cKDTree
-from past.builtins import xrange
 
 # Import from package
-from ..base import SwarmBase
+from ..base import SwarmOptimizer
+from ..backend.operators import (update_pbest, update_gbest_neighborhood, update_position, update_velocity)
 from ..utils.console_utils import cli_print, end_report
 
 
-class LocalBestPSO(SwarmBase):
+class LocalBestPSO(SwarmOptimizer):
 
     def assertions(self):
         """Assertion method to check various inputs.
@@ -180,142 +176,35 @@ class LocalBestPSO(SwarmBase):
             the local best cost and the local best position among the
             swarm.
         """
-        for i in xrange(iters):
+        for i in range(iters):
             # Compute cost for current position and personal best
-            current_cost = objective_func(self.pos)
-            pbest_cost = objective_func(self.personal_best_pos)
-
-            # Store current best cost found
-            best_cost_yet_found = np.min(self.best_cost)
-            
-            # Update personal bests if the current position is better
-            # Create a 1-D mask then update pbest_cost
-            m = (current_cost < pbest_cost)
-            pbest_cost = np.where(~m, pbest_cost, current_cost)
-            # Create a 2-D mask to update positions
-            _m = np.repeat(m[:, np.newaxis], self.dimensions, axis=1)
-            self.personal_best_pos = np.where(~_m, self.personal_best_pos,
-                                              self.pos)
-
-            # Obtain the indices of the best position for each
-            # neighbour-space, and get the local best cost and
-            # local best positions from it.
-            nmin_idx = self._get_neighbors(pbest_cost)
-            self.best_cost = pbest_cost[nmin_idx]
-            self.best_pos = self.personal_best_pos[nmin_idx]
-
+            self.swarm.current_cost = objective_func(self.swarm.position)
+            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos)
+            self.swarm.pbest_pos, self.swarm.pbest_cost = update_pbest(self.swarm)
+            best_cost_yet_found = np.min(self.swarm.best_cost)
+            # Update gbest from neighborhood
+            self.swarm.best_pos, self.swarm.best_cost = update_gbest_neighborhood(self.swarm, self.p, self.k)
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                          (i+1, iters, np.min(self.best_cost)), verbose, 2,
+                          (i+1, iters, np.min(self.swarm.best_cost)), verbose, 2,
                           logger=self.logger)
-
             # Save to history
-            hist = self.ToHistory(
-                best_cost=np.min(self.best_cost),
-                mean_pbest_cost=np.mean(pbest_cost),
-                mean_neighbor_cost=np.mean(self.best_cost),
-                position=self.pos,
-                velocity=self.velocity
-            )
+            hist = self.ToHistory(best_cost=self.swarm.best_cost,
+                                  mean_pbest_cost=np.mean(self.swarm.pbest_cost),
+                                  mean_neighbor_cost=np.mean(self.swarm.best_cost),
+                                  position=self.swarm.position,
+                                  velocity=self.swarm.velocity)
             self._populate_history(hist)
-
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol*(1 + np.abs(best_cost_yet_found))
-            if np.abs(np.min(self.best_cost) - best_cost_yet_found) < relative_measure:
+            if np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure:
                 break
             # Perform position velocity update
-            self._update_velocity()
-            self._update_position()
-
+            self.swarm.velocity = update_velocity(self.swarm, self.velocity_clamp)
+            self.swarm.position = update_position(self.swarm, self.bounds)
         # Obtain the final best_cost and the final best_position
-        final_best_cost_arg = np.argmin(self.best_cost)
-        final_best_cost = np.min(self.best_cost)
-        final_best_pos = self.best_pos[final_best_cost_arg]
-
-        end_report(final_best_cost, final_best_pos, verbose,
-                   logger=self.logger)
-        return final_best_cost, final_best_pos
-
-    def _get_neighbors(self, pbest_cost):
-        """Helper function to obtain the best position found in the
-        neighborhood. This uses the cKDTree method from :code:`scipy`
-        to obtain the nearest neighbours
-
-        Parameters
-        ----------
-        pbest_cost : numpy.ndarray of size :code:`(n_particles, )`
-            the cost incurred at the historically best position. Will be used
-            for mapping the obtained indices to its actual cost.
-
-        Returns
-        -------
-        array of size (n_particles, ) dtype=int64
-            indices containing the best particles for each particle's
-            neighbour-space that have the lowest cost
-        """
-        # Use cKDTree to get the indices of the nearest neighbors
-        tree = cKDTree(self.pos)
-        _, idx = tree.query(self.pos, p=self.p, k=self.k)
-
-        # Map the computed costs to the neighbour indices and take the
-        # argmin. If k-neighbors is equal to 1, then the swarm acts
-        # independently of each other.
-        if self.k == 1:
-            # The minimum index is itself, no mapping needed.
-            best_neighbor = pbest_cost[idx][:, np.newaxis].argmin(axis=1)
-        else:
-            idx_min = pbest_cost[idx].argmin(axis=1)
-            best_neighbor = idx[np.arange(len(idx)), idx_min]
-
-        return best_neighbor
-
-    def _update_velocity(self):
-        """Updates the velocity matrix of the swarm.
-
-        This method updates the attribute :code:`self.velocity` of
-        the instantiated object. It is called by the
-        :code:`self.optimize()` method.
-        """
-        # Define the hyperparameters from options dictionary
-        c1, c2, w = self.options['c1'], self.options['c2'], self.options['w']
-
-        # Compute for cognitive and social terms
-        cognitive = (c1 * np.random.uniform(0, 1, self.swarm_size)
-                     * (self.personal_best_pos - self.pos))
-        social = (c2 * np.random.uniform(0, 1, self.swarm_size)
-                  * (self.best_pos - self.pos))
-        temp_velocity = (w * self.velocity) + cognitive + social
-
-        # Create a mask to clamp the velocities
-        if self.velocity_clamp is not None:
-            # Create a mask depending on the set boundaries
-            min_velocity, max_velocity = self.velocity_clamp[0], \
-                                         self.velocity_clamp[1]
-            _b = np.logical_and(temp_velocity >= min_velocity,
-                                temp_velocity <= max_velocity)
-            # Use the mask to finally clamp the velocities
-            self.velocity = np.where(~_b, self.velocity, temp_velocity)
-        else:
-            self.velocity = temp_velocity
-
-    def _update_position(self):
-        """Updates the position matrix of the swarm.
-
-        This method updates the attribute :code:`self.pos` of
-        the instantiated object. It is called by the
-        :code:`self.optimize()` method.
-        """
-        # Update position and store it in a temporary variable
-        temp = self.pos.copy()
-        temp += self.velocity
-
-        if self.bounds is not None:
-            # Create a mask depending on the set boundaries
-            b = (np.all(self.min_bounds <= temp, axis=1)
-                 * np.all(temp <= self.max_bounds, axis=1))
-            # Broadcast the mask
-            b = np.repeat(b[:, np.newaxis], self.dimensions, axis=1)
-            # Use the mask to finally guide position update
-            temp = np.where(~b, self.pos, temp)
-        self.pos = temp
+        final_best_cost = self.swarm.best_cost.copy()
+        final_best_pos = self.swarm.best_pos.copy()
+        end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
+        return (final_best_cost, final_best_pos)

@@ -15,60 +15,42 @@ import logging
 
 >>>>>>> f0e6a49... [WIP-operator] Add update_gbest_neighborhood to operators
 # Import modules
+import logging
 import numpy as np
 from scipy.spatial import cKDTree
 
+# Create a logger
+logger = logging.getLogger(__name__)
 
-def update_pbest(pbest_pos, pbest_cost, pos, cost):
-    """Updates the personal best, pbest_pos, given the costs
+def update_pbest(swarm):
+    """Takes a swarm instance and updates the personal best scores
     
     You can use this method to update your personal best positions.
 
     ..code-block :: python
 
         import pyswarms.backend as P
+        from pyswarms.backend.swarms import Swarm
 
+        my_swarm = P.create_swarm(n_particles, dimensions)
+
+        # Inside the for-loop...
         for i in range(iters):
-            current_cost = compute_fitness(current_pos)
-            current_pbest_cost = compute_fitness(current_pbest)
-        
-            current_pbest_pos, pbest_cost = P.update_pbest(pbest_pos=current_pbest,
-                                                           pbest_cost=current_pbest_cost,
-                                                           pos=current_pos,
-                                                           cost=current_cost)
+            # It updates the swarm internally
+            my_swarm.pbest_pos, my_swarm.pbest_cost = P.update_pbest(my_swarm)
 
     It updates your :code:`current_pbest` with the personal bests acquired by
     comparing the (1) cost of the current positions and the (2) personal
     bests your swarm has attained.
     
     If the cost of the current position is less than the cost of the personal
-    best, then the current position replaces the previous personal best position.
-    If you wish, you can supply these values as keyword arguments:
-
-    ..code-block :: python
-
-        import pyswarms.backend as P
-
-        current_pbest = P.update_pbest(**{'pbest_pos': current_pbest,
-                                          'pbest_cost': current_pbest_cost,
-                                          'pos': current_pos,
-                                          'cost': current_cost})
-        current_pbest_pos, pbest_cost = current_pbest
+    best, then the current position replaces the previous personal best
+    position.
 
     Parameters
     ----------
-    pbest_pos : numpy.ndarray
-        Current personal best positions of the swarm. Must be of shape
-        :code:`(n_particles, n_dimensions)`
-    pbest_cost : numpy.ndarray
-        Cost or fitness of the personal best positions. Must be of shape
-        :code:`(n_particles,)`
-    pos : numpy.ndarray
-        Current positions of the swarm. Must be of shape
-        :code:`(n_particles, n_dimensions)`
-    cost : numpy.ndarray
-        Cost or fitness of the current positions. Must be of shape
-        :code:`(n_particles, )`
+    swarm : pyswarms.backend.swarm.Swarm
+        a Swarm instance
 
     Returns
     -------
@@ -77,17 +59,23 @@ def update_pbest(pbest_pos, pbest_cost, pos, cost):
     numpy.ndarray
         New personal best costs of shape :code:`(n_particles,)`
     """
-    # Infer dimensions from positions
-    dimensions = pos.shape[1]
-    # Create a 1-D and 2-D mask based from comparisons
-    mask_cost = (cost < pbest_cost)
-    mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
-    # Apply masks
-    new_pbest_pos = np.where(~mask_pos, pbest_pos, pos)
-    new_pbest_cost = np.where(~mask_cost, pbest_cost, cost)
-    return (new_pbest_pos, new_pbest_cost)
+    try:
+        # Infer dimensions from positions
+        dimensions = swarm.dimensions
+        # Create a 1-D and 2-D mask based from comparisons
+        mask_cost = (swarm.current_cost < swarm.pbest_cost)
+        mask_pos = np.repeat(mask_cost[:, np.newaxis], swarm.dimensions, axis=1)
+        # Apply masks
+        new_pbest_pos = np.where(~mask_pos, swarm.pbest_pos, swarm.position)
+        new_pbest_cost = np.where(~mask_cost, swarm.pbest_cost, swarm.current_cost)
+    except AttributeError:
+        msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
+        logger.error(msg)
+        raise
+    else:
+        return (new_pbest_pos, new_pbest_cost)
 
-def update_gbest(pbest_pos, pbest_cost):
+def update_gbest(swarm):
     """Updates the global best given the cost and the position
 
     This method takes the current pbest_pos and pbest_cost, then returns
@@ -97,20 +85,19 @@ def update_gbest(pbest_pos, pbest_cost):
     .. code-block:: python
 
         import pyswarms.backend as P
+        from pyswarms.backend.swarms import Swarm
+
+        my_swarm = P.create_swarm(n_particles, dimensions)
 
         # If the minima of the pbest_cost is less than the best_cost
         if np.min(pbest_cost) < best_cost:
-            # Update best_cost
-            best_pos, best_cost = P.update_gbest(pbest_pos, pbest_cost)
+            # Update best_cost and position
+            swarm.best_pos, swarm.best_cost = P.update_gbest(my_swarm)
 
     Parameters
     ----------
-    pbest_pos : numpy.ndarray
-        Current personal best positions of the swarm. Must be of shape
-        :code:`(n_particles, n_dimensions)`
-    pbest_cost : numpy.ndarray
-        Cost or fitness of the personal best positions. Must be of shape
-        :code:`(n_particles,)`
+    swarm : pyswarms.backend.swarm.Swarm
+        a Swarm instance
 
     Returns
     -------
@@ -119,7 +106,15 @@ def update_gbest(pbest_pos, pbest_cost):
     float
         Best cost
     """
-    return (pbest_pos[np.argmin(pbest_cost)], np.min(pbest_cost))
+    try:
+        best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
+        best_cost = np.min(swarm.pbest_cost)
+    except AttributeError:
+        msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
+        logger.error(msg)
+        raise
+    else:
+        return (best_pos, best_cost)
 
 def update_gbest_neighborhood(swarm, p, k):
     """Updates the global best using a neighborhood approach
@@ -174,77 +169,102 @@ def update_velocity(swarm, clamp):
     """Updates the velocity matrix
 
     This method updates the velocity matrix using the best and current
-    positions of the swarm. A sample usage can be seen with the following:
+    positions of the swarm. The velocity matrix is computed using the
+    cognitive and social terms of the swarm.
+    
+    A sample usage can be seen with the following:
 
     .. code-block :: python
 
         import pyswarms.backend as P
+        from pyswarms.swarms.backend import Swarm
 
-        new_velocity = update_velocity(velocity, pos, pbest_pos, best_pos,
-                                       **{'c1':0.5, 'c2':0.4, 'w':0.3})
+        my_swarm = P.create_swarm(n_particles, dimensions)
+
+        for i in range(iters):
+            # Inside the for-loop
+            my_swarm.velocity = update_velocity(my_swarm, clamp)
 
     Parameters
     ----------
-    velocity : numpy.ndarray
-        Velocity-matrix of shape :code:`(n_samples, n_dimensions)`
-    clamp : None or iterable
-        Clamping value
-    pos : numpy.ndarray
-        Current positions of shape :code:`(n_samples, n_dimensions)`
-    pbest_pos : numpy.ndarray
-        Personal best positions of the particles of shape :code:`(n_samples, n_dimensions)`
-    best_pos : numpy.ndarray
-        Best position of the swarm of shape :code:`(n_dimensions, )`
-    c1 : float
-        Cognitive parameter
-    c2 : float
-        Social parameter
-    w : float
-        Inertia parameter
+    swarm : pyswarms.backend.swarms.Swarm
+        a Swarm instance
+    clamp : tuple of floats (default is :code:`None`)
+        a tuple of size 2 where the first entry is the minimum velocity
+        and the second entry is the maximum velocity. It
+        sets the limits for velocity clamping.
 
     Returns
     -------
     numpy.ndarray
         Updated velocity matrix
     """
-    swarm_size = pos.shape
-    cognitive = (c1 * np.random.uniform(0,1, swarm_size) * (pbest_pos - pos))
-    social = (c2 * np.random.uniform(0, 1, swarm_size) * (best_pos - pos))
+    try:
+        # Prepare parameters
+        swarm_size = swarm.position.shape
+        c1 = swarm.behavior['c1']
+        c2 = swarm.behavior['c2']
+        w = swarm.behavior['w']
+        # Compute for cognitive and social terms
+        cognitive = (c1 * np.random.uniform(0,1, swarm_size) * (swarm.pbest_pos - swarm.position))
+        social = (c2 * np.random.uniform(0, 1, swarm_size) * (swarm.best_pos - swarm.position))
+        # Compute temp velocity (subject to clamping if possible)
+        temp_velocity = (w * swarm.velocity) + cognitive + social
 
-    # Compute temp velocity (subject to clamping if possible)
-    temp_velocity = (w * velocity) + cognitive + social
-
-    if clamp is None:
-        updated_velocity = temp_velocity
+        if clamp is None:
+            updated_velocity = temp_velocity
+        else:
+            min_velocity, max_velocity = clamp
+            mask = np.logical_and(temp_velocity >= min_velocity,
+                                temp_velocity <= max_velocity)
+            updated_velocity = np.where(~mask, swarm.velocity, temp_velocity)
+    except AttributeError:
+        msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
+        logger.error(msg)
+        raise
+    except KeyError:
+        msg = 'Missing keyword in swarm.behavior'
+        logger.error(msg)
+        raise
     else:
-        min_velocity, max_velocity = clamp
-        mask = np.logical_and(temp_velocity >= min_velocity,
-                              temp_velocity <= max_velocity)
-        updated_velocity = np.where(~mask, velocity, temp_velocity)
-    
-    return updated_velocity
+        return updated_velocity
 
-def update_position(velocity, position, bounds):
+def update_position(swarm, bounds):
     """Updates the position matrix
-    
+
+    This method updates the position matrix given the current position and
+    the velocity. If bounded, it waives updating the position.
+
     Parameters
     ----------
-    velocity : numpy.ndarray
-        velocity-matrix of shape (n_samples, dimensions)
-    position : numpy.ndarray
-        position-matrix of shape (n_samples, dimensions)
+    swarm : pyswarms.backend.swarms.Swarm
+        a Swarm instance
+    bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
+        a tuple of size 2 where the first entry is the minimum bound while
+        the second entry is the maximum bound. Each array must be of shape
+        :code:`(dimensions,)`.
 
+    Returns
+    -------
+    numpy.ndarray
+        New position-matrix
     """
-    temp_position = position.copy()
-    temp_position += velocity
+    try:
+        temp_position = swarm.position.copy()
+        temp_position += swarm.velocity
 
-    if bounds is not None:
-        lb, ub = bounds
-        min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0)
-        max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0)
-        mask = (np.all(min_bounds <= temp_position, axis=1)
-               * np.all(temp_position <= max_bounds, axis=1))
-        mask = np.repeat(mask[:, np.newaxis], position.shape[1], axis=1)
-        temp_position = np.where(~mask, position, temp_position)
-    position = temp_position
-    return position
+        if bounds is not None:
+            lb, ub = bounds
+            min_bounds = np.repeat(np.array(lb)[np.newaxis, :], swarm.n_particles, axis=0)
+            max_bounds = np.repeat(np.array(ub)[np.newaxis, :], swarm.n_particles, axis=0)
+            mask = (np.all(min_bounds <= temp_position, axis=1)
+                * np.all(temp_position <= max_bounds, axis=1))
+            mask = np.repeat(mask[:, np.newaxis], swarm.dimensions, axis=1)
+            temp_position = np.where(~mask, swarm.position, temp_position)
+        position = temp_position
+    except AttributeError:
+        msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
+        logger.error(msg)
+        raise
+    else:
+        return position
