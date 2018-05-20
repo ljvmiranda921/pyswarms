@@ -8,8 +8,15 @@ the personal best, finding neighbors, etc. You can use these methods
 to specify how the swarm will behave.
 """
 
+<<<<<<< HEAD
+=======
+# Import from stdlib
+import logging
+
+>>>>>>> f0e6a49... [WIP-operator] Add update_gbest_neighborhood to operators
 # Import modules
 import numpy as np
+from scipy.spatial import cKDTree
 
 
 def update_pbest(pbest_pos, pbest_cost, pos, cost):
@@ -114,7 +121,56 @@ def update_gbest(pbest_pos, pbest_cost):
     """
     return (pbest_pos[np.argmin(pbest_cost)], np.min(pbest_cost))
 
-def update_velocity(velocity, clamp, pos, pbest_pos, best_pos, c1, c2, w):
+def update_gbest_neighborhood(swarm, p, k):
+    """Updates the global best using a neighborhood approach
+
+    This uses the cKDTree method from :code:`scipy` to obtain the nearest
+    neighbours
+
+    Parameters
+    ----------
+    swarm : pyswarms.backend.swarms.Swarm
+        a Swarm instance
+    k : int
+        number of neighbors to be considered. Must be a
+        positive integer less than :code:`n_particles`
+    p: int {1,2}
+        the Minkowski p-norm to use. 1 is the
+        sum-of-absolute values (or L1 distance) while 2 is
+        the Euclidean (or L2) distance.
+
+    Returns
+    -------
+    numpy.ndarray
+        Best position of shape :code:`(n_dimensions, )`
+    float
+        Best cost
+    """
+    try:
+        # Obtain the nearest-neighbors for each particle
+        tree = cKDTree(swarm.position)
+        _, idx = tree.query(swarm.position, p=p, k=k)
+
+        # Map the computed costs to the neighbour indices and take the
+        # argmin. If k-neighbors is equal to 1, then the swarm acts
+        # independently of each other.
+        if k == 1:
+            # The minimum index is itself, no mapping needed.
+            best_neighbor = swarm.pbest_cost[idx][:, np.newaxis].argmin(axis=1)
+        else:
+            idx_min = swarm.pbest_cost[idx].argmin(axis=1)
+            best_neighbor = idx[np.arange(len(idx)), idx_min]
+        # Obtain best cost and position
+        best_cost = np.min(swarm.pbest_cost[best_neighbor])
+        best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost[best_neighbor])]
+    except AttributeError:
+        msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
+        logger.error(msg)
+        raise
+    else:
+        return (best_pos, best_cost)
+
+def update_velocity(swarm, clamp):
     """Updates the velocity matrix
 
     This method updates the velocity matrix using the best and current
