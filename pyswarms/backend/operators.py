@@ -8,14 +8,10 @@ the personal best, finding neighbors, etc. You can use these methods
 to specify how the swarm will behave.
 """
 
-<<<<<<< HEAD
-=======
 # Import from stdlib
 import logging
 
->>>>>>> f0e6a49... [WIP-operator] Add update_gbest_neighborhood to operators
 # Import modules
-import logging
 import numpy as np
 from scipy.spatial import cKDTree
 
