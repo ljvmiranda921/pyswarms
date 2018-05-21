@@ -12,6 +12,9 @@ here to dictate how a swarm is initialized for your custom PSO.
 # Import modules
 import numpy as np
 
+# Import from package
+from .swarms import Swarm
+
 
 def generate_swarm(n_particles, dimensions, bounds=None, init_pos=1.00):
     """Generates a swarm
@@ -56,7 +59,7 @@ def generate_velocity(n_particles, dimensions, clamp=None):
         number of particles to be generated in the swarm.
     dimensions: int
         number of dimensions to be generated in the swarm
-    clamp : tuple of floats (default is :code:`(1,0)`)
+    clamp : tuple of floats (default is :code:`None`)
         a tuple of size 2 where the first entry is the minimum velocity
         and the second entry is the maximum velocity. It
         sets the limits for velocity clamping.
@@ -75,3 +78,34 @@ def generate_velocity(n_particles, dimensions, clamp=None):
         raise
     else:
         return velocity
+
+def create_swarm(n_particles, dimensions, behavior=None, bounds=None, init_pos=1.0, clamp=None):
+    """Abstracts the generate_swarm() and generate_velocity() methods
+    
+    Parameters
+    ----------
+    n_particles : int
+        number of particles to be generated in the swarm.
+    dimensions: int
+        number of dimensions to be generated in the swarm
+    behavior : dict (default is :code:`None`)
+        Swarm behavior, for example, c1, c2, etc.
+    bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
+        a tuple of size 2 where the first entry is the minimum bound while
+        the second entry is the maximum bound. Each array must be of shape
+        :code:`(dimensions,)`.
+    init_pos : :code:`numpy.ndarrray` (default is :code:`1`)
+        a list of initial positions for generating the swarm
+    clamp : tuple of floats (default is :code:`None`)
+        a tuple of size 2 where the first entry is the minimum velocity
+        and the second entry is the maximum velocity. It
+        sets the limits for velocity clamping.
+
+    Returns
+    -------
+    pyswarms.backend.swarms.Swarm
+        a Swarm class
+    """
+    position = generate_swarm(n_particles, dimensions, bounds, init_pos)
+    velocity = generate_velocity(n_particles, dimensions, clamp)
+    return Swarm(position, velocity, behavior=behavior)

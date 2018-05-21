@@ -37,9 +37,9 @@ import logging.config
 from collections import namedtuple
 
 # Import from package
-from ..backend import (generate_swarm, generate_velocity)
+from ..backend import create_swarm
 
-class SwarmBase(object):
+class SwarmOptimizer(object):
 
     def assertions(self):
         """Assertion method to check various inputs.
@@ -123,10 +123,7 @@ class SwarmBase(object):
                  bounds=None, velocity_clamp=None, init_pos=1.0, ftol=-np.inf):
         """Initializes the swarm.
 
-        Creates a :code:`numpy.ndarray` of positions depending on the
-        number of particles needed and the number of dimensions.
-        The initial positions of the particles are sampled from a
-        uniform distribution.
+        Creates a Swarm class depending on the values initialized
 
         Attributes
         ----------
@@ -155,7 +152,6 @@ class SwarmBase(object):
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for convergence
-
         """
         self.setup_logging()
         # Initialize primary swarm attributes
@@ -245,27 +241,7 @@ class SwarmBase(object):
         NotImplementedError
             When this method is not implemented.
         """
-        raise NotImplementedError("SwarmBase::optimize()")
-
-    def _update_velocity(self):
-        """Updates the velocity matrix.
-
-        Raises
-        ------
-        NotImplementedError
-            When this method is not implemented.
-        """
-        raise NotImplementedError("SwarmBase::_update_velocity()")
-
-    def _update_position(self):
-        """Updates the position matrix.
-
-        Raises
-        ------
-        NotImplementedError
-            When this method is not implemented.
-        """
-        raise NotImplementedError("SwarmBase::_update_position()")
+        raise NotImplementedError("SwarmOptimizer::optimize()")
 
     def reset(self):
         """Resets the attributes of the optimizer.
@@ -297,18 +273,7 @@ class SwarmBase(object):
         self.velocity_history = []
 
         # Initialize the swarm
-        self.pos = generate_swarm(n_particles=self.n_particles,
-                                  dimensions=self.dimensions, bounds=self.bounds,
-                                  init_pos=self.init_pos)
-
-        # Initialize velocity vectors
-        self.velocity = generate_velocity(n_particles=self.n_particles,
-                                          dimensions=self.dimensions,
-                                          clamp=self.velocity_clamp)
-
-        # Initialize the best cost of the swarm
-        self.best_cost = np.inf
-        self.best_pos = None
-
-        # Initialize the personal best of each particle
-        self.personal_best_pos = self.pos
+        self.swarm = create_swarm(n_particles=self.n_particles,
+                                  dimensions=self.dimensions,
+                                  bounds=self.bounds, init_pos=self.init_pos, 
+                                  clamp=self.velocity_clamp, behavior=self.options)
