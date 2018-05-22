@@ -308,12 +308,15 @@ Are you using PySwarms in your project or research? Please cite us!
         url     = {https://doi.org/10.21105/joss.00433}
     }
 
-Projects citing PySwarms
-~~~~~~~~~~~~~~~~~~~~~~~~
+People using PySwarms
+~~~~~~~~~~~~~~~~~~~~~~
+Not on the list? Ping us in the Issue Tracker!
 
+* Gousios, Georgios. Lecture notes for the TU Delft TI3110TU course Algorithms and Data Structures. Accessed May 22, 2018. http://gousios.org/courses/algo-ds/book/string-distance.html#sop-example-using-pyswarms.
 * Nandy, Abhishek, and Manisha Biswas., "Applying Python to Reinforcement Learning." *Reinforcement Learning*. Apress, Berkeley, CA, 2018. 89-128.
 * Benedetti, Marcello, et al., "A generative modeling approach for benchmarking and training shallow quantum circuits." *arXiv preprint arXiv:1801.07686* (2018).
 * Vrbančič et al., "NiaPy: Python microframework for building nature-inspired algorithms." Journal of Open Source Software, 3(23), 613, https://doi.org/10.21105/joss.00613
+
 
 Others
 ------
