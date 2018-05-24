@@ -13,12 +13,11 @@ import logging
 
 # Import modules
 import numpy as np
-from scipy.spatial import cKDTree
 
 # Create a logger
 logger = logging.getLogger(__name__)
 
-def update_pbest(swarm):
+def compute_pbest(swarm):
     """Takes a swarm instance and updates the personal best scores
     
     You can use this method to update your personal best positions.
@@ -71,97 +70,7 @@ def update_pbest(swarm):
     else:
         return (new_pbest_pos, new_pbest_cost)
 
-def update_gbest(swarm):
-    """Updates the global best given the cost and the position
-
-    This method takes the current pbest_pos and pbest_cost, then returns
-    the minimum cost and position from the matrix. It should be used in
-    tandem with an if statement
-
-    .. code-block:: python
-
-        import pyswarms.backend as P
-        from pyswarms.backend.swarms import Swarm
-
-        my_swarm = P.create_swarm(n_particles, dimensions)
-
-        # If the minima of the pbest_cost is less than the best_cost
-        if np.min(pbest_cost) < best_cost:
-            # Update best_cost and position
-            swarm.best_pos, swarm.best_cost = P.update_gbest(my_swarm)
-
-    Parameters
-    ----------
-    swarm : pyswarms.backend.swarm.Swarm
-        a Swarm instance
-
-    Returns
-    -------
-    numpy.ndarray
-        Best position of shape :code:`(n_dimensions, )`
-    float
-        Best cost
-    """
-    try:
-        best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
-        best_cost = np.min(swarm.pbest_cost)
-    except AttributeError:
-        msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
-        logger.error(msg)
-        raise
-    else:
-        return (best_pos, best_cost)
-
-def update_gbest_neighborhood(swarm, p, k):
-    """Updates the global best using a neighborhood approach
-
-    This uses the cKDTree method from :code:`scipy` to obtain the nearest
-    neighbours
-
-    Parameters
-    ----------
-    swarm : pyswarms.backend.swarms.Swarm
-        a Swarm instance
-    k : int
-        number of neighbors to be considered. Must be a
-        positive integer less than :code:`n_particles`
-    p: int {1,2}
-        the Minkowski p-norm to use. 1 is the
-        sum-of-absolute values (or L1 distance) while 2 is
-        the Euclidean (or L2) distance.
-
-    Returns
-    -------
-    numpy.ndarray
-        Best position of shape :code:`(n_dimensions, )`
-    float
-        Best cost
-    """
-    try:
-        # Obtain the nearest-neighbors for each particle
-        tree = cKDTree(swarm.position)
-        _, idx = tree.query(swarm.position, p=p, k=k)
-
-        # Map the computed costs to the neighbour indices and take the
-        # argmin. If k-neighbors is equal to 1, then the swarm acts
-        # independently of each other.
-        if k == 1:
-            # The minimum index is itself, no mapping needed.
-            best_neighbor = swarm.pbest_cost[idx][:, np.newaxis].argmin(axis=1)
-        else:
-            idx_min = swarm.pbest_cost[idx].argmin(axis=1)
-            best_neighbor = idx[np.arange(len(idx)), idx_min]
-        # Obtain best cost and position
-        best_cost = np.min(swarm.pbest_cost[best_neighbor])
-        best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost[best_neighbor])]
-    except AttributeError:
-        msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
-        logger.error(msg)
-        raise
-    else:
-        return (best_pos, best_cost)
-
-def update_velocity(swarm, clamp):
+def compute_velocity(swarm, clamp):
     """Updates the velocity matrix
 
     This method updates the velocity matrix using the best and current
@@ -225,7 +134,7 @@ def update_velocity(swarm, clamp):
     else:
         return updated_velocity
 
-def update_position(swarm, bounds):
+def compute_position(swarm, bounds):
     """Updates the position matrix
 
     This method updates the position matrix given the current position and
