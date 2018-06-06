@@ -63,7 +63,8 @@ import numpy as np
 
 # Import from package
 from ..base import SwarmOptimizer
-from ..backend.operators import (update_pbest, update_gbest, update_velocity, update_position)
+from ..backend.operators import compute_pbest
+from ..backend.topology import Star
 from ..utils.console_utils import cli_print, end_report
 
 
@@ -112,6 +113,8 @@ class GlobalBestPSO(SwarmOptimizer):
         self.assertions()
         # Initialize the resettable attributes
         self.reset()
+        # Initialize the topology
+        self.top = Star()
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
@@ -139,11 +142,11 @@ class GlobalBestPSO(SwarmOptimizer):
             # Compute cost for current position and personal best
             self.swarm.current_cost = objective_func(self.swarm.position)
             self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos)
-            self.swarm.pbest_pos, self.swarm.pbest_cost = update_pbest(self.swarm)
+            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
             best_cost_yet_found = self.swarm.best_cost
             # Get minima of pbest and check if it's less than gbest
             if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
-                self.swarm.best_pos, self.swarm.best_cost = update_gbest(self.swarm)
+                self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
@@ -161,8 +164,8 @@ class GlobalBestPSO(SwarmOptimizer):
             if np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure:
                 break
             # Perform velocity and position updates
-            self.swarm.velocity = update_velocity(self.swarm, self.velocity_clamp)
-            self.swarm.position = update_position(self.swarm, self.bounds)
+            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp)
+            self.swarm.position = self.top.compute_position(self.swarm, self.bounds)
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.best_pos.copy()
