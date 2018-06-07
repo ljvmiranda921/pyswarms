@@ -276,4 +276,4 @@ class SwarmOptimizer(object):
         self.swarm = create_swarm(n_particles=self.n_particles,
                                   dimensions=self.dimensions,
                                   bounds=self.bounds, center=self.center, 
-                                  clamp=self.velocity_clamp, behavior=self.options)
+                                  clamp=self.velocity_clamp, options=self.options)

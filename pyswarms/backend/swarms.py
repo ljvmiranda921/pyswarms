@@ -4,7 +4,7 @@
 Swarm Class Backend
 
 This module implements a Swarm class that holds various attributes in
-the swarm such as position, velocity, behavior, etc. You can use this
+the swarm such as position, velocity, options, etc. You can use this
 as input to most backend cases
 """
 
@@ -27,7 +27,7 @@ class Swarm(object):
     # With defaults
     n_particles = attrib(type=int, validator=instance_of(int))
     dimensions = attrib(type=int, validator=instance_of(int))
-    behavior = attrib(type=dict, default={}, validator=instance_of(dict))
+    options = attrib(type=dict, default={}, validator=instance_of(dict))
     pbest_pos = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
     best_pos  = attrib(type=np.ndarray, default=np.array([]), validator=instance_of(np.ndarray))
     pbest_cost = attrib(type=np.ndarray, default=np.array([]), validator=instance_of(np.ndarray))

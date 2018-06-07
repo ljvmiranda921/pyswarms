@@ -24,7 +24,7 @@ is defined as:
                    + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
 
 Here, :math:`c1` and :math:`c2` are the cognitive and social parameters
-respectively. They control the particle's behavior in choosing how to
+respectively. They control the particle's options in choosing how to
 react given two choices: (1) to follow its *personal best* or (2) follow
 the swarm's *global best* position. Overall, this dictates if the swarm
 is explorative or exploitative in nature. In addition, a parameter

@@ -21,6 +21,6 @@ def swarm():
         'pbest_pos' : np.array([[1,2,3], [4,5,6], [7,8,9]]),
         'best_cost' : 1,
         'best_pos' : np.array([1,1,1]),
-        'behavior' : {'c1' : 0.5, 'c2': 1, 'w': 2}
+        'options' : {'c1' : 0.5, 'c2': 1, 'w': 2}
     }
     return Swarm(**attrs_at_t)
