@@ -16,7 +16,7 @@ import numpy as np
 from .swarms import Swarm
 
 
-def generate_swarm(n_particles, dimensions, bounds=None, init_pos=1.00):
+def generate_swarm(n_particles, dimensions, bounds=None, center=1.00):
     """Generates a swarm
 
     Parameters
@@ -29,8 +29,8 @@ def generate_swarm(n_particles, dimensions, bounds=None, init_pos=1.00):
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
-    init_pos : :code:`numpy.ndarrray` (default is :code:`1`)
-        a list of initial positions for generating the swarm
+    center : :code:`numpy.ndarray` or :code:`float` (default is :code:`1`)
+        controls the mean or center whenever the swarm is generated randomly.
 
     Returns
     -------
@@ -43,7 +43,7 @@ def generate_swarm(n_particles, dimensions, bounds=None, init_pos=1.00):
             lb, ub = bounds
             min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0)
             max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0)
-        pos = init_pos * np.random.uniform(low=min_bounds, high=max_bounds,
+        pos = center * np.random.uniform(low=min_bounds, high=max_bounds,
                                            size=(n_particles, dimensions))
     except ValueError:
         raise
@@ -79,7 +79,7 @@ def generate_velocity(n_particles, dimensions, clamp=None):
     else:
         return velocity
 
-def create_swarm(n_particles, dimensions, behavior=None, bounds=None, init_pos=1.0, clamp=None):
+def create_swarm(n_particles, dimensions, behavior=None, bounds=None, center=1.0, clamp=None):
     """Abstracts the generate_swarm() and generate_velocity() methods
     
     Parameters
@@ -94,7 +94,7 @@ def create_swarm(n_particles, dimensions, behavior=None, bounds=None, init_pos=1
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
-    init_pos : :code:`numpy.ndarrray` (default is :code:`1`)
+    center : :code:`numpy.ndarrray` (default is :code:`1`)
         a list of initial positions for generating the swarm
     clamp : tuple of floats (default is :code:`None`)
         a tuple of size 2 where the first entry is the minimum velocity
@@ -106,6 +106,6 @@ def create_swarm(n_particles, dimensions, behavior=None, bounds=None, init_pos=1
     pyswarms.backend.swarms.Swarm
         a Swarm class
     """
-    position = generate_swarm(n_particles, dimensions, bounds, init_pos)
+    position = generate_swarm(n_particles, dimensions, bounds, center)
     velocity = generate_velocity(n_particles, dimensions, clamp)
     return Swarm(position, velocity, behavior=behavior)

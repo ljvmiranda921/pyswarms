@@ -82,13 +82,13 @@ class SwarmOptimizer(object):
                 raise ValueError('Make sure that velocity_clamp is in the '
                                     'form (min, max)')
 
-        # Check setting of init_pos
-        if isinstance(self.init_pos, (list, np.ndarray)):
-            if not len(self.init_pos) == self.dimensions:
-                raise IndexError('Parameter `init_pos` must be the same shape '
+        # Check setting of center
+        if isinstance(self.center, (list, np.ndarray)):
+            if not len(self.center) == self.dimensions:
+                raise IndexError('Parameter `center` must be the same shape '
                                  'as dimensions.')
-            if isinstance(self.init_pos, np.ndarray) and self.init_pos.ndim != 1:
-                raise ValueError('Parameter `init_pos` must have a 1d array')
+            if isinstance(self.center, np.ndarray) and self.center.ndim != 1:
+                raise ValueError('Parameter `center` must have a 1d array')
 
 
         # Required keys in options argument
@@ -120,7 +120,7 @@ class SwarmOptimizer(object):
             logging.basicConfig(level=default_level)
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, init_pos=1.0, ftol=-np.inf):
+                 bounds=None, velocity_clamp=None, center=1.0, ftol=-np.inf):
         """Initializes the swarm.
 
         Creates a Swarm class depending on the values initialized
@@ -148,7 +148,7 @@ class SwarmOptimizer(object):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        init_pos : list (default is :code:`None`)
+        center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for convergence
@@ -161,7 +161,7 @@ class SwarmOptimizer(object):
         self.velocity_clamp = velocity_clamp
         self.swarm_size = (n_particles, dimensions)
         self.options = options
-        self.init_pos = init_pos
+        self.center = center
         self.ftol = ftol
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple('ToHistory',
@@ -275,5 +275,5 @@ class SwarmOptimizer(object):
         # Initialize the swarm
         self.swarm = create_swarm(n_particles=self.n_particles,
                                   dimensions=self.dimensions,
-                                  bounds=self.bounds, init_pos=self.init_pos, 
+                                  bounds=self.bounds, center=self.center, 
                                   clamp=self.velocity_clamp, behavior=self.options)
