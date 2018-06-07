@@ -107,9 +107,9 @@ def compute_velocity(swarm, clamp):
     try:
         # Prepare parameters
         swarm_size = swarm.position.shape
-        c1 = swarm.behavior['c1']
-        c2 = swarm.behavior['c2']
-        w = swarm.behavior['w']
+        c1 = swarm.options['c1']
+        c2 = swarm.options['c2']
+        w = swarm.options['w']
         # Compute for cognitive and social terms
         cognitive = (c1 * np.random.uniform(0,1, swarm_size) * (swarm.pbest_pos - swarm.position))
         social = (c2 * np.random.uniform(0, 1, swarm_size) * (swarm.best_pos - swarm.position))
@@ -128,7 +128,7 @@ def compute_velocity(swarm, clamp):
         logger.error(msg)
         raise
     except KeyError:
-        msg = 'Missing keyword in swarm.behavior'
+        msg = 'Missing keyword in swarm.options'
         logger.error(msg)
         raise
     else:

@@ -93,7 +93,8 @@ def generate_velocity(n_particles, dimensions, clamp=None):
     else:
         return velocity
 
-def create_swarm(n_particles, dimensions, behavior=None, bounds=None, center=1.0, clamp=None):
+def create_swarm(n_particles, dimensions, discrete=False, options=None,
+                 bounds=None, center=1.0, clamp=None):
     """Abstracts the generate_swarm() and generate_velocity() methods
     
     Parameters
@@ -102,8 +103,10 @@ def create_swarm(n_particles, dimensions, behavior=None, bounds=None, center=1.0
         number of particles to be generated in the swarm.
     dimensions: int
         number of dimensions to be generated in the swarm
-    behavior : dict (default is :code:`None`)
-        Swarm behavior, for example, c1, c2, etc.
+    options : dict (default is :code:`None`)
+        Swarm options, for example, c1, c2, etc.
+    discrete : bool (default is :code:`False`)
+        Creates a discrete swarm
     bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
@@ -122,4 +125,4 @@ def create_swarm(n_particles, dimensions, behavior=None, bounds=None, center=1.0
     """
     position = generate_swarm(n_particles, dimensions, bounds, center)
     velocity = generate_velocity(n_particles, dimensions, clamp)
-    return Swarm(position, velocity, behavior=behavior)
+    return Swarm(position, velocity, options=options)
