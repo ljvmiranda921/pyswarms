@@ -103,7 +103,7 @@ class LocalBestPSO(SwarmOptimizer):
                              'or 2 (for L2/Euclidean).')
 
     def __init__(self, n_particles, dimensions, options, bounds=None,
-                 velocity_clamp=None, init_pos=1.00, ftol=-np.inf):
+                 velocity_clamp=None, center=1.00, ftol=-np.inf, init_pos=None):
         """Initializes the swarm.
 
         Attributes
@@ -120,7 +120,7 @@ class LocalBestPSO(SwarmOptimizer):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        init_pos : list (default is :code:`None`)
+        center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
@@ -147,8 +147,11 @@ class LocalBestPSO(SwarmOptimizer):
         # Assign k-neighbors and p-value as attributes
         self.k, self.p = options['k'], options['p']
         # Initialize parent class
-        super(LocalBestPSO, self).__init__(n_particles, dimensions, options,
-                                           bounds, velocity_clamp, init_pos, ftol)
+        super(LocalBestPSO, self).__init__(n_particles=n_particles, dimensions=dimensions,
+                                           options=options, bounds=bounds,
+                                           velocity_clamp=velocity_clamp,
+                                           center=center, ftol=ftol,
+        init_pos=init_pos)
         # Invoke assertions
         self.assertions()
         # Initialize the resettable attributes

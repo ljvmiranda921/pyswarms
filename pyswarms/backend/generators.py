@@ -16,7 +16,7 @@ import numpy as np
 from .swarms import Swarm
 
 
-def generate_swarm(n_particles, dimensions, bounds=None, init_pos=1.00):
+def generate_swarm(n_particles, dimensions, bounds=None, center=1.00, init_pos=None):
     """Generates a swarm
 
     Parameters
@@ -29,22 +29,72 @@ def generate_swarm(n_particles, dimensions, bounds=None, init_pos=1.00):
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
-    init_pos : :code:`numpy.ndarrray` (default is :code:`1`)
-        a list of initial positions for generating the swarm
+    center : :code:`numpy.ndarray` or :code:`float` (default is :code:`1`)
+        controls the mean or center whenever the swarm is generated randomly.
+    init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+        option to explicitly set the particles' initial positions. Set to
+        :code:`None` if you wish to generate the particles randomly.
 
     Returns
     -------
     numpy.ndarray
         swarm matrix of shape (n_particles, n_dimensions)
     """
-    min_bounds, max_bounds = (0.0, 1.0)
     try:
-        if bounds is not None:
-            lb, ub = bounds
-            min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0)
-            max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0)
-        pos = init_pos * np.random.uniform(low=min_bounds, high=max_bounds,
-                                           size=(n_particles, dimensions))
+        if init_pos is not None:
+            # There is user-defined initial position
+            if bounds is None:
+                pos = init_pos
+            else:
+                if not (np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])):
+                    raise ValueError('User-defined init_pos is out of bounds.')
+                pos = init_pos
+        else:
+            # There is no user-defined initial position
+            if bounds is None:
+                pos = center * np.random.uniform(low=0.0, high=1.0, size=(n_particles, dimensions))
+            else:
+                lb, ub = bounds
+                min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0)
+                max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0)
+                pos = center * np.random.uniform(low=min_bounds, high=max_bounds,
+                                                size=(n_particles, dimensions))
+    except ValueError:
+        raise
+    else:
+        return pos
+
+def generate_discrete_swarm(n_particles, dimensions, binary=False, init_pos=None):
+    """Generates a discrete swarm
+    
+    Parameters
+    ----------
+    n_particles : int
+        number of particles to be generated in the swarm.
+    dimensions: int
+        number of dimensions to be generated in the swarm.
+    binary : bool (default is :code:`False`)
+        generate a binary matrix
+    init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+        option to explicitly set the particles' initial positions. Set to
+        :code:`None` if you wish to generate the particles randomly.
+    """
+    try:
+        if init_pos is not None:
+            # There is user-defined initial position
+            if binary:
+                # Check if the initialized position is binary
+                if not len(np.unique(init_pos)) == 2:
+                    raise ValueError('User-defined init_pos is not binary!')
+                pos = init_pos
+            else:
+                pos = init_pos
+        else:
+            # There is no user-defined initial position
+            if binary:
+                pos = np.random.randint(2, size=(n_particles, dimensions))
+            else:
+                pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
     except ValueError:
         raise
     else:
@@ -58,7 +108,7 @@ def generate_velocity(n_particles, dimensions, clamp=None):
     n_particles : int
         number of particles to be generated in the swarm.
     dimensions: int
-        number of dimensions to be generated in the swarm
+        number of dimensions to be generated in the swarm.
     clamp : tuple of floats (default is :code:`None`)
         a tuple of size 2 where the first entry is the minimum velocity
         and the second entry is the maximum velocity. It
@@ -79,7 +129,8 @@ def generate_velocity(n_particles, dimensions, clamp=None):
     else:
         return velocity
 
-def create_swarm(n_particles, dimensions, behavior=None, bounds=None, init_pos=1.0, clamp=None):
+def create_swarm(n_particles, dimensions, discrete=False, binary=False,
+                options=None, bounds=None, center=1.0, init_pos=None, clamp=None):
     """Abstracts the generate_swarm() and generate_velocity() methods
     
     Parameters
@@ -88,14 +139,21 @@ def create_swarm(n_particles, dimensions, behavior=None, bounds=None, init_pos=1
         number of particles to be generated in the swarm.
     dimensions: int
         number of dimensions to be generated in the swarm
-    behavior : dict (default is :code:`None`)
-        Swarm behavior, for example, c1, c2, etc.
+    options : dict (default is :code:`None`)
+        Swarm options, for example, c1, c2, etc.
+    discrete : bool (default is :code:`False`)
+        Creates a discrete swarm
+    binary : bool (default is :code:`False`)
+        generate a binary matrix
     bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
-    init_pos : :code:`numpy.ndarrray` (default is :code:`1`)
+    center : :code:`numpy.ndarray` (default is :code:`1`)
         a list of initial positions for generating the swarm
+    init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+        option to explicitly set the particles' initial positions. Set to
+        :code:`None` if you wish to generate the particles randomly.
     clamp : tuple of floats (default is :code:`None`)
         a tuple of size 2 where the first entry is the minimum velocity
         and the second entry is the maximum velocity. It
@@ -106,6 +164,11 @@ def create_swarm(n_particles, dimensions, behavior=None, bounds=None, init_pos=1
     pyswarms.backend.swarms.Swarm
         a Swarm class
     """
-    position = generate_swarm(n_particles, dimensions, bounds, init_pos)
-    velocity = generate_velocity(n_particles, dimensions, clamp)
-    return Swarm(position, velocity, behavior=behavior)
+    if discrete:
+        position = generate_discrete_swarm(n_particles, dimensions, binary=binary)
+    else:
+        position = generate_swarm(n_particles, dimensions, bounds=bounds,
+                                  center=center, init_pos=init_pos)
+
+    velocity = generate_velocity(n_particles, dimensions, clamp=clamp)
+    return Swarm(position, velocity, options=options)

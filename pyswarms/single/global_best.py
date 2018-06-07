@@ -24,7 +24,7 @@ is defined as:
                    + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
 
 Here, :math:`c1` and :math:`c2` are the cognitive and social parameters
-respectively. They control the particle's behavior in choosing how to
+respectively. They control the particle's options in choosing how to
 react given two choices: (1) to follow its *personal best* or (2) follow
 the swarm's *global best* position. Overall, this dictates if the swarm
 is explorative or exploitative in nature. In addition, a parameter
@@ -71,7 +71,8 @@ from ..utils.console_utils import cli_print, end_report
 class GlobalBestPSO(SwarmOptimizer):
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, init_pos=1.00, ftol=-np.inf):
+                 bounds=None, velocity_clamp=None, center=1.00, ftol=-np.inf,
+                 init_pos=None):
         """Initializes the swarm.
 
         Attributes
@@ -97,15 +98,16 @@ class GlobalBestPSO(SwarmOptimizer):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        init_pos : list (default is :code:`None`)
+        center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
         """
-        super(GlobalBestPSO, self).__init__(n_particles, dimensions, options,
-                                            bounds, velocity_clamp,
-                                            init_pos, ftol)
+        super(GlobalBestPSO, self).__init__(n_particles=n_particles, dimensions=dimensions,
+                                            options=options, bounds=bounds,
+                                            velocity_clamp=velocity_clamp,
+                                            center=center, ftol=ftol, init_pos=init_pos)
 
         # Initialize logger
         self.logger = logging.getLogger(__name__)

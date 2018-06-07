@@ -8,7 +8,7 @@ All methods here are abstract and raises a :code:`NotImplementedError`
 when not used. When defining your own swarm implementation,
 create another class,
 
-    >>> class MySwarm(DiscreteSwarmBase):
+    >>> class MySwarm(DiscreteSwarmOptimizer):
     >>>     def __init__(self):
     >>>        super(MySwarm, self).__init__()
 
@@ -35,8 +35,10 @@ import numpy as np
 import logging.config
 from collections import namedtuple
 
+# Import from package
+from ..backend import create_swarm
 
-class DiscreteSwarmBase(object):
+class DiscreteSwarmOptimizer(object):
 
     def assertions(self):
         """Assertion method to check various inputs.
@@ -94,7 +96,7 @@ class DiscreteSwarmBase(object):
             logging.basicConfig(level=default_level)
 
     def __init__(self, n_particles, dimensions, binary, options,
-                 velocity_clamp=None):
+                 velocity_clamp=None, init_pos=None, ftol=-np.inf):
         """Initializes the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the
@@ -137,6 +139,8 @@ class DiscreteSwarmBase(object):
         self.velocity_clamp = velocity_clamp
         self.swarm_size = (n_particles, dimensions)
         self.options = options
+        self.init_pos = init_pos
+        self.ftol = ftol
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple('ToHistory',
                                     ['best_cost', 'mean_pbest_cost',
@@ -218,26 +222,6 @@ class DiscreteSwarmBase(object):
         """
         raise NotImplementedError("SwarmBase::optimize()")
 
-    def _update_velocity(self):
-        """Updates the velocity matrix.
-
-        Raises
-        ------
-        NotImplementedError
-            When this method is not implemented.
-        """
-        raise NotImplementedError("SwarmBase::_update_velocity()")
-
-    def _update_position(self):
-        """Updates the position matrix.
-
-        Raises
-        ------
-        NotImplementedError
-            When this method is not implemented.
-        """
-        raise NotImplementedError("SwarmBase::_update_position()")
-
     def reset(self):
         """Resets the attributes of the optimizer.
 
@@ -267,25 +251,10 @@ class DiscreteSwarmBase(object):
         self.pos_history = []
         self.velocity_history = []
 
-        # Generate initial position
-        self.pos = np.random.random_sample(size=self.swarm_size).\
-            argsort(axis=1)
-        if self.binary:
-            self.pos = np.random.randint(2, size=self.swarm_size)
-
-        # Initialize velocity vectors
-        if self.velocity_clamp is not None:
-            min_velocity, max_velocity = self.velocity_clamp[0],\
-                                         self.velocity_clamp[1]
-            self.velocity = ((max_velocity - min_velocity)
-                             * np.random.random_sample(size=self.swarm_size)
-                             + min_velocity)
-        else:
-            self.velocity = np.random.random_sample(size=self.swarm_size)
-
-        # Initialize the best cost of the swarm
-        self.best_cost = np.inf
-        self.best_pos = None
-
-        # Initialize the personal best of each particle
-        self.personal_best_pos = self.pos
+        # Initialize the swarm
+        self.swarm = create_swarm(n_particles=self.n_particles,
+                                  dimensions=self.dimensions,
+                                  discrete=True,
+                                  init_pos=self.init_pos,
+                                  binary=self.binary,
+                                  clamp=self.velocity_clamp, options=self.options)
