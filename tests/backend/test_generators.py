@@ -23,7 +23,6 @@ def test_generate_swarm_return_values(bounds, center):
     upper_bound = center * np.array(max_bounds)
     assert (pos <= upper_bound).all() and (pos >= lower_bound).all()
 
-
 @pytest.mark.parametrize('bounds', [None, ([1,1,1], [10,10,10])])
 @pytest.mark.parametrize('init_pos', [None, np.array([[2,5,6],[7,2,1]])])
 def test_generate_swarm_bounds_init_pos(bounds, init_pos):
@@ -48,6 +47,25 @@ def test_generate_swarm_out_of_bounds():
         pos = P.generate_swarm(n_particles=2, dimensions=3, bounds=bounds,
                                init_pos=init_pos)
 
+@pytest.mark.parametrize('binary', [False, True])
+def test_generate_discrete_binary_swarm(binary):
+    """Tests if generate_discrete_swarm(binary=True) returns expected values"""
+    dims = 3
+    pos = P.generate_discrete_swarm(n_particles=2, dimensions=dims, binary=binary)
+    if binary:
+        assert len(np.unique(pos)) == 2
+    else:
+        assert (np.max(pos, axis=1) == dims - 1).all()
+
+@pytest.mark.parametrize('init_pos', [None, np.array([[4,2,1], [1,4,6]])])
+def test_generate_discrete_swarm(init_pos):
+    """Tests if init_pos actually sets the position properly"""
+    dims = 3
+    pos = P.generate_discrete_swarm(n_particles=2, dimensions=dims, init_pos=init_pos)
+    if init_pos is None:
+        assert (np.max(pos, axis=1) == dims - 1).all()
+    else:
+        assert np.equal(pos, init_pos).all()
 
 @pytest.mark.parametrize('clamp', [None, (0,1), (2,5), (1,6)])
 def test_generate_velocity_return_values(clamp):
