@@ -16,7 +16,7 @@ import numpy as np
 from .swarms import Swarm
 
 
-def generate_swarm(n_particles, dimensions, bounds=None, center=1.00):
+def generate_swarm(n_particles, dimensions, bounds=None, center=1.00, init_pos=None):
     """Generates a swarm
 
     Parameters
@@ -31,20 +31,34 @@ def generate_swarm(n_particles, dimensions, bounds=None, center=1.00):
         :code:`(dimensions,)`.
     center : :code:`numpy.ndarray` or :code:`float` (default is :code:`1`)
         controls the mean or center whenever the swarm is generated randomly.
+    init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+        option to explicitly set the particles' initial positions. Set to
+        :code:`None` if you wish to generate the particles randomly.
 
     Returns
     -------
     numpy.ndarray
         swarm matrix of shape (n_particles, n_dimensions)
     """
-    min_bounds, max_bounds = (0.0, 1.0)
     try:
-        if bounds is not None:
-            lb, ub = bounds
-            min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0)
-            max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0)
-        pos = center * np.random.uniform(low=min_bounds, high=max_bounds,
-                                           size=(n_particles, dimensions))
+        if init_pos is not None:
+            # There is user-defined initial position
+            if bounds is None:
+                pos = init_pos
+            else:
+                if not (np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])):
+                    raise ValueError('User-defined init_pos is out of bounds.')
+                pos = init_pos
+        else:
+            # There is no user-defined initial position
+            if bounds is None:
+                pos = center * np.random.uniform(low=0.0, high=1.0, size=(n_particles, dimensions))
+            else:
+                lb, ub = bounds
+                min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0)
+                max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0)
+                pos = center * np.random.uniform(low=min_bounds, high=max_bounds,
+                                                size=(n_particles, dimensions))
     except ValueError:
         raise
     else:
