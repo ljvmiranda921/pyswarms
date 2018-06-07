@@ -119,8 +119,8 @@ class SwarmOptimizer(object):
         else:
             logging.basicConfig(level=default_level)
 
-    def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, center=1.0, ftol=-np.inf):
+    def __init__(self, n_particles, dimensions, options, bounds=None,
+                 velocity_clamp=None, center=1.0, ftol=-np.inf, init_pos=None):
         """Initializes the swarm.
 
         Creates a Swarm class depending on the values initialized
@@ -163,6 +163,7 @@ class SwarmOptimizer(object):
         self.options = options
         self.center = center
         self.ftol = ftol
+        self.init_pos = init_pos
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple('ToHistory',
                                     ['best_cost', 'mean_pbest_cost',
@@ -275,5 +276,5 @@ class SwarmOptimizer(object):
         # Initialize the swarm
         self.swarm = create_swarm(n_particles=self.n_particles,
                                   dimensions=self.dimensions,
-                                  bounds=self.bounds, center=self.center, 
+                                  bounds=self.bounds, center=self.center, init_pos=self.init_pos,
                                   clamp=self.velocity_clamp, options=self.options)
