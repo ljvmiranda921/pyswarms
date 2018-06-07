@@ -71,7 +71,8 @@ from ..utils.console_utils import cli_print, end_report
 class GlobalBestPSO(SwarmOptimizer):
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, center=1.00, ftol=-np.inf):
+                 bounds=None, velocity_clamp=None, center=1.00, ftol=-np.inf,
+                 init_pos=None):
         """Initializes the swarm.
 
         Attributes
@@ -103,9 +104,10 @@ class GlobalBestPSO(SwarmOptimizer):
             relative error in objective_func(best_pos) acceptable for
             convergence
         """
-        super(GlobalBestPSO, self).__init__(n_particles, dimensions, options,
-                                            bounds, velocity_clamp,
-                                            center, ftol)
+        super(GlobalBestPSO, self).__init__(n_particles=n_particles, dimensions=dimensions,
+                                            options=options, bounds=bounds,
+                                            velocity_clamp=velocity_clamp,
+                                            center=center, ftol=ftol, init_pos=init_pos)
 
         # Initialize logger
         self.logger = logging.getLogger(__name__)
