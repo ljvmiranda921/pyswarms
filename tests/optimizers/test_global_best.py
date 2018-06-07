@@ -47,13 +47,6 @@ def test_bound_type_exception(bounds, options):
     with pytest.raises(TypeError):
         GlobalBestPSO(5,2, options=options, bounds=bounds)
 
-@pytest.mark.parametrize('velocity_clamp', [[1, 3],np.array([1, 3])])
-def test_vclamp_type_exception(velocity_clamp, options):
-    """Tests if exception is raised when velocity_clamp type is not a
-    tuple"""
-    with pytest.raises(TypeError):
-        GlobalBestPSO(5, 2, velocity_clamp=velocity_clamp, options=options)
-
 @pytest.mark.parametrize('velocity_clamp', [(1,1,1), (2,3,1)])
 def test_vclamp_shape_exception(velocity_clamp, options):
     """Tests if exception is raised when velocity_clamp's size is not equal
@@ -68,18 +61,18 @@ def test_vclamp_maxmin_exception(velocity_clamp, options):
     with pytest.raises(ValueError):
         GlobalBestPSO(5, 2, velocity_clamp=velocity_clamp, options=options)
 
-@pytest.mark.parametrize('err, init_pos',
-    [(IndexError, [1.5, 3.2, 2.5]), (TypeError, (0.1, 1.5))])
-def test_init_pos_exception(err, init_pos, options):
-    """Tests if exception is thrown when init_pos is not a list or of different shape"""
+@pytest.mark.parametrize('err, center',
+    [(IndexError, [1.5, 3.2, 2.5])])
+def test_center_exception(err, center, options):
+    """Tests if exception is thrown when center is not a list or of different shape"""
     with pytest.raises(err):
-        GlobalBestPSO(5, 2, init_pos=init_pos, options=options)
+        GlobalBestPSO(5, 2, center=center, options=options)
 
 def test_reset_default_values(gbest_reset):
     """Tests if best cost and best pos are set properly when the reset()
     method is called"""
-    assert gbest_reset.best_cost == np.inf
-    assert gbest_reset.best_pos == None
+    assert gbest_reset.swarm.best_cost == np.inf
+    assert set(gbest_reset.swarm.best_pos) == set(np.array([]))
 
 def test_training_history_shape(gbest_history):
     """Test if training histories are of expected shape"""
