@@ -36,8 +36,10 @@ import numpy as np
 import logging.config
 from collections import namedtuple
 
+# Import from package
+from ..backend import create_swarm
 
-class SwarmBase(object):
+class SwarmOptimizer(object):
 
     def assertions(self):
         """Assertion method to check various inputs.
@@ -72,25 +74,21 @@ class SwarmBase(object):
                                  '`bounds[0]`.')
 
         # Check clamp settings
-        if self.velocity_clamp is not None:
-            if not isinstance(self.velocity_clamp, tuple):
-                raise TypeError('Parameter `velocity_clamp` must be a tuple')
+        if hasattr(self.velocity_clamp, '__iter__'):
             if not len(self.velocity_clamp) == 2:
                 raise IndexError('Parameter `velocity_clamp` must be of '
-                                 'size 2')
+                                    'size 2')
             if not self.velocity_clamp[0] < self.velocity_clamp[1]:
                 raise ValueError('Make sure that velocity_clamp is in the '
-                                 'form (min, max)')
+                                    'form (min, max)')
 
-        # Check setting of init_pos
-        if self.init_pos is not None:
-            if not (isinstance(self.init_pos, list) or isinstance(self.init_pos, np.ndarray)):
-                raise TypeError('Parameter `init_pos` must be an array (list or numpy array)')
-            if not len(self.init_pos) == self.dimensions:
-                raise IndexError('Parameter `init_pos` must be the same shape '
+        # Check setting of center
+        if isinstance(self.center, (list, np.ndarray)):
+            if not len(self.center) == self.dimensions:
+                raise IndexError('Parameter `center` must be the same shape '
                                  'as dimensions.')
-            if isinstance(self.init_pos, np.ndarray) and self.init_pos.ndim != 1:
-                raise ValueError('Parameter `init_pos` must have a 1d array')
+            if isinstance(self.center, np.ndarray) and self.center.ndim != 1:
+                raise ValueError('Parameter `center` must have a 1d array')
 
 
         # Required keys in options argument
@@ -121,14 +119,11 @@ class SwarmBase(object):
         else:
             logging.basicConfig(level=default_level)
 
-    def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, init_pos=None, ftol=-np.inf):
+    def __init__(self, n_particles, dimensions, options, bounds=None,
+                 velocity_clamp=None, center=1.0, ftol=-np.inf, init_pos=None):
         """Initializes the swarm.
 
-        Creates a :code:`numpy.ndarray` of positions depending on the
-        number of particles needed and the number of dimensions.
-        The initial positions of the particles are sampled from a
-        uniform distribution.
+        Creates a Swarm class depending on the values initialized
 
         Attributes
         ----------
@@ -153,11 +148,10 @@ class SwarmBase(object):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        init_pos : list (default is :code:`None`)
+        center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for convergence
-
         """
         self.setup_logging()
         # Initialize primary swarm attributes
@@ -167,8 +161,9 @@ class SwarmBase(object):
         self.velocity_clamp = velocity_clamp
         self.swarm_size = (n_particles, dimensions)
         self.options = options
-        self.init_pos = init_pos
+        self.center = center
         self.ftol = ftol
+        self.init_pos = init_pos
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple('ToHistory',
                                     ['best_cost', 'mean_pbest_cost',
@@ -247,27 +242,7 @@ class SwarmBase(object):
         NotImplementedError
             When this method is not implemented.
         """
-        raise NotImplementedError("SwarmBase::optimize()")
-
-    def _update_velocity(self):
-        """Updates the velocity matrix.
-
-        Raises
-        ------
-        NotImplementedError
-            When this method is not implemented.
-        """
-        raise NotImplementedError("SwarmBase::_update_velocity()")
-
-    def _update_position(self):
-        """Updates the position matrix.
-
-        Raises
-        ------
-        NotImplementedError
-            When this method is not implemented.
-        """
-        raise NotImplementedError("SwarmBase::_update_position()")
+        raise NotImplementedError("SwarmOptimizer::optimize()")
 
     def reset(self):
         """Resets the attributes of the optimizer.
@@ -298,41 +273,8 @@ class SwarmBase(object):
         self.pos_history = []
         self.velocity_history = []
 
-        # Broadcast the bounds and initialize the swarm
-        if self.bounds is not None:
-            self.min_bounds = np.repeat(self.bounds[0][np.newaxis, :],
-                                        self.n_particles,
-                                        axis=0)
-            self.max_bounds = np.repeat(self.bounds[1][np.newaxis, :],
-                                        self.n_particles,
-                                        axis=0)
-            if self.init_pos is not None:
-                self.pos = self.init_pos * np.random.uniform(low=self.min_bounds,
-                                         high=self.max_bounds,
-                                         size=self.swarm_size)
-            else:
-                self.pos = np.random.uniform(low=self.min_bounds,
-                                         high=self.max_bounds,
-                                         size=self.swarm_size)
-        else:
-            if self.init_pos is not None:
-                self.pos = self.init_pos * np.random.uniform(size=self.swarm_size)
-            else:
-                self.pos = np.random.uniform(size=self.swarm_size)
-
-        # Initialize velocity vectors
-        if self.velocity_clamp is not None:
-            min_velocity, max_velocity = self.velocity_clamp[0], \
-                                         self.velocity_clamp[1]
-            self.velocity = ((max_velocity - min_velocity)
-                             * np.random.random_sample(size=self.swarm_size)
-                             + min_velocity)
-        else:
-            self.velocity = np.random.random_sample(size=self.swarm_size)
-
-        # Initialize the best cost of the swarm
-        self.best_cost = np.inf
-        self.best_pos = None
-
-        # Initialize the personal best of each particle
-        self.personal_best_pos = self.pos
+        # Initialize the swarm
+        self.swarm = create_swarm(n_particles=self.n_particles,
+                                  dimensions=self.dimensions,
+                                  bounds=self.bounds, center=self.center, init_pos=self.init_pos,
+                                  clamp=self.velocity_clamp, options=self.options)

@@ -48,7 +48,7 @@ It is intended for swarm intelligence researchers, practitioners, and students w
 
 * **Free software:** MIT license
 * **Documentation:** https://pyswarms.readthedocs.io.
-* **Python versions:** 2.7, 3.4, 3.5 and above
+* **Python versions:** 3.4 and above
 
 Features
 --------
