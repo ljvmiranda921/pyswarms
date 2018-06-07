@@ -56,8 +56,8 @@ def test_vclamp_maxmin_exception(velocity_clamp, options):
 def test_reset_default_values(binary_reset):
     """Tests if best cost and best pos are set properly when the reset()
     method is called"""
-    assert binary_reset.best_cost == np.inf
-    assert binary_reset.best_pos == None
+    assert binary_reset.swarm.best_cost == np.inf
+    assert set(binary_reset.swarm.best_pos) == set(np.array([]))
 
 def test_training_history_shape(binary_history):
     """Test if training histories are of expected shape"""
