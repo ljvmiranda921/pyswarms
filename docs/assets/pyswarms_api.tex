@@ -1,0 +1,103 @@
+% ==================================================
+% PySwarms API
+% Author: Lester James V. Miranda
+% ==================================================
+
+\documentclass[preview, convert={outfile=\jobname.png, density=300}]{standalone}
+
+\usepackage[usenames, dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+
+\renewcommand\familydefault{\sfdefault}
+
+\usetikzlibrary{
+    shapes,
+    arrows,
+    positioning,
+    fit,
+    calc,
+    backgrounds,
+    shadows.blur,
+}
+
+% Define some colors
+\definecolor{gold}{RGB}{255,215,0}
+\definecolor{pyblue}{RGB}{7,78,104}
+
+\begin{document}
+\tikzumlset{fill class=gold}
+\begin{tikzpicture}[
+    textbox/.style={fill=none, align=left, minimum height=0.7cm, minimum width=0.7cm,
+                    text width=5.0cm, text=black}
+]
+    % High-level packages
+    \begin{umlpackage}[fill=pyblue,text=white,x=0.21]{Optimizers}
+        % Global best PSO
+        \umlsimpleclass{GlobalBestPSO}
+        % Local best PSO
+        \umlsimpleclass[right=5mm of GlobalBestPSO]{LocalBestPSO}
+        % Binary PSO
+        \umlsimpleclass[right=5mm of LocalBestPSO]{BinaryPSO}
+        % Foo PSO
+        \umlsimpleclass[right=5mm of BinaryPSO,fill=magenta!50]{FooPSO}
+    \end{umlpackage}
+
+    % Base packages
+    \begin{umlpackage}[fill=pyblue,text=white,y=-5]{Base}
+        % Swarm Optimizer
+        \umlclass{SwarmOptimizer}{
+            n\_particles : int\\dimensions : int
+        }{optimize(), reset()}
+        % Discrete Swarm Optimizer
+        \umlclass[right=5mm of SwarmOptimizer]{DiscreteSwarmOptimizer}{
+            n\_particles : int\\dimensions : int
+        }{optimize(), reset()}
+        % Foo Swarm Optimizer
+        \umlclass[right=5mm of DiscreteSwarmOptimizer, fill=magenta!50]{FooSwarmOptimizer}{
+            n\_particles : int\\dimensions : int
+        }{optimize(), reset()}
+    \end{umlpackage}
+
+    % Backend packages
+    \begin{umlpackage}[fill=pyblue,text=white,x=0.56,y=-10]{Backend}
+        % Swarm Backend
+        \umlclass{Swarm}{
+            position : numpy.ndarray,\\
+            velocity : numpy.ndarray,\\
+            options : dict
+        }{}
+        % Topology Backend
+        \umlclass[right=5mm of Swarm]{Topology}{
+        }{compute\_gbest(),\\
+          compute\_position(),\\
+          compute\_velocity()}
+        % Foo Topology Backend
+        \umlclass[right=5mm of Topology, fill=magenta!50]{FooTopology}{
+        }{compute\_gbest(),\\
+          compute\_position(),\\
+          compute\_velocity()}
+    \end{umlpackage}
+
+    \umlimport{Base}{Optimizers}
+    \umlimport{Backend}{Base}
+
+    % Annotations
+    \node[textbox] (annotOptimizers) [right= of Optimizers]
+        {\small
+            High-level, off-the-shelf swarm optimization
+            algorithms
+        };
+    \node[textbox] at (Base -| annotOptimizers)
+        {\small
+            Base classes for solving different problem types:
+            SwarmOptimizer for single-continuous, DiscreteSwarmOptimizer for
+            discrete, etc.
+        };
+    \node[textbox] at (Backend -| annotOptimizers)
+        {\small
+            Contains the Swarm dataclass for keeping swarm attributes
+            and Topology for governing swarm behavior.
+        };
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,78 @@
+% ==================================================
+% Inheritance Demonstration
+% Author: Lester James V. Miranda
+% ==================================================
+
+\documentclass[preview, convert={outfile=\jobname.png, density=300}]{standalone}
+
+\usepackage[usenames, dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+
+\renewcommand\familydefault{\sfdefault}
+
+\usetikzlibrary{
+    shapes,
+    arrows,
+    positioning,
+    fit,
+    calc,
+    backgrounds,
+    shadows.blur,
+}
+
+% Define some colors
+\definecolor{gold}{RGB}{255,215,0}
+\definecolor{pyblue}{RGB}{7,78,104}
+
+\begin{document}
+\tikzumlset{fill class=gold}
+\begin{tikzpicture}[
+    textbox/.style={fill=none, align=left, minimum height=0.7cm, minimum width=0.7cm,
+                    text width=5.0cm, text=black}
+]
+    % SwarmOptimizer
+    \umlclass{SwarmOptimizer}{
+        + n\_particles : int\\
+        + dimensions : int\\
+        + bounds : tuple\\
+        + velocity\_clamp : tuple\\
+        + options : dict\\
+        + center : float\\
+        + init\_pos : numpy.ndarray
+    }{
+        + optimize() \\
+        + reset() \\
+    }
+
+    % GlobalBestPSO
+    \umlclass[right=2.5cm of SwarmOptimizer, yshift=1cm]{GlobalBestPSO}{}{}
+
+    % LocalBestPSO
+    \umlclass[right=2.5cm of SwarmOptimizer, yshift=-1cm]{LocalBestPSO}{
+        + k : int\\
+        + p : \{1,2\}
+    }{}
+
+    \umlimport{GlobalBestPSO}{SwarmOptimizer}
+    \umlimport{LocalBestPSO}{SwarmOptimizer}
+
+    \node[textbox, align=center] (annotOptimizers) [below= of SwarmOptimizer, yshift=0.5cm]
+        {\small
+            Optimizer class for single-objective, continuous
+            problems.
+        };
+
+    \node[textbox, align=center] (annotGbest) [above= of GlobalBestPSO, yshift=-0.5cm]
+        {\small
+            Uses a \textbf{Star} Topology to solve single-objective continuous
+            problems
+        };
+
+    \node[textbox, align=center] at (annotOptimizers -| LocalBestPSO)
+        {\small
+            Uses a \textbf{Ring} Topology to solve single-objective continuous
+            problems
+        };
+\end{tikzpicture}
+\end{document}
