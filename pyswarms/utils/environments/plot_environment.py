@@ -15,6 +15,7 @@ PlotEnvironment will do a fresh run of your optimizer. After that,
 various plotting methods can now be done:
 
 .. code-block:: python
+
     import pyswarms as ps
     from pyswarms.utils.functions.single_obj import sphere_func
     from pyswarms.utils.environments import PlotEnvironment
@@ -35,8 +36,8 @@ various plotting methods can now be done:
 In case you want to plot the particle movement, it is important that either
 one of the :code:`matplotlib` animation :code:`Writers` is installed. These
 doesn't come out of the box for :code:`pyswarms`, and must be installed
-separately. For example, in a Linux or Windows distribution, you can
-install :code:`ffmpeg` as
+separately. For example, in a Linux or Windows distribution, you can install
+:code:`ffmpeg` as
 
     >>> conda install -c conda-forge ffmpeg
 

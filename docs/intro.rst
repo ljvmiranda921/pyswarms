@@ -5,17 +5,16 @@ Introduction
 It's all a treasure hunt
 -------------------------
 
-Imagine that you and your friends are looking for a treasure together.
-The treasure is magical, and it rewards not only the one who finds it,
-but also others based on their proximity. Your group knows,
-approximately, where the treasure is, but not exactly sure of its definite
-location.
+Imagine that you and your friends are looking for a treasure together. The
+treasure is magical, and it rewards not only the one who finds it, but also
+those near to it. Your group knows, approximately, where the treasure is, but
+not exactly sure of its definite location.
 
-Your group then decided to split up and all of you received
-walkie-talkies and metal detectors. The purpose of the walkie-talkie is
-to inform everyone of your current position, while the metal detectors
-indicate if you are near the treasure. In return, you gain knowledge of
-the location of your friends, and also their proximity to the treasure.
+Your group then decided to split up with walkie-talkies and metal detectors.
+You use your walkie-talkie to inform everyone of your current position, and
+the metal detector to check your proximity to the treasure. In return, you
+gain knowledge of your friends' positions, and also their distance from the
+treasure.
 
 As a member of the group, you have two options:
 
@@ -34,18 +33,18 @@ Particle Swarm Optimization (PSO)
 ---------------------------------
 
 As with the treasure example, the idea of PSO is to emulate the social
-behaviour of birds and fishes by initializing a set of candidate solutions
-to search for an optima. Particles are scattered around the search-space, 
-and moves around it to find the position of the optimal solution. Each
-particle represents a candidate solution, and their movements are
-affected in a two-fold manner: (1) their cognitive desire to search
-individually, (2) and the collective action of the group or its
-neighbors. It is a fairly simple concept with profound applications.
+behaviour of birds and fishes by initializing a set of candidate solutions to
+search for an optima. Particles are scattered around the search-space, and
+they move around it to find the position of the optima. Each particle
+represents a candidate solution, and their movements are affected in a
+two-fold manner: (1) their cognitive desire to search individually, (2) and
+the collective action of the group or its neighbors. It is a fairly simple
+concept with profound applications.
 
-One interesting characteristic of PSO is that it does not use the gradient
-of the function, thus, objective functions need not to be differentiable.
-Moreover, the basic PSO is astonishingly simple. And adding variants to
-the original implementation can help it adapt to more complicated problems.
+One interesting characteristic of PSO is that it does not use the gradient of
+the function, thus, objective functions need not to be differentiable.
+Moreover, the basic PSO is astonishingly simple. Adding variants to the
+original implementation can help it adapt to more complicated problems.
 
 The original PSO algorithm is attributed to Eberhart,
 Kennedy, and Shi [IJCNN1995]_ [ICEC2008]_. Nowadays, a lot of variations

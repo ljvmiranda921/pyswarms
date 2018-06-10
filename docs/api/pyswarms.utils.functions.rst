@@ -6,9 +6,6 @@ pyswarms.utils.functions package
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
-
 pyswarms.utils.functions.single_obj module
 -------------------------------------------
 

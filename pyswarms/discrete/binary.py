@@ -73,8 +73,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         KeyError
             When one of the required dictionary keys is missing.
         ValueError
-            When the number of neighbors is not within the range
-                :code:`[0, n_particles]`.
+            When the number of neighbors is not within the range :code:`[0, n_particles]`.
             When the p-value is not in the list of values :code:`[1,2]`.
         """
         super(BinaryPSO, self).assertions()
