@@ -1,5 +1,5 @@
 ===============================
-Implementing your own optimizer
+Contributing your own optimizer
 ===============================
 
 PySwarms aims to be the go-to library for various PSO implementations, so if you
@@ -37,7 +37,7 @@ continuous optimization algorithms such as global-best PSO (:mod:`pyswarms.singl
 local-best PSO (:mod:`pyswarms.single.local_best`), we can see that it inherits a set of methods as
 seen below:
 
-.. image:: inheritance.png
+.. image:: assets/inheritance.png
     :align: center
     :alt: Inheritance from base class
 
@@ -48,28 +48,32 @@ optimizer.
 A short note on keyword arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The role of keyword arguments, or kwargs in short, is to act as a container for all other parameters
-needed for the optimizer. You can define these things in your code, and create assertions to make all
-of them required. However, note that in some implementations, required :code:`options` might include
-:code:`c1`, :code:`c2`, and :code:`w`. This is the case in :mod:`pyswarms.base.bases` for instance.
+The role of keyword arguments, or kwargs in short, is to act as a container
+for all other parameters needed for the optimizer. You can define these
+things in your code, and create assertions to make all of them required.
+However, note that in some implementations, required :code:`options` might
+include :code:`c1`, :code:`c2`, and :code:`w`. This is the case in
+:mod:`pyswarms.base.bases` for instance.
 
 A short note on :code:`assertions()`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You might notice that in most base classes, an :code:`assertions()` method is being called. This aims
-to check if the user-facing input are correct. Although the method is called "assertions", please make
-all user-facing catches as raised Exceptions.
+You might notice that in most base classes, an :code:`assertions()` method is
+being called. This aims to check if the user-facing input are correct.
+Although the method is called "assertions", please make all user-facing
+catches as raised Exceptions.
 
 A short note on :code:`__init__.py`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We make sure that everything can be imported when the whole :code:`pyswarms` library is called. Thus,
-please make sure to also edit the accompanying :code:`__init__.py` file in the directory you are working
-on. 
+We make sure that everything can be imported when the whole :code:`pyswarms`
+library is called. Thus, please make sure to also edit the accompanying
+:code:`__init__.py` file in the directory you are working on.
 
-For example, if you write your optimizer class :code:`MyOptimizer` inside a file called :code:`my_optimizer.py`,
-and you are working under the :code:`/single` directory, please update the :code:`__init__.py` like
-the following:
+For example, if you write your optimizer class :code:`MyOptimizer` inside a
+file called :code:`my_optimizer.py`, and you are working under the
+:code:`/single` directory, please update the :code:`__init__.py` like the
+following:
 
 .. code-block:: python
 
@@ -90,10 +94,11 @@ This ensures that it will be automatically initialized when the whole library is
 Writing unit tests
 ------------------
 
-Testing is an important element of developing PySwarms, and we wanted everything to be as smooth as 
-possible, especially when doing the build and integrating. In this case, we provide the :code:`tests`
-module in the package. In case you add a test for your optimizer, simply name them with the same
-convention as in those tests.
+Testing is an important element of developing PySwarms, and we wanted
+everything to be as smooth as possible, especially when doing the build and
+integrating. In this case, we provide the :code:`tests` module in the
+package. In case you add a test for your optimizer, simply name them with the
+same convention as in those tests.
 
 You can perform separate checks by
 
