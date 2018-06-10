@@ -37,6 +37,26 @@ students who prefer a high-level declarative interface for implementing PSO
 in their problems. PySwarms enables basic optimization with PSO and
 interaction with swarm optimizations. Check out more features below!
 
++------------+------------+---------------+------------------------------+
+| Branch     | Status     | Documentation | Description                  |
++============+============+===============+==============================+
+| master     | |master|   | |master-docs| |Stable, official PyPI version |
++------------+------------+---------------+------------------------------+
+| development| |dev|      | |dev-docs|    |Bleeding-edge, experimental   |
++------------+------------+---------------+------------------------------+
+
+.. |dev| image:: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=development
+    :target: https://travis-ci.org/ljvmiranda921/pyswarms
+
+.. |master| image:: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=master
+        :target: https://travis-ci.org/ljvmiranda921/pyswarms
+
+.. |master-docs| image:: https://readthedocs.org/projects/pyswarms/badge/?version=master
+        :target: https://pyswarms.readthedocs.io/en/master/
+
+.. |dev-docs| image:: https://readthedocs.org/projects/pyswarms/badge/?version=development
+        :target: https://pyswarms.readthedocs.io/en/development/
+
 * **Free software:** MIT license
 * **Github repository:** https://github.com/ljvmiranda921/pyswarms
 * **Python versions:** 3.4, 3.5 and 3.6
