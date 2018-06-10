@@ -77,6 +77,7 @@ Launching pad
 .. toctree::
    :caption: API Documentation
 
+   api/_pyswarms.backend
    api/_pyswarms.base.classes
    api/_pyswarms.optimizers
    api/_pyswarms.utils
