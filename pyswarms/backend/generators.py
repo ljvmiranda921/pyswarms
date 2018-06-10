@@ -130,7 +130,7 @@ def generate_velocity(n_particles, dimensions, clamp=None):
         return velocity
 
 def create_swarm(n_particles, dimensions, discrete=False, binary=False,
-                options=None, bounds=None, center=1.0, init_pos=None, clamp=None):
+                options={}, bounds=None, center=1.0, init_pos=None, clamp=None):
     """Abstracts the generate_swarm() and generate_velocity() methods
     
     Parameters
@@ -139,7 +139,7 @@ def create_swarm(n_particles, dimensions, discrete=False, binary=False,
         number of particles to be generated in the swarm.
     dimensions: int
         number of dimensions to be generated in the swarm
-    options : dict (default is :code:`None`)
+    options : dict (default is empty dict :code:`{}`)
         Swarm options, for example, c1, c2, etc.
     discrete : bool (default is :code:`False`)
         Creates a discrete swarm

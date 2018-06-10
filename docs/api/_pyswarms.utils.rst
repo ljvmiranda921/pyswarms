@@ -9,3 +9,4 @@ module.
 
    pyswarms.utils.functions
    pyswarms.utils.search
+   pyswarms.utils.environments

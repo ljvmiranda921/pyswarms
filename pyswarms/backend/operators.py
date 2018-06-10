@@ -22,7 +22,7 @@ def compute_pbest(swarm):
     
     You can use this method to update your personal best positions.
 
-    ..code-block :: python
+    .. code-block:: python
 
         import pyswarms.backend as P
         from pyswarms.backend.swarms import Swarm
