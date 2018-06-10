@@ -76,7 +76,7 @@ class Ring(Topology):
         else:
             return (best_pos, best_cost)
 
-    def compute_velocity(self, swarm, clamp):
+    def compute_velocity(self, swarm, clamp=None):
         """Computes the velocity matrix
 
         This method updates the velocity matrix using the best and current
@@ -114,7 +114,7 @@ class Ring(Topology):
         """
         return ops.compute_velocity(swarm, clamp)
 
-    def compute_position(self, swarm, bounds):
+    def compute_position(self, swarm, bounds=None):
         """Updates the position matrix
 
         This method updates the position matrix given the current position and
