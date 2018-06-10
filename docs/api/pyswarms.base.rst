@@ -3,10 +3,6 @@ pyswarms.base package
 
 .. automodule:: pyswarms.base
 
-
-Submodules
-----------
-
 pyswarms.base module
 --------------------
 

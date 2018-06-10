@@ -83,7 +83,7 @@ class GlobalBestPSO(SwarmOptimizer):
             number of dimensions in the space.
         options : dict with keys :code:`{'c1', 'c2', 'w'}`
             a dictionary containing the parameters for the specific
-            optimization technique
+            optimization technique.
                 * c1 : float
                     cognitive parameter
                 * c2 : float

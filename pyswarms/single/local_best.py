@@ -53,7 +53,7 @@ An example usage is as follows:
 
 This algorithm was adapted from one of the earlier works of
 J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
-[IJCNN1995]_ [MHS1995]
+[IJCNN1995]_ [MHS1995]_
 
 .. [IJCNN1995] J. Kennedy and R.C. Eberhart, "Particle Swarm Optimization,"
     Proceedings of the IEEE International Joint Conference on Neural
@@ -87,8 +87,7 @@ class LocalBestPSO(SwarmOptimizer):
         KeyError
             When one of the required dictionary keys is missing.
         ValueError
-            When the number of neighbors is not within the range
-                :code:`[0, n_particles]`.
+            When the number of neighbors is not within the range :code:`[0, n_particles]`.
             When the p-value is not in the list of values :code:`[1,2]`.
         """
         super(LocalBestPSO, self).assertions()

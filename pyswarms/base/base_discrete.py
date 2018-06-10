@@ -238,9 +238,10 @@ class DiscreteSwarmOptimizer(object):
         each type of swarm is contained in its own instance. Thus, the
         following attributes are the only ones recommended to be
         resettable:
-            * Swarm position matrix (self.pos)
-            * Velocity matrix (self.pos)
-            * Best scores and positions (gbest_cost, gbest_pos, etc.)
+
+        * Swarm position matrix (self.pos)
+        * Velocity matrix (self.pos)
+        * Best scores and positions (gbest_cost, gbest_pos, etc.)
 
         Otherwise, consider using positional arguments.
         """
