@@ -72,7 +72,9 @@ Launching pad
    :caption: Developer's Guide
 
    contributing
-   contributing.optimizer
+   dev.api
+   dev.loop
+   dev.optimizer
 
 .. toctree::
    :caption: API Documentation
