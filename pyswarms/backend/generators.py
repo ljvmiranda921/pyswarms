@@ -41,24 +41,20 @@ def generate_swarm(n_particles, dimensions, bounds=None, center=1.00, init_pos=N
         swarm matrix of shape (n_particles, n_dimensions)
     """
     try:
-        if init_pos is not None:
-            # There is user-defined initial position
-            if bounds is None:
-                pos = init_pos
-            else:
-                if not (np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])):
-                    raise ValueError('User-defined init_pos is out of bounds.')
-                pos = init_pos
+        if (init_pos is not None) and (bounds is None):
+            pos = init_pos
+        elif (init_pos is not None) and (bounds is not None):
+            if not (np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])):
+                raise ValueError('User-defined init_pos is out of bounds.')
+            pos = init_pos
+        elif (init_pos is None) and (bounds is None):
+            pos = center * np.random.uniform(low=0.0, high=1.0, size=(n_particles, dimensions))
         else:
-            # There is no user-defined initial position
-            if bounds is None:
-                pos = center * np.random.uniform(low=0.0, high=1.0, size=(n_particles, dimensions))
-            else:
-                lb, ub = bounds
-                min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0)
-                max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0)
-                pos = center * np.random.uniform(low=min_bounds, high=max_bounds,
-                                                size=(n_particles, dimensions))
+            lb, ub = bounds
+            min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0)
+            max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0)
+            pos = center * np.random.uniform(low=min_bounds, high=max_bounds,
+                                             size=(n_particles, dimensions))
     except ValueError:
         raise
     else:
@@ -80,21 +76,16 @@ def generate_discrete_swarm(n_particles, dimensions, binary=False, init_pos=None
         :code:`None` if you wish to generate the particles randomly.
     """
     try:
-        if init_pos is not None:
-            # There is user-defined initial position
-            if binary:
-                # Check if the initialized position is binary
-                if not len(np.unique(init_pos)) == 2:
-                    raise ValueError('User-defined init_pos is not binary!')
-                pos = init_pos
-            else:
-                pos = init_pos
+        if (init_pos is not None) and binary:
+            if not len(np.unique(init_pos)) == 2:
+                raise ValueError('User-defined init_pos is not binary!')
+            pos = init_pos
+        elif (init_pos is not None) and not binary:
+            pos = init_pos
+        elif (init_pos is None) and binary:
+            pos = np.random.randint(2, size=(n_particles, dimensions))
         else:
-            # There is no user-defined initial position
-            if binary:
-                pos = np.random.randint(2, size=(n_particles, dimensions))
-            else:
-                pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
+            pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
     except ValueError:
         raise
     else:
