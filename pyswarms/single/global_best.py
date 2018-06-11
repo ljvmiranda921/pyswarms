@@ -20,10 +20,11 @@ is defined as:
 
 .. math::
 
-   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)] + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
+   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)] 
+                   + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
 
 Here, :math:`c1` and :math:`c2` are the cognitive and social parameters
-respectively. They control the particle's behavior in choosing how to
+respectively. They control the particle's options in choosing how to
 react given two choices: (1) to follow its *personal best* or (2) follow
 the swarm's *global best* position. Overall, this dictates if the swarm
 is explorative or exploitative in nature. In addition, a parameter
@@ -54,25 +55,24 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
-# Import from __future__
-from __future__ import with_statement
-from __future__ import absolute_import
-from __future__ import print_function
+# Import from stdlib
+import logging
 
 # Import modules
-import logging
 import numpy as np
-from past.builtins import xrange
 
 # Import from package
-from ..base import SwarmBase
+from ..base import SwarmOptimizer
+from ..backend.operators import compute_pbest
+from ..backend.topology import Star
 from ..utils.console_utils import cli_print, end_report
 
 
-class GlobalBestPSO(SwarmBase):
+class GlobalBestPSO(SwarmOptimizer):
 
     def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, init_pos=None, ftol=-np.inf):
+                 bounds=None, velocity_clamp=None, center=1.00, ftol=-np.inf,
+                 init_pos=None):
         """Initializes the swarm.
 
         Attributes
@@ -83,7 +83,7 @@ class GlobalBestPSO(SwarmBase):
             number of dimensions in the space.
         options : dict with keys :code:`{'c1', 'c2', 'w'}`
             a dictionary containing the parameters for the specific
-            optimization technique
+            optimization technique.
                 * c1 : float
                     cognitive parameter
                 * c2 : float
@@ -98,15 +98,16 @@ class GlobalBestPSO(SwarmBase):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        init_pos : list (default is :code:`None`)
+        center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
         """
-        super(GlobalBestPSO, self).__init__(n_particles, dimensions, options,
-                                            bounds, velocity_clamp,
-                                            init_pos, ftol)
+        super(GlobalBestPSO, self).__init__(n_particles=n_particles, dimensions=dimensions,
+                                            options=options, bounds=bounds,
+                                            velocity_clamp=velocity_clamp,
+                                            center=center, ftol=ftol, init_pos=init_pos)
 
         # Initialize logger
         self.logger = logging.getLogger(__name__)
@@ -114,6 +115,8 @@ class GlobalBestPSO(SwarmBase):
         self.assertions()
         # Initialize the resettable attributes
         self.reset()
+        # Initialize the topology
+        self.top = Star()
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
@@ -137,108 +140,38 @@ class GlobalBestPSO(SwarmBase):
         tuple
             the global best cost and the global best position.
         """
-        for i in xrange(iters):
+        for i in range(iters):
             # Compute cost for current position and personal best
-            current_cost = objective_func(self.pos)
-            pbest_cost = objective_func(self.personal_best_pos)
-
-            # Store current best cost found
-            best_cost_yet_found = self.best_cost
-            
-            # Update personal bests if the current position is better
-            # Create 1-D mask then update pbest_cost
-            m = (current_cost < pbest_cost)
-            pbest_cost = np.where(~m, pbest_cost, current_cost)
-            # Create 2-D mask to update positions
-            _m = np.repeat(m[:, np.newaxis], self.dimensions, axis=1)
-            self.personal_best_pos = np.where(~_m, self.personal_best_pos,
-                                              self.pos)
-
-            # Get the minima of the pbest and check if it's less than
-            # the saved gbest
-            if np.min(pbest_cost) < self.best_cost:
-                self.best_cost = np.min(pbest_cost)
-                self.best_pos = self.personal_best_pos[np.argmin(pbest_cost)]
-
+            self.swarm.current_cost = objective_func(self.swarm.position)
+            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos)
+            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
+            best_cost_yet_found = self.swarm.best_cost
+            # Get minima of pbest and check if it's less than gbest
+            if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
+                self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
             # Print to console
             if i % print_step == 0:
                 cli_print('Iteration %s/%s, cost: %s' %
-                          (i+1, iters, self.best_cost), verbose, 2,
+                          (i+1, iters, self.swarm.best_cost), verbose, 2,
                           logger=self.logger)
-
             # Save to history
-            hist = self.ToHistory(
-                best_cost=self.best_cost,
-                mean_pbest_cost=np.mean(pbest_cost),
-                mean_neighbor_cost=self.best_cost,
-                position=self.pos,
-                velocity=self.velocity
-            )
+            hist = self.ToHistory(best_cost=self.swarm.best_cost,
+                                  mean_pbest_cost=np.mean(self.swarm.pbest_cost),
+                                  mean_neighbor_cost=self.swarm.best_cost,
+                                  position=self.swarm.position,
+                                  velocity=self.swarm.velocity)
             self._populate_history(hist)
-
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol*(1 + np.abs(best_cost_yet_found))
-            if np.abs(self.best_cost - best_cost_yet_found) < relative_measure:
+            if np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure:
                 break
-
             # Perform velocity and position updates
-            self._update_velocity()
-            self._update_position()
-
+            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp)
+            self.swarm.position = self.top.compute_position(self.swarm, self.bounds)
         # Obtain the final best_cost and the final best_position
-        final_best_cost = self.best_cost.copy()  # Make deep copies
-        final_best_pos = self.best_pos.copy()
+        final_best_cost = self.swarm.best_cost.copy()
+        final_best_pos = self.swarm.best_pos.copy()
+        # Write report in log and return final cost and position
+        end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
+        return (final_best_cost, final_best_pos)
 
-        end_report(final_best_cost, final_best_pos, verbose,
-                   logger=self.logger)
-        return final_best_cost, final_best_pos
-
-    def _update_velocity(self):
-        """Updates the velocity matrix of the swarm.
-
-        This method updates the attribute :code:`self.velocity` of
-        the instantiated object. It is called by the
-        :code:`self.optimize()` method.
-        """
-        # Define the hyperparameters from options dictionary
-        c1, c2, w = self.options['c1'], self.options['c2'], self.options['w']
-
-        # Compute for cognitive and social terms
-        cognitive = (c1 * np.random.uniform(0, 1, self.swarm_size)
-                     * (self.personal_best_pos - self.pos))
-        social = (c2 * np.random.uniform(0, 1, self.swarm_size)
-                     * (self.best_pos - self.pos))
-        temp_velocity = (w * self.velocity) + cognitive + social
-
-        # Create a mask to clamp the velocities
-        if self.velocity_clamp is not None:
-            # Create a mask depending on the set boundaries
-            min_velocity, max_velocity = self.velocity_clamp[0], \
-                                         self.velocity_clamp[1]
-            _b = np.logical_and(temp_velocity >= min_velocity,
-                                temp_velocity <= max_velocity)
-            # Use the mask to finally clamp the velocities
-            self.velocity = np.where(~_b, self.velocity, temp_velocity)
-        else:
-            self.velocity = temp_velocity
-
-    def _update_position(self):
-        """Updates the position matrix of the swarm.
-
-        This method updates the attribute :code:`self.pos` of
-        the instantiated object. It is called by the
-        :code:`self.optimize()` method.
-        """
-        # Update position and store it in a temporary variable
-        temp = self.pos.copy()
-        temp += self.velocity
-
-        if self.bounds is not None:
-            # Create a mask depending on the set boundaries
-            b = (np.all(self.min_bounds <= temp, axis=1)
-                 * np.all(temp <= self.max_bounds, axis=1))
-            # Broadcast the mask
-            b = np.repeat(b[:, np.newaxis], self.dimensions, axis=1)
-            # Use the mask to finally guide position update
-            temp = np.where(~b, self.pos, temp)
-        self.pos = temp

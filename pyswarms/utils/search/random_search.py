@@ -65,7 +65,7 @@ class RandomSearch(SearchBase):
 
     def __init__(self, optimizer, n_particles, dimensions, options,
                  objective_func, iters, n_selection_iters,
-                 bounds=None, velocity_clamp=None):
+                 bounds=None, velocity_clamp=(0,1)):
         """Initializes the paramsearch.
 
         Attributes

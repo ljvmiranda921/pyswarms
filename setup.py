@@ -5,7 +5,7 @@
 
 from setuptools import setup, find_packages
 
-with open('README.rst') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:
@@ -18,6 +18,8 @@ requirements = [
     'numpy>=1.13.0',
     'matplotlib>=1.3.1',
     'mock==2.0.0',
+    'pytest==3.2.1',
+    'attrs==18.1.0'
 ]
 
 setup_requirements = [
@@ -31,11 +33,13 @@ test_requirements = [
     'numpy>=1.13.0',
     'matplotlib>=1.3.1',
     'mock==2.0.0',
+    'pytest==3.2.1',
+    'attrs==18.1.0'
 ]
 
 setup(
     name='pyswarms',
-    version='0.1.9',
+    version='0.2.0',
     description="A Python-based Particle Swarm Optimization (PSO) library.",
     long_description=readme + '\n\n' + history,
     author="Lester James V. Miranda",

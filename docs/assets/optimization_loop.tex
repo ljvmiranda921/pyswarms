@@ -1,0 +1,108 @@
+% ==================================================
+% Optimization Loop
+% Author: Lester James V. Miranda
+% ==================================================
+
+\documentclass[preview, convert={outfile=\jobname.png, density=300}]{standalone}
+
+\usepackage[usenames, dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+
+\renewcommand\familydefault{\sfdefault}
+
+\usetikzlibrary{
+    shapes,
+    arrows,
+    positioning,
+    fit,
+    calc,
+    backgrounds,
+    shadows.blur,
+}
+
+% Define some colors
+\definecolor{gold}{RGB}{255,215,0}
+\definecolor{pyblue}{RGB}{7,78,104}
+
+% taken from manual
+\makeatletter
+\pgfdeclareshape{document}{
+\inheritsavedanchors[from=rectangle] % this is nearly a rectangle
+\inheritanchorborder[from=rectangle]
+\inheritanchor[from=rectangle]{center}
+\inheritanchor[from=rectangle]{north}
+\inheritanchor[from=rectangle]{south}
+\inheritanchor[from=rectangle]{west}
+\inheritanchor[from=rectangle]{east}
+% ... and possibly more
+\backgroundpath{% this is new
+% store lower right in xa/ya and upper right in xb/yb
+\southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+\northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+% compute corner of ‘‘flipped page’’
+\pgf@xc=\pgf@xb \advance\pgf@xc by-10pt % this should be a parameter
+\pgf@yc=\pgf@yb \advance\pgf@yc by-10pt
+% construct main path
+\pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+\pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@yb}}
+\pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yb}}
+\pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yc}}
+\pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@ya}}
+\pgfpathclose
+% add little corner
+\pgfpathmoveto{\pgfpoint{\pgf@xc}{\pgf@yb}}
+\pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yc}}
+\pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yc}}
+\pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yc}}
+}
+}
+\makeatother
+
+\begin{document}
+\tikzumlset{fill class=gold}
+\begin{tikzpicture}[
+    textbox/.style={fill=none, align=left, minimum height=0.7cm, minimum width=0.7cm,
+                    text width=5.0cm, text=black},
+    loop/.style={draw, shape=document, color=black!30!green, fill=green!30,
+                  minimum width=5cm, minimum height=3.5cm, text=black, blur shadow={shadow blur steps=5, text width=6.5cm}},
+    bigLoop/.style={draw, rounded corners=3pt, dashed, color=pyblue, inner xsep=5mm, inner ysep=5mm}
+]
+
+    \node[loop, label={[name=l]Custom Swarm Algorithm}] (OptimizationLoop) at (0,0) {
+        Contains your own PSO implementation. This interacts with the
+        Swarm, Topology, and (optional) \texttt{pyswarms.backend} modules.
+    };
+
+    \umlclass[left=2cm of OptimizationLoop]{Swarm}{
+        + position : numpy.ndarray\\
+        + velocity : numpy.ndarray\\
+        + options : dict
+    }{}
+
+    \umlclass[below=2cm of OptimizationLoop]{Topology}{
+    }{
+        + compute\_gbest()\\
+        + compute\_position()\\
+        + compute\_velocity()\\
+    }
+
+    \draw[->, thick, transform canvas={yshift=1em}] (Swarm) -- (OptimizationLoop) 
+        node[pos=0.5,above,yshift=0.45cm, text width=3cm, align=center] {Swarm\\attributes};
+
+    \draw[->, thick, dashed, transform canvas={yshift=-1em}] (OptimizationLoop) -- (Swarm)
+        node[pos=0.5,below,yshift=-0.45cm, text width=3cm, align=center] {Updated\\attributes};
+
+    \draw[->, thick] (Topology) -- (OptimizationLoop)
+        node[pos=0.5,right, text width=3cm, align=left] {Swarm\\ operations};
+
+    \begin{scope}[on background layer]
+        \node [fit=(OptimizationLoop) (Swarm) (l), bigLoop, label={[align=center]Optimization Loop}] (bigLoopy) {};
+    \end{scope}
+
+    \node[textbox] at ([yshift=-0.5cm, xshift=2.8cm]bigLoopy.north west) {
+        \texttt{for i in range(iterations)}
+    };
+\end{tikzpicture}
+\end{document}
+

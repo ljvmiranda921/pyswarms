@@ -2,12 +2,6 @@ pyswarms.utils.search package
 ================================
 
 .. automodule:: pyswarms.utils.search
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Submodules
-----------
 
 pyswarms.utils.search.base_search module
 -----------------------------------------
@@ -16,22 +10,21 @@ pyswarms.utils.search.base_search module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members:
+   :private-members:
+   :special-members: __init__
 
 pyswarms.utils.search.grid_search module
 -----------------------------------------
 
 .. automodule:: pyswarms.utils.search.grid_search
    :members:
-   :undoc-members:
    :show-inheritance:
-   :special-members:
+   :special-members: __init__
 
 pyswarms.utils.search.random_search module
 -------------------------------------------
 
 .. automodule:: pyswarms.utils.search.random_search
    :members:
-   :undoc-members:
    :show-inheritance:
    :special-members:
