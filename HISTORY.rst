@@ -90,3 +90,17 @@ Thanks for all the wonderful Pull Requests, `@mamadyonline <https://github.com/m
 .. _93: https://github.com/ljvmiranda921/pyswarms/pull/93
 .. _98: https://github.com/ljvmiranda921/pyswarms/pull/98
 .. _100: https://github.com/ljvmiranda921/pyswarms/pull/100
+
+
+0.2.0 (2018-06-11)
+------------------
+
+* New PySwarms backend. You can now build native swarm implementations using this module! (PR# 115_) (PR# 116_) (PR# 117_)
+* Drop Python 2.7 version support. This package now supports Python 3.4 and up (PR# 114_).
+* All tests were ported into pytest (PR# 113_).
+
+.. _113: https://github.com/ljvmiranda921/pyswarms/pull/113
+.. _114: https://github.com/ljvmiranda921/pyswarms/pull/114
+.. _115: https://github.com/ljvmiranda921/pyswarms/pull/115
+.. _116: https://github.com/ljvmiranda921/pyswarms/pull/116
+.. _117: https://github.com/ljvmiranda921/pyswarms/pull/117
