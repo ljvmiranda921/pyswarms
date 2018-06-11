@@ -39,7 +39,7 @@ test_requirements = [
 
 setup(
     name='pyswarms',
-    version='0.1.9',
+    version='0.2.0',
     description="A Python-based Particle Swarm Optimization (PSO) library.",
     long_description=readme + '\n\n' + history,
     author="Lester James V. Miranda",
