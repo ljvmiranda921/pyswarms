@@ -6,7 +6,6 @@
 # Import modules
 import os
 import pytest
-import numpy as np
 from mock import Mock
 import matplotlib as mpl
 
@@ -23,9 +22,9 @@ def mock_pso():
     """Returns a function that mocks a PSO class with missing attributes"""
     def _mock_pso(index):
         class_methods = [
-            'get_cost_history',
-            'get_pos_history',
-            'get_velocity_history',
+            'cost_history',
+            'pos_history',
+            'velocity_history',
             'optimize',
             'reset'
         ]
