@@ -87,16 +87,19 @@ def test_reset_default_values(lbest_reset):
     assert lbest_reset.swarm.best_cost == np.inf
     assert set(lbest_reset.swarm.best_pos) == set(np.array([]))
 
-def test_training_history_shape(lbest_history):
+@pytest.mark.parametrize('history, expected_shape', [
+    ('cost_history', (1000,)),
+    ('mean_pbest_history', (1000,)),
+    ('mean_neighbor_history',(1000,)),
+    ('pos_history',(1000, 10, 2)),
+    ('velocity_history',(1000, 10, 2))])
+def test_training_history_shape(lbest_history, history, expected_shape):
     """Test if training histories are of expected shape"""
-    assert lbest_history.get_cost_history.shape == (1000,)
-    assert lbest_history.get_mean_pbest_history.shape == (1000,)
-    assert lbest_history.get_mean_neighbor_history.shape == (1000,)
-    assert lbest_history.get_pos_history.shape == (1000, 10, 2)
-    assert lbest_history.get_velocity_history.shape == (1000, 10, 2)
+    pso = vars(lbest_history)
+    assert np.array(pso[history]).shape == expected_shape
 
 def test_ftol_effect(options):
     """Test if setting the ftol breaks the optimization process accodingly"""
     pso = LocalBestPSO(10, 2, options=options, ftol=1e-1)
     pso.optimize(sphere_func, 2000, verbose=0)
-    assert pso.get_cost_history.shape != (2000,)
+    assert np.array(pso.cost_history).shape != (2000,)
