@@ -58,6 +58,7 @@ from __future__ import print_function
 
 # Import modules
 import logging
+import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 from past.builtins import xrange
@@ -65,6 +66,8 @@ from matplotlib import animation
 from collections import namedtuple
 from mpl_toolkits.mplot3d import Axes3D
 
+warnings.simplefilter('default')
+warnings.warn("The pyswarms.environments module is deprecated and will be removed in v.0.2.5. For visualization, please use pyswarms.plotters", DeprecationWarning, stacklevel=2)
 
 class PlotEnvironment(object):
 
