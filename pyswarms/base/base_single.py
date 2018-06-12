@@ -193,31 +193,6 @@ class SwarmOptimizer(object):
         self.pos_history.append(hist.position)
         self.velocity_history.append(hist.velocity)
 
-    @property
-    def get_cost_history(self):
-        """Get cost history"""
-        return np.array(self.cost_history)
-
-    @property
-    def get_mean_pbest_history(self):
-        """Get mean personal best history"""
-        return np.array(self.mean_pbest_history)
-
-    @property
-    def get_mean_neighbor_history(self):
-        """Get mean neighborhood cost history"""
-        return np.array(self.mean_neighbor_history)
-
-    @property
-    def get_pos_history(self):
-        """Get position history"""
-        return np.array(self.pos_history)
-
-    @property
-    def get_velocity_history(self):
-        """Get velocity history"""
-        return np.array(self.velocity_history)
-
     def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
 

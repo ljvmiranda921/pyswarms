@@ -113,7 +113,7 @@ class DiscreteSwarmBase(object):
             initial positions. When passed with a :code:`False` value,
             random integers from 0 to :code:`dimensions` are generated.
         options : dict with keys :code:`{'c1', 'c2', 'w'}`
-            a dictionary containing the parameters for the specific 
+            a dictionary containing the parameters for the specific
             optimization technique
                 * c1 : float
                     cognitive parameter
@@ -167,31 +167,6 @@ class DiscreteSwarmBase(object):
         self.mean_neighbor_history.append(hist.mean_neighbor_cost)
         self.pos_history.append(hist.position)
         self.velocity_history.append(hist.velocity)
-
-    @property
-    def get_cost_history(self):
-        """Get cost history"""
-        return np.array(self.cost_history)
-
-    @property
-    def get_mean_pbest_history(self):
-        """Get mean personal best history"""
-        return np.array(self.mean_pbest_history)
-
-    @property
-    def get_mean_neighbor_history(self):
-        """Get mean neighborhood cost history"""
-        return np.array(self.mean_neighbor_history)
-
-    @property
-    def get_pos_history(self):
-        """Get position history"""
-        return np.array(self.pos_history)
-
-    @property
-    def get_velocity_history(self):
-        """Get velocity history"""
-        return np.array(self.velocity_history)
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
@@ -267,25 +242,10 @@ class DiscreteSwarmBase(object):
         self.pos_history = []
         self.velocity_history = []
 
-        # Generate initial position
-        self.pos = np.random.random_sample(size=self.swarm_size).\
-            argsort(axis=1)
-        if self.binary:
-            self.pos = np.random.randint(2, size=self.swarm_size)
-
-        # Initialize velocity vectors
-        if self.velocity_clamp is not None:
-            min_velocity, max_velocity = self.velocity_clamp[0],\
-                                         self.velocity_clamp[1]
-            self.velocity = ((max_velocity - min_velocity)
-                             * np.random.random_sample(size=self.swarm_size)
-                             + min_velocity)
-        else:
-            self.velocity = np.random.random_sample(size=self.swarm_size)
-
-        # Initialize the best cost of the swarm
-        self.best_cost = np.inf
-        self.best_pos = None
-
-        # Initialize the personal best of each particle
-        self.personal_best_pos = self.pos
+        # Initialize the swarm
+        self.swarm = create_swarm(n_particles=self.n_particles,
+                                  dimensions=self.dimensions,
+                                  discrete=True,
+                                  init_pos=self.init_pos,
+                                  binary=self.binary,
+                                  clamp=self.velocity_clamp, options=self.options)
