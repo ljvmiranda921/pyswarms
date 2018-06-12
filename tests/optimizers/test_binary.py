@@ -7,7 +7,6 @@ import numpy as np
 
 # Import from package
 from pyswarms.discrete import BinaryPSO
-from pyswarms.utils.functions.single_obj import sphere_func
 
 @pytest.mark.parametrize('options', [
     {'c2':0.7, 'w':0.5, 'k': 2, 'p': 2},
@@ -59,10 +58,13 @@ def test_reset_default_values(binary_reset):
     assert binary_reset.swarm.best_cost == np.inf
     assert set(binary_reset.swarm.best_pos) == set(np.array([]))
 
-def test_training_history_shape(binary_history):
+@pytest.mark.parametrize('history, expected_shape', [
+    ('cost_history', (1000,)),
+    ('mean_pbest_history', (1000,)),
+    ('mean_neighbor_history',(1000,)),
+    ('pos_history',(1000, 10, 2)),
+    ('velocity_history',(1000, 10, 2))])
+def test_training_history_shape(binary_history, history, expected_shape):
     """Test if training histories are of expected shape"""
-    assert binary_history.get_cost_history.shape == (1000,)
-    assert binary_history.get_mean_pbest_history.shape == (1000,)
-    assert binary_history.get_mean_neighbor_history.shape == (1000,)
-    assert binary_history.get_pos_history.shape == (1000, 10, 2)
-    assert binary_history.get_velocity_history.shape == (1000, 10, 2)
+    pso = vars(binary_history)
+    assert np.array(pso[history]).shape == expected_shape
