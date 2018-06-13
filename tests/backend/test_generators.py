@@ -53,7 +53,7 @@ def test_generate_discrete_binary_swarm(binary):
     dims = 3
     pos = P.generate_discrete_swarm(n_particles=2, dimensions=dims, binary=binary)
     if binary:
-        assert len(np.unique(pos)) == 2
+        assert len(np.unique(pos)) <= 2 # Might generate pure 0 or 1
     else:
         assert (np.max(pos, axis=1) == dims - 1).all()
 

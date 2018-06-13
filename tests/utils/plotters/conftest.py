@@ -15,8 +15,8 @@ if os.environ.get('DISPLAY','') == '':
 
 # Import from package
 from pyswarms.single import GlobalBestPSO
-from pyswarms.utils.environments import PlotEnvironment
 from pyswarms.utils.functions.single_obj import sphere_func
+from pyswarms.utils.plotters.formatters import Mesher
 
 @pytest.fixture
 def trained_optimizer():
@@ -25,3 +25,13 @@ def trained_optimizer():
     optimizer = GlobalBestPSO(n_particles=10, dimensions=2, options=options)
     optimizer.optimize(sphere_func, iters=100)
     return optimizer
+
+@pytest.fixture
+def pos_history():
+    """Returns a list containing a swarms' position history"""
+    return np.random.uniform(size=(10, 5, 2))
+
+@pytest.fixture
+def mesher():
+    """A Mesher instance with sphere function and delta=0.1"""
+    return Mesher(func=sphere_func, delta=0.1)
