@@ -3,6 +3,10 @@
 r"""
 Plot environment for Optimizer Analysis
 
+.. deprecated:: 0.2.1
+   This module will be deprecated in the next release. Please use
+   :mod:`pyswarms.utils.plotters` instead.
+
 The class PlotEnvironment is built on top of :code:`matplotlib` in order
 to render quick and easy plots for your optimizer. It can plot the best
 cost for each iteration, and show animations of the particles in 2-D and
