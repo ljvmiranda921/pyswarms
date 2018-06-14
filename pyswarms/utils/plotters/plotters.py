@@ -113,20 +113,20 @@ def plot_cost_history(cost_history, ax=None, title='Cost History',
 
         # If no Designer class supplied, use defaults
         if designer is None:
-            designer = Designer()
+            designer = Designer(legend='Cost', label=['Iterations', 'Cost'])
 
         # If no ax supplied, create new instance
         if ax is None:
             _, ax = plt.subplots(1,1, figsize=designer.figsize)
 
         # Plot with iters in x-axis and the cost in y-axis
-        ax.plot(np.arange(iters), cost_history, 'k', lw=2, label=designer.label)
+        ax.plot(np.arange(iters), cost_history, 'k', lw=2, label=designer.legend)
 
         # Customize plot depending on parameters
         ax.set_title(title, fontsize=designer.title_fontsize)
         ax.legend(fontsize=designer.text_fontsize)
-        ax.set_xlabel('Iterations', fontsize=designer.text_fontsize)
-        ax.set_ylabel('Cost', fontsize=designer.text_fontsize)
+        ax.set_xlabel(designer.label[0], fontsize=designer.text_fontsize)
+        ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
         ax.tick_params(labelsize=designer.text_fontsize)
     except TypeError:
         raise
