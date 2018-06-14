@@ -23,22 +23,6 @@ def test_generate_swarm_return_values(bounds, center):
     upper_bound = center * np.array(max_bounds)
     assert (pos <= upper_bound).all() and (pos >= lower_bound).all()
 
-@pytest.mark.parametrize('bounds', [None, ([1,1,1], [10,10,10])])
-@pytest.mark.parametrize('init_pos', [None, np.array([[2,5,6],[7,2,1]])])
-def test_generate_swarm_bounds_init_pos(bounds, init_pos):
-    """Tests if generate_swarm() returns expected values given init_pos and bounds"""
-    pos = P.generate_swarm(n_particles=2, dimensions=3, bounds=bounds,
-                           init_pos=init_pos)
-    if (bounds is None) and (init_pos is None):
-        min_bounds, max_bounds = (0.0, 1.00)
-    elif (bounds is None) and (init_pos is not None):
-        min_bounds, max_bounds = (-np.inf, np.inf)
-    else:
-        min_bounds, max_bounds = bounds
-    lower_bound = np.array(min_bounds)
-    upper_bound = np.array(max_bounds)
-    assert (pos <= upper_bound).all() and (pos >= lower_bound).all()
-
 def test_generate_swarm_out_of_bounds():
     """Tests if generate_swarm() raises ValueError when initialized with the wrong value"""
     bounds = ([1,1,1], [5,5,5])
@@ -53,7 +37,7 @@ def test_generate_discrete_binary_swarm(binary):
     dims = 3
     pos = P.generate_discrete_swarm(n_particles=2, dimensions=dims, binary=binary)
     if binary:
-        assert len(np.unique(pos)) == 2
+        assert len(np.unique(pos)) <= 2 # Might generate pure 0 or 1
     else:
         assert (np.max(pos, axis=1) == dims - 1).all()
 
