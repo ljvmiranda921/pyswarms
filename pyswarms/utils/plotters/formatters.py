@@ -8,8 +8,9 @@ This module implements helpful classes to format your plots or create meshes.
 
 # Import modules
 import numpy as np
-from attr import (attrs, attrib)
+from attr import attrs, attrib
 from attr.validators import instance_of
+
 
 @attrs
 class Designer(object):
@@ -45,16 +46,23 @@ class Designer(object):
         Label to show in the x, y, or z-axis. For a 3D plot, please pass
         an iterable with three elements.
     """
+
     # Overall plot design
-    figsize = attrib(type=tuple, validator=instance_of(tuple), default=(10,8))
-    title_fontsize = attrib(validator=instance_of((str, int, float)),
-                            default='large')
-    text_fontsize = attrib(validator=instance_of((str, int, float)),
-                           default='medium')
-    legend = attrib(validator=instance_of(str), default='Cost')
-    label = attrib(validator=instance_of((str, list, tuple)), default=['x-axis', 'y-axis'])
-    limits = attrib(validator=instance_of((list, tuple)), 
-                    default=[(-1,1),(-1,1)])
+    figsize = attrib(type=tuple, validator=instance_of(tuple), default=(10, 8))
+    title_fontsize = attrib(
+        validator=instance_of((str, int, float)), default="large"
+    )
+    text_fontsize = attrib(
+        validator=instance_of((str, int, float)), default="medium"
+    )
+    legend = attrib(validator=instance_of(str), default="Cost")
+    label = attrib(
+        validator=instance_of((str, list, tuple)), default=["x-axis", "y-axis"]
+    )
+    limits = attrib(
+        validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1)]
+    )
+
 
 @attrs
 class Animator(object):
@@ -84,9 +92,11 @@ class Animator(object):
     repeat : bool (default is :code:`True`)
         Pass :code:`False` if you don't want to repeat the animation.
     """
+
     interval = attrib(type=int, validator=instance_of(int), default=80)
     repeat_delay = attrib(default=None)
     repeat = attrib(type=bool, validator=instance_of(bool), default=True)
+
 
 @attrs
 class Mesher(object):
@@ -121,12 +131,14 @@ class Mesher(object):
     alpha : float (default is :code:`0.3`)
         Transparency of the surface plot
     """
+
     func = attrib()
     # For mesh creation
     delta = attrib(type=float, default=0.001)
-    limits = attrib(validator=instance_of((list, tuple)),
-                    default=[(-1,1),(-1,1)])
-    levels = attrib(type=list, default=np.arange(-2.0,2.0,0.070))
+    limits = attrib(
+        validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1)]
+    )
+    levels = attrib(type=list, default=np.arange(-2.0, 2.0, 0.070))
     # Surface transparency
     alpha = attrib(type=float, validator=instance_of(float), default=0.3)
 

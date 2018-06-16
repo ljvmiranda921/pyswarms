@@ -39,8 +39,8 @@ from collections import namedtuple
 # Import from package
 from ..backend import create_swarm
 
-class SwarmOptimizer(object):
 
+class SwarmOptimizer(object):
     def assertions(self):
         """Assertion method to check various inputs.
 
@@ -60,43 +60,58 @@ class SwarmOptimizer(object):
         # Check setting of bounds
         if self.bounds is not None:
             if not isinstance(self.bounds, tuple):
-                raise TypeError('Parameter `bound` must be a tuple.')
+                raise TypeError("Parameter `bound` must be a tuple.")
             if not len(self.bounds) == 2:
-                raise IndexError('Parameter `bound` must be of size 2.')
+                raise IndexError("Parameter `bound` must be of size 2.")
             if not self.bounds[0].shape == self.bounds[1].shape:
-                raise IndexError('Arrays in `bound` must be of equal shapes')
-            if not self.bounds[0].shape[0] == self.bounds[1].shape[0] == \
-                    self.dimensions:
-                raise IndexError('Parameter `bound` must be the same shape '
-                                 'as dimensions.')
+                raise IndexError("Arrays in `bound` must be of equal shapes")
+            if (
+                not self.bounds[0].shape[0]
+                == self.bounds[1].shape[0]
+                == self.dimensions
+            ):
+                raise IndexError(
+                    "Parameter `bound` must be the same shape "
+                    "as dimensions."
+                )
             if not (self.bounds[1] > self.bounds[0]).all():
-                raise ValueError('Values of `bounds[1]` must be greater than '
-                                 '`bounds[0]`.')
+                raise ValueError(
+                    "Values of `bounds[1]` must be greater than "
+                    "`bounds[0]`."
+                )
 
         # Check clamp settings
-        if hasattr(self.velocity_clamp, '__iter__'):
+        if hasattr(self.velocity_clamp, "__iter__"):
             if not len(self.velocity_clamp) == 2:
-                raise IndexError('Parameter `velocity_clamp` must be of '
-                                    'size 2')
+                raise IndexError(
+                    "Parameter `velocity_clamp` must be of " "size 2"
+                )
             if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-                raise ValueError('Make sure that velocity_clamp is in the '
-                                    'form (min, max)')
+                raise ValueError(
+                    "Make sure that velocity_clamp is in the "
+                    "form (min, max)"
+                )
 
         # Check setting of center
         if isinstance(self.center, (list, np.ndarray)):
             if not len(self.center) == self.dimensions:
-                raise IndexError('Parameter `center` must be the same shape '
-                                 'as dimensions.')
+                raise IndexError(
+                    "Parameter `center` must be the same shape "
+                    "as dimensions."
+                )
             if isinstance(self.center, np.ndarray) and self.center.ndim != 1:
-                raise ValueError('Parameter `center` must have a 1d array')
-
+                raise ValueError("Parameter `center` must have a 1d array")
 
         # Required keys in options argument
-        if not all(key in self.options for key in ('c1', 'c2', 'w')):
-            raise KeyError('Missing either c1, c2, or w in options')
+        if not all(key in self.options for key in ("c1", "c2", "w")):
+            raise KeyError("Missing either c1, c2, or w in options")
 
-    def setup_logging(self, default_path='./config/logging.yaml',
-                      default_level=logging.INFO, env_key='LOG_CFG'):
+    def setup_logging(
+        self,
+        default_path="./config/logging.yaml",
+        default_level=logging.INFO,
+        env_key="LOG_CFG",
+    ):
         """Setup logging configuration
 
         Parameters
@@ -113,14 +128,23 @@ class SwarmOptimizer(object):
         if value:
             path = value
         if os.path.exists(path):
-            with open(path, 'rt') as f:
+            with open(path, "rt") as f:
                 config = yaml.safe_load(f.read())
             logging.config.dictConfig(config)
         else:
             logging.basicConfig(level=default_level)
 
-    def __init__(self, n_particles, dimensions, options, bounds=None,
-                 velocity_clamp=None, center=1.0, ftol=-np.inf, init_pos=None):
+    def __init__(
+        self,
+        n_particles,
+        dimensions,
+        options,
+        bounds=None,
+        velocity_clamp=None,
+        center=1.0,
+        ftol=-np.inf,
+        init_pos=None,
+    ):
         """Initializes the swarm.
 
         Creates a Swarm class depending on the values initialized
@@ -165,10 +189,16 @@ class SwarmOptimizer(object):
         self.ftol = ftol
         self.init_pos = init_pos
         # Initialize named tuple for populating the history list
-        self.ToHistory = namedtuple('ToHistory',
-                                    ['best_cost', 'mean_pbest_cost',
-                                     'mean_neighbor_cost', 'position',
-                                     'velocity'])
+        self.ToHistory = namedtuple(
+            "ToHistory",
+            [
+                "best_cost",
+                "mean_pbest_cost",
+                "mean_neighbor_cost",
+                "position",
+                "velocity",
+            ],
+        )
         # Invoke assertions
         self.assertions()
         # Initialize resettable attributes
@@ -250,7 +280,12 @@ class SwarmOptimizer(object):
         self.velocity_history = []
 
         # Initialize the swarm
-        self.swarm = create_swarm(n_particles=self.n_particles,
-                                  dimensions=self.dimensions,
-                                  bounds=self.bounds, center=self.center, init_pos=self.init_pos,
-                                  clamp=self.velocity_clamp, options=self.options)
+        self.swarm = create_swarm(
+            n_particles=self.n_particles,
+            dimensions=self.dimensions,
+            bounds=self.bounds,
+            center=self.center,
+            init_pos=self.init_pos,
+            clamp=self.velocity_clamp,
+            options=self.options,
+        )

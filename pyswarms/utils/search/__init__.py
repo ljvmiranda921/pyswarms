@@ -6,7 +6,4 @@ hyperparameter value optimization.
 from .grid_search import GridSearch
 from .random_search import RandomSearch
 
-__all__ = [
-    "GridSearch",
-    "RandomSearch"
-    ]
+__all__ = ["GridSearch", "RandomSearch"]
