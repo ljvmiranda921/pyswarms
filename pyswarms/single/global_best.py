@@ -20,15 +20,15 @@ is defined as:
 
 .. math::
 
-   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)] 
+   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)]
                    + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
 
 Here, :math:`c1` and :math:`c2` are the cognitive and social parameters
-respectively. They control the particle's options in choosing how to
-react given two choices: (1) to follow its *personal best* or (2) follow
-the swarm's *global best* position. Overall, this dictates if the swarm
-is explorative or exploitative in nature. In addition, a parameter
-:math:`w` controls the inertia of the swarm's movement.
+respectively. They control the particle's behavior given two choices: (1) to
+follow its *personal best* or (2) follow the swarm's *global best* position.
+Overall, this dictates if the swarm is explorative or exploitative in nature.
+In addition, a parameter :math:`w` controls the inertia of the swarm's
+movement.
 
 An example usage is as follows:
 
