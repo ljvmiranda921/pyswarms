@@ -145,7 +145,7 @@ def plot_contour(
     designer=None,
     mesher=None,
     animator=None,
-    **kwargs,
+    **kwargs
 ):
     """Draws a 2D contour map for particle trajectories
 
@@ -247,7 +247,7 @@ def plot_surface(
     mesher=None,
     animator=None,
     mark=None,
-    **kwargs,
+    **kwargs
 ):
     """Plots a swarm's trajectory in 3D
 
