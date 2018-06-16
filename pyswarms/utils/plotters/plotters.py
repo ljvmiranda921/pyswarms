@@ -67,7 +67,6 @@ speed of animation.
 
 # Import modules
 import logging
-from collections import namedtuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -75,7 +74,7 @@ from matplotlib import animation, cm
 from mpl_toolkits.mplot3d import Axes3D
 
 # Import from package
-from .formatters import Designer, Animator, Mesher
+from .formatters import Designer, Animator
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -146,7 +145,7 @@ def plot_contour(
     designer=None,
     mesher=None,
     animator=None,
-    **kwargs
+    **kwargs,
 ):
     """Draws a 2D contour map for particle trajectories
 
@@ -248,17 +247,17 @@ def plot_surface(
     mesher=None,
     animator=None,
     mark=None,
-    **kwargs
+    **kwargs,
 ):
     """Plots a swarm's trajectory in 3D
 
     This is useful for plotting the swarm's 2-dimensional position with
     respect to the objective function. The value in the z-axis is the fitness
     of the 2D particle when passed to the objective function. When preparing the
-    position history, make sure that the: 
+    position history, make sure that the:
 
     * first column is the position in the x-axis,
-    * second column is the position in the y-axis; and 
+    * second column is the position in the y-axis; and
     * third column is the fitness of the 2D particle
 
     The :class:`pyswarms.utils.plotters.formatters.Mesher` class provides a

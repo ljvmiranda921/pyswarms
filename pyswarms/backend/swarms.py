@@ -17,17 +17,17 @@ from attr.validators import instance_of
 @attrs
 class Swarm(object):
     """A Swarm Class
-    
+
     This class offers a generic swarm that can be used in most use-cases
     such as single-objective optimization, etc. It contains various attributes
     that are commonly-used in most swarm implementations.
 
     To initialize this class, **simply supply values for the position and
     velocity matrix**. The other attributes are automatically filled. If you want to
-    initialize random values, take a look at: 
+    initialize random values, take a look at:
 
     * :func:`pyswarms.backend.generators.generate_swarm`: for generating positions randomly.
-    * :func:`pyswarms.backend.generators.generate_velocity`: for generating velocities randomly. 
+    * :func:`pyswarms.backend.generators.generate_velocity`: for generating velocities randomly.
 
     If your swarm requires additional parameters (say c1, c2, and w in gbest
     PSO), simply pass them to the :code:`options` dictionary.
@@ -73,7 +73,7 @@ class Swarm(object):
     pbest_cost : numpy.ndarray (default is empty array)
         personal best costs of each particle of shape :code:`(n_particles, )`
     best_cost : float (default is :code:`np.inf`)
-        best cost found by the swarm 
+        best cost found by the swarm
     current_cost : numpy.ndarray (default is empty array)
         the current cost found by the swarm of shape :code:`(n_particles, dimensions)`
     """

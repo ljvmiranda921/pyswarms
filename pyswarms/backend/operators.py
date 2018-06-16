@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 def compute_pbest(swarm):
     """Takes a swarm instance and updates the personal best scores
-    
+
     You can use this method to update your personal best positions.
 
     .. code-block:: python
@@ -38,7 +38,7 @@ def compute_pbest(swarm):
     It updates your :code:`current_pbest` with the personal bests acquired by
     comparing the (1) cost of the current positions and the (2) personal
     bests your swarm has attained.
-    
+
     If the cost of the current position is less than the cost of the personal
     best, then the current position replaces the previous personal best
     position.
@@ -60,9 +60,7 @@ def compute_pbest(swarm):
         dimensions = swarm.dimensions
         # Create a 1-D and 2-D mask based from comparisons
         mask_cost = swarm.current_cost < swarm.pbest_cost
-        mask_pos = np.repeat(
-            mask_cost[:, np.newaxis], swarm.dimensions, axis=1
-        )
+        mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
         # Apply masks
         new_pbest_pos = np.where(~mask_pos, swarm.pbest_pos, swarm.position)
         new_pbest_cost = np.where(
@@ -82,7 +80,7 @@ def compute_velocity(swarm, clamp):
     This method updates the velocity matrix using the best and current
     positions of the swarm. The velocity matrix is computed using the
     cognitive and social terms of the swarm.
-    
+
     A sample usage can be seen with the following:
 
     .. code-block :: python
