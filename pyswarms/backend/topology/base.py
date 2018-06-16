@@ -12,8 +12,8 @@ In addition, this class must interface with any class found in the
 :mod:`pyswarms.backend.swarms.Swarm` module.
 """
 
-class Topology(object):
 
+class Topology(object):
     def __init__(self, **kwargs):
         """Initializes the class"""
         pass

@@ -71,17 +71,19 @@ from collections import namedtuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import (animation, cm)
+from matplotlib import animation, cm
 from mpl_toolkits.mplot3d import Axes3D
 
 # Import from package
-from .formatters import (Designer, Animator, Mesher)
+from .formatters import Designer, Animator, Mesher
 
 # Initialize logger
 logger = logging.getLogger(__name__)
 
-def plot_cost_history(cost_history, ax=None, title='Cost History',
-                      designer=None, **kwargs):
+
+def plot_cost_history(
+    cost_history, ax=None, title="Cost History", designer=None, **kwargs
+):
     """Creates a simple line plot with the cost in the y-axis and
     the iteration at the x-axis
 
@@ -113,14 +115,16 @@ def plot_cost_history(cost_history, ax=None, title='Cost History',
 
         # If no Designer class supplied, use defaults
         if designer is None:
-            designer = Designer(legend='Cost', label=['Iterations', 'Cost'])
+            designer = Designer(legend="Cost", label=["Iterations", "Cost"])
 
         # If no ax supplied, create new instance
         if ax is None:
-            _, ax = plt.subplots(1,1, figsize=designer.figsize)
+            _, ax = plt.subplots(1, 1, figsize=designer.figsize)
 
         # Plot with iters in x-axis and the cost in y-axis
-        ax.plot(np.arange(iters), cost_history, 'k', lw=2, label=designer.legend)
+        ax.plot(
+            np.arange(iters), cost_history, "k", lw=2, label=designer.legend
+        )
 
         # Customize plot depending on parameters
         ax.set_title(title, fontsize=designer.title_fontsize)
@@ -133,8 +137,17 @@ def plot_cost_history(cost_history, ax=None, title='Cost History',
     else:
         return ax
 
-def plot_contour(pos_history, canvas=None, title='Trajectory', mark=None,
-                     designer=None, mesher=None, animator=None, **kwargs):
+
+def plot_contour(
+    pos_history,
+    canvas=None,
+    title="Trajectory",
+    mark=None,
+    designer=None,
+    mesher=None,
+    animator=None,
+    **kwargs
+):
     """Draws a 2D contour map for particle trajectories
 
     Here, the space is represented as flat plane. The contours indicate the
@@ -174,7 +187,9 @@ def plot_contour(pos_history, canvas=None, title='Trajectory', mark=None,
     try:
         # If no Designer class supplied, use defaults
         if designer is None:
-            designer = Designer(limits=[(-1,1), (-1,1)], label=['x-axis', 'y-axis'])
+            designer = Designer(
+                limits=[(-1, 1), (-1, 1)], label=["x-axis", "y-axis"]
+            )
 
         # If no Animator class supplied, use defaults
         if animator is None:
@@ -204,26 +219,37 @@ def plot_contour(pos_history, canvas=None, title='Trajectory', mark=None,
 
         # Mark global best if possible
         if mark is not None:
-            ax.scatter(mark[0], mark[1], color='red', marker='x')
+            ax.scatter(mark[0], mark[1], color="red", marker="x")
 
         # Put scatter skeleton
-        plot = ax.scatter(x=[], y=[], c='black', alpha=0.6, **kwargs)
+        plot = ax.scatter(x=[], y=[], c="black", alpha=0.6, **kwargs)
 
         # Do animation
-        anim = animation.FuncAnimation(fig=fig,
-                                       func=_animate,
-                                       frames=range(n_iters),
-                                       fargs=(pos_history, plot),
-                                       interval=animator.interval,
-                                       repeat=animator.repeat,
-                                       repeat_delay=animator.repeat_delay)
+        anim = animation.FuncAnimation(
+            fig=fig,
+            func=_animate,
+            frames=range(n_iters),
+            fargs=(pos_history, plot),
+            interval=animator.interval,
+            repeat=animator.repeat,
+            repeat_delay=animator.repeat_delay,
+        )
     except TypeError:
         raise
     else:
         return anim
 
-def plot_surface(pos_history, canvas=None, title='Trajectory',
-                 designer=None, mesher=None, animator=None, mark=None, **kwargs):
+
+def plot_surface(
+    pos_history,
+    canvas=None,
+    title="Trajectory",
+    designer=None,
+    mesher=None,
+    animator=None,
+    mark=None,
+    **kwargs
+):
     """Plots a swarm's trajectory in 3D
 
     This is useful for plotting the swarm's 2-dimensional position with
@@ -294,8 +320,10 @@ def plot_surface(pos_history, canvas=None, title='Trajectory',
     try:
         # If no Designer class supplied, use defaults
         if designer is None:
-            designer = Designer(limits=[(-1,1), (-1,1), (-1,1)],
-                                label=['x-axis', 'y-axis', 'z-axis'])
+            designer = Designer(
+                limits=[(-1, 1), (-1, 1), (-1, 1)],
+                label=["x-axis", "y-axis", "z-axis"],
+            )
 
         # If no Animator class supplied, use defaults
         if animator is None:
@@ -330,23 +358,26 @@ def plot_surface(pos_history, canvas=None, title='Trajectory',
 
         # Mark global best if possible
         if mark is not None:
-            ax.scatter(mark[0], mark[1], mark[2], color='red', marker='x')
+            ax.scatter(mark[0], mark[1], mark[2], color="red", marker="x")
 
         # Put scatter skeleton
-        plot = ax.scatter(xs=[], ys=[], zs=[], c='black', alpha=0.6, **kwargs)
+        plot = ax.scatter(xs=[], ys=[], zs=[], c="black", alpha=0.6, **kwargs)
 
         # Do animation
-        anim = animation.FuncAnimation(fig=fig,
-                                       func=_animate,
-                                       frames=range(n_iters),
-                                       fargs=(pos_history, plot),
-                                       interval=animator.interval,
-                                       repeat=animator.repeat,
-                                       repeat_delay=animator.repeat_delay)
+        anim = animation.FuncAnimation(
+            fig=fig,
+            func=_animate,
+            frames=range(n_iters),
+            fargs=(pos_history, plot),
+            interval=animator.interval,
+            repeat=animator.repeat,
+            repeat_delay=animator.repeat_delay,
+        )
     except TypeError:
         raise
     else:
         return anim
+
 
 def _animate(i, data, plot):
     """Helper animation function that is called sequentially
@@ -357,7 +388,8 @@ def _animate(i, data, plot):
         plot.set_offsets(current_pos)
     else:
         plot._offsets3d = current_pos.T
-    return plot,
+    return (plot,)
+
 
 def _mesh(mesher):
     """Helper function to make a mesh"""

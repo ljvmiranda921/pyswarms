@@ -22,8 +22,8 @@ from .base import Topology
 # Create a logger
 logger = logging.getLogger(__name__)
 
-class Ring(Topology):
 
+class Ring(Topology):
     def __init__(self):
         super(Ring, self).__init__()
 
@@ -62,15 +62,21 @@ class Ring(Topology):
             # independently of each other.
             if k == 1:
                 # The minimum index is itself, no mapping needed.
-                best_neighbor = swarm.pbest_cost[idx][:, np.newaxis].argmin(axis=1)
+                best_neighbor = swarm.pbest_cost[idx][:, np.newaxis].argmin(
+                    axis=1
+                )
             else:
                 idx_min = swarm.pbest_cost[idx].argmin(axis=1)
                 best_neighbor = idx[np.arange(len(idx)), idx_min]
             # Obtain best cost and position
             best_cost = np.min(swarm.pbest_cost[best_neighbor])
-            best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost[best_neighbor])]
+            best_pos = swarm.pbest_pos[
+                np.argmin(swarm.pbest_cost[best_neighbor])
+            ]
         except AttributeError:
-            msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
+            msg = "Please pass a Swarm class. You passed {}".format(
+                type(swarm)
+            )
             logger.error(msg)
             raise
         else:

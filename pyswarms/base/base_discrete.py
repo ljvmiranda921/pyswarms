@@ -38,8 +38,8 @@ from collections import namedtuple
 # Import from package
 from ..backend import create_swarm
 
-class DiscreteSwarmOptimizer(object):
 
+class DiscreteSwarmOptimizer(object):
     def assertions(self):
         """Assertion method to check various inputs.
 
@@ -59,20 +59,27 @@ class DiscreteSwarmOptimizer(object):
         # Check clamp settings
         if self.velocity_clamp is not None:
             if not isinstance(self.velocity_clamp, tuple):
-                raise TypeError('Parameter `velocity_clamp` must be a tuple')
+                raise TypeError("Parameter `velocity_clamp` must be a tuple")
             if not len(self.velocity_clamp) == 2:
-                raise IndexError('Parameter `velocity_clamp` must be of '
-                                 'size 2')
+                raise IndexError(
+                    "Parameter `velocity_clamp` must be of " "size 2"
+                )
             if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-                raise ValueError('Make sure that velocity_clamp is in the '
-                                 'form (v_min, v_max)')
+                raise ValueError(
+                    "Make sure that velocity_clamp is in the "
+                    "form (v_min, v_max)"
+                )
 
         # Required keys in options argument
-        if not all(key in self.options for key in ('c1', 'c2', 'w')):
-            raise KeyError('Missing either c1, c2, or w in options')
+        if not all(key in self.options for key in ("c1", "c2", "w")):
+            raise KeyError("Missing either c1, c2, or w in options")
 
-    def setup_logging(self, default_path='./config/logging.yaml',
-                      default_level=logging.INFO, env_key='LOG_CFG'):
+    def setup_logging(
+        self,
+        default_path="./config/logging.yaml",
+        default_level=logging.INFO,
+        env_key="LOG_CFG",
+    ):
         """Setup logging configuration
 
         Parameters
@@ -89,14 +96,22 @@ class DiscreteSwarmOptimizer(object):
         if value:
             path = value
         if os.path.exists(path):
-            with open(path, 'rt') as f:
+            with open(path, "rt") as f:
                 config = yaml.safe_load(f.read())
             logging.config.dictConfig(config)
         else:
             logging.basicConfig(level=default_level)
 
-    def __init__(self, n_particles, dimensions, binary, options,
-                 velocity_clamp=None, init_pos=None, ftol=-np.inf):
+    def __init__(
+        self,
+        n_particles,
+        dimensions,
+        binary,
+        options,
+        velocity_clamp=None,
+        init_pos=None,
+        ftol=-np.inf,
+    ):
         """Initializes the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the
@@ -142,10 +157,16 @@ class DiscreteSwarmOptimizer(object):
         self.init_pos = init_pos
         self.ftol = ftol
         # Initialize named tuple for populating the history list
-        self.ToHistory = namedtuple('ToHistory',
-                                    ['best_cost', 'mean_pbest_cost',
-                                     'mean_neighbor_cost', 'position',
-                                     'velocity'])
+        self.ToHistory = namedtuple(
+            "ToHistory",
+            [
+                "best_cost",
+                "mean_pbest_cost",
+                "mean_neighbor_cost",
+                "position",
+                "velocity",
+            ],
+        )
         # Invoke assertions
         self.assertions()
 
@@ -228,9 +249,12 @@ class DiscreteSwarmOptimizer(object):
         self.velocity_history = []
 
         # Initialize the swarm
-        self.swarm = create_swarm(n_particles=self.n_particles,
-                                  dimensions=self.dimensions,
-                                  discrete=True,
-                                  init_pos=self.init_pos,
-                                  binary=self.binary,
-                                  clamp=self.velocity_clamp, options=self.options)
+        self.swarm = create_swarm(
+            n_particles=self.n_particles,
+            dimensions=self.dimensions,
+            discrete=True,
+            init_pos=self.init_pos,
+            binary=self.binary,
+            clamp=self.velocity_clamp,
+            options=self.options,
+        )

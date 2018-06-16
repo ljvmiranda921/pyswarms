@@ -10,8 +10,9 @@ as input to most backend cases
 
 # Import modules
 import numpy as np
-from attr import (attrs, attrib)
+from attr import attrs, attrib
 from attr.validators import instance_of
+
 
 @attrs
 class Swarm(object):
@@ -76,6 +77,7 @@ class Swarm(object):
     current_cost : numpy.ndarray (default is empty array)
         the current cost found by the swarm of shape :code:`(n_particles, dimensions)`
     """
+
     # Required attributes
     position = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
     velocity = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
@@ -84,10 +86,24 @@ class Swarm(object):
     dimensions = attrib(type=int, validator=instance_of(int))
     options = attrib(type=dict, default={}, validator=instance_of(dict))
     pbest_pos = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
-    best_pos  = attrib(type=np.ndarray, default=np.array([]), validator=instance_of(np.ndarray))
-    pbest_cost = attrib(type=np.ndarray, default=np.array([]), validator=instance_of(np.ndarray))
-    best_cost = attrib(type=float, default=np.inf, validator=instance_of((int, float)))
-    current_cost = attrib(type=np.ndarray, default=np.array([]), validator=instance_of(np.ndarray))
+    best_pos = attrib(
+        type=np.ndarray,
+        default=np.array([]),
+        validator=instance_of(np.ndarray),
+    )
+    pbest_cost = attrib(
+        type=np.ndarray,
+        default=np.array([]),
+        validator=instance_of(np.ndarray),
+    )
+    best_cost = attrib(
+        type=float, default=np.inf, validator=instance_of((int, float))
+    )
+    current_cost = attrib(
+        type=np.ndarray,
+        default=np.array([]),
+        validator=instance_of(np.ndarray),
+    )
 
     @n_particles.default
     def n_particles_default(self):

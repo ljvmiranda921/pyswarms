@@ -44,15 +44,30 @@ class GridSearch(SearchBase):
     """Exhaustive search of optimal performance on selected objective function
     over all combinations of specified hyperparameter values."""
 
-    def __init__(self, optimizer, n_particles, dimensions, options,
-                 objective_func, iters, bounds=None, velocity_clamp=(0,1)):
+    def __init__(
+        self,
+        optimizer,
+        n_particles,
+        dimensions,
+        options,
+        objective_func,
+        iters,
+        bounds=None,
+        velocity_clamp=(0, 1),
+    ):
         """Initializes the paramsearch."""
 
         # Assign attributes
-        super(GridSearch, self).__init__(optimizer, n_particles, dimensions,
-                                         options, objective_func, iters,
-                                         bounds=bounds,
-                                         velocity_clamp=velocity_clamp)
+        super(GridSearch, self).__init__(
+            optimizer,
+            n_particles,
+            dimensions,
+            options,
+            objective_func,
+            iters,
+            bounds=bounds,
+            velocity_clamp=velocity_clamp,
+        )
         # invoke assertions
         self.assertions()
 
@@ -61,8 +76,10 @@ class GridSearch(SearchBase):
 
         # Extract keys and values from options dictionary
         params = self.options.keys()
-        items = [x if type(x) == list
-                 else [x] for x in list(zip(*self.options.items()))[1]]
+        items = [
+            x if type(x) == list else [x]
+            for x in list(zip(*self.options.items()))[1]
+        ]
 
         # Create list of cartesian products of hyperparameter values
         # from options
