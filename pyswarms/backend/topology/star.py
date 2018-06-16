@@ -77,7 +77,7 @@ class Star(Topology):
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
         cognitive and social terms of the swarm.
-        
+
         A sample usage can be seen with the following:
 
         .. code-block :: python

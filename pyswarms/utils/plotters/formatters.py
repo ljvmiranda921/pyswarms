@@ -71,7 +71,7 @@ class Animator(object):
     You can use this class to modify options on how the animation will be run
     in the :func:`pyswarms.utils.plotters.plot_contour` and
     :func:`pyswarms.utils.plotters.plot_surface` methods.
-    
+
     .. code-block :: python
 
         from pyswarms.utils.plotters import plot_contour

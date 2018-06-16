@@ -19,7 +19,8 @@ requirements = [
     'matplotlib>=1.3.1',
     'mock==2.0.0',
     'pytest==3.2.1',
-    'attrs==18.1.0'
+    'attrs==18.1.0',
+    'pre-commit'
 ]
 
 setup_requirements = [
@@ -34,7 +35,8 @@ test_requirements = [
     'matplotlib>=1.3.1',
     'mock==2.0.0',
     'pytest==3.2.1',
-    'attrs==18.1.0'
+    'attrs==18.1.0',
+    'pre-commit'
 ]
 
 setup(

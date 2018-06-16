@@ -76,7 +76,7 @@ def generate_discrete_swarm(
     n_particles, dimensions, binary=False, init_pos=None
 ):
     """Generates a discrete swarm
-    
+
     Parameters
     ----------
     n_particles : int
@@ -128,7 +128,7 @@ def generate_velocity(n_particles, dimensions, clamp=None):
         velocity matrix of shape (n_particles, dimensions)
     """
     try:
-        min_velocity, max_velocity = (0, 1) if clamp == None else clamp
+        min_velocity, max_velocity = (0, 1) if clamp is None else clamp
         velocity = (max_velocity - min_velocity) * np.random.random_sample(
             size=(n_particles, dimensions)
         ) + min_velocity
@@ -150,7 +150,7 @@ def create_swarm(
     clamp=None,
 ):
     """Abstracts the generate_swarm() and generate_velocity() methods
-    
+
     Parameters
     ----------
     n_particles : int
