@@ -20,15 +20,15 @@ is defined as:
 
 .. math::
 
-   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)] 
+   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)]
                    + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
 
 Here, :math:`c1` and :math:`c2` are the cognitive and social parameters
-respectively. They control the particle's options in choosing how to
-react given two choices: (1) to follow its *personal best* or (2) follow
-the swarm's *global best* position. Overall, this dictates if the swarm
-is explorative or exploitative in nature. In addition, a parameter
-:math:`w` controls the inertia of the swarm's movement.
+respectively. They control the particle's behavior given two choices: (1) to
+follow its *personal best* or (2) follow the swarm's *global best* position.
+Overall, this dictates if the swarm is explorative or exploitative in nature.
+In addition, a parameter :math:`w` controls the inertia of the swarm's
+movement.
 
 An example usage is as follows:
 
@@ -69,10 +69,17 @@ from ..utils.console_utils import cli_print, end_report
 
 
 class GlobalBestPSO(SwarmOptimizer):
-
-    def __init__(self, n_particles, dimensions, options,
-                 bounds=None, velocity_clamp=None, center=1.00, ftol=-np.inf,
-                 init_pos=None):
+    def __init__(
+        self,
+        n_particles,
+        dimensions,
+        options,
+        bounds=None,
+        velocity_clamp=None,
+        center=1.00,
+        ftol=-np.inf,
+        init_pos=None,
+    ):
         """Initializes the swarm.
 
         Attributes
@@ -104,10 +111,16 @@ class GlobalBestPSO(SwarmOptimizer):
             relative error in objective_func(best_pos) acceptable for
             convergence
         """
-        super(GlobalBestPSO, self).__init__(n_particles=n_particles, dimensions=dimensions,
-                                            options=options, bounds=bounds,
-                                            velocity_clamp=velocity_clamp,
-                                            center=center, ftol=ftol, init_pos=init_pos)
+        super(GlobalBestPSO, self).__init__(
+            n_particles=n_particles,
+            dimensions=dimensions,
+            options=options,
+            bounds=bounds,
+            velocity_clamp=velocity_clamp,
+            center=center,
+            ftol=ftol,
+            init_pos=init_pos,
+        )
 
         # Initialize logger
         self.logger = logging.getLogger(__name__)
@@ -144,34 +157,52 @@ class GlobalBestPSO(SwarmOptimizer):
             # Compute cost for current position and personal best
             self.swarm.current_cost = objective_func(self.swarm.position)
             self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos)
-            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
+            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
+                self.swarm
+            )
             best_cost_yet_found = self.swarm.best_cost
             # Get minima of pbest and check if it's less than gbest
             if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
-                self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
+                self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
+                    self.swarm
+                )
             # Print to console
             if i % print_step == 0:
-                cli_print('Iteration %s/%s, cost: %s' %
-                          (i+1, iters, self.swarm.best_cost), verbose, 2,
-                          logger=self.logger)
+                cli_print(
+                    "Iteration %s/%s, cost: %s"
+                    % (i + 1, iters, self.swarm.best_cost),
+                    verbose,
+                    2,
+                    logger=self.logger,
+                )
             # Save to history
-            hist = self.ToHistory(best_cost=self.swarm.best_cost,
-                                  mean_pbest_cost=np.mean(self.swarm.pbest_cost),
-                                  mean_neighbor_cost=self.swarm.best_cost,
-                                  position=self.swarm.position,
-                                  velocity=self.swarm.velocity)
+            hist = self.ToHistory(
+                best_cost=self.swarm.best_cost,
+                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
+                mean_neighbor_cost=self.swarm.best_cost,
+                position=self.swarm.position,
+                velocity=self.swarm.velocity,
+            )
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
-            relative_measure = self.ftol*(1 + np.abs(best_cost_yet_found))
-            if np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure:
+            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
+            if (
+                np.abs(self.swarm.best_cost - best_cost_yet_found)
+                < relative_measure
+            ):
                 break
             # Perform velocity and position updates
-            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp)
-            self.swarm.position = self.top.compute_position(self.swarm, self.bounds)
+            self.swarm.velocity = self.top.compute_velocity(
+                self.swarm, self.velocity_clamp
+            )
+            self.swarm.position = self.top.compute_position(
+                self.swarm, self.bounds
+            )
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.best_pos.copy()
         # Write report in log and return final cost and position
-        end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
+        end_report(
+            final_best_cost, final_best_pos, verbose, logger=self.logger
+        )
         return (final_best_cost, final_best_pos)
-

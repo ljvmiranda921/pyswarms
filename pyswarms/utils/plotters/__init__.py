@@ -5,4 +5,6 @@ ou can plot cost history and animate your swarm in both 2D or
 3D spaces.
 """
 
-from .plotters import *
+from .plotters import plot_cost_history, plot_contour, plot_surface
+
+__all__ = ["plotters", "formatters"]

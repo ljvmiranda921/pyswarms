@@ -21,8 +21,8 @@ from .base import Topology
 # Create a logger
 logger = logging.getLogger(__name__)
 
-class Star(Topology):
 
+class Star(Topology):
     def __init__(self):
         super(Star, self).__init__()
 
@@ -63,7 +63,9 @@ class Star(Topology):
             best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
             best_cost = np.min(swarm.pbest_cost)
         except AttributeError:
-            msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
+            msg = "Please pass a Swarm class. You passed {}".format(
+                type(swarm)
+            )
             logger.error(msg)
             raise
         else:
@@ -75,7 +77,7 @@ class Star(Topology):
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
         cognitive and social terms of the swarm.
-        
+
         A sample usage can be seen with the following:
 
         .. code-block :: python

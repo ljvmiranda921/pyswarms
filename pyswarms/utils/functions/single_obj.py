@@ -42,7 +42,7 @@ def sphere_func(x):
     numpy.ndarray
         computed cost of size :code:`(n_particles, )`
     """
-    j = (x**2.0).sum(axis=1)
+    j = (x ** 2.0).sum(axis=1)
 
     return j
 
@@ -70,11 +70,12 @@ def rastrigin_func(x):
         domain
     """
     if not np.logical_and(x >= -5.12, x <= 5.12).all():
-        raise ValueError('Input for Rastrigin function must be within '
-                         '[-5.12, 5.12].')
+        raise ValueError(
+            "Input for Rastrigin function must be within " "[-5.12, 5.12]."
+        )
 
     d = x.shape[1]
-    j = 10.0 * d + (x**2.0 - 10.0 * np.cos(2.0 * np.pi * x)).sum(axis=1)
+    j = 10.0 * d + (x ** 2.0 - 10.0 * np.cos(2.0 * np.pi * x)).sum(axis=1)
 
     return j
 
@@ -102,13 +103,15 @@ def ackley_func(x):
         domain
     """
     if not np.logical_and(x >= -32, x <= 32).all():
-        raise ValueError('Input for Ackley function must be within [-32, 32].')
+        raise ValueError("Input for Ackley function must be within [-32, 32].")
 
     d = x.shape[1]
-    j = (-20.0 * np.exp(-0.2 * np.sqrt((1/d) * (x**2).sum(axis=1)))
-         - np.exp((1/float(d)) * np.cos(2 * np.pi * x).sum(axis=1))
-         + 20.0
-         + np.exp(1))
+    j = (
+        -20.0 * np.exp(-0.2 * np.sqrt((1 / d) * (x ** 2).sum(axis=1)))
+        - np.exp((1 / float(d)) * np.cos(2 * np.pi * x).sum(axis=1))
+        + 20.0
+        + np.exp(1)
+    )
 
     return j
 
@@ -132,7 +135,9 @@ def rosenbrock_func(x):
         computed cost of size :code:`(n_particles, )`
     """
 
-    r = np.sum(100*(x.T[1:] - x.T[:-1]**2.0)**2 + (1-x.T[:-1])**2.0, axis=0)
+    r = np.sum(
+        100 * (x.T[1:] - x.T[:-1] ** 2.0) ** 2 + (1 - x.T[:-1]) ** 2.0, axis=0
+    )
 
     return r
 
@@ -163,16 +168,19 @@ def beale_func(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError('Beale function only takes two-dimensional input.')
+        raise IndexError("Beale function only takes two-dimensional input.")
     if not np.logical_and(x >= -4.5, x <= 4.5).all():
-        raise ValueError('Input for Beale function must be within '
-                         '[-4.5, 4.5].')
+        raise ValueError(
+            "Input for Beale function must be within " "[-4.5, 4.5]."
+        )
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = ((1.5 - x_ + x_ * y_)**2.0
-         + (2.25 - x_ + x_ * y_**2.0)**2.0
-         + (2.625 - x_ + x_ * y_**3.0)**2.0)
+    j = (
+        (1.5 - x_ + x_ * y_) ** 2.0
+        + (2.25 - x_ + x_ * y_ ** 2.0) ** 2.0
+        + (2.625 - x_ + x_ * y_ ** 3.0) ** 2.0
+    )
 
     return j
 
@@ -204,18 +212,39 @@ def goldstein_func(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError('Goldstein function only takes two-dimensional '
-                         'input.')
+        raise IndexError(
+            "Goldstein function only takes two-dimensional " "input."
+        )
     if not np.logical_and(x >= -2, x <= 2).all():
-        raise ValueError('Input for Goldstein-Price function must be within '
-                         '[-2, 2].')
+        raise ValueError(
+            "Input for Goldstein-Price function must be within " "[-2, 2]."
+        )
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = ((1 + (x_ + y_ + 1)**2.0
-         * (19 - 14*x_ + 3*x_**2.0 - 14*y_ + 6*x_*y_ + 3*y_**2.0))
-         * (30 + (2*x_ - 3 * y_)**2.0
-         * (18 - 32*x_ + 12*x_**2.0 + 48*y_ - 36*x_*y_ + 27*y_**2.0)))
+    j = (
+        1
+        + (x_ + y_ + 1) ** 2.0
+        * (
+            19
+            - 14 * x_
+            + 3 * x_ ** 2.0
+            - 14 * y_
+            + 6 * x_ * y_
+            + 3 * y_ ** 2.0
+        )
+    ) * (
+        30
+        + (2 * x_ - 3 * y_) ** 2.0
+        * (
+            18
+            - 32 * x_
+            + 12 * x_ ** 2.0
+            + 48 * y_
+            - 36 * x_ * y_
+            + 27 * y_ ** 2.0
+        )
+    )
 
     return j
 
@@ -247,13 +276,13 @@ def booth_func(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError('Booth function only takes two-dimensional input.')
+        raise IndexError("Booth function only takes two-dimensional input.")
     if not np.logical_and(x >= -10, x <= 10).all():
-        raise ValueError('Input for Booth function must be within [-10, 10].')
+        raise ValueError("Input for Booth function must be within [-10, 10].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = (x_ + 2 * y_ - 7)**2.0 + (2 * x_ + y_ - 5)**2.0
+    j = (x_ + 2 * y_ - 7) ** 2.0 + (2 * x_ + y_ - 5) ** 2.0
 
     return j
 
@@ -287,19 +316,23 @@ def bukin6_func(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError('Bukin N. 6 function only takes two-dimensional '
-                         'input.')
+        raise IndexError(
+            "Bukin N. 6 function only takes two-dimensional " "input."
+        )
     if not np.logical_and(x[:, 0] >= -15, x[:, 0] <= -5).all():
-        raise ValueError('x-coord for Bukin N. 6 function must be within '
-                         '[-15, -5].')
+        raise ValueError(
+            "x-coord for Bukin N. 6 function must be within " "[-15, -5]."
+        )
     if not np.logical_and(x[:, 1] >= -3, x[:, 1] <= 3).all():
-        raise ValueError('y-coord for Bukin N. 6 function must be within '
-                         '[-3, 3].')
+        raise ValueError(
+            "y-coord for Bukin N. 6 function must be within " "[-3, 3]."
+        )
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = 100 * np.sqrt(np.absolute(y_**2.0 - 0.01*x_**2.0)) + 0.01 * \
-        np.absolute(x_ + 10)
+    j = 100 * np.sqrt(
+        np.absolute(y_ ** 2.0 - 0.01 * x_ ** 2.0)
+    ) + 0.01 * np.absolute(x_ + 10)
 
     return j
 
@@ -321,14 +354,15 @@ def matyas_func(x):
     numpy.ndarray
     """
     if not x.shape[1] == 2:
-        raise IndexError('Matyas function only takes two-dimensional input.')
+        raise IndexError("Matyas function only takes two-dimensional input.")
     if not np.logical_and(x >= -10, x <= 10).all():
-        raise ValueError('Input for Matyas function must be within '
-                         '[-10, 10].')
+        raise ValueError(
+            "Input for Matyas function must be within " "[-10, 10]."
+        )
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = 0.26 * (x_**2.0 + y_**2.0) - 0.48 * x_ * y_
+    j = 0.26 * (x_ ** 2.0 + y_ ** 2.0) - 0.48 * x_ * y_
 
     return j
 
@@ -360,9 +394,9 @@ def levi_func(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError('Levi function only takes two-dimensional input.')
+        raise IndexError("Levi function only takes two-dimensional input.")
     if not np.logical_and(x >= -10, x <= 10).all():
-        raise ValueError('Input for Levi function must be within [-10, 10].')
+        raise ValueError("Input for Levi function must be within [-10, 10].")
 
     mask = np.full(x.shape, False)
     mask[:, -1] = True
@@ -372,11 +406,12 @@ def levi_func(x):
     masked_w_ = np.ma.array(w_, mask=mask)
     d_ = x.shape[1] - 1
 
-    j = (np.sin(np.pi * w_[:, 0])**2.0
-         + ((masked_x - 1)**2.0).sum(axis=1)
-         * (1 + 10 * np.sin(np.pi * (masked_w_).sum(axis=1) + 1)**2.0)
-         + (w_[:, d_] - 1)**2.0
-         * (1 + np.sin(2 * np.pi * w_[:, d_])**2.0))
+    j = (
+        np.sin(np.pi * w_[:, 0]) ** 2.0
+        + ((masked_x - 1) ** 2.0).sum(axis=1)
+        * (1 + 10 * np.sin(np.pi * (masked_w_).sum(axis=1) + 1) ** 2.0)
+        + (w_[:, d_] - 1) ** 2.0 * (1 + np.sin(2 * np.pi * w_[:, d_]) ** 2.0)
+    )
 
     return j
 
@@ -408,16 +443,19 @@ def schaffer2_func(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError('Schaffer N. 2 function only takes two-dimensional '
-                         'input.')
+        raise IndexError(
+            "Schaffer N. 2 function only takes two-dimensional " "input."
+        )
     if not np.logical_and(x >= -100, x <= 100).all():
-        raise ValueError('Input for Schaffer function must be within '
-                         '[-100, 100].')
+        raise ValueError(
+            "Input for Schaffer function must be within " "[-100, 100]."
+        )
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = (0.5
-         + ((np.sin(x_**2.0 - y_**2.0)**2.0 - 0.5)
-             / ((1 + 0.001 * (x_**2.0 + y_**2.0))**2.0)))
+    j = 0.5 + (
+        (np.sin(x_ ** 2.0 - y_ ** 2.0) ** 2.0 - 0.5)
+        / ((1 + 0.001 * (x_ ** 2.0 + y_ ** 2.0)) ** 2.0)
+    )
 
     return j

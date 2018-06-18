@@ -10,7 +10,4 @@ from .star import Star
 from .ring import Ring
 
 
-__all__ = [
-    "Star",
-    "Ring"
-]
+__all__ = ["Star", "Ring"]

@@ -11,7 +11,6 @@ import operator as op
 
 
 class SearchBase(object):
-
     def assertions(self):
         """Assertion method to check :code:`optimizer` input.
 
@@ -21,13 +20,22 @@ class SearchBase(object):
             When :code:`optimizer` does not have an `'optimize'` attribute.
         """
         # Check type of optimizer object
-        if not hasattr(self.optimizer, 'optimize'):
-            raise TypeError('Parameter `optimizer` must have an '
-                            '`\'optimize\'` attribute.')
+        if not hasattr(self.optimizer, "optimize"):
+            raise TypeError(
+                "Parameter `optimizer` must have an " "`'optimize'` attribute."
+            )
 
-    def __init__(self, optimizer, n_particles, dimensions, options,
-                 objective_func, iters,
-                 bounds=None, velocity_clamp=(0,1)):
+    def __init__(
+        self,
+        optimizer,
+        n_particles,
+        dimensions,
+        options,
+        objective_func,
+        iters,
+        bounds=None,
+        velocity_clamp=(0, 1),
+    ):
         """Initializes the Search.
 
         Attributes
@@ -91,8 +99,9 @@ class SearchBase(object):
         """
 
         # Intialize optimizer
-        f = self.optimizer(self.n_particles, self.dims, options,
-                           self.bounds, self.vclamp)
+        f = self.optimizer(
+            self.n_particles, self.dims, options, self.bounds, self.vclamp
+        )
 
         # Return score
         return f.optimize(self.objective_func, self.iters)[0]
@@ -121,8 +130,7 @@ class SearchBase(object):
 
         # Catches the maximum bool flag
         if maximum:
-            idx, self.best_score = max(enumerate(scores),
-                                       key=op.itemgetter(1))
+            idx, self.best_score = max(enumerate(scores), key=op.itemgetter(1))
 
         # Return optimum hyperparameter value property from grid using index
         self.best_options = op.itemgetter(idx)(grid)
