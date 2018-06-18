@@ -8,6 +8,7 @@
 [![Documentation Status](https://readthedocs.org/projects/pyswarms/badge/?version=master)](https://pyswarms.readthedocs.io/en/master/?badge=development)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg )](https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE)
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.00433/status.svg)](https://doi.org/10.21105/joss.00433)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pyswarms/Issues)
 
 PySwarms is an extensible research toolkit for particle swarm optimization
