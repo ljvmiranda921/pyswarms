@@ -174,7 +174,7 @@ class LocalBestPSO(SwarmOptimizer):
         # Initialize the topology
         self.top = Ring()
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1):
+    def optimize(self, objective_func, iters, args=(), kwargs={}, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
@@ -199,8 +199,8 @@ class LocalBestPSO(SwarmOptimizer):
         """
         for i in range(iters):
             # Compute cost for current position and personal best
-            self.swarm.current_cost = objective_func(self.swarm.position)
-            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos)
+            self.swarm.current_cost = objective_func(self.swarm.position, *args, **kwargs)
+            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos, *args, **kwargs)
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
                 self.swarm
             )
