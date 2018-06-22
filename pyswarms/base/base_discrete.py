@@ -193,7 +193,7 @@ class DiscreteSwarmOptimizer(object):
         self.pos_history.append(hist.position)
         self.velocity_history.append(hist.velocity)
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1):
+    def optimize(self, objective_func, iters, args=(), kwargs={}, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
