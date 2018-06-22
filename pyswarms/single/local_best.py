@@ -186,6 +186,10 @@ class LocalBestPSO(SwarmOptimizer):
             objective function to be evaluated
         iters : int
             number of iterations
+        args : tuple
+            arguments for the objective function
+        kwargs : dict
+            arguments for the objective function
         print_step : int (default is 1)
             amount of steps for printing into console.
         verbose : int  (default is 1)

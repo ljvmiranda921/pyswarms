@@ -113,7 +113,7 @@ class SearchBase(object):
 
         # Return score
         return f.optimize(self.objective_func, self.iters,
-                          args = self.obj_args, kwargs=self.obj_kwargs)[0]
+                          args=self.obj_args, kwargs=self.obj_kwargs)[0]
 
     def search(self, maximum=False):
         """Compares optimizer's objective function performance scores

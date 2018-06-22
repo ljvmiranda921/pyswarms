@@ -40,6 +40,7 @@ def test_global_kwargs(func, kwargs):
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
     assert np.isclose(pos[1], 1.0, rtol=1e-03)
 
+
 @pytest.mark.parametrize('func', [
     rosenbrock_with_args
 ])
