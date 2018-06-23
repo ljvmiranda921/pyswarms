@@ -95,7 +95,7 @@ class Ring(Topology):
 
             import pyswarms.backend as P
             from pyswarms.swarms.backend import Swarm
-            from pyswarms.backend.topology import Star
+            from pyswarms.backend.topology import Ring
 
             my_swarm = P.create_swarm(n_particles, dimensions)
             my_topology = Ring()
