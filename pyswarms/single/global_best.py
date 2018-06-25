@@ -158,7 +158,7 @@ class GlobalBestPSO(SwarmOptimizer):
             the global best cost and the global best position.
         """
 
-        cli_print("Arguments Passed to Objective Function: \nargs: %s \nkwargs: %s\n" % (args, kwargs),\
+        cli_print("Arguments Passed to Objective Function: \nargs: %s \nkwargs: %s\n" % (args, kwargs),
                   verbose, 2, logger=self.logger)
 
         for i in range(iters):
