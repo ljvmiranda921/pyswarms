@@ -172,6 +172,9 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             the local best cost and the local best position among the
             swarm.
         """
+        cli_print("Arguments Passed to Objective Function: \nargs: %s \nkwargs: %s\n" % (args, kwargs), \
+                  verbose, 2, logger=self.logger)
+
         for i in range(iters):
             # Compute cost for current position and personal best
             self.swarm.current_cost = objective_func(self.swarm.position, *args, **kwargs)
