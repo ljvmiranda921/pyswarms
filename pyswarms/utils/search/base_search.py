@@ -33,8 +33,6 @@ class SearchBase(object):
         options,
         objective_func,
         iters,
-        obj_args=(),
-        obj_kwargs={},
         bounds=None,
         velocity_clamp=(0, 1),
     ):
@@ -68,10 +66,6 @@ class SearchBase(object):
             objective function to be evaluated
         iters: int
             number of iterations
-        obj_args : tuple
-            tuple of arguments for objective function parameterization.
-        obj_kwargs : dict
-            dict of arguments for objective function parameterization.
         bounds : tuple of np.ndarray, optional (default is None)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
@@ -91,8 +85,6 @@ class SearchBase(object):
         self.vclamp = velocity_clamp
         self.objective_func = objective_func
         self.iters = iters
-        self.obj_args = obj_args
-        self.obj_kwargs = obj_kwargs
         # Invoke assertions
         self.assertions()
 
@@ -112,8 +104,7 @@ class SearchBase(object):
         )
 
         # Return score
-        return f.optimize(self.objective_func, self.iters,
-                          args=self.obj_args, kwargs=self.obj_kwargs)[0]
+        return f.optimize(self.objective_func, self.iters)[0]
 
     def search(self, maximum=False):
         """Compares optimizer's objective function performance scores

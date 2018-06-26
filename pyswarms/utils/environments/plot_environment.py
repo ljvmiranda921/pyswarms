@@ -104,7 +104,7 @@ class PlotEnvironment(object):
                 "Missing methods in optimizer, check " "pyswarms.base module"
             )
 
-    def __init__(self, optimizer, objective_func, iters, obj_args=(), obj_kwargs={}):
+    def __init__(self, optimizer, objective_func, iters):
         """Runs the optimizer against an objective function for a number
         of iterations
 
@@ -125,26 +125,17 @@ class PlotEnvironment(object):
         iters : int
             The number of iterations to run the optimizer. This argument
             is passed to the :code:`optimize` method of the :code:`optimizer`.
-        obj_args : tuple
-            Tuple of arguments to be passed into the objective function for
-            parameterization.
-        obj_kwargs : dict
-            dictionary of kwargs to be passed into the objective function for
-            parameterization.
         """
         self.logger = logging.getLogger(__name__)
         # Store the arguments
         self.optimizer = optimizer
         self.objective_func = objective_func
         self.iters = iters
-        self.obj_args = obj_args
-        self.obj_kwargs = obj_kwargs
         # Check assertions
         self.assertions()
         # Run the optimizer
         self.optimizer.reset()
-        self.status = self.optimizer.optimize(objective_func, iters, args=obj_args,
-                                              kwargs=obj_kwargs, print_step=1, verbose=0)
+        self.status = self.optimizer.optimize(objective_func, iters, 1, 0)
         # Initialize tuples for particle plotting
         self.Index = namedtuple("Index", ["x", "y", "z"])
         self.Limit = namedtuple("Limit", ["x", "y", "z"])
