@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-A Ring Network Topology
+A Pyramid Network Topology
 
 This class implements a star topology where all particles are connected in a
-ring-like fashion. This social behavior is often found in LocalBest PSO
-optimizers.
+pyramid like fashion.
 """
 
 # Import from stdlib
@@ -13,7 +12,7 @@ import logging
 
 # Import modules
 import numpy as np
-from scipy.spatial import cKDTree
+from scipy.spatial import Delaunay
 
 # Import from package
 from .. import operators as ops
@@ -22,28 +21,20 @@ from .base import Topology
 # Create a logger
 logger = logging.getLogger(__name__)
 
-
-class Ring(Topology):
+class Pyramid(Topology):
     def __init__(self):
-        super(Ring, self).__init__()
+        super(Pyramid, self).__init__()
+    
+    def compute_gbest(self, swarm):
+        """Updates the global best using a pyramid neighborhood approach
 
-    def compute_gbest(self, swarm, p, k):
-        """Updates the global best using a neighborhood approach
-
-        This uses the cKDTree method from :code:`scipy` to obtain the nearest
-        neighbours
+        This uses the Delaunay method from :code:`scipy` to triangulate space
+        with simplices
 
         Parameters
         ----------
         swarm : pyswarms.backend.swarms.Swarm
             a Swarm instance
-        k : int
-            number of neighbors to be considered. Must be a
-            positive integer less than :code:`n_particles`
-        p: int {1,2}
-            the Minkowski p-norm to use. 1 is the
-            sum-of-absolute values (or L1 distance) while 2 is
-            the Euclidean (or L2) distance.
 
         Returns
         -------
@@ -53,26 +44,23 @@ class Ring(Topology):
             Best cost
         """
         try:
-            # Obtain the nearest-neighbors for each particle
-            tree = cKDTree(swarm.position)
-            _, idx = tree.query(swarm.position, p=p, k=k)
-
-            # Map the computed costs to the neighbour indices and take the
-            # argmin. If k-neighbors is equal to 1, then the swarm acts
-            # independently of each other.
-            if k == 1:
-                # The minimum index is itself, no mapping needed.
-                best_neighbor = swarm.pbest_cost[idx][:, np.newaxis].argmin(
-                    axis=1
-                )
+            # If there are less than 5 particles they are all connected
+            if swarm.n_particles < 5:
+                best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
+                best_cost = np.min(swarm.pbest_cost)
             else:
+                pyramid = Delaunay(swarm.position)
+                indices, index_pointer = pyramid.vertex_neighbor_vertices
+                # Insert all the neighbors for each particle in the idx array
+                idx = np.array([index_pointer[indices[i]:indices[i+1]] for i in range(swarm.n_particles)])
                 idx_min = swarm.pbest_cost[idx].argmin(axis=1)
                 best_neighbor = idx[np.arange(len(idx)), idx_min]
-            # Obtain best cost and position
-            best_cost = np.min(swarm.pbest_cost[best_neighbor])
-            best_pos = swarm.pbest_pos[
-                np.argmin(swarm.pbest_cost[best_neighbor])
-            ]
+                
+                # Obtain best cost and position
+                best_cost = np.min(swarm.pbest_cost[best_neighbor])
+                best_pos = swarm.pbest_pos[
+                    np.argmin(swarm.pbest_cost[best_neighbor])
+                ]
         except AttributeError:
             msg = "Please pass a Swarm class. You passed {}".format(
                 type(swarm)
@@ -81,7 +69,7 @@ class Ring(Topology):
             raise
         else:
             return (best_pos, best_cost)
-
+            
     def compute_velocity(self, swarm, clamp=None):
         """Computes the velocity matrix
 
@@ -95,10 +83,10 @@ class Ring(Topology):
 
             import pyswarms.backend as P
             from pyswarms.swarms.backend import Swarm
-            from pyswarms.backend.topology import Ring
+            from pyswarms.backend.topology import Pyramid
 
             my_swarm = P.create_swarm(n_particles, dimensions)
-            my_topology = Ring()
+            my_topology = Pyramid()
 
             for i in range(iters):
                 # Inside the for-loop
@@ -119,7 +107,7 @@ class Ring(Topology):
             Updated velocity matrix
         """
         return ops.compute_velocity(swarm, clamp)
-
+    
     def compute_position(self, swarm, bounds=None):
         """Updates the position matrix
 

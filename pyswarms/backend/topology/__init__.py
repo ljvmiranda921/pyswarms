@@ -8,6 +8,7 @@ particle behavior. These topologies implement three methods:
 
 from .star import Star
 from .ring import Ring
+from .pyramid import Pyramid
 
 
-__all__ = ["Star", "Ring"]
+__all__ = ["Star", "Ring", "Pyramid"]
