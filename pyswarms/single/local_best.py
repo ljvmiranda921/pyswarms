@@ -174,7 +174,7 @@ class LocalBestPSO(SwarmOptimizer):
         # Initialize the topology
         self.top = Ring()
 
-    def optimize(self, objective_func, iters, args=(), kwargs={}, print_step=1, verbose=1):
+    def optimize(self, objective_func, iters, print_step=1, verbose=1, *args, **kwargs):
         """Optimizes the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective

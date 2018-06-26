@@ -34,7 +34,7 @@ def test_global_kwargs(func, kwargs):
     opt_ps = GlobalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, kwargs=kwargs, print_step=10, verbose=3)
+    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3, **kwargs)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -59,7 +59,7 @@ def test_global_args(func, args):
     opt_ps = GlobalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, args=args, print_step=10, verbose=3)
+    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3, *args)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -106,7 +106,7 @@ def test_local_kwargs(func, kwargs):
     opt_ps = LocalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, kwargs=kwargs, print_step=10, verbose=3)
+    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3, **kwargs)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -131,7 +131,7 @@ def test_local_args(func, args):
     opt_ps = LocalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, args=args, print_step=10, verbose=3)
+    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3, *args)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
