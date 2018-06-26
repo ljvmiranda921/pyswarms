@@ -267,6 +267,7 @@ contributors:
 * Charalampos Papadimitriou ([`@CPapadim`](https://github.com/CPapadim))
 * Mamady Nabé ([`@mamadyonline`](https://github.com/mamadyonline))
 * Erik ([`@slek120`](https://github.com/slek120))
+* Aaron ([`@whzup`](https://github.com/whzup))
 
 [pyswarm]: https://github.com/tisimst/pyswarm
 [Cookiecutter]: https://github.com/audreyr/cookiecutter
