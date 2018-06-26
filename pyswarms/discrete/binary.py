@@ -219,5 +219,5 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         numpy.ndarray
             Output sigmoid computation
         """
-        return 1 / (1 + np.exp(x))
+        return 1 / (1 + np.exp(-x))
 
