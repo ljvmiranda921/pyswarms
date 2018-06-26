@@ -161,6 +161,7 @@ class LocalBestPSO(SwarmOptimizer):
             n_particles=n_particles,
             dimensions=dimensions,
             options=options,
+            topology="ring",
             bounds=bounds,
             velocity_clamp=velocity_clamp,
             center=center,

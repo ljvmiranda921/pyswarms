@@ -64,7 +64,7 @@ import numpy as np
 # Import from package
 from ..base import SwarmOptimizer
 from ..backend.operators import compute_pbest
-from ..backend.topology import Star
+from ..backend.topology import Star, Pyramid
 from ..utils.console_utils import cli_print, end_report
 
 
@@ -74,6 +74,7 @@ class GlobalBestPSO(SwarmOptimizer):
         n_particles,
         dimensions,
         options,
+        topology="star",
         bounds=None,
         velocity_clamp=None,
         center=1.00,
@@ -97,6 +98,10 @@ class GlobalBestPSO(SwarmOptimizer):
                     social parameter
                 * w : float
                     inertia parameter
+        topology: String
+            particle topology to be used in the optimization:
+                * "star": for a star topology
+                * "pyramid": for a pyramid topology
         bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
@@ -115,6 +120,7 @@ class GlobalBestPSO(SwarmOptimizer):
             n_particles=n_particles,
             dimensions=dimensions,
             options=options,
+            topology=topology,
             bounds=bounds,
             velocity_clamp=velocity_clamp,
             center=center,
@@ -129,7 +135,12 @@ class GlobalBestPSO(SwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
-        self.top = Star()
+        if topology == "star":
+            self.top = Star()
+        elif topology == "pyramid":
+            self.top = Pyramid()
+        elif topology == "ring":
+            raise NameError("The ring topology is currently not support for the global search")
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1):
         """Optimizes the swarm for a number of iterations.

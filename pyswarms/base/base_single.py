@@ -8,7 +8,7 @@ All methods here are abstract and raises a :code:`NotImplementedError`
 when not used. When defining your own swarm implementation,
 create another class,
 
-    >>> class MySwarm(SwarmBase):
+    >>> class MySwarm(SwarmOptimizer):
     >>>     def __init__(self):
     >>>        super(MySwarm, self).__init__()
 
@@ -55,6 +55,8 @@ class SwarmOptimizer(object):
         ValueError
             When the value of :code:`bounds[1]` is less than
             :code:`bounds[0]`.
+        NameError
+            When the :code:`topology` does not exist
         """
 
         # Check setting of bounds
@@ -106,6 +108,9 @@ class SwarmOptimizer(object):
         if not all(key in self.options for key in ("c1", "c2", "w")):
             raise KeyError("Missing either c1, c2, or w in options")
 
+        if self.topology not in ["star", "pyramid", "ring"]:
+            raise NameError("Topology name not found. Use either \"star\", \"pyramid\" or \"ring\"")
+
     def setup_logging(
         self,
         default_path="./config/logging.yaml",
@@ -139,6 +144,7 @@ class SwarmOptimizer(object):
         n_particles,
         dimensions,
         options,
+        topology,
         bounds=None,
         velocity_clamp=None,
         center=1.0,
@@ -164,6 +170,11 @@ class SwarmOptimizer(object):
                     social parameter
                 * w : float
                     inertia parameter
+        topology: String
+            particle topology to be used in the optimization
+                * "star": for a star topology
+                * "pyramid": for a pyramid topology
+                * "ring": for a ring topology
         bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
@@ -185,6 +196,7 @@ class SwarmOptimizer(object):
         self.velocity_clamp = velocity_clamp
         self.swarm_size = (n_particles, dimensions)
         self.options = options
+        self.topology = topology
         self.center = center
         self.ftol = ftol
         self.init_pos = init_pos
