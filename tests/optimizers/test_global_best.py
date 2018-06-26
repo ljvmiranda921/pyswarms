@@ -21,6 +21,15 @@ def test_keyword_exception(options):
 
 
 @pytest.mark.parametrize(
+    "topology",
+    ["stare", "pyramide", "ringe"]
+)
+def test_topology_name_exception(options, topology):
+    with pytest.raises(NameError):
+        GlobalBestPSO(5, 2, options, topology)
+
+
+@pytest.mark.parametrize(
     "bounds",
     [
         tuple(np.array([-5, -5])),
