@@ -34,7 +34,7 @@ def test_global_kwargs(func, kwargs):
     opt_ps = GlobalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3, **kwargs)
+    cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3, **kwargs)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -59,7 +59,7 @@ def test_global_args(func, args):
     opt_ps = GlobalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3, *args)
+    cost, pos = opt_ps.optimize(func, 1000, *args, print_step=10, verbose=3)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -81,7 +81,7 @@ def test_global_no_kwargs(func):
     opt_ps = GlobalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3)
+    cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -106,7 +106,7 @@ def test_local_kwargs(func, kwargs):
     opt_ps = LocalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3, **kwargs)
+    cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3, **kwargs)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -131,7 +131,7 @@ def test_local_args(func, args):
     opt_ps = LocalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3, *args)
+    cost, pos = opt_ps.optimize(func, 1000, *args, print_step=10, verbose=3)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -158,3 +158,88 @@ def test_local_no_kwargs(func):
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
     assert np.isclose(pos[1], 1.0, rtol=1e-03)
+
+@pytest.mark.parametrize('func', [
+    rosenbrock_func
+])
+def test_local_uneeded_kwargs(func):
+    """Tests kwargs are passed the objective function for when kwargs do not exist"""
+
+    # setup optimizer
+    options = {'c1': 0.5, 'c2': 0.3, 'w': 0.9, 'k': 2, 'p': 2}
+
+    x_max = 10 * np.ones(2)
+    x_min = -1 * x_max
+    bounds = (x_min, x_max)
+    opt_ps = GlobalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
+
+    kwargs = {'a':1}
+    # run it
+    with pytest.raises(TypeError) as excinfo:
+        cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3, **kwargs)
+        assert 'unexpected keyword' in str(excinfo.value)
+
+
+@pytest.mark.parametrize('func', [
+    rosenbrock_func
+])
+def test_local_uneeded_args(func):
+    """Tests kwargs are passed the objective function for when kwargs do not exist"""
+
+    # setup optimizer
+    options = {'c1': 0.5, 'c2': 0.3, 'w': 0.9, 'k': 2, 'p': 2}
+
+    x_max = 10 * np.ones(2)
+    x_min = -1 * x_max
+    bounds = (x_min, x_max)
+    opt_ps = GlobalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
+
+    args = (1,2)
+    # run it
+    with pytest.raises(TypeError) as excinfo:
+        cost, pos = opt_ps.optimize(func, 1000, *args, print_step=10, verbose=3)
+        assert '1 positional argument' in str(excinfo.value)
+
+@pytest.mark.parametrize('func', [
+    rosenbrock_with_args
+])
+def test_missed_args(func):
+    """Tests kwargs are passed the objective function for when kwargs do not exist"""
+
+    # setup optimizer
+    options = {'c1': 0.5, 'c2': 0.3, 'w': 0.9, 'k': 2, 'p': 2}
+
+    x_max = 10 * np.ones(2)
+    x_min = -1 * x_max
+    bounds = (x_min, x_max)
+    opt_ps = GlobalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
+
+    args = (1,)
+    # run it
+    with pytest.raises(TypeError) as excinfo:
+        cost, pos = opt_ps.optimize(func, 1000, *args, print_step=10, verbose=3)
+        assert 'missing 1 required positional argument' in str(excinfo.value)
+
+
+@pytest.mark.parametrize('func', [
+    rosenbrock_with_args
+])
+def test_missed_kwargs(func):
+    """Tests kwargs are passed the objective function for when kwargs do not exist"""
+
+    # setup optimizer
+    options = {'c1': 0.5, 'c2': 0.3, 'w': 0.9, 'k': 2, 'p': 2}
+
+    x_max = 10 * np.ones(2)
+    x_min = -1 * x_max
+    bounds = (x_min, x_max)
+    opt_ps = GlobalBestPSO(n_particles=100, dimensions=2, options=options, bounds=bounds)
+
+    kwargs = {'a':1}
+    # run it
+    with pytest.raises(TypeError) as excinfo:
+        cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3, **kwargs)
+        assert 'missing 1 required positional argument' in str(excinfo.value)
+
+
+
