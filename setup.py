@@ -8,9 +8,6 @@ from setuptools import setup, find_packages
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
-    history = history_file.read()
-
 requirements = [
     'PyYAML==3.12',
     'future==0.16.0',
@@ -39,9 +36,10 @@ test_requirements = [
 
 setup(
     name='pyswarms',
-    version='0.2.0',
+    version='0.2.1',
     description="A Python-based Particle Swarm Optimization (PSO) library.",
-    long_description=readme + '\n\n' + history,
+    long_description=readme,
+    long_description_content_type="text/markdown",
     author="Lester James V. Miranda",
     author_email='ljvmiranda@gmail.com',
     url='https://github.com/ljvmiranda921/pyswarms',
