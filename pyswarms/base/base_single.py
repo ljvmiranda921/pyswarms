@@ -224,7 +224,7 @@ class SwarmOptimizer(object):
         self.pos_history.append(hist.position)
         self.velocity_history.append(hist.velocity)
 
-    def optimize(self, objective_func, iters, *args, print_step=1, verbose=1, **kwargs):
+    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
         """Optimizes the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
@@ -241,6 +241,8 @@ class SwarmOptimizer(object):
             amount of steps for printing into console.
         verbose : int (the default is 1)
             verbosity setting.
+        kwargs : dict
+            arguments for objective function
 
         Raises
         ------
