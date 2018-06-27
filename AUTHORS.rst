@@ -23,6 +23,7 @@ Contributors
 * Charalampos Papadimitriou (`@CPapadim`_)
 * Mamady Nabé (`@mamadyonline`_)
 * Erik (`@slek120`_)
+* Thomas (`@ThomasCES`_)
 
 .. _`@ljvmiranda921`: https://github.com/ljvmiranda921
 .. _`@Carl-K`: https://github.com/Carl-K
@@ -31,3 +32,4 @@ Contributors
 .. _`@CPapadim`: https://github.com/CPapadim
 .. _`@mamadyonline`: https://github.com/mamadyonline
 .. _`@slek120`: https://github.com/slek120
+.. _`@ThomasCES`: https://github.com/ThomasCES
