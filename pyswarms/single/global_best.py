@@ -131,7 +131,7 @@ class GlobalBestPSO(SwarmOptimizer):
         # Initialize the topology
         self.top = Star()
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1):
+    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
         """Optimizes the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
@@ -147,16 +147,22 @@ class GlobalBestPSO(SwarmOptimizer):
             amount of steps for printing into console.
         verbose : int  (default is 1)
             verbosity setting.
+        kwargs : dict
+            arguments for the objective function
 
         Returns
         -------
         tuple
             the global best cost and the global best position.
         """
+
+        cli_print("Arguments Passed to Objective Function: {}".format(kwargs),
+                  verbose, 2, logger=self.logger)
+
         for i in range(iters):
             # Compute cost for current position and personal best
-            self.swarm.current_cost = objective_func(self.swarm.position)
-            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos)
+            self.swarm.current_cost = objective_func(self.swarm.position, **kwargs)
+            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos, **kwargs)
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
                 self.swarm
             )
@@ -169,8 +175,7 @@ class GlobalBestPSO(SwarmOptimizer):
             # Print to console
             if i % print_step == 0:
                 cli_print(
-                    "Iteration %s/%s, cost: %s"
-                    % (i + 1, iters, self.swarm.best_cost),
+                    "Iteration {}/{}, cost: {}".format(i + 1, iters, self.swarm.best_cost),
                     verbose,
                     2,
                     logger=self.logger,
