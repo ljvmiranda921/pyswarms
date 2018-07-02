@@ -54,7 +54,7 @@ class Pyramid(Topology):
                 # Insert all the neighbors for each particle in the idx array
                 idx = np.array([index_pointer[indices[i]:indices[i+1]] for i in range(swarm.n_particles)])
                 idx_min = np.array([swarm.pbest_cost[idx[i]].argmin() for i in range(idx.size)])
-                best_neighbor = np.array([idx[i][idx_min[i]] for i in range(idx.size)]).astype(int)
+                best_neighbor = np.array([idx[i][idx_min[i]] for i in range(len(idx))]).astype(int)
 
                 # Obtain best cost and position
                 best_cost = np.min(swarm.pbest_cost[best_neighbor])

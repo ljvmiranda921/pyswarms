@@ -44,3 +44,12 @@ pyswarms.backend.topology.pyramid module
    :undoc-members:
    :show-inheritance:
    :special-members: __init__
+
+pyswarms.backend.topology.random module
+--------------------------------------
+
+.. automodule:: pyswarms.backend.topology.random
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :special-members: __init__
