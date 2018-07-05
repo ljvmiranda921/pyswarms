@@ -35,3 +35,12 @@ pyswarms.backend.topology.ring module
    :undoc-members:
    :show-inheritance:
    :special-members: __init__
+
+pyswarms.backend.topology.pyramid module
+--------------------------------------
+
+.. automodule:: pyswarms.backend.topology.pyramid
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :special-members: __init__

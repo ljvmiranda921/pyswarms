@@ -6,9 +6,10 @@ particle behavior. These topologies implement three methods:
     - update_position(): updates the position-matrix depending on the topology.
 """
 
+from .base import Topology
 from .star import Star
 from .ring import Ring
 from .pyramid import Pyramid
 
 
-__all__ = ["Star", "Ring", "Pyramid"]
+__all__ = ["Topology", "Star", "Ring", "Pyramid"]
