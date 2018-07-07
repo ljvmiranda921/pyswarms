@@ -15,18 +15,18 @@ In addition, this class must interface with any class found in the
 
 class Topology(object):
     def __init__(self, **kwargs):
-        """Initializes the class"""
+        """Initialize the class"""
         pass
 
     def compute_gbest(self, swarm):
-        """Computes the best particle of the swarm and returns the cost and
+        """Compute the best particle of the swarm and return the cost and
         position"""
         raise NotImplementedError("Topology::compute_gbest()")
 
     def compute_position(self, swarm):
-        """Updates the swarm's position-matrix"""
+        """Update the swarm's position-matrix"""
         raise NotImplementedError("Topology::compute_position()")
 
     def compute_velocity(self, swarm):
-        """Updates the swarm's velocity-matrix"""
+        """Update the swarm's velocity-matrix"""
         raise NotImplementedError("Topology::compute_velocity()")

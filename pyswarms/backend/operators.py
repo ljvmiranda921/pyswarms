@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def compute_pbest(swarm):
-    """Takes a swarm instance and updates the personal best scores
+    """Update the personal best score of a swarm instance
 
     You can use this method to update your personal best positions.
 
@@ -75,7 +75,7 @@ def compute_pbest(swarm):
 
 
 def compute_velocity(swarm, clamp):
-    """Updates the velocity matrix
+    """Update the velocity matrix
 
     This method updates the velocity matrix using the best and current
     positions of the swarm. The velocity matrix is computed using the
@@ -149,7 +149,7 @@ def compute_velocity(swarm, clamp):
 
 
 def compute_position(swarm, bounds):
-    """Updates the position matrix
+    """Update the position matrix
 
     This method updates the position matrix given the current position and
     the velocity. If bounded, it waives updating the position.

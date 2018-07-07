@@ -143,7 +143,7 @@ class Mesher(object):
     alpha = attrib(type=float, validator=instance_of(float), default=0.3)
 
     def compute_history_3d(self, pos_history):
-        """Computes a 3D position matrix
+        """Compute a 3D position matrix
 
         The first two columns are the 2D position in the x and y axes
         respectively, while the third column is the fitness on that given

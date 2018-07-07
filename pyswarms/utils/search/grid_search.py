@@ -55,7 +55,7 @@ class GridSearch(SearchBase):
         bounds=None,
         velocity_clamp=(0, 1),
     ):
-        """Initializes the paramsearch."""
+        """Initialize the Search"""
 
         # Assign attributes
         super(GridSearch, self).__init__(
@@ -72,7 +72,7 @@ class GridSearch(SearchBase):
         self.assertions()
 
     def generate_grid(self):
-        """Generates the grid of all hyperparameter value combinations."""
+        """Generate the grid of all hyperparameter value combinations"""
 
         # Extract keys and values from options dictionary
         params = self.options.keys()

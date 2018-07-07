@@ -28,7 +28,7 @@ class Ring(Topology):
         super(Ring, self).__init__()
 
     def compute_gbest(self, swarm, p, k):
-        """Updates the global best using a neighborhood approach
+        """Update the global best using a ring-like neighborhood approach
 
         This uses the cKDTree method from :code:`scipy` to obtain the nearest
         neighbours
@@ -83,7 +83,7 @@ class Ring(Topology):
             return (best_pos, best_cost)
 
     def compute_velocity(self, swarm, clamp=None):
-        """Computes the velocity matrix
+        """Compute the velocity matrix
 
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
@@ -121,7 +121,7 @@ class Ring(Topology):
         return ops.compute_velocity(swarm, clamp)
 
     def compute_position(self, swarm, bounds=None):
-        """Updates the position matrix
+        """Update the position matrix
 
         This method updates the position matrix given the current position and
         the velocity. If bounded, it waives updating the position.

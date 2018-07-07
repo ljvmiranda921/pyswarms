@@ -19,7 +19,7 @@ from .swarms import Swarm
 def generate_swarm(
     n_particles, dimensions, bounds=None, center=1.00, init_pos=None
 ):
-    """Generates a swarm
+    """Generate a swarm
 
     Parameters
     ----------
@@ -75,7 +75,7 @@ def generate_swarm(
 def generate_discrete_swarm(
     n_particles, dimensions, binary=False, init_pos=None
 ):
-    """Generates a discrete swarm
+    """Generate a discrete swarm
 
     Parameters
     ----------
@@ -109,7 +109,7 @@ def generate_discrete_swarm(
 
 
 def generate_velocity(n_particles, dimensions, clamp=None):
-    """Initializes a velocity vector
+    """Initialize a velocity vector
 
     Parameters
     ----------
@@ -149,7 +149,7 @@ def create_swarm(
     init_pos=None,
     clamp=None,
 ):
-    """Abstracts the generate_swarm() and generate_velocity() methods
+    """Abstract the generate_swarm() and generate_velocity() methods
 
     Parameters
     ----------

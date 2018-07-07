@@ -4,7 +4,7 @@ r"""
 Base class for single-objective Particle Swarm Optimization
 implementations.
 
-All methods here are abstract and raises a :code:`NotImplementedError`
+All methods here are abstract and raise a :code:`NotImplementedError`
 when not used. When defining your own swarm implementation,
 create another class,
 
@@ -42,7 +42,7 @@ from ..backend import create_swarm
 
 class SwarmOptimizer(object):
     def assertions(self):
-        """Assertion method to check various inputs.
+        """Check inputs and throw assertions
 
         Raises
         ------
@@ -145,7 +145,7 @@ class SwarmOptimizer(object):
         ftol=-np.inf,
         init_pos=None,
     ):
-        """Initializes the swarm.
+        """Initialize the swarm
 
         Creates a Swarm class depending on the values initialized
 
@@ -205,7 +205,7 @@ class SwarmOptimizer(object):
         self.reset()
 
     def _populate_history(self, hist):
-        """Populates all history lists
+        """Populate all history lists
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
         :code:`neighborhood_best` is expected to have a shape of
@@ -225,7 +225,7 @@ class SwarmOptimizer(object):
         self.velocity_history.append(hist.velocity)
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
-        """Optimizes the swarm for a number of iterations.
+        """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
         function :code:`objective_func` for a number of iterations
@@ -252,7 +252,7 @@ class SwarmOptimizer(object):
         raise NotImplementedError("SwarmOptimizer::optimize()")
 
     def reset(self):
-        """Resets the attributes of the optimizer.
+        """Reset the attributes of the optimizer
 
         All variables/atributes that will be re-initialized when this
         method is defined here. Note that this method

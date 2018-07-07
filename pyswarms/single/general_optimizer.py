@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""
+r"""
 A general Particle Swarm Optimization (general PSO) algorithm.
 
 It takes a set of candidate solutions, and tries to find the best
@@ -81,7 +81,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         ftol=-np.inf,
         init_pos=None,
     ):
-        """Initializes the swarm.
+        """Initialize the swarm
 
         Attributes
         ----------
@@ -166,7 +166,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 )
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
-        """Optimizes the swarm for a number of iterations.
+        """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
         function :code:`f` for a number of iterations :code:`iter.`

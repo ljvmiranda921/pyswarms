@@ -27,7 +27,7 @@ class Star(Topology):
         super(Star, self).__init__()
 
     def compute_gbest(self, swarm):
-        """Obtains the global best cost and position based on a star topology
+        """Update the global best using a star topology
 
         This method takes the current pbest_pos and pbest_cost, then returns
         the minimum cost and position from the matrix. It should be used in
@@ -72,7 +72,7 @@ class Star(Topology):
             return (best_pos, best_cost)
 
     def compute_velocity(self, swarm, clamp=None):
-        """Computes the velocity matrix
+        """Compute the velocity matrix
 
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
@@ -110,7 +110,7 @@ class Star(Topology):
         return ops.compute_velocity(swarm, clamp)
 
     def compute_position(self, swarm, bounds=None):
-        """Updates the position matrix
+        """Update the position matrix
 
         This method updates the position matrix given the current position and
         the velocity. If bounded, it waives updating the position.

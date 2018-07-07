@@ -49,7 +49,7 @@ class RandomSearch(SearchBase):
     within specified bounds for specified number of selection iterations."""
 
     def assertions(self):
-        """Assertion method to check :code:`n_selection_iters` input.
+        """Assertion method to check :code:`n_selection_iters` input
 
         Raises
         ------
@@ -76,7 +76,7 @@ class RandomSearch(SearchBase):
         bounds=None,
         velocity_clamp=(0, 1),
     ):
-        """Initializes the paramsearch.
+        """Initialize the Search
 
         Attributes
         ----------
@@ -101,7 +101,7 @@ class RandomSearch(SearchBase):
         self.assertions()
 
     def generate_grid(self):
-        """Generates the grid of hyperparameter value combinations."""
+        """Generate the grid of hyperparameter value combinations"""
 
         options = dict(self.options)
         params = {}
