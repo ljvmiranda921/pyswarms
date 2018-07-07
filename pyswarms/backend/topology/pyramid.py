@@ -29,7 +29,11 @@ class Pyramid(Topology):
         """Updates the global best using a pyramid neighborhood approach
 
         This uses the Delaunay method from :code:`scipy` to triangulate N-dimensional space
-        with simplices consisting of swarm particles
+        with simplices consisting of swarm particles [SIS2008]
+
+        [SIS2008] J. Lane, A. Engelbrecht and J. Gain, "Particle swarm optimization with spatially
+        meaningful neighbours," 2008 IEEE Swarm Intelligence Symposium, St. Louis, MO, 2008,
+        pp. 1-8. doi: 10.1109/SIS.2008.4668281
 
         Parameters
         ----------
