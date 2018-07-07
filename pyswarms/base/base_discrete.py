@@ -198,7 +198,7 @@ class DiscreteSwarmOptimizer(object):
 
         Performs the optimization to evaluate the objective
         function :code:`objective_func` for a number of iterations
-                 :code:`iter.`
+        :code:`iter.`
 
         Parameters
         ----------

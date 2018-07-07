@@ -3,7 +3,7 @@
 """
 A Pyramid Network Topology
 
-This class implements a pyramid topology where all particles are connected in a N-dimensional simplex fashion.
+This class implements a pyramid topology. In this topology, the particles are connected by N-dimensional simplices.
 """
 
 # Import from stdlib
@@ -28,8 +28,8 @@ class Pyramid(Topology):
     def compute_gbest(self, swarm):
         """Update the global best using a pyramid neighborhood approach
 
-        This uses the Delaunay method from :code:`scipy` to triangulate N-dimensional space
-        with simplices consisting of swarm particles [SIS2008]
+        This topology uses the Delaunay method from :code:`scipy`. This method is used to triangulate
+        N-dimensional space into simplices. The vertecies of the simplicies consist of swarm particles. [SIS2008]
 
         [SIS2008] J. Lane, A. Engelbrecht and J. Gain, "Particle swarm optimization with spatially
         meaningful neighbours," 2008 IEEE Swarm Intelligence Symposium, St. Louis, MO, 2008,

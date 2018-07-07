@@ -3,8 +3,9 @@
 """
 A Star Network Topology
 
-This class implements a star topology where all particles are connected to
-one another. This social behavior is often found in GlobalBest PSO
+This class implements a star topology. In this topology,
+all particles are connected to one another. This social
+behavior is often found in GlobalBest PSO
 optimizers.
 """
 

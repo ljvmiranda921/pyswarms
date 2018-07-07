@@ -5,7 +5,7 @@ Swarm Class Backend
 
 This module implements a Swarm class that holds various attributes in
 the swarm such as position, velocity, options, etc. You can use this
-as input to most backend cases
+as input to most backend cases.
 """
 
 # Import modules

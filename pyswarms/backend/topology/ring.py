@@ -3,8 +3,9 @@
 """
 A Ring Network Topology
 
-This class implements a star topology where all particles are connected in a
-ring-like fashion. This social behavior is often found in LocalBest PSO
+This class implements a ring topology. In this topology,
+the particles are connected with their k nearest neighbors.
+This social behavior is often found in LocalBest PSO
 optimizers.
 """
 
@@ -31,7 +32,7 @@ class Ring(Topology):
         """Update the global best using a ring-like neighborhood approach
 
         This uses the cKDTree method from :code:`scipy` to obtain the nearest
-        neighbours
+        neighbors.
 
         Parameters
         ----------
