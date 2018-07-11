@@ -8,6 +8,7 @@ This class implements a random topology. All particles are connected in a random
 
 # Import from stdlib
 import logging
+import itertools
 
 # Import modules
 import numpy as np
@@ -45,6 +46,7 @@ class Random(Topology):
         k : int
             number of neighbors to be considered. Must be a
             positive integer less than :code:`n_particles-1`
+
         Returns
         -------
         numpy.ndarray
@@ -138,7 +140,27 @@ class Random(Topology):
 
         This method computes the adjacency matrix of the topology using
         the randomized algorithm proposed in [TSWJ2013]. The resulting
-        topology is a connected graph.
+        topology is a connected graph. This is achieved by creating three
+        matrices:
+
+            * adj_matrix :  The adjacency matrix of the generated graph.
+                            It's initialized as an identity matrix to
+                            make sure that every particle has itself as
+                            a neighbour. This matrix is the return
+                            value of the method.
+            * neighbor_matrix : The matrix of randomly generated neighbors.
+                                This matrix is a matrix of shape
+                                :code:`(swarm.n_particles, k)`:
+                                with randomly generated elements. It's used
+                                to create connections in the adj_matrix.
+            * dist_matrix : The distance matrix computed with Dijkstra's
+                            algorithm. It is used to determine where the
+                            graph needs edges to change it to a connected
+                            graph.
+
+        .. note::   If the graph isn't connected, it is possible that the
+                    PSO algorithm does not find the best position within
+                    the swarm.
 
         Parameters
         ----------
@@ -153,9 +175,10 @@ class Random(Topology):
         numpy.ndarray
             Adjacency matrix of the topology
         """
+
         adj_matrix = np.identity(swarm.n_particles, dtype=int)
-        # Generate auxiliary matrix
-        aux_matrix = np.array(
+
+        neighbor_matrix = np.array(
             [np.random.choice(
                 # Exclude i from the array
                 np.setdiff1d(
@@ -163,17 +186,15 @@ class Random(Topology):
                 ), k, replace=False
             ) for i in range(swarm.n_particles)])
 
-        # Set elements to one
-        adj_matrix[np.arange(swarm.n_particles).reshape(swarm.n_particles, 1), aux_matrix] = 1
-        adj_matrix[aux_matrix, np.arange(swarm.n_particles).reshape(swarm.n_particles, 1)] = 1
+        # Set random elements to one using the neighbor matrix
+        adj_matrix[np.arange(swarm.n_particles).reshape(swarm.n_particles, 1), neighbor_matrix] = 1
+        adj_matrix[neighbor_matrix, np.arange(swarm.n_particles).reshape(swarm.n_particles, 1)] = 1
 
-        # Compute distance matrix
         dist_matrix = dijkstra(adj_matrix, directed=False, return_predecessors=False, unweighted=True)
 
-        # Generate connected graph
+        # Generate connected graph.
         while connected_components(adj_matrix, directed=False, return_labels=False) != 1:
-            for i in range(swarm.n_particles):
-                for j in range(swarm.n_particles):
+            for i, j in itertools.product(range(swarm.n_particles), repeat=2):
                     if dist_matrix[i][j] == 0:
                         adj_matrix[i][j] = 1
 

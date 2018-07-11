@@ -41,3 +41,21 @@ def test_compute_position_return_values(swarm, bounds):
     assert p.shape == swarm.velocity.shape
     if bounds is not None:
         assert (bounds[0] <= p).all() and (bounds[1] >= p).all()
+
+
+@pytest.mark.parametrize("k", [1, 2])
+def test_compute_neighbors_return_values(swarm, k):
+    """Test if __compute_neighbors() gives the expected shape and symmetry"""
+    topology = Random()
+    adj_matrix = topology._Random__compute_neighbors(swarm, k)
+    assert adj_matrix.shape == (swarm.n_particles, swarm.n_particles)
+    assert np.allclose(adj_matrix, adj_matrix.T, atol=1e-8)  # Symmetry test
+
+
+def test_compute_neighbors_adjacency_matrix(swarm, k):
+    """Test if __compute_neighbors() gives the expected matrix"""
+    np.random.seed(1)
+    topology = Random()
+    adj_matrix = topology._Random__compute_neighbors(swarm, k)
+    comparison_matrix = np.array([[1, 1, 0], [1, 1, 1], [0, 1, 1]])
+    assert np.allclose(adj_matrix, comparison_matrix, atol=1e-8)
