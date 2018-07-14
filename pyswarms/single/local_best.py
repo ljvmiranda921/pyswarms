@@ -31,7 +31,7 @@ powerful explorative feature.
 In this implementation, a neighbor is selected via a k-D tree
 imported from :code:`scipy`. Distance are computed with either
 the L1 or L2 distance. The nearest-neighbours are then queried from
-this k-D tree.
+this k-D tree. They are computed for every iteration.
 
 An example usage is as follows:
 
@@ -172,7 +172,7 @@ class LocalBestPSO(SwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
-        self.top = Ring()
+        self.top = Ring(static=False)
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
         """Optimizes the swarm for a number of iterations.

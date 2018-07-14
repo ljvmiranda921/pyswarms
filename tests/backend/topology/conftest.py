@@ -11,7 +11,7 @@ import numpy as np
 from pyswarms.backend.swarms import Swarm
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def swarm():
     """A contrived instance of the Swarm class at a certain timestep"""
     attrs_at_t = {
@@ -27,7 +27,7 @@ def swarm():
     return Swarm(**attrs_at_t)
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def k():
     """Default neighbor number"""
     _k = 1

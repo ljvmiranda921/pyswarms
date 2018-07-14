@@ -9,11 +9,12 @@ import numpy as np
 from pyswarms.backend.topology import Ring
 
 
+@pytest.mark.parametrize("static", [True, False])
 @pytest.mark.parametrize("k", [1, 2, 3])
 @pytest.mark.parametrize("p", [1, 2])
-def test_update_gbest_neighborhood(swarm, p, k):
+def test_update_gbest_neighborhood(swarm, p, k, static):
     """Test if update_gbest_neighborhood gives the expected return values"""
-    topology = Ring()
+    topology = Ring(static=static)
     pos, cost = topology.compute_gbest(swarm, p=p, k=k)
     expected_pos = np.array([1, 2, 3])
     expected_cost = 1
@@ -21,23 +22,25 @@ def test_update_gbest_neighborhood(swarm, p, k):
     assert cost == expected_cost
 
 
+@pytest.mark.parametrize("static", [True, False])
 @pytest.mark.parametrize("clamp", [None, (0, 1), (-1, 1)])
-def test_compute_velocity_return_values(swarm, clamp):
+def test_compute_velocity_return_values(swarm, clamp, static):
     """Test if compute_velocity() gives the expected shape and range"""
-    topology = Ring()
+    topology = Ring(static=static)
     v = topology.compute_velocity(swarm, clamp)
     assert v.shape == swarm.position.shape
     if clamp is not None:
         assert (clamp[0] <= v).all() and (clamp[1] >= v).all()
 
 
+@pytest.mark.parametrize("static", [True, False])
 @pytest.mark.parametrize(
     "bounds",
     [None, ([-5, -5, -5], [5, 5, 5]), ([-10, -10, -10], [10, 10, 10])],
 )
-def test_compute_position_return_values(swarm, bounds):
+def test_compute_position_return_values(swarm, bounds, static):
     """Test if compute_position() gives the expected shape and range"""
-    topology = Ring()
+    topology = Ring(static=static)
     p = topology.compute_position(swarm, bounds)
     assert p.shape == swarm.velocity.shape
     if bounds is not None:

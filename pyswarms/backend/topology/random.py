@@ -23,8 +23,15 @@ logger = logging.getLogger(__name__)
 
 
 class Random(Topology):
-    def __init__(self):
-        super(Random, self).__init__()
+    def __init__(self, static=False):
+        """Initializes the class
+
+        Parameters
+        ----------
+        static : bool (Default is :code:`False`)
+            a boolean that decides whether the topology
+            is static or dynamic"""
+        super(Random, self).__init__(static)
 
     def compute_gbest(self, swarm, k):
         """Update the global best using a random neighborhood approach
@@ -55,10 +62,14 @@ class Random(Topology):
             Best cost
         """
         try:
-            adj_matrix = self.__compute_neighbors(swarm, k)
-            idx = np.array([adj_matrix[i].nonzero()[0] for i in range(swarm.n_particles)])
-            idx_min = np.array([swarm.pbest_cost[idx[i]].argmin() for i in range(len(idx))])
-            best_neighbor = np.array([idx[i][idx_min[i]] for i in range(len(idx))]).astype(int)
+            # Check if the topology is static or dynamic and assign neighbors
+            if (self.static and self.neighbor_idx is None) or not self.static:
+                adj_matrix = self.__compute_neighbors(swarm, k)
+                self.neighbor_idx = np.array([adj_matrix[i].nonzero()[0] for i in range(swarm.n_particles)])
+            idx_min = np.array([swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))])
+            best_neighbor = np.array(
+                [self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]
+            ).astype(int)
 
             # Obtain best cost and position
             best_cost = np.min(swarm.pbest_cost[best_neighbor])
@@ -91,7 +102,7 @@ class Random(Topology):
             from pyswarms.backend.topology import Random
 
             my_swarm = P.create_swarm(n_particles, dimensions)
-            my_topology = Random()
+            my_topology = Random(static=False)
 
             for i in range(iters):
                 # Inside the for-loop
