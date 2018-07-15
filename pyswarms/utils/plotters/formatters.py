@@ -134,7 +134,7 @@ class Mesher(object):
 
     func = attrib()
     # For mesh creation
-    delta = attrib(type=float, default=0.001)
+    delta = attrib(type=float, default=0.1)
     limits = attrib(
         validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1)]
     )
