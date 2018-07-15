@@ -57,7 +57,7 @@ class Designer(object):
     )
     legend = attrib(validator=instance_of(str), default="Cost")
     label = attrib(
-        validator=instance_of((str, list, tuple)), default=["x-axis", "y-axis"]
+        validator=instance_of((str, list, tuple)), default=["x-axis", "y-axis", "z-axis"]
     )
     limits = attrib(
         validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1)]
