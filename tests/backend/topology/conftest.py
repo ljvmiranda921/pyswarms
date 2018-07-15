@@ -25,3 +25,10 @@ def swarm():
         "options": {"c1": 0.5, "c2": 1, "w": 2},
     }
     return Swarm(**attrs_at_t)
+
+
+@pytest.fixture
+def k():
+    """Default neighbor number"""
+    _k = 1
+    return _k

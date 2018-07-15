@@ -11,61 +11,35 @@ import numpy as np
 from pyswarms.single import GlobalBestPSO, LocalBestPSO, GeneralOptimizerPSO
 from pyswarms.discrete import BinaryPSO
 from pyswarms.utils.functions.single_obj import sphere_func
-from pyswarms.backend.topology import Star, Ring, Pyramid
+from pyswarms.backend.topology import Star, Ring, Pyramid, Random
 
 
-@pytest.fixture(scope="module")
-def general_opt_history():
-    """Returns a GeneralOptimizerPSO with Star topology instance run for 1000 iterations for checking
+@pytest.fixture(scope="module",
+                params=[
+                    Star(),
+                    Ring(),
+                    Pyramid(),
+                    Random()
+                ])
+def general_opt_history(top):
+    """Returns a GeneralOptimizerPSO instance run for 1000 iterations for checking
     history"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, Star())
+    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=top)
     pso.optimize(sphere_func, 1000, verbose=0)
     return pso
 
 
-@pytest.fixture(scope="module")
-def general_opt_reset():
-    """Returns a GeneralOptimizerPSO instance with Star topology that has been run and reset to check
+@pytest.fixture(scope="module",
+                params=[
+                    Star(),
+                    Ring(),
+                    Pyramid(),
+                    Random()
+                ])
+def general_opt_reset(top):
+    """Returns a GeneralOptimizerPSO instance that has been run and reset to check
     default value"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, Star())
-    pso.optimize(sphere_func, 10, verbose=0)
-    pso.reset()
-    return pso
-
-
-@pytest.fixture(scope="module")
-def general_opt_history():
-    """Returns a GeneralOptimizerPSO instance with Star topology run for 1000 iterations for checking
-    history"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2, "p": 2}, Ring())
-    pso.optimize(sphere_func, 1000, verbose=0)
-    return pso
-
-
-@pytest.fixture(scope="module")
-def general_opt_reset():
-    """Returns a GeneralOptimizerPSO instance with Star topology that has been run and reset to check
-    default value"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2, "p": 2}, Ring())
-    pso.optimize(sphere_func, 10, verbose=0)
-    pso.reset()
-    return pso
-
-
-@pytest.fixture(scope="module")
-def general_opt_history():
-    """Returns a GeneralOptimizerPSO instance with Star topology run for 1000 iterations for checking
-    history"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, Pyramid())
-    pso.optimize(sphere_func, 1000, verbose=0)
-    return pso
-
-
-@pytest.fixture(scope="module")
-def general_opt_reset():
-    """Returns a GeneralOptimizerPSO instance with Star topology that has been run and reset to check
-    default value"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, Pyramid())
+    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=top)
     pso.optimize(sphere_func, 10, verbose=0)
     pso.reset()
     return pso

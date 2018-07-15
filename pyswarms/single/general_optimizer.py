@@ -64,7 +64,7 @@ import numpy as np
 # Import from package
 from ..base import SwarmOptimizer
 from ..backend.operators import compute_pbest
-from ..backend.topology import Topology, Ring
+from ..backend.topology import Topology, Ring, Random
 from ..utils.console_utils import cli_print, end_report
 
 
@@ -98,18 +98,29 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                     social parameter
                 * w : float
                     inertia parameter
-                if used with the :code:`Ring` topology the additional
-                parameters k and p must be included
+                if used with the :code:`Ring` or :code:`Random` topology the additional
+                parameter k must be included
                 * k : int
                     number of neighbors to be considered. Must be a
                     positive integer less than :code:`n_particles`
+                if used with the :code:`Ring` topology the additional
+                parameter p must be included
                 * p: int {1,2}
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
                     the Euclidean (or L2) distance.
-        topology : :code:`Topology` object
+        topology : pyswarms.backend.topology.Topology
             a :code:`Topology` object that defines the topology to use
-            in the optimization process
+            in the optimization process. The currently available topologies
+            are:
+                * Star
+                    All particles are connected
+                * Ring
+                    Particles are connected with the k nearest neighbours
+                * Pyramid
+                    Particles are connected in N-dimensional simplices
+                * Random
+                    Particles are connected to k random particles
         bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
@@ -149,21 +160,32 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
         # Case for the Ring topology
         if isinstance(topology, Ring):
-            # Assign k-neighbors and p-value as attributes
-            self.k, self.p = options["k"], options["p"]
-
-            # Exceptions for the k and p values
-            if not all(key in self.options for key in ("k", "p")):
-                raise KeyError("Missing either k or p in options")
-            if not 0 <= self.k <= self.n_particles:
-                raise ValueError(
-                    "No. of neighbors must be between 0 and no. " "of particles."
-                )
+            # Assign p-value as attributes
+            self.p = options["p"]
+            # Exceptions for the p value
+            if "p" not in self.options:
+                raise KeyError("Missing p in options")
             if self.p not in [1, 2]:
                 raise ValueError(
                     "p-value should either be 1 (for L1/Minkowski) "
                     "or 2 (for L2/Euclidean)."
                 )
+
+        # Case for Random and Ring topologies
+        if isinstance(topology, (Random, Ring)):
+            # Assign k-neighbors as attribute
+            self.k = options["k"]
+            if not isinstance(self.k, int):
+                raise ValueError(
+                    "No. of neighbors must be an integer between"
+                    "0 and no. of particles."
+                )
+            if not 0 <= self.k <= self.n_particles-1:
+                raise ValueError(
+                    "No. of neighbors must be between 0 and no. " "of particles."
+                )
+            if "k" not in self.options:
+                raise KeyError("Missing k in options")
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
         """Optimizes the swarm for a number of iterations.
@@ -207,6 +229,13 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
                     self.swarm, self.p, self.k
                 )
+            # If the topology is a random topology pass the neighbor attribute to the compute_gbest() method
+            elif isinstance(self.top, Random):
+                # Get minima of pbest and check if it's less than gbest
+                if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
+                    self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
+                        self.swarm, self.k
+                    )
             else:
                 # Get minima of pbest and check if it's less than gbest
                 if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
