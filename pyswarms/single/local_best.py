@@ -113,6 +113,7 @@ class LocalBestPSO(SwarmOptimizer):
         center=1.00,
         ftol=-np.inf,
         init_pos=None,
+        static=False
     ):
         """Initializes the swarm.
 
@@ -151,6 +152,9 @@ class LocalBestPSO(SwarmOptimizer):
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
                     the Euclidean (or L2) distance.
+        static: bool (Default is :code:`False`)
+            a boolean that decides whether the Ring topology
+            used is static or dynamic
         """
         # Initialize logger
         self.logger = logging.getLogger(__name__)
@@ -172,7 +176,7 @@ class LocalBestPSO(SwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
-        self.top = Ring(static=False)
+        self.top = Ring(static=static)
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
         """Optimizes the swarm for a number of iterations.
