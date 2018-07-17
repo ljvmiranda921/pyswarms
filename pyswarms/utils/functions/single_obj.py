@@ -267,7 +267,7 @@ def easom_func(x):
     `-1` at :code:`f([pi, pi])`.
     Its coordinates are bounded within :code:`[-100,100]`.
 
-    Best visualized in thedomain of :code:`[-5, 5]` and a range of :code:`[-1, 0.2]`.
+    Best visualized in the domain of :code:`[-5, 5]` and a range of :code:`[-1, 0.2]`.
 
     Parameters
     ----------
