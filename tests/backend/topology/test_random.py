@@ -64,3 +64,11 @@ def test_compute_neighbors_adjacency_matrix(swarm, k, static):
     adj_matrix = topology._Random__compute_neighbors(swarm, k)
     comparison_matrix = np.array([[1, 1, 0], [1, 1, 1], [0, 1, 1]])
     assert np.allclose(adj_matrix, comparison_matrix, atol=1e-8)
+
+
+@pytest.mark.parametrize("static", [True, False])
+def test_neighbor_idx(swarm, k, static):
+    """Test if the neighbor_idx attribute is assigned"""
+    topology = Random(static=static)
+    p = topology.compute_gbest(swarm, k)
+    assert topology.neighbor_idx is not None
