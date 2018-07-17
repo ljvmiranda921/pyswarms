@@ -14,32 +14,20 @@ from pyswarms.utils.functions.single_obj import sphere_func
 from pyswarms.backend.topology import Star, Ring, Pyramid, Random
 
 
-@pytest.fixture(scope="module",
-                params=[
-                    Star(),
-                    Ring(),
-                    Pyramid(),
-                    Random()
-                ])
-def general_opt_history(top):
+@pytest.fixture(scope="module")
+def general_opt_history(topology):
     """Returns a GeneralOptimizerPSO instance run for 1000 iterations for checking
     history"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=top)
+    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=topology)
     pso.optimize(sphere_func, 1000, verbose=0)
     return pso
 
 
-@pytest.fixture(scope="module",
-                params=[
-                    Star(),
-                    Ring(),
-                    Pyramid(),
-                    Random()
-                ])
-def general_opt_reset(top):
+@pytest.fixture(scope="module")
+def general_opt_reset(topology):
     """Returns a GeneralOptimizerPSO instance that has been run and reset to check
     default value"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=top)
+    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=topology)
     pso.optimize(sphere_func, 10, verbose=0)
     pso.reset()
     return pso
@@ -109,8 +97,20 @@ def options():
     return options_
 
 
-@pytest.fixture
-def topology():
-    """Default topology for most PSO use-cases"""
-    topology_ = Pyramid()
+@pytest.fixture(params=[
+                Star(),
+                Ring(static=False), Ring(static=True),
+                Pyramid(static=False), Pyramid(static=True),
+                Random(static=False), Random(static=True)
+                ])
+def topology(request):
+    """Parametrized topology parameter"""
+    topology_ = request.param
     return topology_
+
+
+@pytest.fixture(scope="module", params=[True, False])
+def static(request):
+    """Parametrized static parameter"""
+    static_ = request.param
+    return static_
