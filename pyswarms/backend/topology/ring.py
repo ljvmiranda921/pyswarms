@@ -24,8 +24,15 @@ logger = logging.getLogger(__name__)
 
 
 class Ring(Topology):
-    def __init__(self):
-        super(Ring, self).__init__()
+    def __init__(self, static=False):
+        """Initializes the class
+
+        Parameters
+        ----------
+        static : bool (Default is :code:`False`)
+            a boolean that decides whether the topology
+            is static or dynamic"""
+        super(Ring, self).__init__(static)
 
     def compute_gbest(self, swarm, p, k):
         """Updates the global best using a neighborhood approach
@@ -53,21 +60,23 @@ class Ring(Topology):
             Best cost
         """
         try:
-            # Obtain the nearest-neighbors for each particle
-            tree = cKDTree(swarm.position)
-            _, idx = tree.query(swarm.position, p=p, k=k)
+            # Check if the topology is static or not and assign neighbors
+            if (self.static and self.neighbor_idx is None) or not self.static:
+                # Obtain the nearest-neighbors for each particle
+                tree = cKDTree(swarm.position)
+                _, self.neighbor_idx = tree.query(swarm.position, p=p, k=k)
 
             # Map the computed costs to the neighbour indices and take the
             # argmin. If k-neighbors is equal to 1, then the swarm acts
             # independently of each other.
             if k == 1:
                 # The minimum index is itself, no mapping needed.
-                best_neighbor = swarm.pbest_cost[idx][:, np.newaxis].argmin(
+                best_neighbor = swarm.pbest_cost[self.neighbor_idx][:, np.newaxis].argmin(
                     axis=1
                 )
             else:
-                idx_min = swarm.pbest_cost[idx].argmin(axis=1)
-                best_neighbor = idx[np.arange(len(idx)), idx_min]
+                idx_min = swarm.pbest_cost[self.neighbor_idx].argmin(axis=1)
+                best_neighbor = self.neighbor_idx[np.arange(len(self.neighbor_idx)), idx_min]
             # Obtain best cost and position
             best_cost = np.min(swarm.pbest_cost[best_neighbor])
             best_pos = swarm.pbest_pos[
@@ -98,7 +107,7 @@ class Ring(Topology):
             from pyswarms.backend.topology import Ring
 
             my_swarm = P.create_swarm(n_particles, dimensions)
-            my_topology = Ring()
+            my_topology = Ring(static=False)
 
             for i in range(iters):
                 # Inside the for-loop
