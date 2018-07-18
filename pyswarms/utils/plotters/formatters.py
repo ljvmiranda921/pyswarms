@@ -10,7 +10,7 @@ This module implements helpful classes to format your plots or create meshes.
 import numpy as np
 from attr import attrs, attrib
 from attr.validators import instance_of
-from matplotlib import cm
+from matplotlib import cm, colors
 
 
 @attrs
@@ -65,7 +65,7 @@ class Designer(object):
         validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1), (-1, 1)]
     )
     colormap = attrib(
-        validator=instance_of((type(cm.viridis), type(cm.binary))),
+        validator=instance_of(colors.Colormap),
         default=cm.viridis,
     )
 
