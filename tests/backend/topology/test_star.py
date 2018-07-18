@@ -40,3 +40,10 @@ def test_compute_position_return_values(swarm, bounds):
     assert p.shape == swarm.velocity.shape
     if bounds is not None:
         assert (bounds[0] <= p).all() and (bounds[1] >= p).all()
+
+
+def test_neighbor_idx(swarm):
+    """Test if the neighbor_idx attribute is assigned"""
+    topology = Star()
+    p = topology.compute_gbest(swarm)
+    assert topology.neighbor_idx is not None

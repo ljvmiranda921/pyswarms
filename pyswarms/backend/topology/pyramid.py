@@ -54,6 +54,7 @@ class Pyramid(Topology):
         try:
             # If there are less than 5 particles they are all connected
             if swarm.n_particles < 5:
+                self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
                 best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
                 best_cost = np.min(swarm.pbest_cost)
             else:
