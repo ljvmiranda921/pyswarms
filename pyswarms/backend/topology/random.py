@@ -74,7 +74,7 @@ class Random(Topology):
             # Obtain best cost and position
             best_cost = np.min(swarm.pbest_cost[best_neighbor])
             best_pos = swarm.pbest_pos[
-                np.argmin(swarm.pbest_cost[best_neighbor])
+                best_neighbor[np.argmin(swarm.pbest_cost[best_neighbor])]
             ]
 
         except AttributeError:
@@ -169,9 +169,6 @@ class Random(Topology):
                             graph needs edges to change it to a connected
                             graph.
 
-        .. note::   If the graph isn't connected, it is possible that the
-                    PSO algorithm does not find the best position within
-                    the swarm.
 
         Parameters
         ----------
@@ -206,7 +203,7 @@ class Random(Topology):
         # Generate connected graph.
         while connected_components(adj_matrix, directed=False, return_labels=False) != 1:
             for i, j in itertools.product(range(swarm.n_particles), repeat=2):
-                    if dist_matrix[i][j] == 0:
+                    if dist_matrix[i][j] == np.inf:
                         adj_matrix[i][j] = 1
 
         return adj_matrix

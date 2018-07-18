@@ -16,10 +16,10 @@ def test_update_gbest_neighborhood(swarm, p, k, static):
     """Test if update_gbest_neighborhood gives the expected return values"""
     topology = Ring(static=static)
     pos, cost = topology.compute_gbest(swarm, p=p, k=k)
-    expected_pos = np.array([1, 2, 3])
-    expected_cost = 1
-    assert (pos == expected_pos).all()
-    assert cost == expected_cost
+    expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
+    expected_cost = 1.0002528364353296
+    assert cost == pytest.approx(expected_cost)
+    assert (pos == pytest.approx(expected_pos))
 
 
 @pytest.mark.parametrize("static", [True, False])
@@ -50,7 +50,7 @@ def test_compute_position_return_values(swarm, bounds, static):
 @pytest.mark.parametrize("static", [True, False])
 @pytest.mark.parametrize("k", [1, 2, 3])
 @pytest.mark.parametrize("p", [1, 2])
-def test_neighbor_idx(swarm, static, p , k):
+def test_neighbor_idx(swarm, static, p, k):
     """Test if the neighbor_idx attribute is assigned"""
     topology = Ring(static=static)
     p = topology.compute_gbest(swarm, p=p, k=k)

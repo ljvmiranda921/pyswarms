@@ -13,11 +13,11 @@ from pyswarms.backend.topology import Pyramid
 def test_compute_gbest_return_values(swarm, static):
     """Test if compute_gbest() gives the expected return values"""
     topology = Pyramid(static=static)
-    expected_cost = 1
-    expected_pos = np.array([1, 2, 3])
+    expected_cost = 1.0002528364353296
+    expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
     pos, cost = topology.compute_gbest(swarm)
-    assert cost == expected_cost
-    assert (pos == expected_pos).all()
+    assert cost == pytest.approx(expected_cost)
+    assert (pos == pytest.approx(expected_pos))
 
 
 @pytest.mark.parametrize("static", [True, False])
