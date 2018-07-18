@@ -10,6 +10,7 @@ from .base import Topology
 from .star import Star
 from .ring import Ring
 from .pyramid import Pyramid
+from .random import Random
 
 
-__all__ = ["Topology", "Star", "Ring", "Pyramid"]
+__all__ = ["Topology", "Star", "Ring", "Pyramid", "Random"]
