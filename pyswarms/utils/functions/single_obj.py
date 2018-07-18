@@ -48,7 +48,7 @@ import numpy as np
 def ackley_func(x):
     """Ackley's objective function.
 
-    Has a global minimum at :code:`f(0,0,...,0)` with a search
+    Has a global minimum of `0` at :code:`f(0,0,...,0)` with a search
     domain of [-32, 32]
 
     Parameters
@@ -84,7 +84,7 @@ def ackley_func(x):
 def beale_func(x):
     """Beale objective function.
 
-    Only takes two dimensions and has a global minimum at
+    Only takes two dimensions and has a global minimum of `0` at
     :code:`f([3,0.5])` Its domain is bounded between :code:`[-4.5, 4.5]`
 
     Parameters
@@ -127,7 +127,7 @@ def beale_func(x):
 def booth_func(x):
     """Booth's objective function.
 
-    Only takes two dimensions and has a global minimum at
+    Only takes two dimensions and has a global minimum of `0` at
     :code:`f([1,3])`. Its domain is bounded between :code:`[-10, 10]`
 
     Parameters
@@ -164,7 +164,7 @@ def booth_func(x):
 def bukin6_func(x):
     """Bukin N. 6 Objective Function
 
-    Only takes two dimensions and has a global minimum at
+    Only takes two dimensions and has a global minimum  of `0` at
     :code:`f([-10,1])`. Its coordinates are bounded by:
         * x[:,0] must be within [-15, -5]
         * x[:,1] must be within [-3, 3]
@@ -214,7 +214,7 @@ def crossintray_func(x):
     """Cross-in-tray objective function.
 
     Only takes two dimensions and has a four equal global minimums
-     of `-2.0621` at :code:`f([1.34941, -1.34941])`, :code:`f([1.34941, 1.34941])`,
+     of `-2.06261` at :code:`f([1.34941, -1.34941])`, :code:`f([1.34941, 1.34941])`,
      :code:`f([-1.34941, 1.34941])`, and :code:`f([-1.34941, -1.34941])`.
     Its coordinates are bounded within :code:`[-10,10]`.
 

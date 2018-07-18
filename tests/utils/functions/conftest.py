@@ -13,7 +13,7 @@ def outbound():
     """Returns a function that generates a matrix out of bounds a given
     range"""
 
-    def _outbound(low, high, size, tol=100, nums=100):
+    def _outbound(low, high, size, tol=1000, nums=100):
         """Generates a matrix that is out of bounds"""
         low_end = -np.random.uniform(tol, low, (nums,))
         high_end = np.random.uniform(tol, high, (nums,))
