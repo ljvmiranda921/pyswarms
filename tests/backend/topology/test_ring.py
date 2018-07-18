@@ -16,10 +16,10 @@ def test_update_gbest_neighborhood(swarm, p, k, static):
     """Test if update_gbest_neighborhood gives the expected return values"""
     topology = Ring(static=static)
     pos, cost = topology.compute_gbest(swarm, p=p, k=k)
-    expected_pos = np.array([1, 2, 3])
-    expected_cost = 1
-    assert (pos == expected_pos).all()
-    assert cost == expected_cost
+    expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
+    expected_cost = 1.0002528364353296
+    assert cost == pytest.approx(expected_cost)
+    assert (pos == pytest.approx(expected_pos))
 
 
 @pytest.mark.parametrize("static", [True, False])
