@@ -62,7 +62,7 @@ class Designer(object):
         default=["x-axis", "y-axis", "z-axis"],
     )
     limits = attrib(
-        validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1)]
+        validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1), (-1, 1)]
     )
     colormap = attrib(
         validator=instance_of((type(cm.viridis), type(cm.binary))),
