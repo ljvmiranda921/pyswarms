@@ -57,6 +57,7 @@ def test_compute_neighbors_return_values(swarm, k, static):
 
 
 @pytest.mark.parametrize("static", [True, False])
+@pytest.mark.parametrize("k", [1])
 def test_compute_neighbors_adjacency_matrix(swarm, k, static):
     """Test if __compute_neighbors() gives the expected matrix"""
     np.random.seed(1)
@@ -76,6 +77,7 @@ def test_compute_neighbors_adjacency_matrix(swarm, k, static):
 
 
 @pytest.mark.parametrize("static", [True, False])
+@pytest.mark.parametrize("k", [1])
 def test_neighbor_idx(swarm, k, static):
     """Test if the neighbor_idx attribute is assigned"""
     topology = Random(static=static)

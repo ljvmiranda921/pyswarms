@@ -50,7 +50,7 @@ def test_compute_position_return_values(swarm, bounds, static):
 @pytest.mark.parametrize("static", [True, False])
 @pytest.mark.parametrize("k", [1, 2, 3])
 @pytest.mark.parametrize("p", [1, 2])
-def test_neighbor_idx(swarm, static, p , k):
+def test_neighbor_idx(swarm, static, p, k):
     """Test if the neighbor_idx attribute is assigned"""
     topology = Ring(static=static)
     p = topology.compute_gbest(swarm, p=p, k=k)
