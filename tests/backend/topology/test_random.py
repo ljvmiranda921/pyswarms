@@ -15,10 +15,10 @@ def test_update_gbest_neighborhood(swarm, k, static):
     """Test if update_gbest_neighborhood gives the expected return values"""
     topology = Random(static=static)
     pos, cost = topology.compute_gbest(swarm, k=k)
-    expected_pos = np.array([1, 2, 3])
-    expected_cost = 1
-    assert (pos == expected_pos).all()
-    assert cost == expected_cost
+    expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
+    expected_cost = 1.0002528364353296
+    assert cost == pytest.approx(expected_cost)
+    assert (pos == pytest.approx(expected_pos))
 
 
 @pytest.mark.parametrize("static", [True, False])
@@ -57,16 +57,27 @@ def test_compute_neighbors_return_values(swarm, k, static):
 
 
 @pytest.mark.parametrize("static", [True, False])
+@pytest.mark.parametrize("k", [1])
 def test_compute_neighbors_adjacency_matrix(swarm, k, static):
     """Test if __compute_neighbors() gives the expected matrix"""
     np.random.seed(1)
     topology = Random(static=static)
     adj_matrix = topology._Random__compute_neighbors(swarm, k)
-    comparison_matrix = np.array([[1, 1, 0], [1, 1, 1], [0, 1, 1]])
+    comparison_matrix = np.array([[1, 1, 1, 0, 1, 0, 0, 0, 0, 1],
+                                  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                  [0, 1, 1, 1, 1, 0, 0, 0, 1, 0],
+                                  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                  [0, 1, 1, 0, 1, 1, 0, 1, 0, 1],
+                                  [0, 1, 1, 0, 1, 0, 1, 0, 1, 1],
+                                  [0, 1, 1, 0, 1, 1, 0, 1, 1, 0],
+                                  [0, 1, 1, 1, 1, 0, 1, 1, 1, 0],
+                                  [1, 1, 1, 0, 1, 1, 1, 0, 0, 1]])
     assert np.allclose(adj_matrix, comparison_matrix, atol=1e-8)
 
 
 @pytest.mark.parametrize("static", [True, False])
+@pytest.mark.parametrize("k", [1])
 def test_neighbor_idx(swarm, k, static):
     """Test if the neighbor_idx attribute is assigned"""
     topology = Random(static=static)

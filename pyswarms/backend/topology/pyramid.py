@@ -77,7 +77,7 @@ class Pyramid(Topology):
                 # Obtain best cost and position
                 best_cost = np.min(swarm.pbest_cost[best_neighbor])
                 best_pos = swarm.pbest_pos[
-                    np.argmin(swarm.pbest_cost[best_neighbor])
+                    best_neighbor[np.argmin(swarm.pbest_cost[best_neighbor])]
                 ]
         except AttributeError:
             msg = "Please pass a Swarm class. You passed {}".format(
