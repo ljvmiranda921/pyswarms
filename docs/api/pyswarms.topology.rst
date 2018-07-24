@@ -36,6 +36,15 @@ pyswarms.backend.topology.ring module
    :show-inheritance:
    :special-members: __init__
 
+pyswarms.backend.topology.von_neumann module
+--------------------------------------
+
+.. automodule:: pyswarms.backend.topology.von_neumann
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :special-members: __init__
+
 pyswarms.backend.topology.pyramid module
 --------------------------------------
 

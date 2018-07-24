@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-r"""
+"""
 Plotting tool for Optimizer Analysis
 
 This module is built on top of :code:`matplotlib` to render quick and easy
@@ -322,12 +322,14 @@ def plot_surface(
             designer = Designer(
                 limits=[(-1, 1), (-1, 1), (-1, 1)],
                 label=["x-axis", "y-axis", "z-axis"],
+                colormap=cm.viridis,
             )
 
         # If no Animator class supplied, use defaults
         if animator is None:
             animator = Animator()
 
+        # Get number of iterations
         # If ax is default, then create new plot. Set-up the figure, the
         # axis, and the plot element that we want to animate
         if canvas is None:
@@ -338,7 +340,6 @@ def plot_surface(
         # Initialize 3D-axis
         ax = Axes3D(fig)
 
-        # Get number of iterations
         n_iters = len(pos_history)
 
         # Customize plot
@@ -353,7 +354,9 @@ def plot_surface(
         # Make a contour map if possible
         if mesher is not None:
             xx, yy, zz, = _mesh(mesher)
-            ax.plot_surface(xx, yy, zz, cmap=cm.viridis, alpha=mesher.alpha)
+            ax.plot_surface(
+                xx, yy, zz, cmap=designer.colormap, alpha=mesher.alpha
+            )
 
         # Mark global best if possible
         if mark is not None:

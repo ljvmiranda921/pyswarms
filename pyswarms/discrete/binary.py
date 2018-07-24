@@ -19,10 +19,10 @@ proceeding equation:
 For the velocity update rule, a particle compares its current position
 with respect to its neighbours. The nearest neighbours are being
 determined by a kD-tree given a distance metric, similar to local-best
-PSO. However, this whole behavior can be modified into a global-best PSO
-by changing the nearest neighbours equal to the number of particles in
-the swarm. In this case, all particles see each other, and thus a global
-best particle can be established.
+PSO. The neighbours are computed for every iteration. However, this whole
+behavior can be modified into a global-best PSO by changing the nearest
+neighbours equal to the number of particles in the swarm. In this case,
+all particles see each other, and thus a global best particle can be established.
 
 In addition, one notable change for binary PSO is that the position
 update rule is now decided upon by the following case expression:
@@ -147,7 +147,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
-        self.top = Ring()
+        self.top = Ring(static=False)
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1,**kwargs):
         """Optimize the swarm for a number of iterations

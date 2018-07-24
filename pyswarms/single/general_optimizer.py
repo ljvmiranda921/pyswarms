@@ -39,7 +39,7 @@ An example usage is as follows:
 
     # Set-up hyperparameters and topology
     options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
-    my_topology = Pyramid()
+    my_topology = Pyramid(static=False)
 
     # Call instance of GlobalBestPSO
     optimizer = ps.single.GeneralOptimizerPSO(n_particles=10, dimensions=2,
@@ -104,7 +104,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                     number of neighbors to be considered. Must be a
                     positive integer less than :code:`n_particles`
                 if used with the :code:`Ring` topology the additional
-                parameter p must be included
+                parameters k and p must be included
                 * p: int {1,2}
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
@@ -115,12 +115,15 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             are:
                 * Star
                     All particles are connected
-                * Ring
-                    Particles are connected with the k nearest neighbours
-                * Pyramid
+                * Ring (static and dynamic)
+                    Particles are connected to the k nearest neighbours
+                * Pyramid (static and dynamic)
                     Particles are connected in N-dimensional simplices
-                * Random
+                * Random (static and dynamic)
                     Particles are connected to k random particles
+                Static variants of the topologies remain with the same neighbours
+                over the course of the optimization. Dynamic variants calculate
+                new neighbours every time step.
         bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
@@ -180,7 +183,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                     "No. of neighbors must be an integer between"
                     "0 and no. of particles."
                 )
-            if not 0 <= self.k <= self.n_particles-1:
+            if not 0 <= self.k <= self.n_particles - 1:
                 raise ValueError(
                     "No. of neighbors must be between 0 and no. " "of particles."
                 )

@@ -31,10 +31,25 @@ def test_keyword_exception(options, topology):
         {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2},
     ],
 )
-def test_keyword_exception_ring(options):
+def test_keyword_exception_ring(options, static):
     """Tests if exceptions are thrown when keywords are missing and a Ring topology is chosen"""
     with pytest.raises(KeyError):
-        GeneralOptimizerPSO(5, 2, options, Ring())
+        GeneralOptimizerPSO(5, 2, options, Ring(static=static))
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"c2": 0.7, "w": 0.5, "k": 2},
+        {"c1": 0.5, "w": 0.5, "k": 2},
+        {"c1": 0.5, "c2": 0.7, "k": 2},
+        {"c1": 0.5, "c2": 0.7, "w": 0.5},
+    ],
+)
+def test_keyword_exception_random(options, static):
+    """Tests if exceptions are thrown when keywords are missing and a Random topology is chosen"""
+    with pytest.raises(KeyError):
+        GeneralOptimizerPSO(5, 2, options, Random(static=static))
 
 
 @pytest.mark.parametrize(
@@ -60,11 +75,26 @@ def test_keyword_exception_random(options):
         {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2, "p": 5},
     ],
 )
-def test_invalid_k_or_p_values(options):
+def test_invalid_k_or_p_values(options, static):
     """Tests if exception is thrown when passing
     an invalid value for k or p when using a Ring topology"""
     with pytest.raises(ValueError):
-        GeneralOptimizerPSO(5, 2, options, Ring())
+        GeneralOptimizerPSO(5, 2, options, Ring(static=static))
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": -1},
+        {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 6},
+        {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 0.5}
+    ],
+)
+def test_invalid_k_value(options, static):
+    """Tests if exception is thrown when passing
+    an invalid value for k when using a Random topology"""
+    with pytest.raises(ValueError):
+        GeneralOptimizerPSO(5, 2, options, Random(static=static))
 
 
 @pytest.mark.parametrize(

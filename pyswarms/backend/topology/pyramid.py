@@ -22,8 +22,16 @@ logger = logging.getLogger(__name__)
 
 
 class Pyramid(Topology):
-    def __init__(self):
-        super(Pyramid, self).__init__()
+    def __init__(self, static=False):
+        """Initialize the class
+
+        Parameters
+        ----------
+        static : bool (Default is :code:`False`)
+            a boolean that decides whether the topology
+            is static or dynamic
+        """
+        super(Pyramid, self).__init__(static)
 
     def compute_gbest(self, swarm):
         """Update the global best using a pyramid neighborhood approach
@@ -50,20 +58,30 @@ class Pyramid(Topology):
         try:
             # If there are less than 5 particles they are all connected
             if swarm.n_particles < 5:
+                self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
                 best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
                 best_cost = np.min(swarm.pbest_cost)
             else:
-                pyramid = Delaunay(swarm.position)
-                indices, index_pointer = pyramid.vertex_neighbor_vertices
-                # Insert all the neighbors for each particle in the idx array
-                idx = np.array([index_pointer[indices[i]:indices[i+1]] for i in range(swarm.n_particles)])
-                idx_min = np.array([swarm.pbest_cost[idx[i]].argmin() for i in range(idx.size)])
-                best_neighbor = np.array([idx[i][idx_min[i]] for i in range(len(idx))]).astype(int)
+                # Check if the topology is static or dynamic and assign neighbors
+                if (self.static and self.neighbor_idx is None) or not self.static:
+                    pyramid = Delaunay(swarm.position)
+                    indices, index_pointer = pyramid.vertex_neighbor_vertices
+                    # Insert all the neighbors for each particle in the idx array
+                    self.neighbor_idx = np.array(
+                        [index_pointer[indices[i]:indices[i + 1]] for i in range(swarm.n_particles)]
+                    )
+
+                idx_min = np.array(
+                    [swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))]
+                )
+                best_neighbor = np.array(
+                    [self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]
+                ).astype(int)
 
                 # Obtain best cost and position
                 best_cost = np.min(swarm.pbest_cost[best_neighbor])
                 best_pos = swarm.pbest_pos[
-                    np.argmin(swarm.pbest_cost[best_neighbor])
+                    best_neighbor[np.argmin(swarm.pbest_cost[best_neighbor])]
                 ]
         except AttributeError:
             msg = "Please pass a Swarm class. You passed {}".format(
@@ -90,7 +108,7 @@ class Pyramid(Topology):
             from pyswarms.backend.topology import Pyramid
 
             my_swarm = P.create_swarm(n_particles, dimensions)
-            my_topology = Pyramid()
+            my_topology = Pyramid(static=False)
 
             for i in range(iters):
                 # Inside the for-loop

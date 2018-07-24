@@ -11,6 +11,7 @@ from .star import Star
 from .ring import Ring
 from .pyramid import Pyramid
 from .random import Random
+from .von_neumann import VonNeumann
 
 
-__all__ = ["Topology", "Star", "Ring", "Pyramid", "Random"]
+__all__ = ["Topology", "Star", "Ring", "Pyramid", "Random", "VonNeumann"]
