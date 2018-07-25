@@ -12,7 +12,7 @@ import operator as op
 
 class SearchBase(object):
     def assertions(self):
-        """Assertion method to check :code:`optimizer` input.
+        """Assertion method to check :code:`optimizer` input
 
         Raises
         ------
@@ -36,7 +36,7 @@ class SearchBase(object):
         bounds=None,
         velocity_clamp=(0, 1),
     ):
-        """Initializes the Search.
+        """Initialize the Search
 
         Attributes
         ----------
@@ -89,7 +89,7 @@ class SearchBase(object):
         self.assertions()
 
     def generate_score(self, options):
-        """Generates score for optimizer's performance on objective function.
+        """Generate score for optimizer's performance on objective function
 
         Parameters
         ----------
@@ -107,8 +107,8 @@ class SearchBase(object):
         return f.optimize(self.objective_func, self.iters)[0]
 
     def search(self, maximum=False):
-        """Compares optimizer's objective function performance scores
-        for all combinations of provided parameters.
+        """Compare optimizer's objective function performance scores
+        for all combinations of provided parameters
 
         Parameters
         ----------

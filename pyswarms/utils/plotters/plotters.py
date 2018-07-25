@@ -83,7 +83,7 @@ logger = logging.getLogger(__name__)
 def plot_cost_history(
     cost_history, ax=None, title="Cost History", designer=None, **kwargs
 ):
-    """Creates a simple line plot with the cost in the y-axis and
+    """Create a simple line plot with the cost in the y-axis and
     the iteration at the x-axis
 
     Parameters
@@ -147,9 +147,9 @@ def plot_contour(
     animator=None,
     **kwargs
 ):
-    """Draws a 2D contour map for particle trajectories
+    """Draw a 2D contour map for particle trajectories
 
-    Here, the space is represented as flat plane. The contours indicate the
+    Here, the space is represented as a flat plane. The contours indicate the
     elevation with respect to the objective function. This works best with
     2-dimensional swarms with their fitness in z-space.
 
@@ -249,7 +249,7 @@ def plot_surface(
     mark=None,
     **kwargs
 ):
-    """Plots a swarm's trajectory in 3D
+    """Plot a swarm's trajectory in 3D
 
     This is useful for plotting the swarm's 2-dimensional position with
     respect to the objective function. The value in the z-axis is the fitness

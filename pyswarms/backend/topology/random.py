@@ -169,7 +169,6 @@ class Random(Topology):
                             graph needs edges to change it to a connected
                             graph.
 
-
         Parameters
         ----------
         swarm : pyswarms.backend.swarms.Swarm

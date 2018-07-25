@@ -66,7 +66,7 @@ from ..utils.console_utils import cli_print, end_report
 
 class BinaryPSO(DiscreteSwarmOptimizer):
     def assertions(self):
-        """Assertion method to check various inputs.
+        """Check inputs and throw assertions
 
         Raises
         ------
@@ -99,7 +99,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         velocity_clamp=None,
         ftol=-np.inf,
     ):
-        """Initializes the swarm.
+        """Initialize the swarm
 
         Attributes
         ----------
@@ -149,8 +149,8 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         # Initialize the topology
         self.top = Ring(static=False)
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
-        """Optimizes the swarm for a number of iterations.
+    def optimize(self, objective_func, iters, print_step=1, verbose=1,**kwargs):
+        """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
         function :code:`f` for a number of iterations :code:`iter.`
@@ -227,7 +227,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         return (final_best_cost, final_best_pos)
 
     def _compute_position(self, swarm):
-        """Updates the position matrix of the swarm.
+        """Update the position matrix of the swarm
 
         This computes the next position in a binary swarm. It compares the
         sigmoid output of the velocity-matrix and compares it with a randomly
@@ -244,7 +244,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         ) * 1
 
     def _sigmoid(self, x):
-        """Helper method for the sigmoid function.
+        """Helper method for the sigmoid function
 
         Parameters
         ----------

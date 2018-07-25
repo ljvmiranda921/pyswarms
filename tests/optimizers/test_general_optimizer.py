@@ -55,6 +55,21 @@ def test_keyword_exception_random(options, static):
 @pytest.mark.parametrize(
     "options",
     [
+        {"c2": 0.7, "w": 0.5, "k": 2},
+        {"c1": 0.5, "w": 0.5, "k": 2},
+        {"c1": 0.5, "c2": 0.7, "k": 2},
+        {"c1": 0.5, "c2": 0.7, "w": 0.5},
+    ],
+)
+def test_keyword_exception_random(options):
+    """Tests if exceptions are thrown when keywords are missing and a Random topology is chosen"""
+    with pytest.raises(KeyError):
+        GeneralOptimizerPSO(5, 2, options, Random())
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
         {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": -1, "p": 2},
         {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 6, "p": 2},
         {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2, "p": 5},
@@ -83,6 +98,21 @@ def test_invalid_k_value(options, static):
 
 
 @pytest.mark.parametrize(
+    "options",
+    [
+        {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": -1},
+        {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 6},
+        {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 0.5}
+    ],
+)
+def test_invalid_k_value(options):
+    """Tests if exception is thrown when passing
+    an invalid value for k when using a Random topology"""
+    with pytest.raises(ValueError):
+        GeneralOptimizerPSO(5, 2, options, Random())
+
+
+@pytest.mark.parametrize(
     "topology",
     [object(), int(), dict()]
 )
@@ -92,6 +122,10 @@ def test_topology_type_exception(options, topology):
         GeneralOptimizerPSO(5, 2, options, topology)
 
 
+@pytest.mark.parametrize(
+    "topology",
+    [Star(), Ring(), Pyramid(), Random()]
+)
 @pytest.mark.parametrize(
     "bounds",
     [
@@ -107,6 +141,10 @@ def test_bounds_size_exception(bounds, options, topology):
 
 
 @pytest.mark.parametrize(
+    "topology",
+    [Star(), Ring(), Pyramid(), Random()]
+)
+@pytest.mark.parametrize(
     "bounds",
     [
         (np.array([5, 5]), np.array([-5, -5])),
@@ -120,6 +158,10 @@ def test_bounds_maxmin_exception(bounds, options, topology):
 
 
 @pytest.mark.parametrize(
+    "topology",
+    [Star(), Ring(), Pyramid(), Random()]
+)
+@pytest.mark.parametrize(
     "bounds",
     [
         [np.array([-5, -5]), np.array([5, 5])],
@@ -132,6 +174,10 @@ def test_bound_type_exception(bounds, options, topology):
         GeneralOptimizerPSO(5, 2, options=options, topology=topology, bounds=bounds)
 
 
+@pytest.mark.parametrize(
+    "topology",
+    [Star(), Ring(), Pyramid(), Random()]
+)
 @pytest.mark.parametrize("velocity_clamp", [(1, 1, 1), (2, 3, 1)])
 def test_vclamp_shape_exception(velocity_clamp, options, topology):
     """Tests if exception is raised when velocity_clamp's size is not equal
@@ -140,6 +186,10 @@ def test_vclamp_shape_exception(velocity_clamp, options, topology):
         GeneralOptimizerPSO(5, 2, velocity_clamp=velocity_clamp, options=options, topology=topology)
 
 
+@pytest.mark.parametrize(
+    "topology",
+    [Star(), Ring(), Pyramid(), Random()]
+)
 @pytest.mark.parametrize("velocity_clamp", [(3, 2), (10, 8)])
 def test_vclamp_maxmin_exception(velocity_clamp, options, topology):
     """Tests if the max velocity_clamp is less than min velocity_clamp and
@@ -148,6 +198,10 @@ def test_vclamp_maxmin_exception(velocity_clamp, options, topology):
         GeneralOptimizerPSO(5, 2, velocity_clamp=velocity_clamp, options=options, topology=topology)
 
 
+@pytest.mark.parametrize(
+    "topology",
+    [Star(), Ring(), Pyramid(), Random()]
+)
 @pytest.mark.parametrize("err, center", [(IndexError, [1.5, 3.2, 2.5])])
 def test_center_exception(err, center, options, topology):
     """Tests if exception is thrown when center is not a list or of different shape"""
@@ -177,7 +231,10 @@ def test_training_history_shape(gbest_history, history, expected_shape):
     pso = vars(gbest_history)
     assert np.array(pso[history]).shape == expected_shape
 
-
+@pytest.mark.parametrize(
+    "topology",
+    [Star(), Ring(), Pyramid(), Random()]
+)
 def test_ftol_effect(options, topology):
     """Test if setting the ftol breaks the optimization process accodingly"""
     pso = GeneralOptimizerPSO(10, 2, options=options, topology=topology, ftol=1e-1)

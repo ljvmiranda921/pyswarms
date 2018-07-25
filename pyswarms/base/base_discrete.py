@@ -41,7 +41,7 @@ from ..backend import create_swarm
 
 class DiscreteSwarmOptimizer(object):
     def assertions(self):
-        """Assertion method to check various inputs.
+        """Check inputs and throw assertions
 
         Raises
         ------
@@ -112,7 +112,7 @@ class DiscreteSwarmOptimizer(object):
         init_pos=None,
         ftol=-np.inf,
     ):
-        """Initializes the swarm.
+        """Initialize the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the
         number of particles needed and the number of dimensions.
@@ -174,7 +174,7 @@ class DiscreteSwarmOptimizer(object):
         self.reset()
 
     def _populate_history(self, hist):
-        """Populates all history lists
+        """Populate all history lists
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
         :code:`neighborhood_best` is expected to have a shape of
@@ -194,11 +194,11 @@ class DiscreteSwarmOptimizer(object):
         self.velocity_history.append(hist.velocity)
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
-        """Optimizes the swarm for a number of iterations.
+        """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
         function :code:`objective_func` for a number of iterations
-                 :code:`iter.`
+        :code:`iter.`
 
         Parameters
         ----------
@@ -221,7 +221,7 @@ class DiscreteSwarmOptimizer(object):
         raise NotImplementedError("SwarmBase::optimize()")
 
     def reset(self):
-        """Resets the attributes of the optimizer.
+        """Reset the attributes of the optimizer
 
         All variables/atributes that will be re-initialized when this
         method is defined here. Note that this method

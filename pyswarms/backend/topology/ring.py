@@ -3,8 +3,9 @@
 """
 A Ring Network Topology
 
-This class implements a star topology where all particles are connected in a
-ring-like fashion. This social behavior is often found in LocalBest PSO
+This class implements a ring topology. In this topology,
+the particles are connected with their k nearest neighbors.
+This social behavior is often found in LocalBest PSO
 optimizers.
 """
 
@@ -35,10 +36,10 @@ class Ring(Topology):
         super(Ring, self).__init__(static)
 
     def compute_gbest(self, swarm, p, k):
-        """Updates the global best using a neighborhood approach
+        """Update the global best using a ring-like neighborhood approach
 
         This uses the cKDTree method from :code:`scipy` to obtain the nearest
-        neighbours
+        neighbors.
 
         Parameters
         ----------
@@ -92,7 +93,7 @@ class Ring(Topology):
             return (best_pos, best_cost)
 
     def compute_velocity(self, swarm, clamp=None):
-        """Computes the velocity matrix
+        """Compute the velocity matrix
 
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
@@ -130,7 +131,7 @@ class Ring(Topology):
         return ops.compute_velocity(swarm, clamp)
 
     def compute_position(self, swarm, bounds=None):
-        """Updates the position matrix
+        """Update the position matrix
 
         This method updates the position matrix given the current position and
         the velocity. If bounded, it waives updating the position.

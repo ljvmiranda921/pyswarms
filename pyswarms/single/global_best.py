@@ -80,7 +80,7 @@ class GlobalBestPSO(SwarmOptimizer):
         ftol=-np.inf,
         init_pos=None,
     ):
-        """Initializes the swarm.
+        """Initialize the swarm
 
         Attributes
         ----------
@@ -132,7 +132,7 @@ class GlobalBestPSO(SwarmOptimizer):
         self.top = Star()
 
     def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
-        """Optimizes the swarm for a number of iterations.
+        """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
         function :code:`f` for a number of iterations :code:`iter.`

@@ -80,7 +80,7 @@ warnings.warn(
 
 class PlotEnvironment(object):
     def assertions(self):
-        """Assertion check"""
+        """Check inputs and throw assertions"""
         # Check if the objective_func is a callable
         if not callable(self.objective_func):
             raise TypeError("Must pass a callable")
@@ -105,7 +105,7 @@ class PlotEnvironment(object):
             )
 
     def __init__(self, optimizer, objective_func, iters):
-        """Runs the optimizer against an objective function for a number
+        """Run the optimizer against an objective function for a number
         of iterations
 
         Upon initialization, the :code:`optimize` method of the optimizer
@@ -150,7 +150,7 @@ class PlotEnvironment(object):
         text_fontsize="medium",
         **kwargs
     ):
-        """Creates a simple line plot with the cost in the y-axis and
+        """Create a simple line plot with the cost in the y-axis and
         the iteration at the x-axis
 
         Parameters
@@ -230,7 +230,7 @@ class PlotEnvironment(object):
         title_fontsize="large",
         text_fontsize="medium",
     ):
-        """Creates an animation of particle movement in 2D-space
+        """Create an animation of particle movement in 2D-space
 
         Parameters
         ----------
@@ -326,7 +326,7 @@ class PlotEnvironment(object):
         title_fontsize="large",
         text_fontsize="medium",
     ):
-        """Creates an animation of particle movement in 2D-space
+        """Create an animation of particle movement in 3D-space
 
         Parameters
         ----------
@@ -414,7 +414,7 @@ class PlotEnvironment(object):
         return anim
 
     def _animate2D(self, i, data, plot, idx):
-        """Helper animation function that is called seqentially
+        """Helper animation function that is called sequentially
         :class:`matplotlib.animation.FuncAnimation`
 
         Parameters
@@ -441,7 +441,7 @@ class PlotEnvironment(object):
         return (plot,)
 
     def _animate3D(self, i, data, plot, idx):
-        """Helper animation function that is called seqentially
+        """Helper animation function that is called sequentially
         :class:`matplotlib.animation.FuncAnimation`
 
         Parameters

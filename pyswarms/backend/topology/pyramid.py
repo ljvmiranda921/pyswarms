@@ -3,7 +3,7 @@
 """
 A Pyramid Network Topology
 
-This class implements a pyramid topology where all particles are connected in a N-dimensional simplex fashion.
+This class implements a pyramid topology. In this topology, the particles are connected by N-dimensional simplices.
 """
 
 # Import from stdlib
@@ -34,10 +34,14 @@ class Pyramid(Topology):
         super(Pyramid, self).__init__(static)
 
     def compute_gbest(self, swarm):
-        """Updates the global best using a pyramid neighborhood approach
+        """Update the global best using a pyramid neighborhood approach
 
-        This uses the Delaunay method from :code:`scipy` to triangulate N-dimensional space
-        with simplices consisting of swarm particles
+        This topology uses the Delaunay method from :code:`scipy`. This method is used to triangulate
+        N-dimensional space into simplices. The vertices of the simplicies consist of swarm particles. [SIS2008]
+
+        [SIS2008] J. Lane, A. Engelbrecht and J. Gain, "Particle swarm optimization with spatially
+        meaningful neighbours," 2008 IEEE Swarm Intelligence Symposium, St. Louis, MO, 2008,
+        pp. 1-8. doi: 10.1109/SIS.2008.4668281
 
         Parameters
         ----------
@@ -89,7 +93,7 @@ class Pyramid(Topology):
             return (best_pos, best_cost)
 
     def compute_velocity(self, swarm, clamp=None):
-        """Computes the velocity matrix
+        """Compute the velocity matrix
 
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
@@ -127,7 +131,7 @@ class Pyramid(Topology):
         return ops.compute_velocity(swarm, clamp)
 
     def compute_position(self, swarm, bounds=None):
-        """Updates the position matrix
+        """Update the position matrix
 
         This method updates the position matrix given the current position and
         the velocity. If bounded, it waives updating the position.
