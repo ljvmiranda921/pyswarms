@@ -232,14 +232,21 @@ animation3d = plot_surface(pos_history=pos_history_3d,
 
 ## Contributing
 
-PySwarms is currently maintained by a single person (me!) with the aid of a
-few but very helpful contributors. We would appreciate it if you can lend a
-hand with the following:
+PySwarms is currently maintained by a small yet dedicated team:
+- Lester James V. Miranda ([@ljvmiranda921](https://github.com/ljvmiranda921))
+- Siobhán K Cronin ([@SioKCronin](https://github.com/SioKCronin))
+- Aaron ([@whzup](https://github.com/whzup))
+
+And we would appreciate it if you can lend a hand with the following:
 
 * Find bugs and fix them
 * Update documentation in docstrings
 * Implement new optimizers to our collection
 * Make utility functions more robust.
+
+We would also like to acknowledge [all our
+contributors](http://pyswarms.readthedocs.io/en/latest/authors.html), past and
+present, for making this project successful!
 
 If you wish to contribute, check out our [contributing guide].
 Moreover, you can also see the list of features that need some help in our
