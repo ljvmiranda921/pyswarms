@@ -64,7 +64,7 @@ import numpy as np
 # Import from package
 from ..base import SwarmOptimizer
 from ..backend.operators import compute_pbest
-from ..backend.topology import Topology, Ring, Random
+from ..backend.topology import Topology, Ring, Random, VonNeumann
 from ..utils.console_utils import cli_print, end_report
 
 
@@ -162,7 +162,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self.top = topology
 
         # Case for the Ring topology
-        if isinstance(topology, Ring):
+        if isinstance(topology, (Ring, VonNeumann)):
             # Assign p-value as attributes
             self.p = options["p"]
             # Exceptions for the p value
@@ -175,22 +175,42 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 )
 
         # Case for Random and Ring topologies
-        if isinstance(topology, (Random, Ring)):
+        if isinstance(topology, (Random, Ring, VonNeumann)):
             # Assign k-neighbors as attribute
-            self.k = options["k"]
-            if not isinstance(self.k, int):
-                raise ValueError(
-                    "No. of neighbors must be an integer between"
-                    "0 and no. of particles."
-                )
-            if not 0 <= self.k <= self.n_particles - 1:
-                raise ValueError(
-                    "No. of neighbors must be between 0 and no. " "of particles."
-                )
-            if "k" not in self.options:
-                raise KeyError("Missing k in options")
+            if not isinstance(topology, VonNeumann):
+                self.k = options["k"]
+                if not isinstance(self.k, int):
+                    raise ValueError(
+                        "No. of neighbors must be an integer between"
+                        "0 and no. of particles."
+                    )
+                if not 0 <= self.k <= self.n_particles - 1:
+                    raise ValueError(
+                        "No. of neighbors must be between 0 and no. "
+                        "of particles."
+                    )
+                if "k" not in self.options:
+                    raise KeyError("Missing k in options")
+            else:
+                # Assign range r as attribute
+                self.r = options["r"]
+                if not isinstance(self.r, int):
+                    raise ValueError("The range must be a positive integer")
+                if (
+                    self.r <= 0
+                    or not 0
+                    <= VonNeumann.delannoy(self.swarm.dimensions, self.r)
+                    <= self.n_particles - 1
+                ):
+                    raise ValueError(
+                        "The range must be set such that the computed"
+                        "Delannoy number (number of neighbours) is"
+                        "between 0 and the no. of particles."
+                    )
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
+    def optimize(
+        self, objective_func, iters, print_step=1, verbose=1, **kwargs
+    ):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -215,19 +235,29 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             the global best cost and the global best position.
         """
 
-        cli_print("Arguments Passed to Objective Function: {}".format(kwargs),
-                  verbose, 2, logger=self.logger)
+        cli_print(
+            "Arguments Passed to Objective Function: {}".format(kwargs),
+            verbose,
+            2,
+            logger=self.logger,
+        )
 
         for i in range(iters):
             # Compute cost for current position and personal best
-            self.swarm.current_cost = objective_func(self.swarm.position, **kwargs)
-            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos, **kwargs)
+            self.swarm.current_cost = objective_func(
+                self.swarm.position, **kwargs
+            )
+            self.swarm.pbest_cost = objective_func(
+                self.swarm.pbest_pos, **kwargs
+            )
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
                 self.swarm
             )
             best_cost_yet_found = self.swarm.best_cost
             # If the topology is a ring topology just use the local minimum
-            if isinstance(self.top, Ring):
+            if isinstance(self.top, Ring) and not isinstance(
+                self.top, VonNeumann
+            ):
                 # Update gbest from neighborhood
                 self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
                     self.swarm, self.p, self.k
@@ -239,6 +269,11 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                     self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
                         self.swarm, self.k
                     )
+            elif isinstance(self.top, VonNeumann):
+                self.swarm.best_pos, self.swarm.best_pos = self.top.compute_gbest(
+                    self.swarm, self.p, self.r
+                )
+
             else:
                 # Get minima of pbest and check if it's less than gbest
                 if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
@@ -248,10 +283,12 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             # Print to console
             if i % print_step == 0:
                 cli_print(
-                    "Iteration {}/{}, cost: {}".format(i + 1, iters, self.swarm.best_cost),
+                    "Iteration {}/{}, cost: {}".format(
+                        i + 1, iters, self.swarm.best_cost
+                    ),
                     verbose,
                     2,
-                    logger=self.logger
+                    logger=self.logger,
                 )
             # Save to history
             hist = self.ToHistory(
@@ -259,7 +296,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),
                 mean_neighbor_cost=self.swarm.best_cost,
                 position=self.swarm.position,
-                velocity=self.swarm.velocity
+                velocity=self.swarm.velocity,
             )
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
@@ -283,4 +320,4 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         end_report(
             final_best_cost, final_best_pos, verbose, logger=self.logger
         )
-        return(final_best_cost, final_best_pos)
+        return (final_best_cost, final_best_pos)

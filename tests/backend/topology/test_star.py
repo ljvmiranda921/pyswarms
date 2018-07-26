@@ -16,7 +16,7 @@ def test_compute_gbest_return_values(swarm):
     expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
     pos, cost = topology.compute_gbest(swarm)
     assert cost == pytest.approx(expected_cost)
-    assert (pos == pytest.approx(expected_pos))
+    assert pos == pytest.approx(expected_pos)
 
 
 @pytest.mark.parametrize("clamp", [None, (0, 1), (-1, 1)])
@@ -45,5 +45,5 @@ def test_compute_position_return_values(swarm, bounds):
 def test_neighbor_idx(swarm):
     """Test if the neighbor_idx attribute is assigned"""
     topology = Star()
-    p = topology.compute_gbest(swarm)
+    topology.compute_gbest(swarm)
     assert topology.neighbor_idx is not None

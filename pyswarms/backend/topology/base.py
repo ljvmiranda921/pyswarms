@@ -31,11 +31,13 @@ class Topology(object):
         self.neighbor_idx = None
 
         if self.static:
-            cli_print("Running on `dynamic` topology, neighbors are updated regularly."
-                      "Set `static=True` for fixed neighbors.",
-                      1,
-                      0,
-                      self.logger)
+            cli_print(
+                "Running on `dynamic` topology, neighbors are updated regularly."
+                "Set `static=True` for fixed neighbors.",
+                1,
+                0,
+                self.logger,
+            )
 
     def compute_gbest(self, swarm):
         """Compute the best particle of the swarm and return the cost and

@@ -41,6 +41,7 @@ def test_easom_dim_fail(outdim):
     with pytest.raises(IndexError):
         fx.easom_func(outdim)
 
+
 def test_goldstein_dim_fail(outdim):
     """Test goldstein dim exception"""
     with pytest.raises(IndexError):
