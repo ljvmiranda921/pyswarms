@@ -10,9 +10,6 @@ from collections import namedtuple
 from pyswarms.utils.functions import single_obj as fx
 
 
-
-
-
 def test_ackley_output(common_minima):
     """Tests ackley function output."""
     assert np.isclose(fx.ackley_func(common_minima), np.zeros(3)).all()
@@ -42,23 +39,22 @@ def test_bukin6_output(common_minima2):
 @pytest.mark.parametrize(
     "x",
     [
-        np.array([[1.34941, -1.34941],
-                  [1.34941, 1.34941],
-                  [-1.34941, 1.34941],
-                  [-1.34941, -1.34941]])
+        np.array(
+            [
+                [1.34941, -1.34941],
+                [1.34941, 1.34941],
+                [-1.34941, 1.34941],
+                [-1.34941, -1.34941],
+            ]
+        )
     ],
 )
 @pytest.mark.parametrize(
-    "minima",
-    [
-        np.array([-2.06261, -2.06261, -2.06261, -2.06261])
-    ],
+    "minima", [np.array([-2.06261, -2.06261, -2.06261, -2.06261])]
 )
 def test_crossintray_output(x, minima):
     """Tests crossintray function output."""
-    assert np.isclose(
-        fx.crossintray_func(x), minima
-    ).all()
+    assert np.isclose(fx.crossintray_func(x), minima).all()
 
 
 def test_easom_output(common_minima2):
@@ -71,7 +67,8 @@ def test_easom_output(common_minima2):
 def test_eggholder_output(common_minima2):
     """Tests eggholder function output."""
     assert np.isclose(
-        fx.eggholder_func([512, 404.3219] * common_minima2), (-959.6407 * np.ones(3))
+        fx.eggholder_func([512, 404.3219] * common_minima2),
+        (-959.6407 * np.ones(3)),
     ).all()
 
 
@@ -85,39 +82,40 @@ def test_goldstein_output(common_minima2):
 @pytest.mark.parametrize(
     "x",
     [
-        np.array([[3.0, 2.0],
-                  [-2.805118, 3.131312],
-                  [-3.779310, -3.283186],
-                  [3.584428, -1.848126]])
+        np.array(
+            [
+                [3.0, 2.0],
+                [-2.805118, 3.131312],
+                [-3.779310, -3.283186],
+                [3.584428, -1.848126],
+            ]
+        )
     ],
 )
 def test_himmelblau_output(x):
     """Tests himmelblau function output."""
-    assert np.isclose(
-        fx.himmelblau_func(x), np.zeros(4)
-    ).all()
+    assert np.isclose(fx.himmelblau_func(x), np.zeros(4)).all()
 
 
 @pytest.mark.parametrize(
     "x",
     [
-        np.array([[8.05502, 9.66459],
-                  [-8.05502, 9.66459],
-                  [8.05502, -9.66459],
-                  [-8.05502, -9.66459]])
+        np.array(
+            [
+                [8.05502, 9.66459],
+                [-8.05502, 9.66459],
+                [8.05502, -9.66459],
+                [-8.05502, -9.66459],
+            ]
+        )
     ],
 )
 @pytest.mark.parametrize(
-    "minima",
-    [
-        np.array([-19.2085, -19.2085, -19.2085, -19.2085])
-    ],
+    "minima", [np.array([-19.2085, -19.2085, -19.2085, -19.2085])]
 )
 def test_holdertable_output(x, minima):
     """Tests holdertable function output."""
-    assert np.isclose(
-        fx.holdertable_func(x), minima
-    ).all()
+    assert np.isclose(fx.holdertable_func(x), minima).all()
 
 
 def test_levi_output(common_minima2):

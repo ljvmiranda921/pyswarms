@@ -72,12 +72,14 @@ class Ring(Topology):
             # independently of each other.
             if k == 1:
                 # The minimum index is itself, no mapping needed.
-                best_neighbor = swarm.pbest_cost[self.neighbor_idx][:, np.newaxis].argmin(
-                    axis=0
-                )
+                best_neighbor = swarm.pbest_cost[self.neighbor_idx][
+                    :, np.newaxis
+                ].argmin(axis=0)
             else:
                 idx_min = swarm.pbest_cost[self.neighbor_idx].argmin(axis=1)
-                best_neighbor = self.neighbor_idx[np.arange(len(self.neighbor_idx)), idx_min]
+                best_neighbor = self.neighbor_idx[
+                    np.arange(len(self.neighbor_idx)), idx_min
+                ]
             # Obtain best cost and position
             best_cost = np.min(swarm.pbest_cost[best_neighbor])
             best_pos = swarm.pbest_pos[

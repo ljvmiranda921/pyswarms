@@ -19,7 +19,7 @@ def test_update_gbest_neighborhood(swarm, p, k, static):
     expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
     expected_cost = 1.0002528364353296
     assert cost == pytest.approx(expected_cost)
-    assert (pos == pytest.approx(expected_pos))
+    assert pos == pytest.approx(expected_pos)
 
 
 @pytest.mark.parametrize("static", [True, False])
@@ -53,5 +53,5 @@ def test_compute_position_return_values(swarm, bounds, static):
 def test_neighbor_idx(swarm, static, p, k):
     """Test if the neighbor_idx attribute is assigned"""
     topology = Ring(static=static)
-    p = topology.compute_gbest(swarm, p=p, k=k)
+    topology.compute_gbest(swarm, p=p, k=k)
     assert topology.neighbor_idx is not None

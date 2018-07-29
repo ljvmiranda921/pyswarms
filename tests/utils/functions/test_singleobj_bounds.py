@@ -33,7 +33,6 @@ b = {
 }
 
 
-
 def test_ackley_bound_fail(outbound):
     """Test ackley bound exception"""
     with pytest.raises(ValueError):
