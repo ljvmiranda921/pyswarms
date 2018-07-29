@@ -26,7 +26,7 @@ Contributors
 * Erik (`@slek120`_)
 * Jay Speidell (`@jayspeidell`_)
 * Bradahoward (`@bradahoward`_)
-* ThomasCES (`@ThomasCES`_)
+* Thomas (`@ThomasCES`_)
 
 .. _`@ljvmiranda921`: https://github.com/ljvmiranda921
 .. _`@Carl-K`: https://github.com/Carl-K
