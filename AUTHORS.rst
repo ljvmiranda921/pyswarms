@@ -13,8 +13,8 @@ Maintainers
 -----------
 
 * Lester James V. Miranda (`@ljvmiranda921`_)
-* Aaron (`@whzup`_)
-* Siobhán K Cronin (`@SioKCronin`_)
+* Aaron Moser (`@whzup`_)
+* Siobhán K. Cronin (`@SioKCronin`_)
 
 Contributors
 ------------
