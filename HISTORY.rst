@@ -104,3 +104,11 @@ Thanks for all the wonderful Pull Requests, `@mamadyonline <https://github.com/m
 .. _115: https://github.com/ljvmiranda921/pyswarms/pull/115
 .. _116: https://github.com/ljvmiranda921/pyswarms/pull/116
 .. _117: https://github.com/ljvmiranda921/pyswarms/pull/117
+
+
+0.2.1 (2018-06-27)
+------------------
+
+* Fix sigmoid function in BinaryPSO. Thanks a lot `@ThomasCES <https://github.com/ThomasCES`_! (PR # 145)
+
+.. _145: https://github.com/ljvmiranda921/pyswarms/pull/145
