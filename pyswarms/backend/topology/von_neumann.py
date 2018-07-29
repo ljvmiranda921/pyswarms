@@ -19,7 +19,7 @@ class VonNeumann(Ring):
     def __init__(self):
         super(VonNeumann, self).__init__(static=True)
 
-    def compute_gbest(self, swarm, p=1, r=1):
+    def compute_gbest(self, swarm, p, r):
         """Updates the global best using a neighborhood approach
 
         The Von Neumann topology inherits from the Ring topology and uses
