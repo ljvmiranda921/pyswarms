@@ -12,7 +12,7 @@ with open('HISTORY.rst', encoding="utf8") as history_file:
     history = history_file.read()
 
 requirements = [
-    'PyYAML==3.12',
+    'PyYAML==3.13',
     'future==0.16.0',
     'scipy>=0.17.0',
     'numpy>=1.13.0',
@@ -28,7 +28,7 @@ setup_requirements = [
 ]
 
 test_requirements = [
-    'PyYAML==3.12',
+    'PyYAML==3.13',
     'future==0.16.0',
     'scipy>=0.17.0',
     'numpy>=1.13.0',
