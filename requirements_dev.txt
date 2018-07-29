@@ -8,7 +8,7 @@ tox==3.0.0
 coverage==4.5.1
 Sphinx==1.7.6
 cryptography==2.2.2
-PyYAML==3.13
+PyYAML==3.13 # pyup: ignore
 future==0.16.0
 scipy>=0.17.0
 numpy>=1.13.0
