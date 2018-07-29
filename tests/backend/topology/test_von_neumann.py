@@ -49,7 +49,7 @@ def test_compute_position_return_values(swarm, bounds):
 def test_neighbor_idx(swarm, p, r):
     """Test if the neighbor_idx attribute is assigned"""
     topology = VonNeumann()
-    p = topology.compute_gbest(swarm, p=p, r=r)
+    topology.compute_gbest(swarm, p=p, r=r)
     assert topology.neighbor_idx is not None
 
 
