@@ -11,7 +11,7 @@ import numpy as np
 from pyswarms.single import GlobalBestPSO, LocalBestPSO, GeneralOptimizerPSO
 from pyswarms.discrete import BinaryPSO
 from pyswarms.utils.functions.single_obj import sphere_func
-from pyswarms.backend.topology import Star, Ring, Pyramid, Random
+from pyswarms.backend.topology import Star, Ring, Pyramid, Random, VonNeumann
 
 
 @pytest.fixture(scope="module")
@@ -93,7 +93,7 @@ def binary_reset():
 @pytest.fixture
 def options():
     """Default options dictionary for most PSO use-cases"""
-    options_ = {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2, "p": 2}
+    options_ = {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2, "p": 2, "r": 1}
     return options_
 
 
@@ -101,16 +101,10 @@ def options():
                 Star(),
                 Ring(static=False), Ring(static=True),
                 Pyramid(static=False), Pyramid(static=True),
-                Random(static=False), Random(static=True)
+                Random(static=False), Random(static=True),
+                VonNeumann()
                 ])
 def topology(request):
     """Parametrized topology parameter"""
     topology_ = request.param
     return topology_
-
-
-@pytest.fixture(scope="module", params=[True, False])
-def static(request):
-    """Parametrized static parameter"""
-    static_ = request.param
-    return static_

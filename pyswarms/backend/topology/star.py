@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class Star(Topology):
     def __init__(self):
-        super(Star, self).__init__(static=False)
+        super(Star, self).__init__(static=True)
 
     def compute_gbest(self, swarm):
         """Update the global best using a star topology
@@ -61,7 +61,8 @@ class Star(Topology):
             Best cost
         """
         try:
-            self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
+            if self.neighbor_idx is None:
+                self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
             best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
             best_cost = np.min(swarm.pbest_cost)
         except AttributeError:

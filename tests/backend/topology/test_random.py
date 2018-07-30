@@ -81,5 +81,5 @@ def test_compute_neighbors_adjacency_matrix(swarm, k, static):
 def test_neighbor_idx(swarm, k, static):
     """Test if the neighbor_idx attribute is assigned"""
     topology = Random(static=static)
-    p = topology.compute_gbest(swarm, k)
+    topology.compute_gbest(swarm, k)
     assert topology.neighbor_idx is not None

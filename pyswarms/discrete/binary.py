@@ -149,7 +149,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         # Initialize the topology
         self.top = Ring(static=False)
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1,**kwargs):
+    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -257,4 +257,3 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             Output sigmoid computation
         """
         return 1 / (1 + np.exp(-x))
-

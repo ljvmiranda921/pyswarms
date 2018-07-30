@@ -45,5 +45,5 @@ def test_compute_position_return_values(swarm, bounds):
 def test_neighbor_idx(swarm):
     """Test if the neighbor_idx attribute is assigned"""
     topology = Star()
-    p = topology.compute_gbest(swarm)
+    topology.compute_gbest(swarm)
     assert topology.neighbor_idx is not None
