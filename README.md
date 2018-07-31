@@ -70,6 +70,20 @@ $ cd pyswarms
 $ python setup.py install
 ```
 
+## Running in a Vagrant Box
+
+To run PySwarms in a Vagrant Box, install Vagrant by going to 
+https://www.vagrantup.com/downloads.html and downloading the proper packaged from the Hashicorp website. 
+
+Afterward, run the following command in the project directory:
+
+```shell
+$ vagrant provision
+$ vagrant up
+$ vagrant ssh
+```
+Now you're ready to develop your contributions in a premade virtual enviroment. 
+
 ## Basic Usage
 
 PySwarms provides a high-level implementation of various particle swarm
