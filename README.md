@@ -194,7 +194,7 @@ plot_cost_history(optimizer.cost_history)
 plt.show()
 ```
 
-<img src="./docs/examples/output_8_0.png" width="460">
+![CostHistory](https://i.imgur.com/19Iuz4Bs.png)
 
 We can also plot the animation...
 
