@@ -3,8 +3,9 @@
 """
 A Star Network Topology
 
-This class implements a star topology where all particles are connected to
-one another. This social behavior is often found in GlobalBest PSO
+This class implements a star topology. In this topology,
+all particles are connected to one another. This social
+behavior is often found in GlobalBest PSO
 optimizers.
 """
 
@@ -21,13 +22,13 @@ from .base import Topology
 # Create a logger
 logger = logging.getLogger(__name__)
 
-class Star(Topology):
 
+class Star(Topology):
     def __init__(self):
-        super(Star, self).__init__()
+        super(Star, self).__init__(static=True)
 
     def compute_gbest(self, swarm):
-        """Obtains the global best cost and position based on a star topology
+        """Update the global best using a star topology
 
         This method takes the current pbest_pos and pbest_cost, then returns
         the minimum cost and position from the matrix. It should be used in
@@ -60,22 +61,26 @@ class Star(Topology):
             Best cost
         """
         try:
+            if self.neighbor_idx is None:
+                self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
             best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
             best_cost = np.min(swarm.pbest_cost)
         except AttributeError:
-            msg = 'Please pass a Swarm class. You passed {}'.format(type(swarm))
+            msg = "Please pass a Swarm class. You passed {}".format(
+                type(swarm)
+            )
             logger.error(msg)
             raise
         else:
             return (best_pos, best_cost)
 
     def compute_velocity(self, swarm, clamp=None):
-        """Computes the velocity matrix
+        """Compute the velocity matrix
 
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
         cognitive and social terms of the swarm.
-        
+
         A sample usage can be seen with the following:
 
         .. code-block :: python
@@ -108,7 +113,7 @@ class Star(Topology):
         return ops.compute_velocity(swarm, clamp)
 
     def compute_position(self, swarm, bounds=None):
-        """Updates the position matrix
+        """Update the position matrix
 
         This method updates the position matrix given the current position and
         the velocity. If bounded, it waives updating the position.

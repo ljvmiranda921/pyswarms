@@ -22,3 +22,13 @@ pyswarms.single.local_best module
    :show-inheritance:
    :private-members:
    :special-members: __init__
+
+pyswarms.single.general_optimizer module
+---------------------------------
+
+.. automodule:: pyswarms.single.general_optimizer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
+   :special-members: __init__

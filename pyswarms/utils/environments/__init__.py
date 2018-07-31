@@ -6,6 +6,4 @@ better parameters
 
 from .plot_environment import PlotEnvironment
 
-__all__ = [
-    "PlotEnvironment"
-    ]
+__all__ = ["PlotEnvironment"]

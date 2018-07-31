@@ -3,6 +3,10 @@
 r"""
 Plot environment for Optimizer Analysis
 
+.. deprecated:: 0.2.1
+   This module will be deprecated in the next release. Please use
+   :mod:`pyswarms.utils.plotters` instead.
+
 The class PlotEnvironment is built on top of :code:`matplotlib` in order
 to render quick and easy plots for your optimizer. It can plot the best
 cost for each iteration, and show animations of the particles in 2-D and
@@ -58,6 +62,7 @@ from __future__ import print_function
 
 # Import modules
 import logging
+import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 from past.builtins import xrange
@@ -65,30 +70,42 @@ from matplotlib import animation
 from collections import namedtuple
 from mpl_toolkits.mplot3d import Axes3D
 
+warnings.simplefilter("default")
+warnings.warn(
+    "The pyswarms.environments module is deprecated and will be removed in v.0.2.5. For visualization, please use pyswarms.plotters",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 
 class PlotEnvironment(object):
-
     def assertions(self):
-        """Assertion check"""
+        """Check inputs and throw assertions"""
         # Check if the objective_func is a callable
         if not callable(self.objective_func):
-            raise TypeError('Must pass a callable')
+            raise TypeError("Must pass a callable")
 
         # Check if getters exist in the optimizer
-        if not (hasattr(self.optimizer, 'get_cost_history')
-                & hasattr(self.optimizer, 'get_pos_history')
-                & hasattr(self.optimizer, 'get_velocity_history')):
-            raise AttributeError('Missing getters in optimizer, check '
-                                 'pyswarms.base module')
+        if not (
+            hasattr(self.optimizer, "get_cost_history")
+            & hasattr(self.optimizer, "get_pos_history")
+            & hasattr(self.optimizer, "get_velocity_history")
+        ):
+            raise AttributeError(
+                "Missing getters in optimizer, check " "pyswarms.base module"
+            )
 
         # Check if important methods exist in the optimizer
-        if not (hasattr(self.optimizer, 'optimize')
-                & hasattr(self.optimizer, 'reset')):
-            raise AttributeError('Missing methods in optimizer, check '
-                                 'pyswarms.base module')
+        if not (
+            hasattr(self.optimizer, "optimize")
+            & hasattr(self.optimizer, "reset")
+        ):
+            raise AttributeError(
+                "Missing methods in optimizer, check " "pyswarms.base module"
+            )
 
     def __init__(self, optimizer, objective_func, iters):
-        """Runs the optimizer against an objective function for a number
+        """Run the optimizer against an objective function for a number
         of iterations
 
         Upon initialization, the :code:`optimize` method of the optimizer
@@ -120,13 +137,20 @@ class PlotEnvironment(object):
         self.optimizer.reset()
         self.status = self.optimizer.optimize(objective_func, iters, 1, 0)
         # Initialize tuples for particle plotting
-        self.Index = namedtuple('Index', ['x', 'y', 'z'])
-        self.Limit = namedtuple('Limit', ['x', 'y', 'z'])
-        self.Label = namedtuple('Label', ['x', 'y', 'z'])
+        self.Index = namedtuple("Index", ["x", "y", "z"])
+        self.Limit = namedtuple("Limit", ["x", "y", "z"])
+        self.Label = namedtuple("Label", ["x", "y", "z"])
 
-    def plot_cost(self, title='Cost History', ax=None, figsize=None,
-                  title_fontsize="large", text_fontsize="medium", **kwargs):
-        """Creates a simple line plot with the cost in the y-axis and
+    def plot_cost(
+        self,
+        title="Cost History",
+        ax=None,
+        figsize=None,
+        title_fontsize="large",
+        text_fontsize="medium",
+        **kwargs
+    ):
+        """Create a simple line plot with the cost in the y-axis and
         the iteration at the x-axis
 
         Parameters
@@ -167,28 +191,46 @@ class PlotEnvironment(object):
 
         # Plot with self.iters as x-axis and cost_history as
         # y-axis.
-        ax.plot(np.arange(self.iters), cost_history, 'k', lw=2,
-                label='Best cost')
-        ax.plot(np.arange(self.iters), mean_pbest_history, 'k--', lw=2,
-                label='Avg. personal best cost')
-        ax.plot(np.arange(self.iters), mean_neighbor_history, 'k:', lw=2,
-                label='Avg. neighborhood cost')
+        ax.plot(
+            np.arange(self.iters), cost_history, "k", lw=2, label="Best cost"
+        )
+        ax.plot(
+            np.arange(self.iters),
+            mean_pbest_history,
+            "k--",
+            lw=2,
+            label="Avg. personal best cost",
+        )
+        ax.plot(
+            np.arange(self.iters),
+            mean_neighbor_history,
+            "k:",
+            lw=2,
+            label="Avg. neighborhood cost",
+        )
 
         # Customize plot depending on parameters
         ax.set_title(title, fontsize=title_fontsize)
         ax.legend(fontsize=text_fontsize)
-        ax.set_xlabel('Iterations', fontsize=text_fontsize)
-        ax.set_ylabel('Cost', fontsize=text_fontsize)
+        ax.set_xlabel("Iterations", fontsize=text_fontsize)
+        ax.set_ylabel("Cost", fontsize=text_fontsize)
         ax.tick_params(labelsize=text_fontsize)
 
         return ax
 
-    def plot_particles2D(self, index=(0, 1), limits=((-1, 1), (-1, 1)),
-                         labels=('x-axis', 'y-axis'), interval=80,
-                         title='Particle Movement in 2D space',
-                         ax=None, figsize=None, title_fontsize="large",
-                         text_fontsize="medium"):
-        """Creates an animation of particle movement in 2D-space
+    def plot_particles2D(
+        self,
+        index=(0, 1),
+        limits=((-1, 1), (-1, 1)),
+        labels=("x-axis", "y-axis"),
+        interval=80,
+        title="Particle Movement in 2D space",
+        ax=None,
+        figsize=None,
+        title_fontsize="large",
+        text_fontsize="medium",
+    ):
+        """Create an animation of particle movement in 2D-space
 
         Parameters
         ----------
@@ -231,7 +273,7 @@ class PlotEnvironment(object):
         """
         # Check inconsistencies with input
         if not (len(index) == len(limits) == 2):
-            raise ValueError('The index and limits should be of length 2')
+            raise ValueError("The index and limits should be of length 2")
 
         # Set-up tuples for plotting environment
         idx = self.Index(x=index[0], y=index[1], z=None)
@@ -255,27 +297,36 @@ class PlotEnvironment(object):
         ax.set_ylim(lmt.y)
 
         # Plot data
-        plot = ax.scatter(x=[], y=[], c='red')
+        plot = ax.scatter(x=[], y=[], c="red")
         data = self.optimizer.get_pos_history
 
         # Get the number of iterations
         n_iters = self.optimizer.get_pos_history.shape[0]
 
         # Perform animation
-        anim = animation.FuncAnimation(fig, func=self._animate2D,
-                                       frames=xrange(n_iters),
-                                       fargs=(data, plot, idx),
-                                       interval=interval, blit=True)
+        anim = animation.FuncAnimation(
+            fig,
+            func=self._animate2D,
+            frames=xrange(n_iters),
+            fargs=(data, plot, idx),
+            interval=interval,
+            blit=True,
+        )
         return anim
 
-    def plot_particles3D(self, index=(0, 1, 2),
-                         limits=((-1, 1), (-1, 1), (-1, 1)),
-                         labels=('x-axis', 'y-axis', 'z-axis'),
-                         interval=80,
-                         title='Particle Movement in 3D space', ax=None,
-                         figsize=None, title_fontsize="large",
-                         text_fontsize="medium"):
-        """Creates an animation of particle movement in 2D-space
+    def plot_particles3D(
+        self,
+        index=(0, 1, 2),
+        limits=((-1, 1), (-1, 1), (-1, 1)),
+        labels=("x-axis", "y-axis", "z-axis"),
+        interval=80,
+        title="Particle Movement in 3D space",
+        ax=None,
+        figsize=None,
+        title_fontsize="large",
+        text_fontsize="medium",
+    ):
+        """Create an animation of particle movement in 3D-space
 
         Parameters
         ----------
@@ -319,7 +370,7 @@ class PlotEnvironment(object):
         """
         # Check inconsistencies with input
         if not (len(index) == len(limits) == 3):
-            raise ValueError('The index and limits should be of length 3')
+            raise ValueError("The index and limits should be of length 3")
 
         # Set-up tuples for plotting environment
         idx = self.Index(x=index[0], y=index[1], z=index[2])
@@ -346,21 +397,24 @@ class PlotEnvironment(object):
         ax.set_zlim(lmt.z)
 
         # Plot data
-        plot = ax.scatter(xs=[], ys=[], zs=[], c='red')
+        plot = ax.scatter(xs=[], ys=[], zs=[], c="red")
         data = self.optimizer.get_pos_history
 
         # Get the number of iterations
         n_iters = self.optimizer.get_pos_history.shape[0]
 
         # Perform animation
-        anim = animation.FuncAnimation(fig, func=self._animate3D,
-                                       frames=xrange(n_iters),
-                                       fargs=(data, plot, idx),
-                                       interval=interval)
+        anim = animation.FuncAnimation(
+            fig,
+            func=self._animate3D,
+            frames=xrange(n_iters),
+            fargs=(data, plot, idx),
+            interval=interval,
+        )
         return anim
 
     def _animate2D(self, i, data, plot, idx):
-        """Helper animation function that is called seqentially
+        """Helper animation function that is called sequentially
         :class:`matplotlib.animation.FuncAnimation`
 
         Parameters
@@ -384,10 +438,10 @@ class PlotEnvironment(object):
         current_pos = data[i]
         xy = current_pos[:, (idx.x, idx.y)]
         plot.set_offsets(xy)
-        return plot,
+        return (plot,)
 
     def _animate3D(self, i, data, plot, idx):
-        """Helper animation function that is called seqentially
+        """Helper animation function that is called sequentially
         :class:`matplotlib.animation.FuncAnimation`
 
         Parameters
@@ -409,7 +463,10 @@ class PlotEnvironment(object):
             iterable of artists
         """
         current_pos = data[i]
-        x, y, z = current_pos[:, idx.x], current_pos[:, idx.y], \
-            current_pos[:, idx.z]
+        x, y, z = (
+            current_pos[:, idx.x],
+            current_pos[:, idx.y],
+            current_pos[:, idx.z],
+        )
         plot._offsets3d = (x, y, z)
-        return plot,
+        return (plot,)
