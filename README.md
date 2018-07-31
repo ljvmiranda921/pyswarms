@@ -1,5 +1,4 @@
-![PySwarms Logo](docs/pyswarms-header.png)
-
+![PySwarms Logo](https://i.imgur.com/eX8oqPQ.png)
 ---
 
 
