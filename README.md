@@ -174,14 +174,12 @@ hyperparameter options that enables it.
 9.504769054771
 ```
 
-### Plotting environments
+### Swarm visualization
 
 It is also possible to plot optimizer performance for the sake of formatting.
-The plotting environment is built on top of `matplotlib`, making it
+The plotters moule is built on top of `matplotlib`, making it
 highly-customizable.
 
-The environment takes in the optimizer and its parameters, then performs a
-fresh run to plot the cost and create animation.
 
 ```python
 import pyswarms as ps
