@@ -107,8 +107,30 @@ Thanks for all the wonderful Pull Requests, `@mamadyonline <https://github.com/m
 
 
 0.2.1 (2018-06-27)
-------------------
+~~~~~~~~~~~~~~~~~~
 
 * Fix sigmoid function in BinaryPSO. Thanks a lot `@ThomasCES <https://github.com/ThomasCES`_! (PR # 145)
 
 .. _145: https://github.com/ljvmiranda921/pyswarms/pull/145
+
+0.3.0 (2018-08-10)
+------------------
+
+* New topologies: Pyramid, Random, and Von Neumann. More ways for your particles to interact! (PR# 176_) (PR# 177_) (PR# 155_) (PR# 142_) Thanks a lot `@whzup <https://github.com/whzup>`_!
+* New GeneralOptimizer algorithm that allows you to switch-out topologies for your optimization needs (PR# 151). Thanks a lot `@whzup <https://github.com/whzup>`_!
+* All topologies now have a static attribute. Neigbors can now be set initially or computed dynamically (PR# 164_). Thanks a lot `@whzup <https://github.com/whzup>`_!
+* New single-objective functions (PR# 168_)! Awesome work, `@jayspeidell <https://github.com/jayspeidell>`_!
+* New tutorial on Inverse Kinematics using Particle Swarm Optimization (PR# 141_) Thanks a lot `@whzup <https://github.com/whzup>`_!
+* New plotters module for visualization. The environment module is now deprecated (PR# 135_).
+* Keyword arguments can now be passed in the optimize() method for your custom objective functions (PR# 144_). Great job, `@bradahoward <https://github.com/bradahoward>`
+
+.. _135: https://github.com/ljvmiranda921/pyswarms/pull/135
+.. _141: https://github.com/ljvmiranda921/pyswarms/pull/141
+.. _142: https://github.com/ljvmiranda921/pyswarms/pull/142
+.. _144: https://github.com/ljvmiranda921/pyswarms/pull/144
+.. _151: https://github.com/ljvmiranda921/pyswarms/pull/151
+.. _155: https://github.com/ljvmiranda921/pyswarms/pull/155
+.. _164: https://github.com/ljvmiranda921/pyswarms/pull/164
+.. _168: https://github.com/ljvmiranda921/pyswarms/pull/168
+.. _176: https://github.com/ljvmiranda921/pyswarms/pull/176
+.. _177: https://github.com/ljvmiranda921/pyswarms/pull/177
