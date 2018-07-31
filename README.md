@@ -1,5 +1,4 @@
-![PySwarms Logo](docs/pyswarms-header.png)
-
+![PySwarms Logo](https://i.imgur.com/eX8oqPQ.png)
 ---
 
 
@@ -175,14 +174,12 @@ hyperparameter options that enables it.
 9.504769054771
 ```
 
-### Plotting environments
+### Swarm visualization
 
 It is also possible to plot optimizer performance for the sake of formatting.
-The plotting environment is built on top of `matplotlib`, making it
+The plotters moule is built on top of `matplotlib`, making it
 highly-customizable.
 
-The environment takes in the optimizer and its parameters, then performs a
-fresh run to plot the cost and create animation.
 
 ```python
 import pyswarms as ps
@@ -197,7 +194,7 @@ plot_cost_history(optimizer.cost_history)
 plt.show()
 ```
 
-<img src="./docs/examples/output_8_0.png" width="460">
+![CostHistory](https://i.imgur.com/19Iuz4B.png)
 
 We can also plot the animation...
 
