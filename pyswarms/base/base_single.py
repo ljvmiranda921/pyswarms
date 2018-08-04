@@ -27,6 +27,7 @@ See Also
 --------
 :mod:`pyswarms.single.global_best`: global-best PSO implementation
 :mod:`pyswarms.single.local_best`: local-best PSO implementation
+:mod:`pyswarms.single.general_optimizer`: a more general PSO implementation with a custom topology
 """
 
 import os
