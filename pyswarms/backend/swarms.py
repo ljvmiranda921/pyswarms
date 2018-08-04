@@ -5,28 +5,29 @@ Swarm Class Backend
 
 This module implements a Swarm class that holds various attributes in
 the swarm such as position, velocity, options, etc. You can use this
-as input to most backend cases
+as input to most backend cases.
 """
 
 # Import modules
 import numpy as np
-from attr import (attrs, attrib)
+from attr import attrs, attrib
 from attr.validators import instance_of
+
 
 @attrs
 class Swarm(object):
     """A Swarm Class
-    
+
     This class offers a generic swarm that can be used in most use-cases
     such as single-objective optimization, etc. It contains various attributes
     that are commonly-used in most swarm implementations.
 
     To initialize this class, **simply supply values for the position and
     velocity matrix**. The other attributes are automatically filled. If you want to
-    initialize random values, take a look at: 
+    initialize random values, take a look at:
 
     * :func:`pyswarms.backend.generators.generate_swarm`: for generating positions randomly.
-    * :func:`pyswarms.backend.generators.generate_velocity`: for generating velocities randomly. 
+    * :func:`pyswarms.backend.generators.generate_velocity`: for generating velocities randomly.
 
     If your swarm requires additional parameters (say c1, c2, and w in gbest
     PSO), simply pass them to the :code:`options` dictionary.
@@ -72,10 +73,11 @@ class Swarm(object):
     pbest_cost : numpy.ndarray (default is empty array)
         personal best costs of each particle of shape :code:`(n_particles, )`
     best_cost : float (default is :code:`np.inf`)
-        best cost found by the swarm 
+        best cost found by the swarm
     current_cost : numpy.ndarray (default is empty array)
         the current cost found by the swarm of shape :code:`(n_particles, dimensions)`
     """
+
     # Required attributes
     position = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
     velocity = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
@@ -84,10 +86,24 @@ class Swarm(object):
     dimensions = attrib(type=int, validator=instance_of(int))
     options = attrib(type=dict, default={}, validator=instance_of(dict))
     pbest_pos = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
-    best_pos  = attrib(type=np.ndarray, default=np.array([]), validator=instance_of(np.ndarray))
-    pbest_cost = attrib(type=np.ndarray, default=np.array([]), validator=instance_of(np.ndarray))
-    best_cost = attrib(type=float, default=np.inf, validator=instance_of((int, float)))
-    current_cost = attrib(type=np.ndarray, default=np.array([]), validator=instance_of(np.ndarray))
+    best_pos = attrib(
+        type=np.ndarray,
+        default=np.array([]),
+        validator=instance_of(np.ndarray),
+    )
+    pbest_cost = attrib(
+        type=np.ndarray,
+        default=np.array([]),
+        validator=instance_of(np.ndarray),
+    )
+    best_cost = attrib(
+        type=float, default=np.inf, validator=instance_of((int, float))
+    )
+    current_cost = attrib(
+        type=np.ndarray,
+        default=np.array([]),
+        validator=instance_of(np.ndarray),
+    )
 
     @n_particles.default
     def n_particles_default(self):

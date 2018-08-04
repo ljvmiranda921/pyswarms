@@ -4,11 +4,13 @@
 # Import modules
 import pytest
 
-@pytest.mark.parametrize('maximum', [True, False])
+
+@pytest.mark.parametrize("maximum", [True, False])
 def test_search_best_options_return_type(random_unbounded, maximum):
     """Tests if best options returns a dictionary"""
     _, best_options = random_unbounded.search(maximum)
     assert isinstance(best_options, dict)
+
 
 def test_generate_grid_combinations(random_bounded):
     """Test that the number of combinations in grid equals the number
@@ -17,7 +19,8 @@ def test_generate_grid_combinations(random_bounded):
     grid = random_bounded.generate_grid()
     assert len(grid) == expected
 
-@pytest.mark.parametrize('options', ['c1', 'c2', 'k', 'w'])
+
+@pytest.mark.parametrize("options", ["c1", "c2", "k", "w"])
 def test_generate_grid_parameter_mapping(random_bounded, options):
     """Test that generated values are correctly mapped to each parameter and
     are within the specified bounds """

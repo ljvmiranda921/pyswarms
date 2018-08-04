@@ -1,5 +1,4 @@
-![PySwarms Logo](docs/pyswarms-header.png)
-
+![PySwarms Logo](https://i.imgur.com/eX8oqPQ.png)
 ---
 
 
@@ -8,6 +7,7 @@
 [![Documentation Status](https://readthedocs.org/projects/pyswarms/badge/?version=master)](https://pyswarms.readthedocs.io/en/master/?badge=development)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg )](https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE)
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.00433/status.svg)](https://doi.org/10.21105/joss.00433)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pyswarms/Issues)
 
 PySwarms is an extensible research toolkit for particle swarm optimization
@@ -174,50 +174,76 @@ hyperparameter options that enables it.
 9.504769054771
 ```
 
-### Plotting environments
+### Swarm visualization
 
 It is also possible to plot optimizer performance for the sake of formatting.
-The plotting environment is built on top of `matplotlib`, making it
+The plotters moule is built on top of `matplotlib`, making it
 highly-customizable.
 
-The environment takes in the optimizer and its parameters, then performs a
-fresh run to plot the cost and create animation.
 
 ```python
 import pyswarms as ps
 from pyswarms.utils.functions import single_obj as fx
-from pyswarms.utils.environments import PlotEnvironment
+from pyswarms.utils.plotters import plot_cost_history
 # Set-up optimizer
 options = {'c1':0.5, 'c2':0.3, 'w':0.9}
-optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=3, options=options)
-# Initialize plot environment
-plt_env = PlotEnvironment(optimizer, fx.sphere_func, 1000)
+optimizer = ps.single.GlobalBestPSO(n_particles=50, dimensions=2, options=options)
+optimizer.optimize(fx.sphere_func, iters=100)
 # Plot the cost
-plt_env.plot_cost(figsize=(8,6));
+plot_cost_history(optimizer.cost_history)
 plt.show()
 ```
 
-<img src="./docs/examples/output_9_0.png" width="460">
+![CostHistory](https://i.imgur.com/19Iuz4B.png)
 
-We can also plot the animation,
+We can also plot the animation...
 
 ```python
-plt_env.plot_particles2D(limits=((-1.2,1.2),(-1.2,1.2))
+from pyswarms.utils.plotters.formatters import Mesher
+from pyswarms.utils.plotters.formatters import Designer
+# Plot the sphere function's mesh for better plots
+m = Mesher(func=fx.sphere_func)
+# Adjust figure limits
+d = Designer(limits=[(-1,1), (-1,1), (-0.1,1)],
+             label=['x-axis', 'y-axis', 'z-axis'])
 ```
 
-<img src="./docs/examples/output_3d.gif" width="460">
+In 2D,
 
+```python
+plot_contour(pos_history=optimizer.pos_history, mesher=m, mark=(0,0))
+```
+
+![Contour](https://i.imgur.com/H3YofJ6.gif)
+
+Or in 3D!
+
+```python
+pos_history_3d = m.compute_history_3d(optimizer.pos_history) # preprocessing
+animation3d = plot_surface(pos_history=pos_history_3d,
+                           mesher=m, designer=d,
+                           mark=(0,0,0))    
+```
+
+![Surface](https://i.imgur.com/kRb61Hx.gif)
 
 ## Contributing
 
-PySwarms is currently maintained by a single person (me!) with the aid of a
-few but very helpful contributors. We would appreciate it if you can lend a
-hand with the following:
+PySwarms is currently maintained by a small yet dedicated team:
+- Lester James V. Miranda ([@ljvmiranda921](https://github.com/ljvmiranda921))
+- Siobhán K. Cronin ([@SioKCronin](https://github.com/SioKCronin))
+- Aaron Moser ([@whzup](https://github.com/whzup))
+
+And we would appreciate it if you can lend a hand with the following:
 
 * Find bugs and fix them
 * Update documentation in docstrings
 * Implement new optimizers to our collection
 * Make utility functions more robust.
+
+We would also like to acknowledge [all our
+contributors](http://pyswarms.readthedocs.io/en/latest/authors.html), past and
+present, for making this project successful!
 
 If you wish to contribute, check out our [contributing guide].
 Moreover, you can also see the list of features that need some help in our
