@@ -9,20 +9,23 @@ The package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypacka
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 
-Development Lead
-----------------
+Maintainers
+-----------
 
 * Lester James V. Miranda (`@ljvmiranda921`_)
+* Aaron Moser (`@whzup`_)
+* Siobhán K. Cronin (`@SioKCronin`_)
 
 Contributors
 ------------
 
 * Carl-K (`@Carl-K`_)
-* Siobhán K Cronin (`@SioKCronin`_)
 * Andrew Jarcho (`@jazcap53`_)
 * Charalampos Papadimitriou (`@CPapadim`_)
 * Mamady Nabé (`@mamadyonline`_)
 * Erik (`@slek120`_)
+* Jay Speidell (`@jayspeidell`_)
+* Bradahoward (`@bradahoward`_)
 * Thomas (`@ThomasCES`_)
 
 .. _`@ljvmiranda921`: https://github.com/ljvmiranda921
@@ -32,4 +35,7 @@ Contributors
 .. _`@CPapadim`: https://github.com/CPapadim
 .. _`@mamadyonline`: https://github.com/mamadyonline
 .. _`@slek120`: https://github.com/slek120
+.. _`@whzup`: https://github.com/whzup
+.. _`@jayspeidell`: https://github.com/jayspeidell
+.. _`@bradahoward`: https://github.com/bradahoward
 .. _`@ThomasCES`: https://github.com/ThomasCES

@@ -38,10 +38,10 @@ from collections import namedtuple
 # Import from package
 from ..backend import create_swarm
 
-class DiscreteSwarmOptimizer(object):
 
+class DiscreteSwarmOptimizer(object):
     def assertions(self):
-        """Assertion method to check various inputs.
+        """Check inputs and throw assertions
 
         Raises
         ------
@@ -59,20 +59,27 @@ class DiscreteSwarmOptimizer(object):
         # Check clamp settings
         if self.velocity_clamp is not None:
             if not isinstance(self.velocity_clamp, tuple):
-                raise TypeError('Parameter `velocity_clamp` must be a tuple')
+                raise TypeError("Parameter `velocity_clamp` must be a tuple")
             if not len(self.velocity_clamp) == 2:
-                raise IndexError('Parameter `velocity_clamp` must be of '
-                                 'size 2')
+                raise IndexError(
+                    "Parameter `velocity_clamp` must be of " "size 2"
+                )
             if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-                raise ValueError('Make sure that velocity_clamp is in the '
-                                 'form (v_min, v_max)')
+                raise ValueError(
+                    "Make sure that velocity_clamp is in the "
+                    "form (v_min, v_max)"
+                )
 
         # Required keys in options argument
-        if not all(key in self.options for key in ('c1', 'c2', 'w')):
-            raise KeyError('Missing either c1, c2, or w in options')
+        if not all(key in self.options for key in ("c1", "c2", "w")):
+            raise KeyError("Missing either c1, c2, or w in options")
 
-    def setup_logging(self, default_path='./config/logging.yaml',
-                      default_level=logging.INFO, env_key='LOG_CFG'):
+    def setup_logging(
+        self,
+        default_path="./config/logging.yaml",
+        default_level=logging.INFO,
+        env_key="LOG_CFG",
+    ):
         """Setup logging configuration
 
         Parameters
@@ -89,15 +96,23 @@ class DiscreteSwarmOptimizer(object):
         if value:
             path = value
         if os.path.exists(path):
-            with open(path, 'rt') as f:
+            with open(path, "rt") as f:
                 config = yaml.safe_load(f.read())
             logging.config.dictConfig(config)
         else:
             logging.basicConfig(level=default_level)
 
-    def __init__(self, n_particles, dimensions, binary, options,
-                 velocity_clamp=None, init_pos=None, ftol=-np.inf):
-        """Initializes the swarm.
+    def __init__(
+        self,
+        n_particles,
+        dimensions,
+        binary,
+        options,
+        velocity_clamp=None,
+        init_pos=None,
+        ftol=-np.inf,
+    ):
+        """Initialize the swarm.
 
         Creates a :code:`numpy.ndarray` of positions depending on the
         number of particles needed and the number of dimensions.
@@ -115,7 +130,7 @@ class DiscreteSwarmOptimizer(object):
             initial positions. When passed with a :code:`False` value,
             random integers from 0 to :code:`dimensions` are generated.
         options : dict with keys :code:`{'c1', 'c2', 'w'}`
-            a dictionary containing the parameters for the specific 
+            a dictionary containing the parameters for the specific
             optimization technique
                 * c1 : float
                     cognitive parameter
@@ -142,10 +157,16 @@ class DiscreteSwarmOptimizer(object):
         self.init_pos = init_pos
         self.ftol = ftol
         # Initialize named tuple for populating the history list
-        self.ToHistory = namedtuple('ToHistory',
-                                    ['best_cost', 'mean_pbest_cost',
-                                     'mean_neighbor_cost', 'position',
-                                     'velocity'])
+        self.ToHistory = namedtuple(
+            "ToHistory",
+            [
+                "best_cost",
+                "mean_pbest_cost",
+                "mean_neighbor_cost",
+                "position",
+                "velocity",
+            ],
+        )
         # Invoke assertions
         self.assertions()
 
@@ -153,7 +174,7 @@ class DiscreteSwarmOptimizer(object):
         self.reset()
 
     def _populate_history(self, hist):
-        """Populates all history lists
+        """Populate all history lists
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
         :code:`neighborhood_best` is expected to have a shape of
@@ -172,37 +193,12 @@ class DiscreteSwarmOptimizer(object):
         self.pos_history.append(hist.position)
         self.velocity_history.append(hist.velocity)
 
-    @property
-    def get_cost_history(self):
-        """Get cost history"""
-        return np.array(self.cost_history)
-
-    @property
-    def get_mean_pbest_history(self):
-        """Get mean personal best history"""
-        return np.array(self.mean_pbest_history)
-
-    @property
-    def get_mean_neighbor_history(self):
-        """Get mean neighborhood cost history"""
-        return np.array(self.mean_neighbor_history)
-
-    @property
-    def get_pos_history(self):
-        """Get position history"""
-        return np.array(self.pos_history)
-
-    @property
-    def get_velocity_history(self):
-        """Get velocity history"""
-        return np.array(self.velocity_history)
-
-    def optimize(self, objective_func, iters, print_step=1, verbose=1):
-        """Optimizes the swarm for a number of iterations.
+    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
+        """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
         function :code:`objective_func` for a number of iterations
-                 :code:`iter.`
+        :code:`iter.`
 
         Parameters
         ----------
@@ -214,6 +210,8 @@ class DiscreteSwarmOptimizer(object):
             amount of steps for printing into console.
         verbose : int (the default is 1)
             verbosity setting.
+        kwargs : dict
+            arguments for objective function
 
         Raises
         ------
@@ -223,7 +221,7 @@ class DiscreteSwarmOptimizer(object):
         raise NotImplementedError("SwarmBase::optimize()")
 
     def reset(self):
-        """Resets the attributes of the optimizer.
+        """Reset the attributes of the optimizer
 
         All variables/atributes that will be re-initialized when this
         method is defined here. Note that this method
@@ -253,9 +251,12 @@ class DiscreteSwarmOptimizer(object):
         self.velocity_history = []
 
         # Initialize the swarm
-        self.swarm = create_swarm(n_particles=self.n_particles,
-                                  dimensions=self.dimensions,
-                                  discrete=True,
-                                  init_pos=self.init_pos,
-                                  binary=self.binary,
-                                  clamp=self.velocity_clamp, options=self.options)
+        self.swarm = create_swarm(
+            n_particles=self.n_particles,
+            dimensions=self.dimensions,
+            discrete=True,
+            init_pos=self.init_pos,
+            binary=self.binary,
+            clamp=self.velocity_clamp,
+            options=self.options,
+        )

@@ -6,6 +6,4 @@ discrete search-space.
 
 from .binary import BinaryPSO
 
-__all__ = [
-    "BinaryPSO"
-    ]
+__all__ = ["BinaryPSO"]

@@ -31,7 +31,7 @@ powerful explorative feature.
 In this implementation, a neighbor is selected via a k-D tree
 imported from :code:`scipy`. Distance are computed with either
 the L1 or L2 distance. The nearest-neighbours are then queried from
-this k-D tree.
+this k-D tree. They are computed for every iteration.
 
 An example usage is as follows:
 
@@ -78,9 +78,8 @@ from ..utils.console_utils import cli_print, end_report
 
 
 class LocalBestPSO(SwarmOptimizer):
-
     def assertions(self):
-        """Assertion method to check various inputs.
+        """Check inputs and throw assertions
 
         Raises
         ------
@@ -92,18 +91,31 @@ class LocalBestPSO(SwarmOptimizer):
         """
         super(LocalBestPSO, self).assertions()
 
-        if not all(key in self.options for key in ('k', 'p')):
-            raise KeyError('Missing either k or p in options')
+        if not all(key in self.options for key in ("k", "p")):
+            raise KeyError("Missing either k or p in options")
         if not 0 <= self.k <= self.n_particles:
-            raise ValueError('No. of neighbors must be between 0 and no. '
-                             'of particles.')
+            raise ValueError(
+                "No. of neighbors must be between 0 and no. " "of particles."
+            )
         if self.p not in [1, 2]:
-            raise ValueError('p-value should either be 1 (for L1/Minkowski) '
-                             'or 2 (for L2/Euclidean).')
+            raise ValueError(
+                "p-value should either be 1 (for L1/Minkowski) "
+                "or 2 (for L2/Euclidean)."
+            )
 
-    def __init__(self, n_particles, dimensions, options, bounds=None,
-                 velocity_clamp=None, center=1.00, ftol=-np.inf, init_pos=None):
-        """Initializes the swarm.
+    def __init__(
+        self,
+        n_particles,
+        dimensions,
+        options,
+        bounds=None,
+        velocity_clamp=None,
+        center=1.00,
+        ftol=-np.inf,
+        init_pos=None,
+        static=False
+    ):
+        """Initialize the swarm
 
         Attributes
         ----------
@@ -140,26 +152,34 @@ class LocalBestPSO(SwarmOptimizer):
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
                     the Euclidean (or L2) distance.
+        static: bool (Default is :code:`False`)
+            a boolean that decides whether the Ring topology
+            used is static or dynamic
         """
         # Initialize logger
         self.logger = logging.getLogger(__name__)
         # Assign k-neighbors and p-value as attributes
-        self.k, self.p = options['k'], options['p']
+        self.k, self.p = options["k"], options["p"]
         # Initialize parent class
-        super(LocalBestPSO, self).__init__(n_particles=n_particles, dimensions=dimensions,
-                                           options=options, bounds=bounds,
-                                           velocity_clamp=velocity_clamp,
-                                           center=center, ftol=ftol,
-        init_pos=init_pos)
+        super(LocalBestPSO, self).__init__(
+            n_particles=n_particles,
+            dimensions=dimensions,
+            options=options,
+            bounds=bounds,
+            velocity_clamp=velocity_clamp,
+            center=center,
+            ftol=ftol,
+            init_pos=init_pos,
+        )
         # Invoke assertions
         self.assertions()
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
-        self.top = Ring()
+        self.top = Ring(static=static)
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1):
-        """Optimizes the swarm for a number of iterations.
+    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
+        """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
         function :code:`f` for a number of iterations :code:`iter.`
@@ -174,6 +194,8 @@ class LocalBestPSO(SwarmOptimizer):
             amount of steps for printing into console.
         verbose : int  (default is 1)
             verbosity setting.
+        kwargs : dict
+            arguments for the objective function
 
         Returns
         -------
@@ -181,37 +203,56 @@ class LocalBestPSO(SwarmOptimizer):
             the local best cost and the local best position among the
             swarm.
         """
+        cli_print("Arguments Passed to Objective Function: {}".format(kwargs),
+                  verbose, 2, logger=self.logger)
+
         for i in range(iters):
             # Compute cost for current position and personal best
-            self.swarm.current_cost = objective_func(self.swarm.position)
-            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos)
-            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
+            self.swarm.current_cost = objective_func(self.swarm.position, **kwargs)
+            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos, **kwargs)
+            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
+                self.swarm
+            )
             best_cost_yet_found = np.min(self.swarm.best_cost)
             # Update gbest from neighborhood
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm,
-                                                                               self.p,
-                                                                               self.k)
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
+                self.swarm, self.p, self.k
+            )
             # Print to console
             if i % print_step == 0:
-                cli_print('Iteration %s/%s, cost: %s' %
-                          (i+1, iters, np.min(self.swarm.best_cost)), verbose, 2,
-                          logger=self.logger)
+                cli_print(
+                    "Iteration {}/{}, cost: {}".format(i + 1, iters, np.min(self.swarm.best_cost)),
+                    verbose,
+                    2,
+                    logger=self.logger,
+                )
             # Save to history
-            hist = self.ToHistory(best_cost=self.swarm.best_cost,
-                                  mean_pbest_cost=np.mean(self.swarm.pbest_cost),
-                                  mean_neighbor_cost=np.mean(self.swarm.best_cost),
-                                  position=self.swarm.position,
-                                  velocity=self.swarm.velocity)
+            hist = self.ToHistory(
+                best_cost=self.swarm.best_cost,
+                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
+                mean_neighbor_cost=np.mean(self.swarm.best_cost),
+                position=self.swarm.position,
+                velocity=self.swarm.velocity,
+            )
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
-            relative_measure = self.ftol*(1 + np.abs(best_cost_yet_found))
-            if np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure:
+            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
+            if (
+                np.abs(self.swarm.best_cost - best_cost_yet_found)
+                < relative_measure
+            ):
                 break
             # Perform position velocity update
-            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp)
-            self.swarm.position = self.top.compute_position(self.swarm, self.bounds)
+            self.swarm.velocity = self.top.compute_velocity(
+                self.swarm, self.velocity_clamp
+            )
+            self.swarm.position = self.top.compute_position(
+                self.swarm, self.bounds
+            )
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.best_pos.copy()
-        end_report(final_best_cost, final_best_pos, verbose, logger=self.logger)
+        end_report(
+            final_best_cost, final_best_pos, verbose, logger=self.logger
+        )
         return (final_best_cost, final_best_pos)
