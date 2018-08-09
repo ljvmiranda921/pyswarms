@@ -94,14 +94,19 @@ This ensures that it will be automatically initialized when the whole library is
 Writing unit tests
 ------------------
 
-Testing is an important element of developing PySwarms, and we wanted
-everything to be as smooth as possible, especially when doing the build and
-integrating. In this case, we provide the :code:`tests` module in the
-package. In case you add a test for your optimizer, simply name them with the
-same convention as in those tests.
+Testing is an important element of developing PySwarms and we want
+everything to be as smooth as possible. Especially, when working on
+the build and integrating new features. In this case, we provide the
+:code:`tests` module in the package. For writing the test, we use the
+:code:`pytest` module. In case you add a test for your optimizer,
+use the same naming conventions that were used in the existing ones.
 
 You can perform separate checks by
 
 .. code-block:: shell
 
-    $ python -m unittest tests.optimizers.<test_myoptimizer>
+    $ python -m pytest tests.optimizers.<test_myoptimizer>
+
+For more details on running the tests `see here`_.
+
+.. _see here: https://docs.pytest.org/en/latest/usage.html

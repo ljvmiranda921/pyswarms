@@ -49,7 +49,7 @@ class RandomSearch(SearchBase):
     within specified bounds for specified number of selection iterations."""
 
     def assertions(self):
-        """Assertion method to check :code:`n_selection_iters` input.
+        """Assertion method to check :code:`n_selection_iters` input
 
         Raises
         ------
@@ -60,13 +60,23 @@ class RandomSearch(SearchBase):
 
         # Check type of n_selection_iters parameter
         if not isinstance(self.n_selection_iters, int):
-            raise TypeError('Parameter `n_selection_iters` must be of '
-                            'type int')
+            raise TypeError(
+                "Parameter `n_selection_iters` must be of " "type int"
+            )
 
-    def __init__(self, optimizer, n_particles, dimensions, options,
-                 objective_func, iters, n_selection_iters,
-                 bounds=None, velocity_clamp=(0,1)):
-        """Initializes the paramsearch.
+    def __init__(
+        self,
+        optimizer,
+        n_particles,
+        dimensions,
+        options,
+        objective_func,
+        iters,
+        n_selection_iters,
+        bounds=None,
+        velocity_clamp=(0, 1),
+    ):
+        """Initialize the Search
 
         Attributes
         ----------
@@ -77,40 +87,51 @@ class RandomSearch(SearchBase):
         # Assign n_selection_iters as attribute
         self.n_selection_iters = n_selection_iters
         # Assign attributes
-        super(RandomSearch, self).__init__(optimizer, n_particles, dimensions,
-                                           options, objective_func, iters,
-                                           bounds=bounds,
-                                           velocity_clamp=velocity_clamp)
+        super(RandomSearch, self).__init__(
+            optimizer,
+            n_particles,
+            dimensions,
+            options,
+            objective_func,
+            iters,
+            bounds=bounds,
+            velocity_clamp=velocity_clamp,
+        )
         # Invoke assertions
         self.assertions()
 
     def generate_grid(self):
-        """Generates the grid of hyperparameter value combinations."""
+        """Generate the grid of hyperparameter value combinations"""
 
         options = dict(self.options)
         params = {}
 
         # Remove 'p' to hold as a constant in the paramater combinations
-        p = options.pop('p')
-        params['p'] = [p for _ in xrange(self.n_selection_iters)]
+        p = options.pop("p")
+        params["p"] = [p for _ in xrange(self.n_selection_iters)]
 
         # Assign generators based on parameter type
         param_generators = {
-            'c1': np.random.uniform,
-            'c2': np.random.uniform,
-            'w': np.random.uniform,
-            'k': np.random.randint
+            "c1": np.random.uniform,
+            "c2": np.random.uniform,
+            "w": np.random.uniform,
+            "k": np.random.randint,
         }
 
         # Generate random values for hyperparameters 'c1', 'c2', 'w', and 'k'
         for idx, bounds in options.items():
             params[idx] = param_generators[idx](
-                              *bounds, size=self.n_selection_iters)
+                *bounds, size=self.n_selection_iters
+            )
 
         # Return list of dicts of hyperparameter combinations
-        return [{'c1': params['c1'][i],
-                 'c2': params['c2'][i],
-                 'w': params['w'][i],
-                 'k': params['k'][i],
-                 'p': params['p'][i]}
-                for i in xrange(self.n_selection_iters)]
+        return [
+            {
+                "c1": params["c1"][i],
+                "c2": params["c2"][i],
+                "w": params["w"][i],
+                "k": params["k"][i],
+                "p": params["p"][i],
+            }
+            for i in xrange(self.n_selection_iters)
+        ]

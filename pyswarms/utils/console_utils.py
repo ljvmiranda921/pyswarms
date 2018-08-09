@@ -49,13 +49,15 @@ def end_report(cost, pos, verbosity, logger):
 
     # Cuts the length of the best position if it's too long
     if len(list(pos)) > 3:
-        out = ('[ ' + 3 * '{:3f} ' + '...]').format(*list(pos))
+        out = ("[ " + 3 * "{:3f} " + "...]").format(*list(pos))
     else:
         out = list(pos)
 
-    template = ('================================\n'
-                'Optimization finished!\n'
-                'Final cost: {:06.4f}\n'
-                'Best value: {}\n').format(cost, out)
+    template = (
+        "================================\n"
+        "Optimization finished!\n"
+        "Final cost: {:06.4f}\n"
+        "Best value: {}\n"
+    ).format(cost, out)
     if verbosity >= 1:
         logger.info(template)

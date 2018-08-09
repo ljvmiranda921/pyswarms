@@ -4,7 +4,7 @@ r"""
 Base class for single-objective Particle Swarm Optimization
 implementations.
 
-All methods here are abstract and raises a :code:`NotImplementedError`
+All methods here are abstract and raise a :code:`NotImplementedError`
 when not used. When defining your own swarm implementation,
 create another class,
 
@@ -27,6 +27,7 @@ See Also
 --------
 :mod:`pyswarms.single.global_best`: global-best PSO implementation
 :mod:`pyswarms.single.local_best`: local-best PSO implementation
+:mod:`pyswarms.single.general_optimizer`: a more general PSO implementation with a custom topology
 """
 
 import os
@@ -39,10 +40,10 @@ from collections import namedtuple
 # Import from package
 from ..backend import create_swarm
 
-class SwarmOptimizer(object):
 
+class SwarmOptimizer(object):
     def assertions(self):
-        """Assertion method to check various inputs.
+        """Check inputs and throw assertions
 
         Raises
         ------
@@ -60,43 +61,58 @@ class SwarmOptimizer(object):
         # Check setting of bounds
         if self.bounds is not None:
             if not isinstance(self.bounds, tuple):
-                raise TypeError('Parameter `bound` must be a tuple.')
+                raise TypeError("Parameter `bound` must be a tuple.")
             if not len(self.bounds) == 2:
-                raise IndexError('Parameter `bound` must be of size 2.')
+                raise IndexError("Parameter `bound` must be of size 2.")
             if not self.bounds[0].shape == self.bounds[1].shape:
-                raise IndexError('Arrays in `bound` must be of equal shapes')
-            if not self.bounds[0].shape[0] == self.bounds[1].shape[0] == \
-                    self.dimensions:
-                raise IndexError('Parameter `bound` must be the same shape '
-                                 'as dimensions.')
+                raise IndexError("Arrays in `bound` must be of equal shapes")
+            if (
+                not self.bounds[0].shape[0]
+                == self.bounds[1].shape[0]
+                == self.dimensions
+            ):
+                raise IndexError(
+                    "Parameter `bound` must be the same shape "
+                    "as dimensions."
+                )
             if not (self.bounds[1] > self.bounds[0]).all():
-                raise ValueError('Values of `bounds[1]` must be greater than '
-                                 '`bounds[0]`.')
+                raise ValueError(
+                    "Values of `bounds[1]` must be greater than "
+                    "`bounds[0]`."
+                )
 
         # Check clamp settings
-        if hasattr(self.velocity_clamp, '__iter__'):
+        if hasattr(self.velocity_clamp, "__iter__"):
             if not len(self.velocity_clamp) == 2:
-                raise IndexError('Parameter `velocity_clamp` must be of '
-                                    'size 2')
+                raise IndexError(
+                    "Parameter `velocity_clamp` must be of " "size 2"
+                )
             if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-                raise ValueError('Make sure that velocity_clamp is in the '
-                                    'form (min, max)')
+                raise ValueError(
+                    "Make sure that velocity_clamp is in the "
+                    "form (min, max)"
+                )
 
         # Check setting of center
         if isinstance(self.center, (list, np.ndarray)):
             if not len(self.center) == self.dimensions:
-                raise IndexError('Parameter `center` must be the same shape '
-                                 'as dimensions.')
+                raise IndexError(
+                    "Parameter `center` must be the same shape "
+                    "as dimensions."
+                )
             if isinstance(self.center, np.ndarray) and self.center.ndim != 1:
-                raise ValueError('Parameter `center` must have a 1d array')
-
+                raise ValueError("Parameter `center` must have a 1d array")
 
         # Required keys in options argument
-        if not all(key in self.options for key in ('c1', 'c2', 'w')):
-            raise KeyError('Missing either c1, c2, or w in options')
+        if not all(key in self.options for key in ("c1", "c2", "w")):
+            raise KeyError("Missing either c1, c2, or w in options")
 
-    def setup_logging(self, default_path='./config/logging.yaml',
-                      default_level=logging.INFO, env_key='LOG_CFG'):
+    def setup_logging(
+        self,
+        default_path="./config/logging.yaml",
+        default_level=logging.INFO,
+        env_key="LOG_CFG",
+    ):
         """Setup logging configuration
 
         Parameters
@@ -113,15 +129,24 @@ class SwarmOptimizer(object):
         if value:
             path = value
         if os.path.exists(path):
-            with open(path, 'rt') as f:
+            with open(path, "rt") as f:
                 config = yaml.safe_load(f.read())
             logging.config.dictConfig(config)
         else:
             logging.basicConfig(level=default_level)
 
-    def __init__(self, n_particles, dimensions, options, bounds=None,
-                 velocity_clamp=None, center=1.0, ftol=-np.inf, init_pos=None):
-        """Initializes the swarm.
+    def __init__(
+        self,
+        n_particles,
+        dimensions,
+        options,
+        bounds=None,
+        velocity_clamp=None,
+        center=1.0,
+        ftol=-np.inf,
+        init_pos=None,
+    ):
+        """Initialize the swarm
 
         Creates a Swarm class depending on the values initialized
 
@@ -165,17 +190,23 @@ class SwarmOptimizer(object):
         self.ftol = ftol
         self.init_pos = init_pos
         # Initialize named tuple for populating the history list
-        self.ToHistory = namedtuple('ToHistory',
-                                    ['best_cost', 'mean_pbest_cost',
-                                     'mean_neighbor_cost', 'position',
-                                     'velocity'])
+        self.ToHistory = namedtuple(
+            "ToHistory",
+            [
+                "best_cost",
+                "mean_pbest_cost",
+                "mean_neighbor_cost",
+                "position",
+                "velocity",
+            ],
+        )
         # Invoke assertions
         self.assertions()
         # Initialize resettable attributes
         self.reset()
 
     def _populate_history(self, hist):
-        """Populates all history lists
+        """Populate all history lists
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
         :code:`neighborhood_best` is expected to have a shape of
@@ -194,33 +225,8 @@ class SwarmOptimizer(object):
         self.pos_history.append(hist.position)
         self.velocity_history.append(hist.velocity)
 
-    @property
-    def get_cost_history(self):
-        """Get cost history"""
-        return np.array(self.cost_history)
-
-    @property
-    def get_mean_pbest_history(self):
-        """Get mean personal best history"""
-        return np.array(self.mean_pbest_history)
-
-    @property
-    def get_mean_neighbor_history(self):
-        """Get mean neighborhood cost history"""
-        return np.array(self.mean_neighbor_history)
-
-    @property
-    def get_pos_history(self):
-        """Get position history"""
-        return np.array(self.pos_history)
-
-    @property
-    def get_velocity_history(self):
-        """Get velocity history"""
-        return np.array(self.velocity_history)
-
-    def optimize(self, objective_func, iters, print_step=1, verbose=1):
-        """Optimizes the swarm for a number of iterations.
+    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
+        """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
         function :code:`objective_func` for a number of iterations
@@ -236,6 +242,8 @@ class SwarmOptimizer(object):
             amount of steps for printing into console.
         verbose : int (the default is 1)
             verbosity setting.
+        kwargs : dict
+            arguments for objective function
 
         Raises
         ------
@@ -245,7 +253,7 @@ class SwarmOptimizer(object):
         raise NotImplementedError("SwarmOptimizer::optimize()")
 
     def reset(self):
-        """Resets the attributes of the optimizer.
+        """Reset the attributes of the optimizer
 
         All variables/atributes that will be re-initialized when this
         method is defined here. Note that this method
@@ -275,7 +283,12 @@ class SwarmOptimizer(object):
         self.velocity_history = []
 
         # Initialize the swarm
-        self.swarm = create_swarm(n_particles=self.n_particles,
-                                  dimensions=self.dimensions,
-                                  bounds=self.bounds, center=self.center, init_pos=self.init_pos,
-                                  clamp=self.velocity_clamp, options=self.options)
+        self.swarm = create_swarm(
+            n_particles=self.n_particles,
+            dimensions=self.dimensions,
+            bounds=self.bounds,
+            center=self.center,
+            init_pos=self.init_pos,
+            clamp=self.velocity_clamp,
+            options=self.options,
+        )
