@@ -16,29 +16,13 @@ and Windows users, it can be installed via:
 
     $ conda install -c conda-forge ffmpeg
 
-.. code:: ipython3
-
-    import sys
-    # Change directory to access the pyswarms module
-    sys.path.append('../')
-
-.. code:: ipython3
-
-    print('Running on Python version: {}'.format(sys.version))
-
-
-.. code:: shell
-
-    Running on Python version: 3.6.3 |Anaconda custom (64-bit)| (default, Oct 13 2017, 12:02:49) [GCC 7.2.0]
-
-
 In this example, we will demonstrate three plotting methods available on
 PySwarms: - ``plot_cost_history``: for plotting the cost history of a
 swarm given a matrix - ``plot_contour``: for plotting swarm trajectories
 of a 2D-swarm in two-dimensional space - ``plot_surface``: for plotting
 swarm trajectories of a 2D-swarm in three-dimensional space
 
-.. code:: ipython3
+.. code-block:: python
 
     # Import modules
     import matplotlib.pyplot as plt
@@ -62,14 +46,14 @@ simply create an instance of its class ``pyswarms.single.GlobalBestPSO``
 by passing the required parameters that we will use. Then, we'll call
 the ``optimize()`` method for 100 iterations.
 
-.. code:: ipython3
+.. code-block:: python
 
     options = {'c1':0.5, 'c2':0.3, 'w':0.9}
     optimizer = ps.single.GlobalBestPSO(n_particles=50, dimensions=2, options=options)
     cost, pos = optimizer.optimize(fx.sphere_func, iters=100)
 
 
-.. parsed-literal::
+.. code-block::
 
     INFO:pyswarms.single.global_best:================================
     Optimization finished!
@@ -86,12 +70,12 @@ To plot the cost history, we simply obtain the ``cost_history`` from the
 Furthermore, this method also accepts a keyword argument ``**kwargs``
 similar to ``matplotlib``. This enables us to further customize various
 artists and elements in the plot. In addition, we can obtain the
-following histories from the same class: - mean\_neighbor\_history:
-average local best history of all neighbors throughout optimization -
-mean\_pbest\_history: average personal best of the particles throughout
-optimization
+following histories from the same class:
 
-.. code:: ipython3
+    * mean\_neighbor\_history: average local best history of all neighbors throughout optimization 
+    * mean\_pbest\_history: average personal best of the particles throughout optimization
+
+.. code-block:: python
 
     plot_cost_history(cost_history=optimizer.cost_history)
     plt.show()
@@ -112,7 +96,7 @@ necessitating the installation of a writer module). For the proceeding
 examples, we will convert the animations into an HTML5 video. In such
 case, we need to invoke some extra methods to do just that.
 
-.. code:: ipython3
+.. code-block:: python
 
     # equivalent to rcParams['animation.html'] = 'html5'
     # See http://louistiao.me/posts/notebooks/save-matplotlib-animations-as-gifs/
@@ -123,11 +107,9 @@ function. This enables us to visually recognize where the particles are
 with respect to our objective function. We can accomplish that using the
 ``Mesher`` class.
 
-.. code:: ipython3
+.. code-block:: python
 
     from pyswarms.utils.plotters.formatters import Mesher
-
-.. code:: ipython3
 
     # Initialize mesher with sphere function
     m = Mesher(func=fx.sphere_func)
@@ -147,7 +129,7 @@ pass this together with the ``Mesher`` to the ``plot_contour()``
 function. In addition, we can also mark the global minima of the sphere
 function, ``(0,0)``, to visualize the swarm's "target".
 
-.. code:: ipython3
+.. code-block:: python
 
     # Make animation
     animation = plot_contour(pos_history=optimizer.pos_history,
@@ -169,19 +151,15 @@ position of the particles, while the third column is the fitness of that
 given position. You need to set this up on your own, but we have
 provided a helper function to compute this automatically
 
-.. code:: ipython3
+.. code-block:: python
 
     # Obtain a position-fitness matrix using the Mesher.compute_history_3d()
     # method. It requires a cost history obtainable from the optimizer class
     pos_history_3d = m.compute_history_3d(optimizer.pos_history)
 
-.. code:: ipython3
-
     # Make a designer and set the x,y,z limits to (-1,1), (-1,1) and (-0.1,1) respectively
     from pyswarms.utils.plotters.formatters import Designer
     d = Designer(limits=[(-1,1), (-1,1), (-0.1,1)], label=['x-axis', 'y-axis', 'z-axis'])
-
-.. code:: ipython3
 
     # Make animation
     animation3d = plot_surface(pos_history=pos_history_3d, # Use the cost_history we computed
