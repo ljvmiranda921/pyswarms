@@ -85,6 +85,7 @@ Launching pad
    :maxdepth: 2
    :caption: Examples
 
+   Tutorials <examples/tutorials>
    Use-cases <examples/usecases>
 
 .. toctree::
