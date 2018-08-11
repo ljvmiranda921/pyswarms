@@ -23,24 +23,7 @@ class. 2. Operate on it according to our custom algorithm with the help
 of the ``Topology`` class; and 3. Update the ``Swarm`` class with the
 new attributes.
 
-.. code:: ipython3
-
-    import sys
-    # Change directory to access the pyswarms module
-    sys.path.append('../')
-
-.. code:: ipython3
-
-    print('Running on Python version: {}'.format(sys.version))
-
-
-.. parsed-literal::
-
-    Running on Python version: 3.6.3 |Anaconda custom (64-bit)| (default, Oct 13 2017, 12:02:49) 
-    [GCC 7.2.0]
-
-
-.. code:: ipython3
+.. code-block:: python
 
     # Import modules
     import numpy as np
@@ -64,7 +47,7 @@ Now, the global best PSO pseudocode looks like the following (adapted
 from `A. Engelbrecht, "Computational Intelligence: An Introduction,
 2002 <https://www.wiley.com/en-us/Computational+Intelligence%3A+An+Introduction%2C+2nd+Edition-p-9780470035610>`__):
 
-.. code:: python
+.. code-block:: python
 
     # Python-version of gbest algorithm from Engelbrecht's book
     for i in range(iterations):
@@ -90,7 +73,7 @@ Let's make a 2-dimensional swarm with 50 particles that will optimize
 the sphere function. First, let's initialize the important attributes in
 our algorithm
 
-.. code:: ipython3
+.. code-block:: python
 
     my_topology = Star() # The Topology Class
     my_options = {'c1': 0.6, 'c2': 0.3, 'w': 0.4} # arbitrarily set
@@ -99,14 +82,14 @@ our algorithm
     print('The following are the attributes of our swarm: {}'.format(my_swarm.__dict__.keys()))
 
 
-.. parsed-literal::
+.. code::
 
     The following are the attributes of our swarm: dict_keys(['position', 'velocity', 'n_particles', 'dimensions', 'options', 'pbest_pos', 'best_pos', 'pbest_cost', 'best_cost', 'current_cost'])
 
 
 Now, let's write our optimization loop!
 
-.. code:: ipython3
+.. code-block:: python
 
     iterations = 100 # Set 100 iterations
     for i in range(iterations):
@@ -133,7 +116,7 @@ Now, let's write our optimization loop!
     print('The best position found by our swarm is: {}'.format(my_swarm.best_pos))
 
 
-.. parsed-literal::
+.. code::
 
     Iteration: 1 | my_swarm.best_cost: 0.0180
     Iteration: 21 | my_swarm.best_cost: 0.0023
@@ -147,7 +130,7 @@ Now, let's write our optimization loop!
 Of course, we can just use the ``GlobalBestPSO`` implementation in
 PySwarms (it has boundary support, tolerance, initial positions, etc.):
 
-.. code:: ipython3
+.. code-block:: python
 
     from pyswarms.single import GlobalBestPSO
     
@@ -155,7 +138,7 @@ PySwarms (it has boundary support, tolerance, initial positions, etc.):
     optimizer.optimize(f, iters=100, print_step=20, verbose=2)
 
 
-.. parsed-literal::
+.. code::
 
     INFO:pyswarms.single.global_best:Iteration 1/100, cost: 0.025649680624878678
     INFO:pyswarms.single.global_best:Iteration 21/100, cost: 0.00011046719760866999
@@ -167,12 +150,3 @@ PySwarms (it has boundary support, tolerance, initial positions, etc.):
     Final cost: 0.0001
     Best value: [0.007417861777661566, 0.004421058167808941]
     
-
-
-
-
-.. parsed-literal::
-
-    (7.457042867564255e-05, array([0.00741786, 0.00442106]))
-
-
