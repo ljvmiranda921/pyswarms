@@ -194,6 +194,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         self.pos_history.append(hist.position)
         self.velocity_history.append(hist.velocity)
 
+    @abc.abstractmethod
     def optimize(
         self, objective_func, iters, print_step=1, verbose=1, **kwargs
     ):
