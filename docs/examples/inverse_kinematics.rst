@@ -6,23 +6,7 @@ In this example, we are going to use the ``pyswarms`` library to solve a
 it as an optimization problem. We will use the ``pyswarms`` library to
 find an *optimal* solution from a set of candidate solutions.
 
-.. code:: python
-
-    import sys
-    # Change directory to access the pyswarms module
-    sys.path.append('../')
-
-.. code:: python
-
-    print('Running on Python version: {}'.format(sys.version))
-
-
-.. parsed-literal::
-
-    Running on Python version: 3.6.0 (v3.6.0:41df79263a11, Dec 23 2016, 07:18:10) [MSC v.1900 32 bit (Intel)]
-
-
-.. code:: python
+.. code-block:: python
 
     # Import modules
     import numpy as np
@@ -35,26 +19,8 @@ find an *optimal* solution from a set of candidate solutions.
     %load_ext autoreload
     %autoreload 2
 
-.. code:: python
-
-    %%html
-    <style>
-      table {margin-left: 0 !important;}
-    </style>
-    # Styling for the text below
-
-
-
-.. raw:: html
-
-    <style>
-      table {margin-left: 0 !important;}
-    </style>
-    # Styling for the text below
-
-
 Introduction
-============
+------------
 
 Inverse Kinematics is one of the most challenging problems in robotics.
 The problem involves finding an optimal *pose* for a manipulator given
@@ -77,7 +43,7 @@ trying to solve the problem for 6 or even more DOF can lead to
 challenging algebraic problems.
 
 IK as an Optimization Problem
-=============================
+-----------------------------
 
 In this implementation, we are going to use a *6-DOF Stanford
 Manipulator* with 5 revolute joints and 1 prismatic joint. Furthermore,
@@ -117,7 +83,7 @@ And for our end-tip position we define the target vector
 We can then start implementing our optimization algorithm.
 
 Initializing the Swarm
-======================
+~~~~~~~~~~~~~~~~~~~~~~
 
 The main idea for PSO is that we set a swarm :math:`\mathbf{S}` composed
 of particles :math:`\mathbf{P}_n` into a search space in order to find
@@ -147,7 +113,7 @@ generate the :math:`N-1` particles using a uniform distribution which is
 controlled by the hyperparameter :math:`\epsilon`.
 
 Finding the global optimum
-==========================
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to find the global optimum, the swarm must be moved. This
 movement is then translated by an update of the current position given
@@ -174,7 +140,7 @@ point :math:`[-2,2,3]` as our target for which we want to find an
 optimal pose of the manipulator. We start by defining a function to get
 the distance from the current position to the target position:
 
-.. code:: python
+.. code-block:: python
 
     def distance(query, target):
         x_dist = (target[0] - query[0])**2
@@ -194,7 +160,7 @@ values and a list of the respective maximal values. The rest can be
 handled with variables. Additionally, we define the joint lengths to be
 3 units long:
 
-.. code:: python
+.. code-block:: python
 
     swarm_size = 20
     dim = 6        # Dimension of X
@@ -214,7 +180,7 @@ for that. So we define a function that calculates these. The function
 uses the rotation angle and the extension :math:`d` of a prismatic joint
 as input:
 
-.. code:: python
+.. code-block:: python
 
     def getTransformMatrix(theta, d, a, alpha):
         T = np.array([[np.cos(theta) , -np.sin(theta)*np.cos(alpha) ,  np.sin(theta)*np.sin(alpha) , a*np.cos(theta)],
@@ -228,7 +194,7 @@ Now we can calculate the transformation matrix to obtain the end tip
 position. For this we create another function that takes our vector
 :math:`\mathbf{X}` with the joint variables as input:
 
-.. code:: python
+.. code-block:: python
 
     def get_end_tip_position(params):
         # Create the transformation matrices for the respective joints
@@ -252,7 +218,7 @@ actual function that we want to optimize. We just need to calculate the
 distance between the position of each swarm particle and the target
 point:
 
-.. code:: python
+.. code-block:: python
 
     def opt_func(X):
         n_particles = X.shape[0]  # number of particles
@@ -265,7 +231,7 @@ Running the algorithm
 
 Braced with these preparations we can finally start using the algorithm:
 
-.. code:: python
+.. code-block:: python
 
     %%time
     # Call an instance of PSO
@@ -295,13 +261,6 @@ Braced with these preparations we can finally start using the algorithm:
     Final cost: 0.0000
     Best value: [ -2.182725 1.323111 1.579636 ...]
 
-
-
-.. parsed-literal::
-
-    Wall time: 13.6 s
-
-
 Now let’s see if the algorithm really worked and test the output for
 ``joint_vars``:
 
@@ -313,7 +272,6 @@ Now let’s see if the algorithm really worked and test the output for
 .. parsed-literal::
 
     [-2.  2.  3.]
-
 
 Hooray! That’s exactly the position we wanted the tip to be in. Of
 course this example is quite primitive. Some extensions of this idea
