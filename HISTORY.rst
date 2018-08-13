@@ -134,3 +134,16 @@ Thanks for all the wonderful Pull Requests, `@mamadyonline <https://github.com/m
 .. _#168: https://github.com/ljvmiranda921/pyswarms/pull/168
 .. _#176: https://github.com/ljvmiranda921/pyswarms/pull/176
 .. _#177: https://github.com/ljvmiranda921/pyswarms/pull/177
+
+0.3.1 (2018-08-13)
+~~~~~~~~~~~~~~~~~~
+
+* New collaboration tool using Vagrantfiles - `#193`_. Thanks a lot `@jdbohrman <https://github.com/jdbohrman>`_!
+* Add configuration file for pyup.io - `#210`_
+* Fix incomplete documentation in ReadTheDocs - `#208`_
+* Update dependencies via pyup - `#204`_
+
+.. _#193: https://github.com/ljvmiranda921/pyswarms/pull/193
+.. _#204: https://github.com/ljvmiranda921/pyswarms/pull/204
+.. _#208: https://github.com/ljvmiranda921/pyswarms/pull/208
+.. _#210: https://github.com/ljvmiranda921/pyswarms/pull/210
