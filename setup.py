@@ -38,7 +38,7 @@ test_requirements = [
 
 setup(
     name="pyswarms",
-    version="0.3.0",
+    version="0.3.1",
     description="A Python-based Particle Swarm Optimization (PSO) library.",
     long_description=readme,
     long_description_content_type="text/markdown",
