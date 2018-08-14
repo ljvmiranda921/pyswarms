@@ -7,7 +7,7 @@ import numpy as np
 
 # Import from package
 from pyswarms.single import GlobalBestPSO, LocalBestPSO
-from pyswarms.utils.functions.single_obj import rosenbrock_func
+from pyswarms.utils.functions.single_obj import rosenbrock
 
 
 def rosenbrock_with_args(x, a, b):
@@ -62,7 +62,7 @@ def test_global_kwargs_without_named_arguments(func):
 
 
 @pytest.mark.parametrize('func', [
-    rosenbrock_func
+    rosenbrock
 ])
 def test_global_no_kwargs(func):
     """Tests if args are passed properly to the objective function for when no args are present"""
@@ -106,7 +106,7 @@ def test_local_kwargs(func):
 
 
 @pytest.mark.parametrize('func', [
-    rosenbrock_func
+    rosenbrock
 ])
 def test_local_no_kwargs(func):
     """Tests if no kwargs/args are passed properly to the objective function for when kwargs are present"""
@@ -128,7 +128,7 @@ def test_local_no_kwargs(func):
 
 
 @pytest.mark.parametrize('func', [
-    rosenbrock_func
+    rosenbrock
 ])
 def test_global_uneeded_kwargs(func):
     """Tests kwargs are passed the objective function for when kwargs do not exist"""
@@ -168,7 +168,7 @@ def test_global_missed_kwargs(func):
 
 
 @pytest.mark.parametrize('func', [
-    rosenbrock_func
+    rosenbrock
 ])
 def test_local_uneeded_kwargs(func):
     """Tests kwargs are passed the objective function for when kwargs do not exist"""

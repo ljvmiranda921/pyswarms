@@ -119,7 +119,7 @@ class Mesher(object):
         from pyswarms.utils.functions import single_obj as fx
 
         # Use sphere function
-        my_mesher = Mesher(func=fx.sphere_func)
+        my_mesher = Mesher(func=fx.sphere)
 
         # Assuming we already had an optimizer ready
         plot_surface(pos_history, mesher=my_mesher)
