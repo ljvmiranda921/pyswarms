@@ -71,7 +71,7 @@ several variables at once.
     optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options)
     
     # Perform optimization
-    cost, pos = optimizer.optimize(fx.sphere_func, print_step=100, iters=1000, verbose=3)
+    cost, pos = optimizer.optimize(fx.sphere, print_step=100, iters=1000, verbose=3)
 
 
 .. parsed-literal::
@@ -116,7 +116,7 @@ Now, let’s try this one using local-best PSO:
     optimizer = ps.single.LocalBestPSO(n_particles=10, dimensions=2, options=options)
     
     # Perform optimization
-    cost, pos = optimizer.optimize(fx.sphere_func, print_step=100, iters=1000, verbose=3)
+    cost, pos = optimizer.optimize(fx.sphere, print_step=100, iters=1000, verbose=3)
 
 
 .. parsed-literal::
@@ -151,7 +151,7 @@ Another thing that we can do is to set some bounds into our solution, so
 as to contain our candidate solutions within a specific range. We can do
 this simply by passing a ``bounds`` parameter, of type ``tuple``, when
 creating an instance of our swarm. Let’s try this using the global-best
-PSO with the Rastrigin function (``rastrigin_func`` in
+PSO with the Rastrigin function (``rastrigin`` in
 ``pyswarms.utils.functions.single_obj``).
 
 Recall that the Rastrigin function is bounded within ``[-5.12, 5.12]``.
@@ -191,7 +191,7 @@ constant.
     optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options, bounds=bounds)
     
     # Perform optimization
-    cost, pos = optimizer.optimize(fx.rastrigin_func, print_step=100, iters=1000, verbose=3)
+    cost, pos = optimizer.optimize(fx.rastrigin, print_step=100, iters=1000, verbose=3)
 
 
 .. parsed-literal::

@@ -18,7 +18,7 @@ yield the minimum score, yet maximum score can also be evaluated.
                'k' : [5, 10, 15],
                'p' : 1}
 >>> g = GridSearch(LocalBestPSO, n_particles=40, dimensions=20,
-                   options=options, objective_func=sphere_func, iters=10)
+                   options=options, objective_func=sphere, iters=10)
 >>> best_score, best_options = g.search()
 >>> best_score
 0.498641604188

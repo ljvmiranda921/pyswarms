@@ -101,7 +101,7 @@ import pyswarms as ps
 
 Suppose we want to find the minima of `f(x) = x^2` using global best
 PSO, simply import the built-in sphere function,
-`pyswarms.utils.functions.sphere_func()`, and the necessary optimizer:
+`pyswarms.utils.functions.sphere()`, and the necessary optimizer:
 
 ```python
 import pyswarms as ps
@@ -111,7 +111,7 @@ options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
 # Call instance of PSO
 optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options)
 # Perform optimization
-best_cost, best_pos = optimizer.optimize(fx.sphere_func, iters=100, verbose=3, print_step=25)
+best_cost, best_pos = optimizer.optimize(fx.sphere, iters=100, verbose=3, print_step=25)
 ```
 ```s
 >>> 2017-10-03 10:12:33,859 - pyswarms.single.global_best - INFO - Iteration 1/100, cost: 0.131244226714
@@ -170,7 +170,7 @@ options = {
 # n_selection_iters is the number of iterations to run the searcher
 # iters is the number of iterations to run the optimizer
 g = RandomSearch(ps.single.LocalBestPSO, n_particles=40,
-            dimensions=20, options=options, objective_func=fx.sphere_func,
+            dimensions=20, options=options, objective_func=fx.sphere,
             iters=10, n_selection_iters=100)
 
 best_score, best_options = g.search()
@@ -202,7 +202,7 @@ from pyswarms.utils.plotters import plot_cost_history
 # Set-up optimizer
 options = {'c1':0.5, 'c2':0.3, 'w':0.9}
 optimizer = ps.single.GlobalBestPSO(n_particles=50, dimensions=2, options=options)
-optimizer.optimize(fx.sphere_func, iters=100)
+optimizer.optimize(fx.sphere, iters=100)
 # Plot the cost
 plot_cost_history(optimizer.cost_history)
 plt.show()
@@ -216,7 +216,7 @@ We can also plot the animation...
 from pyswarms.utils.plotters.formatters import Mesher
 from pyswarms.utils.plotters.formatters import Designer
 # Plot the sphere function's mesh for better plots
-m = Mesher(func=fx.sphere_func)
+m = Mesher(func=fx.sphere)
 # Adjust figure limits
 d = Designer(limits=[(-1,1), (-1,1), (-0.1,1)],
              label=['x-axis', 'y-axis', 'z-axis'])

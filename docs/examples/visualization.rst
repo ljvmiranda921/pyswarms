@@ -50,7 +50,7 @@ the ``optimize()`` method for 100 iterations.
 
     options = {'c1':0.5, 'c2':0.3, 'w':0.9}
     optimizer = ps.single.GlobalBestPSO(n_particles=50, dimensions=2, options=options)
-    cost, pos = optimizer.optimize(fx.sphere_func, iters=100)
+    cost, pos = optimizer.optimize(fx.sphere, iters=100)
 
 
 .. code-block::
@@ -112,7 +112,7 @@ with respect to our objective function. We can accomplish that using the
     from pyswarms.utils.plotters.formatters import Mesher
 
     # Initialize mesher with sphere function
-    m = Mesher(func=fx.sphere_func)
+    m = Mesher(func=fx.sphere)
 
 There are different formatters available in the
 ``pyswarms.utils.plotters.formatters`` module to customize your plots
