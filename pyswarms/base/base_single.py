@@ -31,6 +31,7 @@ See Also
 """
 
 import os
+import abc
 import yaml
 import logging
 import numpy as np
@@ -41,7 +42,7 @@ from collections import namedtuple
 from ..backend import create_swarm
 
 
-class SwarmOptimizer(object):
+class SwarmOptimizer(abc.ABC):
     def assertions(self):
         """Check inputs and throw assertions
 
@@ -225,7 +226,10 @@ class SwarmOptimizer(object):
         self.pos_history.append(hist.position)
         self.velocity_history.append(hist.velocity)
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
+    @abc.abstractmethod
+    def optimize(
+        self, objective_func, iters, print_step=1, verbose=1, **kwargs
+    ):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
