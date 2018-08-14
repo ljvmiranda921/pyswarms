@@ -14,7 +14,7 @@ from matplotlib.animation import FuncAnimation
 
 # Import from package
 from pyswarms.utils.environments import PlotEnvironment
-from pyswarms.utils.functions.single_obj import sphere_func
+from pyswarms.utils.functions.single_obj import sphere
 
 class_methods = [
     "cost_history",
@@ -31,7 +31,7 @@ def test_getters_pso(mock_pso, attributes):
     idx, _ = attributes
     with pytest.raises(AttributeError):
         m = mock_pso(idx)
-        PlotEnvironment(m, sphere_func, 100)
+        PlotEnvironment(m, sphere, 100)
 
 
 @pytest.mark.xfail

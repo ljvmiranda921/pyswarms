@@ -15,7 +15,7 @@ if os.environ.get("DISPLAY", "") == "":
 # Import from package
 from pyswarms.single import GlobalBestPSO
 from pyswarms.utils.environments import PlotEnvironment
-from pyswarms.utils.functions.single_obj import sphere_func
+from pyswarms.utils.functions.single_obj import sphere
 
 
 @pytest.fixture
@@ -42,4 +42,4 @@ def mock_pso():
 def plot_environment():
     """Returns a PlotEnvironment instance"""
     optimizer = GlobalBestPSO(10, 3, options={"c1": 0.5, "c2": 0.3, "w": 0.9})
-    return PlotEnvironment(optimizer, sphere_func, 1000)
+    return PlotEnvironment(optimizer, sphere, 1000)

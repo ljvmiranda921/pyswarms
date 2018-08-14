@@ -20,7 +20,7 @@ the minimum score, yet maximum score can also be evaluated.
                'k' : [11, 15],
                'p' : 1}
 >>> g = RandomSearch(LocalBestPSO, n_particles=40, dimensions=20,
-                   options=options, objective_func=sphere_func, iters=10)
+                   options=options, objective_func=sphere, iters=10)
 >>> best_score, best_options = g.search()
 >>> best_score
 1.41978545901

@@ -21,7 +21,7 @@ various plotting methods can now be done:
 .. code-block:: python
 
     import pyswarms as ps
-    from pyswarms.utils.functions.single_obj import sphere_func
+    from pyswarms.utils.functions.single_obj import sphere
     from pyswarms.utils.environments import PlotEnvironment
 
     # Set up optimizer
@@ -31,7 +31,7 @@ various plotting methods can now be done:
 
     # Pass optimizer  inside the environment. You also need to pass some
     # of the required arguments on how your optimizer will be evaluated.
-    plt_env = PlotEnvironment(optimizer, sphere_func, 1000)
+    plt_env = PlotEnvironment(optimizer, sphere, 1000)
 
     # To plot the cost
     plt_env.plot_cost()

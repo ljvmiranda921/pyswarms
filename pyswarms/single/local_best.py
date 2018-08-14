@@ -49,7 +49,7 @@ An example usage is as follows:
                                        options=options)
 
     # Perform optimization
-    stats = optimizer.optimize(fx.sphere_func, iters=100)
+    stats = optimizer.optimize(fx.sphere, iters=100)
 
 This algorithm was adapted from one of the earlier works of
 J. Kennedy and R.C. Eberhart in Particle Swarm Optimization

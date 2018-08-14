@@ -11,7 +11,7 @@ import numpy as np
 from pyswarms.utils.search.grid_search import GridSearch
 from pyswarms.utils.search.random_search import RandomSearch
 from pyswarms.single import LocalBestPSO
-from pyswarms.utils.functions.single_obj import sphere_func
+from pyswarms.utils.functions.single_obj import sphere
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def grid():
         n_particles=40,
         dimensions=20,
         options=options,
-        objective_func=sphere_func,
+        objective=sphere,
         iters=10,
         bounds=None,
     )
@@ -44,7 +44,7 @@ def grid_mini():
         n_particles=40,
         dimensions=20,
         options=options,
-        objective_func=sphere_func,
+        objective=sphere,
         iters=10,
         bounds=None,
     )
@@ -65,7 +65,7 @@ def random_unbounded():
         n_particles=40,
         dimensions=20,
         options=options,
-        objective_func=sphere_func,
+        objective=sphere,
         iters=10,
         n_selection_iters=100,
         bounds=None,
@@ -88,7 +88,7 @@ def random_bounded():
         n_particles=40,
         dimensions=20,
         options=options,
-        objective_func=sphere_func,
+        objective=sphere,
         iters=10,
         n_selection_iters=100,
         bounds=bounds,

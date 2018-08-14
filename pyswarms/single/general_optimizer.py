@@ -46,7 +46,7 @@ An example usage is as follows:
                                         options=options, topology=my_topology)
 
     # Perform optimization
-    stats = optimizer.optimize(fx.sphere_func, iters=100)
+    stats = optimizer.optimize(fx.sphere, iters=100)
 
 This algorithm was adapted from the earlier works of J. Kennedy and
 R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
