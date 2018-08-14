@@ -16,7 +16,7 @@ cost history from the optimizer instance, and pass it to the
 .. code-block:: python
 
     import pyswarms as ps
-    from pyswarms.utils.functions.single_obj import sphere_func
+    from pyswarms.utils.functions.single_obj import sphere
     from pyswarms.utils.plotters import plot_cost_history
 
     # Set up optimizer
@@ -46,7 +46,7 @@ the position history of your swarm (obtainable from swarm instance):
 .. code-block:: python
 
     import pyswarms as ps
-    from pyswarms.utils.functions.single_obj import sphere_func
+    from pyswarms.utils.functions.single_obj import sphere
     from pyswarms.utils.plotters import plot_cost_history
 
     # Set up optimizer
@@ -267,7 +267,7 @@ def plot_surface(
     .. code-block:: python
 
         import pyswarms as ps
-        from pyswarms.utils.functions.single_obj import sphere_func
+        from pyswarms.utils.functions.single_obj import sphere
         from pyswarms.utils.plotters import plot_surface
         from pyswarms.utils.plotters.formatters import Mesher
 
@@ -276,7 +276,7 @@ def plot_surface(
         optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options)
 
         # Prepare position history
-        m = Mesher(func=sphere_func)
+        m = Mesher(func=sphere)
         pos_history_3d = m.compute_history_3d(optimizer.pos_history)
 
         # Plot!

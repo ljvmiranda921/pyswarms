@@ -29,7 +29,7 @@ new attributes.
     import numpy as np
     
     # Import sphere function as objective function
-    from pyswarms.utils.functions.single_obj import sphere_func as f
+    from pyswarms.utils.functions.single_obj import sphere as f
     
     # Import backend modules
     import pyswarms.backend as P
