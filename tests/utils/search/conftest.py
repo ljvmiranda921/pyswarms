@@ -29,7 +29,7 @@ def grid():
         n_particles=40,
         dimensions=20,
         options=options,
-        objective=sphere,
+        objective_func=sphere,
         iters=10,
         bounds=None,
     )
