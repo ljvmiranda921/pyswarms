@@ -8,7 +8,7 @@ import numpy as np
 # Import from package
 from pyswarms.single import GeneralOptimizerPSO
 from pyswarms.backend.topology import Star, Ring, Pyramid, Random, VonNeumann
-from pyswarms.utils.functions.single_obj import sphere_func
+from pyswarms.utils.functions.single_obj import sphere
 
 
 @pytest.mark.parametrize(
@@ -217,5 +217,5 @@ def test_training_history_shape(gbest_history, history, expected_shape):
 def test_ftol_effect(options, topology):
     """Test if setting the ftol breaks the optimization process accordingly"""
     pso = GeneralOptimizerPSO(10, 2, options=options, topology=topology, ftol=1e-1)
-    pso.optimize(sphere_func, 2000, verbose=0)
+    pso.optimize(sphere, 2000, verbose=0)
     assert np.array(pso.cost_history).shape != (2000,)
