@@ -18,7 +18,7 @@ def test_update_gbest_neighborhood(swarm, k, static):
     expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
     expected_cost = 1.0002528364353296
     assert cost == pytest.approx(expected_cost)
-    assert (pos == pytest.approx(expected_pos))
+    assert pos == pytest.approx(expected_pos)
 
 
 @pytest.mark.parametrize("static", [True, False])
@@ -63,6 +63,7 @@ def test_compute_neighbors_adjacency_matrix(swarm, k, static):
     np.random.seed(1)
     topology = Random(static=static)
     adj_matrix = topology._Random__compute_neighbors(swarm, k)
+    # fmt: off
     comparison_matrix = np.array([[1, 1, 1, 0, 1, 0, 0, 0, 0, 1],
                                   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                                   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -74,6 +75,7 @@ def test_compute_neighbors_adjacency_matrix(swarm, k, static):
                                   [0, 1, 1, 1, 1, 0, 1, 1, 1, 0],
                                   [1, 1, 1, 0, 1, 1, 1, 0, 0, 1]])
     assert np.allclose(adj_matrix, comparison_matrix, atol=1e-8)
+    # fmt: on
 
 
 @pytest.mark.parametrize("static", [True, False])

@@ -149,7 +149,9 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         # Initialize the topology
         self.top = Ring(static=False)
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
+    def optimize(
+        self, objective_func, iters, print_step=1, verbose=1, **kwargs
+    ):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -174,13 +176,21 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             the local best cost and the local best position among the
             swarm.
         """
-        cli_print("Arguments Passed to Objective Function: {}".format(kwargs),
-                  verbose, 2, logger=self.logger)
+        cli_print(
+            "Arguments Passed to Objective Function: {}".format(kwargs),
+            verbose,
+            2,
+            logger=self.logger,
+        )
 
         for i in range(iters):
             # Compute cost for current position and personal best
-            self.swarm.current_cost = objective_func(self.swarm.position, **kwargs)
-            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos, **kwargs)
+            self.swarm.current_cost = objective_func(
+                self.swarm.position, **kwargs
+            )
+            self.swarm.pbest_cost = objective_func(
+                self.swarm.pbest_pos, **kwargs
+            )
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
                 self.swarm
             )
@@ -192,7 +202,9 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             # Print to console
             if i % print_step == 0:
                 cli_print(
-                    "Iteration {}/{}, cost: {}".format(i + 1, iters, np.min(self.swarm.best_cost)),
+                    "Iteration {}/{}, cost: {}".format(
+                        i + 1, iters, np.min(self.swarm.best_cost)
+                    ),
                     verbose,
                     2,
                     logger=self.logger,

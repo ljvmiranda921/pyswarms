@@ -14,6 +14,7 @@ from pyswarms.backend.swarms import Swarm
 @pytest.fixture(scope="module")
 def swarm():
     """A contrived instance of the Swarm class at a certain timestep"""
+    # fmt: off
     attrs_at_t = {
         "position": np.array([[9.95838686e-01,  5.87433429e-04,  6.49113772e-03],
                              [1.00559609e+00,   3.96477697e-02,  7.67205397e-01],
@@ -53,4 +54,5 @@ def swarm():
         "best_pos": np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05]),
         "options": {'c1': 0.5, 'c2': 0.3, 'w': 0.9},
     }
+    # fmt: on
     return Swarm(**attrs_at_t)
