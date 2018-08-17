@@ -3,6 +3,7 @@ import os
 import yaml
 import pprint
 import logging
+import logging.config
 from tqdm import trange
 
 
@@ -77,7 +78,7 @@ class Reporter(object):
         self.logger = logger or logging.getLogger(__name__)
         self.printer = printer or pprint.PrettyPrinter()
         self.log_path = log_path or (os.getcwd() + "/report.log")
-        self._bar_fmt = "{l_bar}{bar}|{n_fmt}/{total_fmt}[{postfix}]"
+        self._bar_fmt = "{l_bar}{bar}|{n_fmt}/{total_fmt}{postfix}"
         self._env_key = "LOG_CFG"
         self._default_config = {
             "version": 1,
@@ -200,8 +201,8 @@ class Reporter(object):
 
         Parameters
         ----------
-        iters : iterable
-            Iterable passed to the tqdm instance
+        iters : int
+            Maximum range passed to the tqdm instance
         desc : str
             Name of the progress bar that will be displayed
 
