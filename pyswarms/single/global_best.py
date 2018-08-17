@@ -55,17 +55,14 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
-# Import from stdlib
 import logging
 from time import sleep
 
-# Import modules
 import numpy as np
 
-# Import from package
-from ..base import SwarmOptimizer
 from ..backend.operators import compute_pbest
 from ..backend.topology import Star
+from ..base import SwarmOptimizer
 from ..utils.reporter import Reporter
 
 
