@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
 import pytest
 import numpy as np
 
-# Import from package
 from pyswarms.single import GlobalBestPSO, LocalBestPSO
 from pyswarms.utils.functions.single_obj import rosenbrock
 
@@ -31,9 +29,7 @@ def test_global_kwargs(func):
     )
 
     # run it
-    cost, pos = opt_ps.optimize(
-        func, 1000, print_step=10, verbose=3, a=1, b=100
-    )
+    cost, pos = opt_ps.optimize(func, 1000, a=1, b=100)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -56,7 +52,7 @@ def test_global_kwargs_without_named_arguments(func):
     )
 
     # run it
-    cost, pos = opt_ps.optimize(func, 1000, verbose=3, a=1, b=100)
+    cost, pos = opt_ps.optimize(func, 1000, a=1, b=100)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -78,7 +74,7 @@ def test_global_no_kwargs(func):
     )
 
     # run it
-    cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3)
+    cost, pos = opt_ps.optimize(func, 1000)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
