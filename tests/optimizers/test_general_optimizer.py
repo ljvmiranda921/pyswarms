@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
-import pytest
 import numpy as np
+import pytest
 
-# Import from package
+from pyswarms.backend.topology import Random, Ring, VonNeumann
 from pyswarms.single import GeneralOptimizerPSO
-from pyswarms.backend.topology import Star, Ring, Pyramid, Random, VonNeumann
 from pyswarms.utils.functions.single_obj import sphere
 
 
@@ -236,5 +234,5 @@ def test_ftol_effect(options, topology):
     pso = GeneralOptimizerPSO(
         10, 2, options=options, topology=topology, ftol=1e-1
     )
-    pso.optimize(sphere, 2000, verbose=0)
+    pso.optimize(sphere, 2000)
     assert np.array(pso.cost_history).shape != (2000,)
