@@ -96,9 +96,7 @@ def test_local_kwargs(func):
     )
 
     # run it
-    cost, pos = opt_ps.optimize(
-        func, 1000, print_step=10, verbose=3, a=1, b=100
-    )
+    cost, pos = opt_ps.optimize(func, 1000, a=1, b=100)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -120,7 +118,7 @@ def test_local_no_kwargs(func):
     )
 
     # run it
-    cost, pos = opt_ps.optimize(func, iters=1000, print_step=10, verbose=3)
+    cost, pos = opt_ps.optimize(func, iters=1000)
 
     assert np.isclose(cost, 0, rtol=1e-03)
     assert np.isclose(pos[0], 1.0, rtol=1e-03)
@@ -143,7 +141,7 @@ def test_global_uneeded_kwargs(func):
 
     # run it
     with pytest.raises(TypeError) as excinfo:
-        cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3, a=1)
+        cost, pos = opt_ps.optimize(func, 1000, a=1)
         assert "unexpected keyword" in str(excinfo.value)
 
 
@@ -163,7 +161,7 @@ def test_global_missed_kwargs(func):
 
     # run it
     with pytest.raises(TypeError) as excinfo:
-        cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3, a=1)
+        cost, pos = opt_ps.optimize(func, 1000, a=1)
         assert "missing 1 required positional argument" in str(excinfo.value)
 
 
@@ -183,7 +181,7 @@ def test_local_uneeded_kwargs(func):
 
     # run it
     with pytest.raises(TypeError) as excinfo:
-        cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3, a=1)
+        cost, pos = opt_ps.optimize(func, 1000, a=1)
         assert "unexpected keyword" in str(excinfo.value)
 
 
@@ -203,7 +201,7 @@ def test_local_missed_kwargs(func):
 
     # run it
     with pytest.raises(TypeError) as excinfo:
-        cost, pos = opt_ps.optimize(func, 1000, print_step=10, verbose=3, a=1)
+        cost, pos = opt_ps.optimize(func, 1000, a=1)
         assert "missing 1 required positional argument" in str(excinfo.value)
 
 
@@ -223,9 +221,7 @@ def test_local_wrong_kwargs(func):
 
     # run it
     with pytest.raises(TypeError) as excinfo:
-        cost, pos = opt_ps.optimize(
-            func, 1000, print_step=10, verbose=3, c=1, d=100
-        )
+        cost, pos = opt_ps.optimize(func, 1000, print_step=10, c=1, d=100)
         assert "unexpected keyword" in str(excinfo.value)
 
 
@@ -245,7 +241,5 @@ def test_global_wrong_kwargs(func):
 
     # run it
     with pytest.raises(TypeError) as excinfo:
-        cost, pos = opt_ps.optimize(
-            func, 1000, print_step=10, verbose=3, c=1, d=100
-        )
+        cost, pos = opt_ps.optimize(func, 1000, c=1, d=100)
         assert "unexpected keyword" in str(excinfo.value)

@@ -67,7 +67,7 @@ def lbest_reset():
     """Returns a LocalBestPSO instance that has been run and reset to check
     default value"""
     pso = LocalBestPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2, "p": 2})
-    pso.optimize(sphere, 10, verbose=0)
+    pso.optimize(sphere, 10)
     pso.reset()
     return pso
 
@@ -77,7 +77,7 @@ def binary_history():
     """Returns a BinaryPSO instance run for 1000 iterations for checking
     history"""
     pso = BinaryPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2, "p": 2})
-    pso.optimize(sphere, 1000, verbose=0)
+    pso.optimize(sphere, 1000)
     return pso
 
 
@@ -86,7 +86,7 @@ def binary_reset():
     """Returns a BinaryPSO instance that has been run and reset to check
     default value"""
     pso = BinaryPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5, "k": 2, "p": 2})
-    pso.optimize(sphere, 10, verbose=0)
+    pso.optimize(sphere, 10)
     pso.reset()
     return pso
 
