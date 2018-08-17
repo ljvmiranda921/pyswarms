@@ -181,16 +181,6 @@ class GlobalBestPSO(SwarmOptimizer):
                     self.swarm
                 )
             self.rep.hook(best_cost=self.swarm.best_cost)
-            # Print to console
-            # if i % print_step == 0:
-            #    cli_print(
-            #        "Iteration {}/{}, cost: {}".format(
-            #            i + 1, iters, self.swarm.best_cost
-            #        ),
-            #        verbose,
-            #        2,
-            #        logger=self.logger,
-            #    )
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
