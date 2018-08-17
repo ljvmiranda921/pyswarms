@@ -193,10 +193,22 @@ class Reporter(object):
 
             from pyswarms.utils import Reporter
 
-            rep = Reporter
+            rep = Reporter()
             # Create a progress bar
-            for i in rep.pbar(100, name="My progress bar")
+            for i in rep.pbar(100, name="Optimizer")
                     pass
+
+        Parameters
+        ----------
+        iters : iterable
+            Iterable passed to the tqdm instance
+        desc : str
+            Name of the progress bar that will be displayed
+
+        Returns
+        -------
+        tqdm._tqdm.tqdm
+            A tqdm iterable
         """
         self.t = trange(iters, desc=desc, bar_format=self._bar_fmt)
         return self.t
@@ -211,10 +223,10 @@ class Reporter(object):
 
             from pyswarms.utils import Reporter
 
-            rep = Reporter
+            rep = Reporter()
             # Create a progress bar
-            for i in rep.pbar(100, name="My progress bar")
-                    global_best = compute()
-                    rep.hook(global_best=global_best)
+            for i in rep.pbar(100, name="Optimizer")
+                    best_cost = compute()
+                    rep.hook(best_cost=best_cost)
         """
         self.t.set_postfix(*args, **kwargs)
