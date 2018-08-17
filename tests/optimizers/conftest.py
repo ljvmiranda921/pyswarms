@@ -18,7 +18,9 @@ from pyswarms.backend.topology import Star, Ring, Pyramid, Random, VonNeumann
 def general_opt_history(topology):
     """Returns a GeneralOptimizerPSO instance run for 1000 iterations for checking
     history"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=topology)
+    pso = GeneralOptimizerPSO(
+        10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=topology
+    )
     pso.optimize(sphere, 1000, verbose=0)
     return pso
 
@@ -27,7 +29,9 @@ def general_opt_history(topology):
 def general_opt_reset(topology):
     """Returns a GeneralOptimizerPSO instance that has been run and reset to check
     default value"""
-    pso = GeneralOptimizerPSO(10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=topology)
+    pso = GeneralOptimizerPSO(
+        10, 2, {"c1": 0.5, "c2": 0.7, "w": 0.5}, topology=topology
+    )
     pso.optimize(sphere, 10, verbose=0)
     pso.reset()
     return pso
@@ -97,6 +101,7 @@ def options():
     return options_
 
 
+# fmt: off
 @pytest.fixture(params=[
                 Star(),
                 Ring(static=False), Ring(static=True),
@@ -104,6 +109,7 @@ def options():
                 Random(static=False), Random(static=True),
                 VonNeumann()
                 ])
+# fmt: on
 def topology(request):
     """Parametrized topology parameter"""
     topology_ = request.param
