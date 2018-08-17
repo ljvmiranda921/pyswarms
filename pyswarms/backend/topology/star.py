@@ -62,7 +62,9 @@ class Star(Topology):
         """
         try:
             if self.neighbor_idx is None:
-                self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
+                self.neighbor_idx = np.tile(
+                    np.arange(swarm.n_particles), (swarm.n_particles, 1)
+                )
             best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
             best_cost = np.min(swarm.pbest_cost)
         except AttributeError:
