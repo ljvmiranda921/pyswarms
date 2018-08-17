@@ -3,6 +3,7 @@ import os
 import yaml
 import pprint
 import logging
+from tqdm import trange
 
 
 class Reporter(object):
@@ -76,6 +77,7 @@ class Reporter(object):
         self.logger = logger or logging.getLogger(__name__)
         self.printer = printer or pprint.PrettyPrinter()
         self.log_path = log_path or (os.getcwd() + "/report.log")
+        self._bar_fmt = "{l_bar}{bar}|{n_fmt}/{total_fmt}[{postfix}]"
         self._env_key = "LOG_CFG"
         self._default_config = {
             "version": 1,
@@ -171,7 +173,7 @@ class Reporter(object):
         """
         value = path or os.getenv(self._env_key, None)
         try:
-            with open(path, "rt") as f:
+            with open(value, "rt") as f:
                 config = yaml.safe_load(f.read())
             logging.config.dictConfig(config)
         except (TypeError, FileNotFoundError):
@@ -180,3 +182,39 @@ class Reporter(object):
     def _load_defaults(self):
         """Load default logging configuration"""
         logging.config.dictConfig(self._default_config)
+
+    def pbar(self, iters, desc=None):
+        """Create a tqdm iterable
+
+        You can use this method to create progress bars. It uses a set
+        of abstracted methods from tqdm:
+
+        .. code-block:: python
+
+            from pyswarms.utils import Reporter
+
+            rep = Reporter
+            # Create a progress bar
+            for i in rep.pbar(100, name="My progress bar")
+                    pass
+        """
+        self.t = trange(iters, desc=desc, bar_format=self._bar_fmt)
+        return self.t
+
+    def hook(self, *args, **kwargs):
+        """Set a hook on the progress bar
+
+        Method for creating a postfix in tqdm. In practice we use this
+        to report the best cost found during an iteration:
+
+        .. code-block:: python
+
+            from pyswarms.utils import Reporter
+
+            rep = Reporter
+            # Create a progress bar
+            for i in rep.pbar(100, name="My progress bar")
+                    global_best = compute()
+                    rep.hook(global_best=global_best)
+        """
+        self.t.set_postfix(*args, **kwargs)
