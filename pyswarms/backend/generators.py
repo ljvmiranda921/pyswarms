@@ -73,6 +73,7 @@ def generate_swarm(
         rep.logger.exception(
             "Please check the size and value of bounds and dimensions"
         )
+        raise
     except TypeError:
         rep.logger.exception("Invalid input type!")
     else:
