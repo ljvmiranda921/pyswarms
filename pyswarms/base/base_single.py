@@ -30,15 +30,11 @@ See Also
 :mod:`pyswarms.single.general_optimizer`: a more general PSO implementation with a custom topology
 """
 
-import os
 import abc
-import yaml
-import logging
-import numpy as np
-import logging.config
 from collections import namedtuple
 
-# Import from package
+import numpy as np
+
 from ..backend import create_swarm
 
 
@@ -108,34 +104,6 @@ class SwarmOptimizer(abc.ABC):
         if not all(key in self.options for key in ("c1", "c2", "w")):
             raise KeyError("Missing either c1, c2, or w in options")
 
-    def setup_logging(
-        self,
-        default_path="./config/logging.yaml",
-        default_level=logging.INFO,
-        env_key="LOG_CFG",
-    ):
-        """Setup logging configuration
-
-        Parameters
-        ----------
-        default_path : str (default is `./config/logging.yaml`)
-            the path where the logging configuration is stored
-        default_level: logging.LEVEL (default is `logging.INFO`)
-            the default logging level
-        env_key : str
-            the environment key for accessing the setup
-        """
-        path = default_path
-        value = os.getenv(env_key, None)
-        if value:
-            path = value
-        if os.path.exists(path):
-            with open(path, "rt") as f:
-                config = yaml.safe_load(f.read())
-            logging.config.dictConfig(config)
-        else:
-            logging.basicConfig(level=default_level)
-
     def __init__(
         self,
         n_particles,
@@ -179,7 +147,6 @@ class SwarmOptimizer(abc.ABC):
         ftol : float
             relative error in objective_func(best_pos) acceptable for convergence
         """
-        self.setup_logging()
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dimensions = dimensions
@@ -227,9 +194,7 @@ class SwarmOptimizer(abc.ABC):
         self.velocity_history.append(hist.velocity)
 
     @abc.abstractmethod
-    def optimize(
-        self, objective_func, iters, print_step=1, verbose=1, **kwargs
-    ):
+    def optimize(self, objective_func, iters, fast=False, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -242,10 +207,8 @@ class SwarmOptimizer(abc.ABC):
             objective function to be evaluated
         iters : int
             number of iterations
-        print_step : int (the default is 1)
-            amount of steps for printing into console.
-        verbose : int (the default is 1)
-            verbosity setting.
+        fast : bool (default is False)
+            if True, time.sleep is not executed
         kwargs : dict
             arguments for objective function
 
