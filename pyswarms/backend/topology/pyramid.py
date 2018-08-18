@@ -15,8 +15,6 @@ from .. import operators as ops
 from ...utils.reporter import Reporter
 from .base import Topology
 
-rep = Reporter(logging.getLogger(__name__))
-
 
 class Pyramid(Topology):
     def __init__(self, static=False):
@@ -29,6 +27,7 @@ class Pyramid(Topology):
             is static or dynamic
         """
         super(Pyramid, self).__init__(static)
+        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm):
         """Update the global best using a pyramid neighborhood approach
@@ -99,7 +98,7 @@ class Pyramid(Topology):
                     best_neighbor[np.argmin(swarm.pbest_cost[best_neighbor])]
                 ]
         except AttributeError:
-            rep.logger.exception(
+            self.rep.logger.exception(
                 "Please pass a Swarm class. You passed {}".format(type(swarm))
             )
         else:

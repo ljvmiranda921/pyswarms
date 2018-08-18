@@ -12,9 +12,9 @@ import logging
 
 import numpy as np
 
-from ...utils.reporter import Reporter
+from ..utils.reporter import Reporter
 
-rep = Reporter(logging.getLogger(__name__))
+rep = Reporter(logger=logging.getLogger(__name__))
 
 
 def compute_pbest(swarm):

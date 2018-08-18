@@ -9,13 +9,13 @@ This class implements a Von Neumann topology.
 import logging
 
 from .ring import Ring
-
-logger = logging.getLogger(__name__)
+from ...utils.reporter import Reporter
 
 
 class VonNeumann(Ring):
     def __init__(self):
         super(VonNeumann, self).__init__(static=True)
+        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, p, r):
         """Updates the global best using a neighborhood approach
