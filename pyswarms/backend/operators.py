@@ -8,14 +8,13 @@ the personal best, finding neighbors, etc. You can use these methods
 to specify how the swarm will behave.
 """
 
-# Import from stdlib
 import logging
 
-# Import modules
 import numpy as np
 
-# Create a logger
-logger = logging.getLogger(__name__)
+from ...utils.reporter import Reporter
+
+rep = Reporter(logging.getLogger(__name__))
 
 
 def compute_pbest(swarm):
@@ -67,9 +66,9 @@ def compute_pbest(swarm):
             ~mask_cost, swarm.pbest_cost, swarm.current_cost
         )
     except AttributeError:
-        msg = "Please pass a Swarm class. You passed {}".format(type(swarm))
-        logger.error(msg)
-        raise
+        rep.logger.exception(
+            "Please pass a Swarm class. You passed {}".format(type(swarm))
+        )
     else:
         return (new_pbest_pos, new_pbest_cost)
 
@@ -137,13 +136,11 @@ def compute_velocity(swarm, clamp):
             )
             updated_velocity = np.where(~mask, swarm.velocity, temp_velocity)
     except AttributeError:
-        msg = "Please pass a Swarm class. You passed {}".format(type(swarm))
-        logger.error(msg)
-        raise
+        rep.logger.exception(
+            "Please pass a Swarm class. You passed {}".format(type(swarm))
+        )
     except KeyError:
-        msg = "Missing keyword in swarm.options"
-        logger.error(msg)
-        raise
+        rep.logger.exception("Missing keyword in swarm.options")
     else:
         return updated_velocity
 
@@ -187,8 +184,8 @@ def compute_position(swarm, bounds):
             temp_position = np.where(~mask, swarm.position, temp_position)
         position = temp_position
     except AttributeError:
-        msg = "Please pass a Swarm class. You passed {}".format(type(swarm))
-        logger.error(msg)
-        raise
+        rep.logger.exception(
+            "Please pass a Swarm class. You passed {}".format(type(swarm))
+        )
     else:
         return position

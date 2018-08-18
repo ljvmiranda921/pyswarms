@@ -9,19 +9,16 @@ This social behavior is often found in LocalBest PSO
 optimizers.
 """
 
-# Import from stdlib
 import logging
 
-# Import modules
 import numpy as np
 from scipy.spatial import cKDTree
 
-# Import from package
 from .. import operators as ops
 from .base import Topology
+from ...utils.reporter import Reporter
 
-# Create a logger
-logger = logging.getLogger(__name__)
+rep = Reporter(logging.getLogger(__name__))
 
 
 class Ring(Topology):
@@ -86,11 +83,9 @@ class Ring(Topology):
                 best_neighbor[np.argmin(swarm.pbest_cost[best_neighbor])]
             ]
         except AttributeError:
-            msg = "Please pass a Swarm class. You passed {}".format(
-                type(swarm)
+            rep.logger.exception(
+                "Please pass a Swarm class. You passed {}".format(type(swarm))
             )
-            logger.error(msg)
-            raise
         else:
             return (best_pos, best_cost)
 
