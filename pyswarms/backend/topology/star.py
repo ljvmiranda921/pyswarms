@@ -67,6 +67,7 @@ class Star(Topology):
             self.rep.logger.exception(
                 "Please pass a Swarm class. You passed {}".format(type(swarm))
             )
+            raise
         else:
             return (best_pos, best_cost)
 
