@@ -6,20 +6,17 @@ A Random Network Topology
 This class implements a random topology. All particles are connected in a random fashion.
 """
 
-# Import from stdlib
-import logging
 import itertools
+import logging
 
-# Import modules
 import numpy as np
 from scipy.sparse.csgraph import connected_components, dijkstra
 
-# Import from package
 from .. import operators as ops
+from ...utils.reporter import Reporter
 from .base import Topology
 
-# Create a logger
-logger = logging.getLogger(__name__)
+rep = Reporter(logging.getLogger(__name__))
 
 
 class Random(Topology):
@@ -91,11 +88,9 @@ class Random(Topology):
             ]
 
         except AttributeError:
-            msg = "Please pass a Swarm class. You passed {}".format(
-                type(swarm)
+            rep.logger.exception(
+                "Please pass a Swarm class. You passed {}".format(type(swarm))
             )
-            logger.error(msg)
-            raise
         else:
             return (best_pos, best_cost)
 

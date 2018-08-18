@@ -6,12 +6,10 @@ A Von Neumann Network Topology
 This class implements a Von Neumann topology.
 """
 
-# Import from stdlib
 import logging
 
 from .ring import Ring
 
-# Create a logger
 logger = logging.getLogger(__name__)
 
 

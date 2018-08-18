@@ -15,8 +15,8 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 from .. import operators as ops
-from .base import Topology
 from ...utils.reporter import Reporter
+from .base import Topology
 
 rep = Reporter(logging.getLogger(__name__))
 
