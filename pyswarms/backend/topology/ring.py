@@ -9,19 +9,14 @@ This social behavior is often found in LocalBest PSO
 optimizers.
 """
 
-# Import from stdlib
 import logging
 
-# Import modules
 import numpy as np
 from scipy.spatial import cKDTree
 
-# Import from package
 from .. import operators as ops
+from ...utils.reporter import Reporter
 from .base import Topology
-
-# Create a logger
-logger = logging.getLogger(__name__)
 
 
 class Ring(Topology):
@@ -34,6 +29,7 @@ class Ring(Topology):
             a boolean that decides whether the topology
             is static or dynamic"""
         super(Ring, self).__init__(static)
+        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, p, k):
         """Update the global best using a ring-like neighborhood approach
@@ -86,10 +82,9 @@ class Ring(Topology):
                 best_neighbor[np.argmin(swarm.pbest_cost[best_neighbor])]
             ]
         except AttributeError:
-            msg = "Please pass a Swarm class. You passed {}".format(
-                type(swarm)
+            self.rep.logger.exception(
+                "Please pass a Swarm class. You passed {}".format(type(swarm))
             )
-            logger.error(msg)
             raise
         else:
             return (best_pos, best_cost)
