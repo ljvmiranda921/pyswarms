@@ -64,17 +64,15 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
     Symposium on Micromachine and Human Science, 1995, pp. 39–43.
 """
 
-# Import from stdlib
 import logging
+from time import sleep
 
-# Import modules
 import numpy as np
 
-# Import from package
-from ..base import SwarmOptimizer
 from ..backend.operators import compute_pbest
 from ..backend.topology import Ring
-from ..utils.console_utils import cli_print, end_report
+from ..base import SwarmOptimizer
+from ..utils.reporter import Reporter
 
 
 class LocalBestPSO(SwarmOptimizer):
@@ -171,16 +169,17 @@ class LocalBestPSO(SwarmOptimizer):
             ftol=ftol,
             init_pos=init_pos,
         )
+        # Initialize logger
+        self.rep = Reporter(logger=logging.getLogger(__name__))
         # Invoke assertions
         self.assertions()
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
         self.top = Ring(static=static)
+        self.name = __name__
 
-    def optimize(
-        self, objective_func, iters, print_step=1, verbose=1, **kwargs
-    ):
+    def optimize(self, objective_func, iters, fast=False, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -192,10 +191,8 @@ class LocalBestPSO(SwarmOptimizer):
             objective function to be evaluated
         iters : int
             number of iterations
-        print_step : int (default is 1)
-            amount of steps for printing into console.
-        verbose : int  (default is 1)
-            verbosity setting.
+        fast : bool (default is False)
+            if True, time.sleep is not executed
         kwargs : dict
             arguments for the objective function
 
@@ -205,14 +202,14 @@ class LocalBestPSO(SwarmOptimizer):
             the local best cost and the local best position among the
             swarm.
         """
-        cli_print(
-            "Arguments Passed to Objective Function: {}".format(kwargs),
-            verbose,
-            2,
-            logger=self.logger,
+        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=10)
+        self.rep.log(
+            "Optimize for {} iters with {}".format(iters, self.options), lvl=20
         )
 
-        for i in range(iters):
+        for i in self.rep.pbar(iters, self.name):
+            if not fast:
+                sleep(0.01)
             # Compute cost for current position and personal best
             self.swarm.current_cost = objective_func(
                 self.swarm.position, **kwargs
@@ -228,16 +225,7 @@ class LocalBestPSO(SwarmOptimizer):
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
                 self.swarm, self.p, self.k
             )
-            # Print to console
-            if i % print_step == 0:
-                cli_print(
-                    "Iteration {}/{}, cost: {}".format(
-                        i + 1, iters, np.min(self.swarm.best_cost)
-                    ),
-                    verbose,
-                    2,
-                    logger=self.logger,
-                )
+            self.rep.hook(best_cost=np.min(self.swarm.best_cost))
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
@@ -264,7 +252,11 @@ class LocalBestPSO(SwarmOptimizer):
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.best_pos.copy()
-        end_report(
-            final_best_cost, final_best_pos, verbose, logger=self.logger
+        # Write report in log and return final cost and position
+        self.rep.log(
+            "Optimization finished | best cost: {}, best pos: {}".format(
+                final_best_cost, final_best_pos
+            ),
+            lvl=20,
         )
         return (final_best_cost, final_best_pos)

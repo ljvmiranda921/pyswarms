@@ -10,4 +10,6 @@ functionalities.
    pyswarms.utils.decorators
    pyswarms.utils.functions
    pyswarms.utils.plotters
+   pyswarms.utils.reporter
    pyswarms.utils.search
+   
