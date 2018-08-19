@@ -17,6 +17,7 @@ requirements = [
     "mock==2.0.0",
     "pytest==3.6.4",
     "attrs==18.1.0",
+    "tqdm==4.24.0",
     "pre-commit",
 ]
 
@@ -31,6 +32,7 @@ test_requirements = [
     "numpy>=1.13.0",
     "matplotlib>=1.3.1",
     "mock==2.0.0",
+    "tqdm==4.24.0",
     "pytest==3.6.4",
     "attrs==18.1.0",
     "pre-commit",

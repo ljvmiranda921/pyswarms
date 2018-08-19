@@ -12,6 +12,7 @@ PyYAML==3.13 # pyup: ignore
 future==0.16.0
 scipy>=0.17.0
 numpy>=1.13.0
+tqdm==4.24.0
 matplotlib>=1.3.1
 pytest==3.7.1
 attrs==18.1.0

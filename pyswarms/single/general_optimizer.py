@@ -55,17 +55,16 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Proceedings of the IEEE International Joint Conference on Neural
     Networks, 1995, pp. 1942-1948.
 """
-# Import from stdlib
-import logging
 
-# Import modules
+import logging
+from time import sleep
+
 import numpy as np
 
-# Import from package
-from ..base import SwarmOptimizer
 from ..backend.operators import compute_pbest
-from ..backend.topology import Topology, Ring, Random, VonNeumann
-from ..utils.console_utils import cli_print, end_report
+from ..backend.topology import Random, Ring, Topology, VonNeumann
+from ..base import SwarmOptimizer
+from ..utils.reporter import Reporter
 
 
 class GeneralOptimizerPSO(SwarmOptimizer):
@@ -158,7 +157,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         )
 
         # Initialize logger
-        self.logger = logging.getLogger(__name__)
+        self.rep = Reporter(logger=logging.getLogger(__name__))
         # Invoke assertions
         self.assertions()
         # Initialize the resettable attributes
@@ -214,10 +213,9 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                         "Delannoy number (number of neighbours) is"
                         "between 0 and the no. of particles."
                     )
+        self.name = __name__
 
-    def optimize(
-        self, objective_func, iters, print_step=1, verbose=1, **kwargs
-    ):
+    def optimize(self, objective_func, iters, fast=False, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -229,10 +227,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             objective function to be evaluated
         iters : int
             number of iterations
-        print_step : int (default is 1)
-            amount of steps for printing into console.
-        verbose : int  (default is 1)
-            verbosity setting.
+        fast : bool (default is False)
+            if True, time.sleep is not executed
         kwargs : dict
             arguments for the objective function
 
@@ -241,15 +237,15 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         tuple
             the global best cost and the global best position.
         """
+        if not fast:
+            sleep(0.01)
 
-        cli_print(
-            "Arguments Passed to Objective Function: {}".format(kwargs),
-            verbose,
-            2,
-            logger=self.logger,
+        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=10)
+        self.rep.log(
+            "Optimize for {} iters with {}".format(iters, self.options), lvl=20
         )
 
-        for i in range(iters):
+        for i in self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             self.swarm.current_cost = objective_func(
                 self.swarm.position, **kwargs
@@ -289,16 +285,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                         self.swarm
                     )
             # Print to console
-            if i % print_step == 0:
-                cli_print(
-                    "Iteration {}/{}, cost: {}".format(
-                        i + 1, iters, self.swarm.best_cost
-                    ),
-                    verbose,
-                    2,
-                    logger=self.logger,
-                )
-            # Save to history
+            self.rep.hook(best_cost=self.swarm.best_cost)
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),
@@ -325,7 +312,10 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.best_pos.copy()
         # Write report in log and return final cost and position
-        end_report(
-            final_best_cost, final_best_pos, verbose, logger=self.logger
+        self.rep.log(
+            "Optimization finished | best cost: {}, best pos: {}".format(
+                final_best_cost, final_best_pos
+            ),
+            lvl=20,
         )
         return (final_best_cost, final_best_pos)

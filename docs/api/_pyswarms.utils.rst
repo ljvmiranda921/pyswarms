@@ -10,3 +10,4 @@ functionalities.
    pyswarms.utils.functions
    pyswarms.utils.search
    pyswarms.utils.plotters
+   pyswarms.utils.reporter

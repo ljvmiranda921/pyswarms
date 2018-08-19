@@ -9,23 +9,19 @@ behavior is often found in GlobalBest PSO
 optimizers.
 """
 
-# Import from stdlib
 import logging
 
-# Import modules
 import numpy as np
 
-# Import from package
 from .. import operators as ops
+from ...utils.reporter import Reporter
 from .base import Topology
-
-# Create a logger
-logger = logging.getLogger(__name__)
 
 
 class Star(Topology):
     def __init__(self):
         super(Star, self).__init__(static=True)
+        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm):
         """Update the global best using a star topology
@@ -68,10 +64,9 @@ class Star(Topology):
             best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
             best_cost = np.min(swarm.pbest_cost)
         except AttributeError:
-            msg = "Please pass a Swarm class. You passed {}".format(
-                type(swarm)
+            self.rep.logger.exception(
+                "Please pass a Swarm class. You passed {}".format(type(swarm))
             )
-            logger.error(msg)
             raise
         else:
             return (best_pos, best_cost)
