@@ -1,0 +1,6 @@
+daysUntilStale: 30
+daysUntilClose: 3
+exemptLabels:
+    - admin
+exemptProjects: true
+staleLabel: stale
