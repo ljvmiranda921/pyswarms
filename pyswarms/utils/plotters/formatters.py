@@ -42,9 +42,14 @@ class Designer(object):
     legend : str (default is :code:`Cost`)
         Label to show in the legend. For cost histories, it states
         the label of the line plot.
-    label : str, list, or tuple (default is :code:`['x-axis', 'y-axis']`)
+    label : str, list, or tuple (default is :code:`['x-axis', 'y-axis', 'z-axis']`)
         Label to show in the x, y, or z-axis. For a 3D plot, please pass
         an iterable with three elements.
+    limits : list (default is :code:`[(-1, 1), (-1, 1), (-1, 1)]`)
+        The x-, y-, z- limits of the axes. Pass an iterable with the number of elements
+        representing the number of axes.
+    colormap : matplotlib.cm.Colormap (default is :code:`cm.viridis`)
+        Colormap for contour plots
     """
 
     # Overall plot design
@@ -131,10 +136,14 @@ class Mesher(object):
         Number of steps when generating the surface plot
     limits : list, tuple (default is :code:`[(-1,1), (-1,1)]`)
         The range, in each axis, where the mesh will be drawn.
-    levels : list (default is :code:`np.arange(-2.0, 2.0, 0.070)`)
-        Levels on which the contours are shown.
+    levels : list or int (default is :code:`np.arange(-2.0, 2.0, 0.070)`)
+        Levels on which the contours are shown. If :code:`int` is passed,
+        then `matplotlib` automatically computes for the level positions.
     alpha : float (default is :code:`0.3`)
         Transparency of the surface plot
+    limits : list (default is :code:`[(-1, 1), (-1, 1)]`)
+        The x-, y-, z- limits of the axes. Pass an iterable with the number of elements
+        representing the number of axes.
     """
 
     func = attrib()
