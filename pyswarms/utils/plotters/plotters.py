@@ -58,7 +58,7 @@ the position history of your swarm (obtainable from swarm instance):
     pos_history = optimizer.pos_history
 
     # Plot!
-    plot_trajectory2D(pos_history)
+    plot_contour(pos_history)
 
 You can also supply various arguments in this method: the indices of the
 specific dimensions to be used, the limits of the axes, and the interval/
