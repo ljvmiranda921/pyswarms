@@ -216,7 +216,8 @@ We can also plot the animation...
 from pyswarms.utils.plotters.formatters import Mesher
 from pyswarms.utils.plotters.formatters import Designer
 # Plot the sphere function's mesh for better plots
-m = Mesher(func=fx.sphere)
+m = Mesher(func=fx.sphere_func,
+           limits=[(-1,1), (-1,1)])
 # Adjust figure limits
 d = Designer(limits=[(-1,1), (-1,1), (-0.1,1)],
              label=['x-axis', 'y-axis', 'z-axis'])
@@ -225,7 +226,7 @@ d = Designer(limits=[(-1,1), (-1,1), (-0.1,1)],
 In 2D,
 
 ```python
-plot_contour(pos_history=optimizer.pos_history, mesher=m, mark=(0,0))
+plot_contour(pos_history=optimizer.pos_history, mesher=m, designer=d, mark=(0,0))
 ```
 
 ![Contour](https://i.imgur.com/H3YofJ6.gif)
