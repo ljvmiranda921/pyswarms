@@ -13,7 +13,7 @@ import logging
 
 import numpy as np
 
-from ..util.reporter import Reporter
+from ..utils.reporter import Reporter
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
@@ -47,13 +47,20 @@ class BoundaryHandler:
         Attributes
         ----------
         strategy : str
-            The strategy to be used. The following are available:
-            * "nearest"
-            * "random"
-            * "shrink"
-            * "reflective"
-            * "intermediate"
-            * "resample"
+            The strategy to be used.
+            The following are available:
+                * "nearest"
+
+                * "random"
+
+                * "shrink"
+
+                * "reflective"
+
+                * "intermediate"
+
+                * "resample"
+
             For a description of these see above.
         """
         self.strategy = strategy

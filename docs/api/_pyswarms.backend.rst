@@ -9,6 +9,7 @@ as GlobalBestPSO and LocalBestPSO were built using the backend module.
 .. toctree::
 
    pyswarms.backend
+   pyswarms.handlers
    pyswarms.topology
    pyswarms.swarms
 
