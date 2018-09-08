@@ -139,8 +139,7 @@ class BoundaryHandler(object):
         pass
 
     def random(self, **k):
-        """
-        Set position to random location
+        """Set position to random location
 
         This method resets particles that exeed the bounds to a random position
         inside the boundary conditions.
