@@ -18,7 +18,7 @@ from ..util.reporter import Reporter
 rep = Reporter(logger=logging.getLogger(__name__))
 
 
-class BoundaryHandler:
+class BoundaryHandler(object):
     def __init__(self, strategy):
         """ A BoundaryHandler class
 
@@ -108,7 +108,7 @@ class BoundaryHandler:
         elif self.strategy == "resample":
             new_position = self.resample()
 
-        return self.position
+        return new_position
 
     def __out_of_bounds(self):
         """
