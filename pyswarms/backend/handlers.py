@@ -107,12 +107,14 @@ class BoundaryHandler(object):
         else:
             return new_position
 
-    def __out_of_bounds(self):
+    def __out_of_bounds(self, position, bounds):
         """Helper method to find indices of out-of-bound positions"""
-        self.greater_than_bound = np.nonzero(self.position > self.upper_bound)
-        self.lower_than_bound = np.nonzero(self.position < self.lower_bound)
+        lb, ub = bounds
+        greater_than_bound = np.nonzero(position > ub)
+        lower_than_bound = np.nonzero(position < lb)
+        return (lower_than_bound, greater_than_bound)
 
-    def nearest(self, **kwargs):
+    def nearest(self, **k):
         """
         Set position to nearest bound
 
@@ -121,35 +123,42 @@ class BoundaryHandler(object):
         surpasses the boundary conditions the coordinate is set to the respective
         bound that it surpasses.
         """
-        bool_greater = self.position > self.upper_bound
-        bool_lower = self.position < self.lower_bound
-        self.position = np.where(bool_greater, self.upper_bound, self.position)
-        self.position = np.where(bool_lower, self.lower_bound, self.position)
+        try:
+            lb, ub = k["bounds"]
+            bool_greater = k["position"] > ub
+            bool_lower = k["position"] < lb
+            new_pos = np.where(bool_greater, ub, k["position"])
+            new_pos = np.where(bool_lower, lb, k["position"])
+        except KeyError:
+            raise
+        else:
+            return new_pos
 
-    def reflective(self, **kwargs):
+    def reflective(self, **k):
         pass
 
-    def shrink(self, **kwargs):
+    def shrink(self, **k):
         pass
 
-    def random(self, **kwargs):
+    def random(self, **k):
         """
         Set position to random location
 
         This method resets particles that exeed the bounds to a random position
         inside the boundary conditions.
         """
-        sample = np.random.sample((self.position.shape[0],))
-        self.position[self.greater_than_bound[0]] = np.array(
-            [
-                (self.upper_bound[i] - self.lower_bound[i]) * sample[i]
-                + self.lower_bound[i]
-                for i in range(sample.size)
-            ]
+        lb, ub = k["bounds"]
+        sample = np.random.sample((k["position"].shape[0],))
+        lower_than_bound, greater_than_bound = self.__out_of_bounds(
+            k["position"], k["bounds"]
+        )
+        # Set indices that are greater than bounds
+        k["position"][greater_than_bound[0]] = np.array(
+            [(ub[i] - lb[i]) * sample[i] + lb[i] for i in range(sample.size)]
         )
 
-    def intermediate(self, **kwargs):
+    def intermediate(self, **k):
         pass
 
-    def resample(self, **kwargs):
+    def resample(self, **k):
         pass
