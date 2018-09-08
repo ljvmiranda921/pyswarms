@@ -1,31 +1,30 @@
-"""
-Handler Backend
+"""Handlers
 
-This module provides Handler classes for the position as well as
-the velocity of particles. This is necessary when boundary conditions
-are imposed on the PSO algorithm. Particles that do not stay inside
-these boundary conditions have to be handled by either adjusting their
-position after they left the bounded search space or adjusting their
-velocity when it would position them outside the search space.
+This module provides Handler classes for the position as well as the velocity
+of particles. This is necessary when boundary conditions are imposed on the PSO
+algorithm. Particles that do not stay inside these boundary conditions have to
+be handled by either adjusting their position after they left the bounded
+search space or adjusting their velocity when it would position them outside
+the search space.
+
 """
 
+import inspect
 import logging
 
 import numpy as np
 
 from ..utils.reporter import Reporter
 
-rep = Reporter(logger=logging.getLogger(__name__))
 
-
-class BoundaryHandler:
+class BoundaryHandler(object):
     def __init__(self, strategy):
         """ A BoundaryHandler class
 
         This class offers a way to handle boundary conditions. It contains
         methods to avoid having particles outside of the defined boundaries.
-        It repairs the position of particles that would leave the boundares
-        in the next optimization step by using one of the follwing methods:
+        It repairs the position of particles that would leave the boundares in
+        the next optimization step by using one of the follwing methods:
 
         * Nearest:
             Reposition the particle to the nearest bound.
@@ -39,34 +38,10 @@ class BoundaryHandler:
             bounds.
         * Intermediate:
             Reposition the particle to the midpoint between its current
-            position on the bound surpassing axis and the bound itself.
-            This only adjusts the axes that surpass the boundaries.
+            position on the bound surpassing axis and the bound itself.  This
+            only adjusts the axes that surpass the boundaries.
         * Resample:
             Redraw the velocity until the next position is inside the bounds.
-
-        Attributes
-        ----------
-        strategy : str
-            The strategy to be used.
-            The following are available:
-                * "nearest"
-
-                * "random"
-
-                * "shrink"
-
-                * "reflective"
-
-                * "intermediate"
-
-                * "resample"
-
-            For a description of these see above.
-        """
-        self.strategy = strategy
-
-    def __call__(self, position, bounds, *args, **kwargs):
-        """Make class callable
 
         The BoundaryHandler can be called as a function to use the strategy
         that is passed at initialization to repair boundary issues. An example
@@ -80,6 +55,18 @@ class BoundaryHandler:
             bh = BoundaryHandler(strategy="reflective")
             ops.compute_position(swarm, bounds, handler=bh)
 
+        Attributes
+        ----------
+        strategy : str
+            The strategy to use. To see all available strategies,
+            call :code:`BoundaryHandler.strategies`
+        """
+        self.strategy = strategy
+        self.strategies = self.__get_all_strategies()
+        self.rep = Reporter(logger=logging.getLogger(__name__))
+
+    def __call__(self, position, bounds, **kwargs):
+        """Apply the selected strategy to the position-matrix given the bounds
 
         Parameters
         ----------
@@ -89,82 +76,86 @@ class BoundaryHandler:
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`
-        *args : tuple
-        **kwargs : dict
+        kwargs : dict
 
         Returns
         -------
         numpy.ndarray
             the adjusted positions of the swarm
         """
-        # Assign new attributes
-        self.position = position
-        self.lower_bound, self.upper_bound = bounds
-        self.__out_of_bounds()
+        # Combine `position` and `bounds` with extra keyword args
+        kwargs_ = {**{"position": position, "bounds": bounds}, **kwargs}
 
-        if self.strategy == "nearest":
-            new_position = self.nearest()
-        elif self.strategy == "reflective":
-            new_position = self.reflective()
-        elif self.strategy == "shrink":
-            new_position = self.shrink()
-        elif self.strategy == "random":
-            new_position = self.random()
-        elif self.strategy == "intermediate":
-            new_position = self.random()
-        elif self.strategy == "resample":
-            new_position = self.resample()
+        try:
+            new_position = self.strategies[self.strategy](**kwargs_)
+        except KeyError:
+            message = "Unrecognized strategy: {}. Choose one among: " + str(
+                [strat for strat in self.strategies.keys()]
+            )
+            self.rep.log.exception(message.format(self.strategy))
+            raise
+        else:
+            return new_position
 
-        return self.position
+    def __out_of_bounds(self, position, bounds):
+        """Helper method to find indices of out-of-bound positions"""
+        lb, ub = bounds
+        greater_than_bound = np.nonzero(position > ub)
+        lower_than_bound = np.nonzero(position < lb)
+        return (lower_than_bound, greater_than_bound)
 
-    def __out_of_bounds(self):
-        """
-        Helper method to find indices
+    def __get_all_strategies(self):
+        """Helper method to automatically generate a dict of strategies"""
+        return {
+            k: v
+            for k, v in inspect.getmembers(self, predicate=inspect.isroutine)
+            if not k.startswith(("__", "_"))
+        }
 
-        This helper methods finds the indices of the positions that do
-        transgress the imposed bounds and stores them in class attributes
-        """
-        self.greater_than_bound = np.nonzero(self.position > self.upper_bound)
-        self.lower_than_bound = np.nonzero(self.position < self.lower_bound)
-
-    def nearest(self):
-        """
-        Set position to nearest bound
+    def nearest(self, **k):
+        """Set position to nearest bound
 
         This method resets particles that exceed the bounds to the nearest
         available bound. For every axis on which the coordiantes of the particle
         surpasses the boundary conditions the coordinate is set to the respective
         bound that it surpasses.
         """
-        bool_greater = self.position > self.upper_bound
-        bool_lower = self.position < self.lower_bound
-        self.position = np.where(bool_greater, self.upper_bound, self.position)
-        self.position = np.where(bool_lower, self.lower_bound, self.position)
+        try:
+            lb, ub = k["bounds"]
+            bool_greater = k["position"] > ub
+            bool_lower = k["position"] < lb
+            new_pos = np.where(bool_greater, ub, k["position"]).where(
+                bool_lower, lb, k["position"]
+            )
+        except KeyError:
+            raise
+        else:
+            return new_pos
 
-    def reflective(self):
+    def reflective(self, **k):
         pass
 
-    def shrink(self):
+    def shrink(self, **k):
         pass
 
-    def random(self):
-        """
-        Set position to random location
+    def random(self, **k):
+        """Set position to random location
 
         This method resets particles that exeed the bounds to a random position
         inside the boundary conditions.
         """
-        sample = np.random.sample((self.position.shape[0],))
-        self.position[self.greater_than_bound[0]] = np.array(
-            [
-                (self.upper_bound[i] - self.lower_bound[i]) * sample[i]
-                + self.lower_bound[i]
-                for i in range(sample.size)
-            ]
+        lb, ub = k["bounds"]
+        sample = np.random.sample((k["position"].shape[0],))
+        lower_than_bound, greater_than_bound = self.__out_of_bounds(
+            k["position"], k["bounds"]
+        )
+        # Set indices that are greater than bounds
+        k["position"][greater_than_bound[0]] = np.array(
+            [(ub[i] - lb[i]) * sample[i] + lb[i] for i in range(sample.size)]
         )
 
-    def intermediate(self):
+    def intermediate(self, **k):
         pass
 
-    def resample(self):
+    def resample(self, **k):
         pass
