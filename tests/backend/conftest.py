@@ -38,3 +38,12 @@ def bh(request):
     """A parametrizized BoundaryHandler instance"""
     bh_ = BoundaryHandler(strategy=request.param)
     return bh_
+
+@pytest.fixture
+def bounds():
+    bounds_ = (np.array([5,7,3]), np.array([9,12,5]))
+    return bounds_
+
+@pytest.fixture
+def positions():
+    pass
