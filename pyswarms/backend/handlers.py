@@ -13,7 +13,7 @@ import logging
 
 import numpy as np
 
-from ..util.reporter import Reporter
+from ..utils.reporter import Reporter
 
 
 class BoundaryHandler(object):
