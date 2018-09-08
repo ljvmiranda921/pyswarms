@@ -9,6 +9,7 @@ the search space.
 
 """
 
+import inspect
 import logging
 
 import numpy as np
@@ -57,27 +58,15 @@ class BoundaryHandler(object):
         Attributes
         ----------
         strategy : str
-            The strategy to be used. The following are available:
-            * "nearest"
-            * "random"
-            * "shrink"
-            * "reflective"
-            * "intermediate"
-            * "resample"
+            The strategy to use. To see all available strategies,
+            call :code:`BoundaryHandler.strategies`
         """
         self.strategy = strategy
-        self.strats = {
-            "nearest": self.nearest,
-            "random": self.random,
-            "shrink": self.shrink,
-            "reflective": self.reflective,
-            "intermediate": self.intermediate,
-            "resample": self.resample,
-        }
+        self.strategies = self.__get_all_strategies()
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def __call__(self, position, bounds, **kwargs):
-        """Apply the selected strategy to the position-matrix
+        """Apply the selected strategy to the position-matrix given the bounds
 
         Parameters
         ----------
@@ -94,13 +83,14 @@ class BoundaryHandler(object):
         numpy.ndarray
             the adjusted positions of the swarm
         """
+        # Combine `position` and `bounds` with extra keyword args
         kwargs_ = {**{"position": position, "bounds": bounds}, **kwargs}
 
         try:
-            new_position = self.strats[self.strategy](**kwargs_)
+            new_position = self.strategies[self.strategy](**kwargs_)
         except KeyError:
             message = "Unrecognized strategy: {}. Choose one among: " + str(
-                [strat for strat in self.strats.keys()]
+                [strat for strat in self.strategies.keys()]
             )
             self.rep.log.exception(message.format(self.strategy))
             raise
@@ -114,9 +104,16 @@ class BoundaryHandler(object):
         lower_than_bound = np.nonzero(position < lb)
         return (lower_than_bound, greater_than_bound)
 
+    def __get_all_strategies(self):
+        """Helper method to automatically generate a dict of strategies"""
+        return {
+            k: v
+            for k, v in inspect.getmembers(self, predicate=inspect.isroutine)
+            if not k.startswith(("__", "_"))
+        }
+
     def nearest(self, **k):
-        """
-        Set position to nearest bound
+        """Set position to nearest bound
 
         This method resets particles that exceed the bounds to the nearest
         available bound. For every axis on which the coordiantes of the particle
@@ -127,8 +124,9 @@ class BoundaryHandler(object):
             lb, ub = k["bounds"]
             bool_greater = k["position"] > ub
             bool_lower = k["position"] < lb
-            new_pos = np.where(bool_greater, ub, k["position"])
-            new_pos = np.where(bool_lower, lb, k["position"])
+            new_pos = np.where(bool_greater, ub, k["position"]).where(
+                bool_lower, lb, k["position"]
+            )
         except KeyError:
             raise
         else:
