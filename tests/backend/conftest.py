@@ -9,6 +9,7 @@ import numpy as np
 
 # Import from package
 from pyswarms.backend.swarms import Swarm
+from pyswarms.backend.handlers import BoundaryHandler
 
 
 @pytest.fixture
@@ -25,3 +26,15 @@ def swarm():
         "options": {"c1": 0.5, "c2": 1, "w": 2},
     }
     return Swarm(**attrs_at_t)
+
+@pytest.fixture(params=[
+                "nearest",
+                "random",
+                "shrink",
+                "reflective",
+                "intermediate",
+                "resample"])
+def bh(request):
+    """A parametrizized BoundaryHandler instance"""
+    bh_ = BoundaryHandler(strategy=request.param)
+    return bh_
