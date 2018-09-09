@@ -150,9 +150,11 @@ class BoundaryHandler(object):
             k["position"], k["bounds"]
         )
         # Set indices that are greater than bounds
-        k["position"][greater_than_bound[0]] = np.array(
+        new_pos = k["position"]
+        new_pos[greater_than_bound[0]] = np.array(
             [(ub[i] - lb[i]) * sample[i] + lb[i] for i in range(sample.size)]
         )
+        return new_pos
 
     def intermediate(self, **k):
         pass
