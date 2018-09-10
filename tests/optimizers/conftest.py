@@ -100,11 +100,11 @@ def options():
 
 # fmt: off
 @pytest.fixture(params=[
-                Star(),
-                Ring(static=False), Ring(static=True),
-                Pyramid(static=False), Pyramid(static=True),
-                Random(static=False), Random(static=True),
-                VonNeumann()
+                Star,
+                Ring,
+                Pyramid,
+                Random,
+                VonNeumann
                 ])
 # fmt: on
 def topology(request):

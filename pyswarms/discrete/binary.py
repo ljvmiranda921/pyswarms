@@ -145,7 +145,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
-        self.top = Ring(static=False)
+        self.top = Ring(static=False, p=self.p, k=self.k)
         self.name = __name__
 
     def optimize(self, objective_func, iters, fast=False, **kwargs):
@@ -192,7 +192,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             best_cost_yet_found = np.min(self.swarm.best_cost)
             # Update gbest from neighborhood
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                self.swarm, self.p, self.k
+                self.swarm
             )
             # Print to console
             self.rep.hook(best_cost=self.swarm.best_cost)

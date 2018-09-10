@@ -176,7 +176,7 @@ class LocalBestPSO(SwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
-        self.top = Ring(static=static)
+        self.top = Ring(static=static, p=self.p, k=self.k)
         self.name = __name__
 
     def optimize(self, objective_func, iters, fast=False, **kwargs):
@@ -223,7 +223,7 @@ class LocalBestPSO(SwarmOptimizer):
             best_cost_yet_found = np.min(self.swarm.best_cost)
             # Update gbest from neighborhood
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                self.swarm, self.p, self.k
+                self.swarm
             )
             self.rep.hook(best_cost=np.min(self.swarm.best_cost))
             # Save to history
