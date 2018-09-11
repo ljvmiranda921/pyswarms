@@ -1,4 +1,5 @@
-"""Handlers
+"""
+Handlers
 
 This module provides Handler classes for the position as well as the velocity
 of particles. This is necessary when boundary conditions are imposed on the PSO
@@ -6,7 +7,6 @@ algorithm. Particles that do not stay inside these boundary conditions have to
 be handled by either adjusting their position after they left the bounded
 search space or adjusting their velocity when it would position them outside
 the search space.
-
 """
 
 import inspect
@@ -15,6 +15,7 @@ import logging
 import numpy as np
 
 from ..utils.reporter import Reporter
+from .operators import compute_velocity
 
 
 class BoundaryHandler(object):
@@ -22,9 +23,8 @@ class BoundaryHandler(object):
         """ A BoundaryHandler class
 
         This class offers a way to handle boundary conditions. It contains
-        methods to avoid having particles outside of the defined boundaries.
-        It repairs the position of particles that would leave the boundares in
-        the next optimization step by using one of the follwing methods:
+        methods to repair particle positions outside of the defined boundaries.
+        Following strategies are available for the handling:
 
         * Nearest:
             Reposition the particle to the nearest bound.
@@ -54,6 +54,10 @@ class BoundaryHandler(object):
 
             bh = BoundaryHandler(strategy="reflective")
             ops.compute_position(swarm, bounds, handler=bh)
+
+        By passing the handler, the :func:`compute_position()` functions now has
+        the ability to reset the particles by calling the :code:`BoundaryHandler`
+        inside.
 
         Attributes
         ----------
@@ -97,8 +101,15 @@ class BoundaryHandler(object):
         else:
             return new_position
 
-    def __out_of_bounds(self, position, bounds):
-        """Helper method to find indices of out-of-bound positions"""
+    def __out_of_bounds(self, position, bounds, velocity=None):
+        """Helper method to find indices of out-of-bound positions
+
+        This method finds the indices of the particles that are out-of-bound
+        if a velocity is specified it returns the indices of the particles that
+        will be out-of-bounds after the velocity is applied
+        """
+        if velocity is not None:
+            position += velocity
         lb, ub = bounds
         greater_than_bound = np.nonzero(position > ub)
         lower_than_bound = np.nonzero(position < lb)
@@ -145,14 +156,20 @@ class BoundaryHandler(object):
         inside the boundary conditions.
         """
         lb, ub = k["bounds"]
-        sample = np.random.sample((k["position"].shape[0],))
         lower_than_bound, greater_than_bound = self.__out_of_bounds(
             k["position"], k["bounds"]
         )
         # Set indices that are greater than bounds
         new_pos = k["position"]
         new_pos[greater_than_bound[0]] = np.array(
-            [(ub[i] - lb[i]) * sample[i] + lb[i] for i in range(sample.size)]
+            [(ub[i] - lb[i]) * randr + lb[i] for randr,i in
+                (np.random.sample((k["position"].shape[0],)),
+                 k["position"].shape[0])]
+        )
+        new_pos[lower_than_bound[0]] = np.array(
+            [(ub[i] - lb[i]) * randr + lb[i] for randr,i in
+                (np.random.sample((k["position"].shape[0],)),
+                 k["position"].shape[0])]
         )
         return new_pos
 
@@ -160,4 +177,22 @@ class BoundaryHandler(object):
         pass
 
     def resample(self, **k):
-        pass
+        """Redraw velocity until the particle is feasible
+
+        This method redraws the particle velocity if it would cause a particle to
+        go out-of-bounds in the next optimization step.
+        """
+        lb, ub = k["bounds"]
+        new_vel = k["velocity"]
+        while True:
+            lower_than_bound, greater_than_bound = self.__out_of_bounds(
+                    k["position"], k["bounds"], k["velocity"]
+            )
+
+            if not lower_than_bound and not greater_than_bound:
+                break
+
+            masking_vel = compute_velocity(k["swarm"], k["clamp"])
+            new_vel[lower_than_bound[0]] = masking_vel[lower_than_bound[0]]
+            new_vel[greate_than_bound[0]] = masking_vel[greater_than_bound[0]]
+        return new_vel
