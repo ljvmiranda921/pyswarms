@@ -88,7 +88,9 @@ class BoundaryHandler(object):
             the adjusted positions of the swarm
         """
         # Combine `position` and `bounds` with extra keyword args
-        kwargs_ = {**{"position": position, "bounds": bounds}, **kwargs}
+        kwargs_ = self.__merge_dicts(
+            {"position": position, "bounds": bounds}, kwargs
+        )
 
         try:
             new_position = self.strategies[self.strategy](**kwargs_)
@@ -100,6 +102,13 @@ class BoundaryHandler(object):
             raise
         else:
             return new_position
+
+    def __merge_dicts(self, *dict_args):
+        """Backward-compatible helper method to combine two dicts"""
+        result = {}
+        for dictionary in dict_args:
+            result.update(dictionary)
+        return result
 
     def __out_of_bounds(self, position, bounds, velocity=None):
         """Helper method to find indices of out-of-bound positions
@@ -162,14 +171,22 @@ class BoundaryHandler(object):
         # Set indices that are greater than bounds
         new_pos = k["position"]
         new_pos[greater_than_bound[0]] = np.array(
-            [(ub[i] - lb[i]) * randr + lb[i] for randr,i in
-                (np.random.sample((k["position"].shape[0],)),
-                 k["position"].shape[0])]
+            [
+                (ub[i] - lb[i]) * randr + lb[i]
+                for randr, i in (
+                    np.random.sample((k["position"].shape[0],)),
+                    k["position"].shape[0],
+                )
+            ]
         )
         new_pos[lower_than_bound[0]] = np.array(
-            [(ub[i] - lb[i]) * randr + lb[i] for randr,i in
-                (np.random.sample((k["position"].shape[0],)),
-                 k["position"].shape[0])]
+            [
+                (ub[i] - lb[i]) * randr + lb[i]
+                for randr, i in (
+                    np.random.sample((k["position"].shape[0],)),
+                    k["position"].shape[0],
+                )
+            ]
         )
         return new_pos
 
@@ -186,7 +203,7 @@ class BoundaryHandler(object):
         new_vel = k["velocity"]
         while True:
             lower_than_bound, greater_than_bound = self.__out_of_bounds(
-                    k["position"], k["bounds"], k["velocity"]
+                k["position"], k["bounds"], k["velocity"]
             )
 
             if not lower_than_bound and not greater_than_bound:
