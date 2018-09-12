@@ -63,7 +63,9 @@ class Ring(Topology):
             if (self.static and self.neighbor_idx is None) or not self.static:
                 # Obtain the nearest-neighbors for each particle
                 tree = cKDTree(swarm.position)
-                _, self.neighbor_idx = tree.query(swarm.position, p=self.p, k=self.k)
+                _, self.neighbor_idx = tree.query(
+                    swarm.position, p=self.p, k=self.k
+                )
 
             # Map the computed costs to the neighbour indices and take the
             # argmin. If k-neighbors is equal to 1, then the swarm acts

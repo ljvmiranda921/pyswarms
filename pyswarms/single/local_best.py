@@ -222,7 +222,9 @@ class LocalBestPSO(SwarmOptimizer):
             )
             best_cost_yet_found = np.min(self.swarm.best_cost)
             # Update gbest from neighborhood
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
+                self.swarm
+            )
             self.rep.hook(best_cost=np.min(self.swarm.best_cost))
             # Save to history
             hist = self.ToHistory(
