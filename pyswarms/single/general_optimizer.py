@@ -167,52 +167,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             raise TypeError("Parameter `topology` must be a Topology object")
         else:
             self.top = topology
-
-        # Case for the Ring topology
-        if isinstance(topology, (Ring, VonNeumann)):
-            # Assign p-value as attributes
-            self.p = options["p"]
-            # Exceptions for the p value
-            if "p" not in self.options:
-                raise KeyError("Missing p in options")
-            if self.p not in [1, 2]:
-                raise ValueError(
-                    "p-value should either be 1 (for L1/Minkowski) "
-                    "or 2 (for L2/Euclidean)."
-                )
-
-        # Case for Random, VonNeumann and Ring topologies
-        if isinstance(topology, (Random, Ring, VonNeumann)):
-            if not isinstance(topology, VonNeumann):
-                self.k = options["k"]
-                if not isinstance(self.k, int):
-                    raise ValueError(
-                        "No. of neighbors must be an integer between"
-                        "0 and no. of particles."
-                    )
-                if not 0 <= self.k <= self.n_particles - 1:
-                    raise ValueError(
-                        "No. of neighbors must be between 0 and no. "
-                        "of particles."
-                    )
-                if "k" not in self.options:
-                    raise KeyError("Missing k in options")
-            else:
-                # Assign range r as attribute
-                self.r = options["r"]
-                if not isinstance(self.r, int):
-                    raise ValueError("The range must be a positive integer")
-                if (
-                    self.r <= 0
-                    or not 0
-                    <= VonNeumann.delannoy(self.swarm.dimensions, self.r)
-                    <= self.n_particles - 1
-                ):
-                    raise ValueError(
-                        "The range must be set such that the computed"
-                        "Delannoy number (number of neighbours) is"
-                        "between 0 and the no. of particles."
-                    )
         self.name = __name__
 
     def optimize(self, objective_func, iters, fast=False, **kwargs):
@@ -257,37 +211,11 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 self.swarm
             )
             best_cost_yet_found = self.swarm.best_cost
-            # If the topology is a ring topology just use the local minimum
-            # TODO
-            if isinstance(self.top, Ring) and not isinstance(
-                self.top, VonNeumann
-            ):
-                # Update gbest from neighborhood
+            # Update swarm
+            if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
                 self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                    self.swarm, self.p, self.k
+                    self.swarm
                 )
-            # If the topology is a VonNeumann topology pass the neighbour and range attribute to compute_gbest()
-            # TODO
-            if isinstance(self.top, VonNeumann):
-                # Update gbest from neighborhood
-                self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                    self.swarm, self.p, self.r
-                )
-            # If the topology is a random topology pass the neighbor attribute to compute_gbest()
-            # TODO
-            elif isinstance(self.top, Random):
-                # Get minima of pbest and check if it's less than gbest
-                if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
-                    self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                        self.swarm, self.k
-                    )
-            else:
-                # Get minima of pbest and check if it's less than gbest
-                # TODO
-                if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
-                    self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                        self.swarm
-                    )
             # Print to console
             self.rep.hook(best_cost=self.swarm.best_cost)
             hist = self.ToHistory(
