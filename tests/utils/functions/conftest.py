@@ -4,8 +4,8 @@
 """Fixtures for tests"""
 
 # Import modules
-import pytest
 import numpy as np
+import pytest
 
 
 @pytest.fixture

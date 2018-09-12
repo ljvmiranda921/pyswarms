@@ -2,48 +2,31 @@
 # -*- coding: utf-8 -*-
 
 # Import modules
-import pytest
 import numpy as np
+import pytest
 
-# Import from package
+# Import from pyswarms
 from pyswarms.backend.topology import Star
 
-
-def test_compute_gbest_return_values(swarm):
-    """Test if compute_gbest() gives the expected return values"""
-    topology = Star()
-    expected_cost = 1.0002528364353296
-    expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
-    pos, cost = topology.compute_gbest(swarm)
-    assert cost == pytest.approx(expected_cost)
-    assert pos == pytest.approx(expected_pos)
+from .abc_test_topology import ABCTestTopology
 
 
-@pytest.mark.parametrize("clamp", [None, (0, 1), (-1, 1)])
-def test_compute_velocity_return_values(swarm, clamp):
-    """Test if compute_velocity() gives the expected shape and range"""
-    topology = Star()
-    v = topology.compute_velocity(swarm, clamp)
-    assert v.shape == swarm.position.shape
-    if clamp is not None:
-        assert (clamp[0] <= v).all() and (clamp[1] >= v).all()
+class TestStarTopology(ABCTestTopology):
+    @pytest.fixture
+    def topology(self):
+        return Star
 
+    @pytest.fixture
+    def options(self):
+        return {}
 
-@pytest.mark.parametrize(
-    "bounds",
-    [None, ([-5, -5, -5], [5, 5, 5]), ([-10, -10, -10], [10, 10, 10])],
-)
-def test_compute_position_return_values(swarm, bounds):
-    """Test if compute_position() gives the expected shape and range"""
-    topology = Star()
-    p = topology.compute_position(swarm, bounds)
-    assert p.shape == swarm.velocity.shape
-    if bounds is not None:
-        assert (bounds[0] <= p).all() and (bounds[1] >= p).all()
-
-
-def test_neighbor_idx(swarm):
-    """Test if the neighbor_idx attribute is assigned"""
-    topology = Star()
-    topology.compute_gbest(swarm)
-    assert topology.neighbor_idx is not None
+    def test_compute_gbest_return_values(self, swarm, options, topology):
+        """Test if compute_gbest() gives the expected return values"""
+        topo = topology()
+        expected_cost = 1.0002528364353296
+        expected_pos = np.array(
+            [9.90438476e-01, 2.50379538e-03, 1.87405987e-05]
+        )
+        pos, cost = topo.compute_gbest(swarm, **options)
+        assert cost == pytest.approx(expected_cost)
+        assert pos == pytest.approx(expected_pos)
