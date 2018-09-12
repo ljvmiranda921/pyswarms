@@ -4,15 +4,18 @@
 
 
 from __future__ import print_function
+
+# Import standard library
 import base64
 import json
 import os
 from getpass import getpass
+
+# Import modules
 import yaml
-from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric.padding import PKCS1v15
-
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
 try:
     from urllib import urlopen

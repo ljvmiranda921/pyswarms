@@ -9,8 +9,10 @@ here to dictate how a swarm is initialized for your custom PSO.
 
 """
 
+# Import standard library
 import logging
 
+# Import modules
 import numpy as np
 
 from ..utils.reporter import Reporter
@@ -44,6 +46,14 @@ def generate_swarm(
     -------
     numpy.ndarray
         swarm matrix of shape (n_particles, n_dimensions)
+
+    Raises
+    ------
+    ValueError
+        When the shapes and values of bounds, dimensions, and init_pos
+        are inconsistent.
+    TypeError
+        When the argument passed to bounds is not an iterable.
     """
     try:
         if (init_pos is not None) and (bounds is None):
@@ -70,12 +80,13 @@ def generate_swarm(
                 low=min_bounds, high=max_bounds, size=(n_particles, dimensions)
             )
     except ValueError:
-        rep.logger.exception(
-            "Please check the size and value of bounds and dimensions"
-        )
+        msg = "Bounds and/or init_pos should be of size ({},)"
+        rep.logger.exception(msg.format(dimensions))
         raise
     except TypeError:
-        rep.logger.exception("Invalid input type!")
+        msg = "generate_swarm() takes an int for n_particles and dimensions and an array for bounds"
+        rep.logger.exception(msg)
+        raise
     else:
         return pos
 
@@ -96,6 +107,18 @@ def generate_discrete_swarm(
     init_pos : :code:`numpy.ndarray` (default is :code:`None`)
         option to explicitly set the particles' initial positions. Set to
         :code:`None` if you wish to generate the particles randomly.
+
+    Returns
+    -------
+    numpy.ndarray
+        swarm matrix of shape (n_particles, n_dimensions)
+
+    Raises
+    ------
+    ValueError
+        When init_pos during binary=True does not contain two unique values.
+    TypeError
+        When the argument passed to n_particles or dimensions is incorrect.
     """
     try:
         if (init_pos is not None) and binary:
@@ -111,11 +134,12 @@ def generate_discrete_swarm(
                 size=(n_particles, dimensions)
             ).argsort(axis=1)
     except ValueError:
-        rep.logger.exception(
-            "Please check the size and value of bounds and dimensions"
-        )
+        rep.logger.exception("Please check the size and value of dimensions")
+        raise
     except TypeError:
-        rep.logger.exception("Invalid input type!")
+        msg = "generate_discrete_swarm() takes an int for n_particles and dimensions"
+        rep.logger.exception(msg)
+        raise
     else:
         return pos
 
@@ -145,11 +169,13 @@ def generate_velocity(n_particles, dimensions, clamp=None):
             size=(n_particles, dimensions)
         ) + min_velocity
     except ValueError:
-        rep.logger.exception(
-            "Please check the size and value of clamp and dimensions"
-        )
+        msg = "Please check clamp shape: {} != {}"
+        rep.logger.exception(msg.format(len(clamp), dimensions))
+        raise
     except TypeError:
-        rep.logger.exception("Invalid input type!")
+        msg = "generate_velocity() takes an int for n_particles and dimensions and an array for clamp"
+        rep.logger.exception(msg)
+        raise
     else:
         return velocity
 

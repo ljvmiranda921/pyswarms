@@ -30,80 +30,17 @@ See Also
 :mod:`pyswarms.single.general_optimizer`: a more general PSO implementation with a custom topology
 """
 
+# Import standard library
 import abc
 from collections import namedtuple
 
+# Import modules
 import numpy as np
 
 from ..backend import create_swarm
 
 
 class SwarmOptimizer(abc.ABC):
-    def assertions(self):
-        """Check inputs and throw assertions
-
-        Raises
-        ------
-        TypeError
-            When the :code:`bounds` is not of type tuple
-        IndexError
-            When the :code:`bounds` is not of size 2.
-            When the arrays in :code:`bounds` is not of equal size.
-            When the shape of :code:`bounds` is not the same as :code:`dimensions`.
-        ValueError
-            When the value of :code:`bounds[1]` is less than
-            :code:`bounds[0]`.
-        """
-
-        # Check setting of bounds
-        if self.bounds is not None:
-            if not isinstance(self.bounds, tuple):
-                raise TypeError("Parameter `bound` must be a tuple.")
-            if not len(self.bounds) == 2:
-                raise IndexError("Parameter `bound` must be of size 2.")
-            if not self.bounds[0].shape == self.bounds[1].shape:
-                raise IndexError("Arrays in `bound` must be of equal shapes")
-            if (
-                not self.bounds[0].shape[0]
-                == self.bounds[1].shape[0]
-                == self.dimensions
-            ):
-                raise IndexError(
-                    "Parameter `bound` must be the same shape "
-                    "as dimensions."
-                )
-            if not (self.bounds[1] > self.bounds[0]).all():
-                raise ValueError(
-                    "Values of `bounds[1]` must be greater than "
-                    "`bounds[0]`."
-                )
-
-        # Check clamp settings
-        if hasattr(self.velocity_clamp, "__iter__"):
-            if not len(self.velocity_clamp) == 2:
-                raise IndexError(
-                    "Parameter `velocity_clamp` must be of " "size 2"
-                )
-            if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-                raise ValueError(
-                    "Make sure that velocity_clamp is in the "
-                    "form (min, max)"
-                )
-
-        # Check setting of center
-        if isinstance(self.center, (list, np.ndarray)):
-            if not len(self.center) == self.dimensions:
-                raise IndexError(
-                    "Parameter `center` must be the same shape "
-                    "as dimensions."
-                )
-            if isinstance(self.center, np.ndarray) and self.center.ndim != 1:
-                raise ValueError("Parameter `center` must have a 1d array")
-
-        # Required keys in options argument
-        if not all(key in self.options for key in ("c1", "c2", "w")):
-            raise KeyError("Missing either c1, c2, or w in options")
-
     def __init__(
         self,
         n_particles,
@@ -168,8 +105,6 @@ class SwarmOptimizer(abc.ABC):
                 "velocity",
             ],
         )
-        # Invoke assertions
-        self.assertions()
         # Initialize resettable attributes
         self.reset()
 
