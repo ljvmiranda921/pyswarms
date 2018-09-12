@@ -39,9 +39,15 @@ def cost(cost_func):
     cost_dec : callable
         The vectorized output for all particles as defined by :code:`cost_func`
     """
+
     def cost_dec(particles, **kwargs):
         n_particles = particles.shape[0]
-        vector = np.array([cost_func(particles[i], **kwargs) for i in range(n_particles)])
-        assert vector.shape == (n_particles, ), "The cost function should return a single value."
+        vector = np.array(
+            [cost_func(particles[i], **kwargs) for i in range(n_particles)]
+        )
+        assert vector.shape == (
+            n_particles,
+        ), "The cost function should return a single value."
         return vector
+
     return cost_dec
