@@ -167,52 +167,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             raise TypeError("Parameter `topology` must be a Topology object")
         else:
             self.top = topology
-
-        # Case for the Ring topology
-        if isinstance(topology, (Ring, VonNeumann)):
-            # Assign p-value as attributes
-            self.p = options["p"]
-            # Exceptions for the p value
-            if "p" not in self.options:
-                raise KeyError("Missing p in options")
-            if self.p not in [1, 2]:
-                raise ValueError(
-                    "p-value should either be 1 (for L1/Minkowski) "
-                    "or 2 (for L2/Euclidean)."
-                )
-
-        # Case for Random, VonNeumann and Ring topologies
-        if isinstance(topology, (Random, Ring, VonNeumann)):
-            if not isinstance(topology, VonNeumann):
-                self.k = options["k"]
-                if not isinstance(self.k, int):
-                    raise ValueError(
-                        "No. of neighbors must be an integer between"
-                        "0 and no. of particles."
-                    )
-                if not 0 <= self.k <= self.n_particles - 1:
-                    raise ValueError(
-                        "No. of neighbors must be between 0 and no. "
-                        "of particles."
-                    )
-                if "k" not in self.options:
-                    raise KeyError("Missing k in options")
-            else:
-                # Assign range r as attribute
-                self.r = options["r"]
-                if not isinstance(self.r, int):
-                    raise ValueError("The range must be a positive integer")
-                if (
-                    self.r <= 0
-                    or not 0
-                    <= VonNeumann.delannoy(self.swarm.dimensions, self.r)
-                    <= self.n_particles - 1
-                ):
-                    raise ValueError(
-                        "The range must be set such that the computed"
-                        "Delannoy number (number of neighbours) is"
-                        "between 0 and the no. of particles."
-                    )
         self.name = __name__
 
     def optimize(self, objective_func, iters, fast=False, **kwargs):

@@ -98,7 +98,6 @@ def test_center_exception(err, center, options, topology):
             5, 2, center=center, options=options, topology=topology
         )
 
-
 def test_reset_default_values(gbest_reset):
     """Tests if best cost and best pos are set properly when the reset()
     method is called"""
