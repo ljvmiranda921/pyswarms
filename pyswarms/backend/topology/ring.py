@@ -20,7 +20,7 @@ from .base import Topology
 
 
 class Ring(Topology):
-    def __init__(self, k, p, static=False):
+    def __init__(self, p, k, static=False):
         """Initializes the class
 
         Parameters

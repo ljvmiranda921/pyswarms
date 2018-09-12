@@ -13,11 +13,12 @@ from ...utils.reporter import Reporter
 
 
 class VonNeumann(Ring):
-    def __init__(self):
-        super(VonNeumann, self).__init__(static=True)
+    def __init__(self, p, r):
+        super(VonNeumann, self).__init__(static=True, p=p, k=None)
+        self.r = r
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
-    def compute_gbest(self, swarm, p, r):
+    def compute_gbest(self, swarm):
         """Updates the global best using a neighborhood approach
 
         The Von Neumann topology inherits from the Ring topology and uses
@@ -43,8 +44,8 @@ class VonNeumann(Ring):
         float
             Best cost
         """
-        neighbors = VonNeumann.delannoy(swarm.dimensions, r)
-        return super(VonNeumann, self).compute_gbest(swarm, p, neighbors)
+        self.k = VonNeumann.delannoy(swarm.dimensions, self.r)
+        return super(VonNeumann, self).compute_gbest(swarm)
 
     @staticmethod
     def delannoy(d, r):
