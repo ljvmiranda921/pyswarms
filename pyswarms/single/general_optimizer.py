@@ -257,37 +257,11 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 self.swarm
             )
             best_cost_yet_found = self.swarm.best_cost
-            # If the topology is a ring topology just use the local minimum
-            # TODO
-            if isinstance(self.top, Ring) and not isinstance(
-                self.top, VonNeumann
-            ):
-                # Update gbest from neighborhood
+            # Update swarm
+            if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
                 self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                    self.swarm, self.p, self.k
+                    self.swarm
                 )
-            # If the topology is a VonNeumann topology pass the neighbour and range attribute to compute_gbest()
-            # TODO
-            if isinstance(self.top, VonNeumann):
-                # Update gbest from neighborhood
-                self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                    self.swarm, self.p, self.r
-                )
-            # If the topology is a random topology pass the neighbor attribute to compute_gbest()
-            # TODO
-            elif isinstance(self.top, Random):
-                # Get minima of pbest and check if it's less than gbest
-                if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
-                    self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                        self.swarm, self.k
-                    )
-            else:
-                # Get minima of pbest and check if it's less than gbest
-                # TODO
-                if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
-                    self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                        self.swarm
-                    )
             # Print to console
             self.rep.hook(best_cost=self.swarm.best_cost)
             hist = self.ToHistory(
