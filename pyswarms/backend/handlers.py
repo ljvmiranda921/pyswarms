@@ -252,14 +252,14 @@ class BoundaryHandler(object):
         try:
             lb, ub = k["bounds"]
             lower_than_bound, greater_than_bound = self.__out_of_bounds(
-                    k["position"], k["bounds"]
+                k["position"], k["bounds"]
             )
             new_pos = k["position"]
-            new_pos[lower_than_bound] = 0.5 * (self.memory[lower_than_bound] +
-                    lb[lower_than_bound[1]]
+            new_pos[lower_than_bound] = 0.5 * (
+                self.memory[lower_than_bound] + lb[lower_than_bound[1]]
             )
-            new_pos[greater_than_bound] = 0.5 * (self.memory[greater_than_bound] +
-                    ub[greater_than_bound[1]]
+            new_pos[greater_than_bound] = 0.5 * (
+                self.memory[greater_than_bound] + ub[greater_than_bound[1]]
             )
             self.memory = new_pos
         except KeyError:
@@ -292,7 +292,9 @@ class BoundaryHandler(object):
                 # unsuccessfully redraws the velocity.
                 masking_vel = compute_velocity(k["swarm"], k["clamp"])
                 new_vel[lower_than_bound[0]] = masking_vel[lower_than_bound[0]]
-                new_vel[greate_than_bound[0]] = masking_vel[greater_than_bound[0]]
+                new_vel[greate_than_bound[0]] = masking_vel[
+                    greater_than_bound[0]
+                ]
         except KeyError:
             self.rep.log.exception("Keyword 'bound' or 'position' missing")
             raise
@@ -308,19 +310,18 @@ class BoundaryHandler(object):
         try:
             lb, ub = k["bounds"]
             lower_than_bound, greater_than_bound = sel.__out_of_bounds(
-                    k["position"], k["bounds"]
+                k["position"], k["bounds"]
             )
             bound_d = np.abs(ub - lb)
             new_pos = k["position"]
-            new_pos[lower_than_bound] = np.remainder((ub - lb +
-                new_pos[lower_than_bound[0]]), bound_d
+            new_pos[lower_than_bound] = np.remainder(
+                (ub - lb + new_pos[lower_than_bound[0]]), bound_d
             )
-            new_pos[greater_than_bound] = np.remainder((lb +
-                (new_pos[greater_than_bound[0]] - ub)), bound_d
+            new_pos[greater_than_bound] = np.remainder(
+                (lb + (new_pos[greater_than_bound[0]] - ub)), bound_d
             )
         except KeyError:
             self.rep.log.exception("Keyword 'bound' or 'position' missing")
             raise
         else:
             return new_pos
-
