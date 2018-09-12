@@ -1,5 +1,6 @@
-import pytest
+# Import modules
 import numpy as np
+import pytest
 
 
 @pytest.fixture()

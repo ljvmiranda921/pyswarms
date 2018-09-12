@@ -55,9 +55,11 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
+# Import standard library
 import logging
 from time import sleep
 
+# Import modules
 import numpy as np
 
 from ..backend.operators import compute_pbest
@@ -122,8 +124,6 @@ class GlobalBestPSO(SwarmOptimizer):
 
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
-        # Invoke assertions
-        self.assertions()
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
@@ -153,30 +153,24 @@ class GlobalBestPSO(SwarmOptimizer):
             the global best cost and the global best position.
         """
 
-        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=10)
+        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
-            "Optimize for {} iters with {}".format(iters, self.options), lvl=20
+            "Optimize for {} iters with {}".format(iters, self.options),
+            lvl=logging.INFO,
         )
 
         for i in self.rep.pbar(iters, self.name):
             if not fast:
                 sleep(0.01)
             # Compute cost for current position and personal best
-            self.swarm.current_cost = objective_func(
-                self.swarm.position, **kwargs
-            )
-            self.swarm.pbest_cost = objective_func(
-                self.swarm.pbest_pos, **kwargs
-            )
-            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
-                self.swarm
-            )
+            # fmt: off
+            self.swarm.current_cost = objective_func(self.swarm.position, **kwargs)
+            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos, **kwargs)
+            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
+            # Set best_cost_yet_found for ftol
             best_cost_yet_found = self.swarm.best_cost
-            # Get minima of pbest and check if it's less than gbest
-            if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
-                self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                    self.swarm
-                )
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
+            # fmt: on
             self.rep.hook(best_cost=self.swarm.best_cost)
             # Save to history
             hist = self.ToHistory(
@@ -209,6 +203,6 @@ class GlobalBestPSO(SwarmOptimizer):
             "Optimization finished | best cost: {}, best pos: {}".format(
                 final_best_cost, final_best_pos
             ),
-            lvl=20,
+            lvl=logging.INFO,
         )
         return (final_best_cost, final_best_pos)
