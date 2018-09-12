@@ -167,26 +167,30 @@ class BoundaryHandler(object):
         try:
             lb, ub = k["bounds"]
             lower_than_bound, greater_than_bound = self.__out_of_bounds(
-                    k["position"], k["bounds"]
+                k["position"], k["bounds"]
             )
             velocity = k["position"] - self.memory
             # Create a coefficient matrix
-            sigma = np.tile(1, (k["position"].shape[1], k["position"].shape[0]))
-            sigma[lower_than_bound]= (
-                    lb[lower_than_bound[1]] - self.memory[lower_than_bound]
+            sigma = np.tile(
+                1, (k["position"].shape[1], k["position"].shape[0])
+            )
+            sigma[lower_than_bound] = (
+                lb[lower_than_bound[1]] - self.memory[lower_than_bound]
             ) / velocity[lower_than_bound]
             min_sigma = np.amin(sigma, axis=0)
             new_pos = k["position"]
-            new_pos[lower_than_bound[0]] = (self.memory[lower_than_bound[0]] +
-                min_sigma[lower_than_bound[0]] * velocity[lower_than_bound[0]])
+            new_pos[lower_than_bound[0]] = (
+                self.memory[lower_than_bound[0]]
+                + min_sigma[lower_than_bound[0]]
+                * velocity[lower_than_bound[0]]
+            )
         except KeyError:
             self.rep.log.exception("Keyword 'bounds'  or 'position' not found")
             raise
         else:
             return new_pos
 
-
-   def random(self, **k):
+    def random(self, **k):
         """Set position to random location
 
         This method resets particles that exeed the bounds to a random position
