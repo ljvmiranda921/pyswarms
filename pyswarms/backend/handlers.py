@@ -7,6 +7,10 @@ algorithm. Particles that do not stay inside these boundary conditions have to
 be handled by either adjusting their position after they left the bounded
 search space or adjusting their velocity when it would position them outside
 the search space.
+For the follwing documentation let :math:`x_{i, t, d}` be the :math:`d` th
+coordinate of the particle :math:`i` 's position vector at the time :math:`t`,
+:math:`lb` the vector of the lower boundaries and :math:`ub` the vector of the
+upper boundaries.
 """
 
 import inspect
@@ -134,23 +138,20 @@ class BoundaryHandler(object):
         }
 
     def nearest(self, **k):
-        """Set position to nearest bound
+        r"""Set position to nearest bound
 
         This method resets particles that exceed the bounds to the nearest
         available bound. For every axis on which the coordiantes of the particle
         surpasses the boundary conditions the coordinate is set to the respective
         bound that it surpasses.
-        Let :math:`x_{i, t, d}` be the :math:`d`th coordinate of the particle
-        :math:`i`'s position vector at the time :math:`t`, :math:`lb` the vector
-        of the lower bound and :math:`ub` the vector of the upper bound.
         The following equation describes this strategy:
 
         .. math::
 
             x_{i, t, d} = \begin{cases}
-                                lb_d &\quad \text{if }x_{i, t, d} < lb_d \\
-                                ub_d &\quad \text{if }x_{i, t, d} > ub_d \\
-                                x_{i, t, d} &\quad \text{otherwise}
+                                lb_d & \quad \text{if }x_{i, t, d} < lb_d \\
+                                ub_d & \quad \text{if }x_{i, t, d} > ub_d \\
+                                x_{i, t, d} & \quad \text{otherwise}
                           \end{cases}
 
         """
@@ -171,11 +172,36 @@ class BoundaryHandler(object):
         pass
 
     def shrink(self, **k):
-        """Set the particle to the boundary
+        r"""Set the particle to the boundary
 
         This methods resets particles that exceed the bounds to the intersection
         of its previous velocity and the bound. This can be imagined as shrinking
         the previous velocity until the particle is back in the valid search space.
+        Let :math:`\sigma_{i, t, d}` be the :math:`d` th shrinking value of the
+        :math:`i` th particle at the time :math:`t` and :math:`v_{i, t}` the velocity
+        of the :math:`i` th particle at the time :math:`t`. Then the new position
+        computed by the follwing equation:
+
+        .. math::
+            :nowrap:
+
+            \begin{gather*}
+            \mathbf{x}_{i, t} = \mathbf{x}_{i, t-1} + \sigma_{i, t} \mathbf{v}_{i, t} \\
+            \\
+            \text{with} \\
+            \\
+            \sigma_{i, t, d} = \begin{cases}
+                                \frac{lb_d-x_{i, t-1, d}}{v_{i, t, d}} & \quad \text{if } x_{i, t, d} < lb_d \\
+                                \frac{ub_d-x_{i, t-1, d}}{v_{i, t, d}} & \quad \text{if } x_{i, t, d} > ub_d \\
+                                1 & \quad \text{otherwise}
+                          \end{cases} \\
+            \\
+            \text{and} \\
+            \\
+            \sigma_{i, t} = \min_{d=1...n} \sigma_{i, t, d}
+            \\
+            \end{gather*}
+
         """
         try:
             lb, ub = k["bounds"]
