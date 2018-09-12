@@ -140,6 +140,19 @@ class BoundaryHandler(object):
         available bound. For every axis on which the coordiantes of the particle
         surpasses the boundary conditions the coordinate is set to the respective
         bound that it surpasses.
+        Let :math:`x_{i, t, d}` be the :math:`d`th coordinate of the particle
+        :math:`i`'s position vector at the time :math:`t`, :math:`lb` the vector
+        of the lower bound and :math:`ub` the vector of the upper bound.
+        The following equation describes this strategy:
+
+        .. math::
+
+            x_{i, t, d} = \begin{cases}
+                                lb_d &\quad \text{if }x_{i, t, d} < lb_d \\
+                                ub_d &\quad \text{if }x_{i, t, d} > ub_d \\
+                                x_{i, t, d} &\quad \text{otherwise}
+                          \end{cases}
+
         """
         try:
             lb, ub = k["bounds"]
@@ -149,7 +162,7 @@ class BoundaryHandler(object):
                 bool_lower, lb, k["position"]
             )
         except KeyError:
-            self.rep.log.exception("Keyword 'bounds'  or 'position' not found")
+            self.rep.log.exception("Keyword 'bounds'  or 'position' missing")
             raise
         else:
             return new_pos
@@ -184,8 +197,9 @@ class BoundaryHandler(object):
                 + min_sigma[lower_than_bound[0]]
                 * velocity[lower_than_bound[0]]
             )
+            self.memory = new_pos
         except KeyError:
-            self.rep.log.exception("Keyword 'bounds'  or 'position' not found")
+            self.rep.log.exception("Keyword 'bounds' or 'position' missing")
             raise
         else:
             return new_pos
@@ -222,13 +236,37 @@ class BoundaryHandler(object):
                 ]
             )
         except KeyError:
-            self.rep.log.exception("Keyword 'bounds'  or 'position' not found")
+            self.rep.log.exception("Keyword 'bounds' or 'position' missing")
             raise
         else:
             return new_pos
 
     def intermediate(self, **k):
-        pass
+        """Set the particle to an intermediate position
+
+        This method resets particles that exceed the bounds to an intermediate
+        position between the bound and their earlier position. Namely, it changes
+        the coordinate of the out-of-bounds axis to the middle value between the
+        previous position and the boundary of the axis.
+        """
+        try:
+            lb, ub = k["bounds"]
+            lower_than_bound, greater_than_bound = self.__out_of_bounds(
+                    k["position"], k["bounds"]
+            )
+            new_pos = k["position"]
+            new_pos[lower_than_bound] = 0.5 * (self.memory[lower_than_bound] +
+                    lb[lower_than_bound[1]]
+            )
+            new_pos[greater_than_bound] = 0.5 * (self.memory[greater_than_bound] +
+                    ub[greater_than_bound[1]]
+            )
+            self.memory = new_pos
+        except KeyError:
+            self.rep.log.exception("Keyword 'bound' or 'position' missing")
+            raise
+        else:
+            return new_pos
 
     def resample(self, **k):
         """Redraw velocity until the particle is feasible
@@ -236,17 +274,53 @@ class BoundaryHandler(object):
         This method redraws the particle velocity if it would cause a particle to
         go out-of-bounds in the next optimization step.
         """
-        lb, ub = k["bounds"]
-        new_vel = k["velocity"]
-        while True:
-            lower_than_bound, greater_than_bound = self.__out_of_bounds(
-                k["position"], k["bounds"], k["velocity"]
+        try:
+            lb, ub = k["bounds"]
+            new_vel = k["velocity"]
+            while True:
+                lower_than_bound, greater_than_bound = self.__out_of_bounds(
+                    k["position"], k["bounds"], k["velocity"]
+                )
+
+                if not lower_than_bound and not greater_than_bound:
+                    break
+
+                # TODO Create a more efficient method to redraw the velocity
+                # One possibility would be to force it to the middle of the
+                # boundaries by using a dummy swarm with all pbests and gbests
+                # in the middle. Another one is to reduce the clamp every time it
+                # unsuccessfully redraws the velocity.
+                masking_vel = compute_velocity(k["swarm"], k["clamp"])
+                new_vel[lower_than_bound[0]] = masking_vel[lower_than_bound[0]]
+                new_vel[greate_than_bound[0]] = masking_vel[greater_than_bound[0]]
+        except KeyError:
+            self.rep.log.exception("Keyword 'bound' or 'position' missing")
+            raise
+        else:
+            return new_vel
+
+    def periodic(self, **k):
+        """Sets the particles a perodic fashion
+        This method resets the particles that exeed the bounds by using the
+        modulo function to cut down the position. This creates a virtual,
+        periodic plane which is tiled with the search space.
+        """
+        try:
+            lb, ub = k["bounds"]
+            lower_than_bound, greater_than_bound = sel.__out_of_bounds(
+                    k["position"], k["bounds"]
             )
+            bound_d = np.abs(ub - lb)
+            new_pos = k["position"]
+            new_pos[lower_than_bound] = np.remainder((ub - lb +
+                new_pos[lower_than_bound[0]]), bound_d
+            )
+            new_pos[greater_than_bound] = np.remainder((lb +
+                (new_pos[greater_than_bound[0]] - ub)), bound_d
+            )
+        except KeyError:
+            self.rep.log.exception("Keyword 'bound' or 'position' missing")
+            raise
+        else:
+            return new_pos
 
-            if not lower_than_bound and not greater_than_bound:
-                break
-
-            masking_vel = compute_velocity(k["swarm"], k["clamp"])
-            new_vel[lower_than_bound[0]] = masking_vel[lower_than_bound[0]]
-            new_vel[greate_than_bound[0]] = masking_vel[greater_than_bound[0]]
-        return new_vel
