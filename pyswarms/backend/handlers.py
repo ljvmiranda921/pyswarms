@@ -211,9 +211,7 @@ class BoundaryHandler(object):
                 )
                 velocity = k["position"] - self.memory
                 # Create a coefficient matrix
-                sigma = np.tile(
-                    1, k["position"].shape
-                )
+                sigma = np.tile(1, k["position"].shape)
                 sigma[lower_than_bound] = (
                     lb[lower_than_bound[1]] - self.memory[lower_than_bound]
                 ) / velocity[lower_than_bound]
@@ -246,12 +244,16 @@ class BoundaryHandler(object):
             new_pos = k["position"]
             new_pos[greater_than_bound[0]] = np.array(
                 [
-                    (ub - lb) * np.random.random_sample((k["position"].shape[1],)) + lb
+                    (ub - lb)
+                    * np.random.random_sample((k["position"].shape[1],))
+                    + lb
                 ]
             )
             new_pos[lower_than_bound[0]] = np.array(
                 [
-                    (ub - lb) * np.random.random_sample((k["position"].shape[1],)) + lb
+                    (ub - lb)
+                    * np.random.random_sample((k["position"].shape[1],))
+                    + lb
                 ]
             )
         except KeyError:
@@ -344,6 +346,7 @@ class BoundaryHandler(object):
         else:
             return new_pos
 
+
 # TODO Finish it
 class VelocityHandler(object):
     def __init__(self, strategy):
@@ -394,6 +397,7 @@ class VelocityHandler(object):
             raise
         else:
             return new_position
+
     def resample(self, **k):
         """Redraw velocity until the particle is feasible
 
