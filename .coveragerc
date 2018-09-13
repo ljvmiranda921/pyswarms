@@ -2,4 +2,7 @@
 exclude_lines =
     pragma: no cover
     @abc.abstractmethod
+<<<<<<< HEAD
     pos = init_pos
+=======
+>>>>>>> 092ad40... Add pytest-cov config file
