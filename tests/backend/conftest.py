@@ -9,7 +9,6 @@ import numpy as np
 
 # Import from package
 from pyswarms.backend.swarms import Swarm
-from pyswarms.backend.handlers import BoundaryHandler
 
 
 @pytest.fixture
@@ -27,23 +26,29 @@ def swarm():
     }
     return Swarm(**attrs_at_t)
 
-@pytest.fixture(params=[
-                "nearest",
-                "random",
-                "shrink",
-                "reflective",
-                "intermediate",
-                "resample"])
-def bh(request):
-    """A parametrizized BoundaryHandler instance"""
-    bh_ = BoundaryHandler(strategy=request.param)
-    return bh_
-
 @pytest.fixture
 def bounds():
-    bounds_ = (np.array([5,7,3]), np.array([9,12,5]))
+    bounds_ = (np.array([2, 3, 1]), np.array([4, 7, 8]))
     return bounds_
 
 @pytest.fixture
-def positions():
-    pass
+def positions_inbound():
+    pos_ = np.array([[3.3, 4.4, 2.3],
+                     [3.7, 5.2, 7.0],
+                     [2.5, 6.8, 2.3],
+                     [2.1, 6.9, 4.7],
+                     [2.7, 3.2, 3.5],
+                     [2.5, 5.1, 1.2]
+                    ])
+    return pos_
+
+@pytest.fixture
+def positions_out_of_bound():
+    pos_ = np.array([[5.3, 4.4, 2.3],
+                     [3.7, 9.2, 7.0],
+                     [8.5, 0.8, 2.3],
+                     [2.1, 6.9, 0.7],
+                     [2.7, 9.2, 3.5],
+                     [1.5, 5.1, 9.2]
+                    ])
+    return pos_

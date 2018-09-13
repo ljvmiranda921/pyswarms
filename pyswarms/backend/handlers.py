@@ -44,8 +44,6 @@ class BoundaryHandler(object):
             Reposition the particle to the midpoint between its current
             position on the bound surpassing axis and the bound itself.  This
             only adjusts the axes that surpass the boundaries.
-        * Resample:
-            Redraw the velocity until the next position is inside the bounds.
 
         The BoundaryHandler can be called as a function to use the strategy
         that is passed at initialization to repair boundary issues. An example
@@ -159,9 +157,8 @@ class BoundaryHandler(object):
             lb, ub = k["bounds"]
             bool_greater = k["position"] > ub
             bool_lower = k["position"] < lb
-            new_pos = np.where(bool_greater, ub, k["position"]).where(
-                bool_lower, lb, k["position"]
-            )
+            new_pos = np.where(bool_lower, lb, k["position"])
+            new_pos = np.where(bool_greater, ub, new_pos)
         except KeyError:
             self.rep.log.exception("Keyword 'bounds'  or 'position' missing")
             raise
@@ -204,26 +201,30 @@ class BoundaryHandler(object):
 
         """
         try:
-            lb, ub = k["bounds"]
-            lower_than_bound, greater_than_bound = self.__out_of_bounds(
-                k["position"], k["bounds"]
-            )
-            velocity = k["position"] - self.memory
-            # Create a coefficient matrix
-            sigma = np.tile(
-                1, (k["position"].shape[1], k["position"].shape[0])
-            )
-            sigma[lower_than_bound] = (
-                lb[lower_than_bound[1]] - self.memory[lower_than_bound]
-            ) / velocity[lower_than_bound]
-            min_sigma = np.amin(sigma, axis=0)
-            new_pos = k["position"]
-            new_pos[lower_than_bound[0]] = (
-                self.memory[lower_than_bound[0]]
-                + min_sigma[lower_than_bound[0]]
-                * velocity[lower_than_bound[0]]
-            )
-            self.memory = new_pos
+            if self.memory is None:
+                new_pos = k["position"]
+                self.memory = new_pos
+            else:
+                lb, ub = k["bounds"]
+                lower_than_bound, greater_than_bound = self.__out_of_bounds(
+                    k["position"], k["bounds"]
+                )
+                velocity = k["position"] - self.memory
+                # Create a coefficient matrix
+                sigma = np.tile(
+                    1, k["position"].shape
+                )
+                sigma[lower_than_bound] = (
+                    lb[lower_than_bound[1]] - self.memory[lower_than_bound]
+                ) / velocity[lower_than_bound]
+                min_sigma = np.amin(sigma, axis=1)
+                new_pos = k["position"]
+                new_pos[lower_than_bound[0]] = (
+                    self.memory[lower_than_bound[0]]
+                    + min_sigma[lower_than_bound[0]]
+                    * velocity[lower_than_bound[0]]
+                )
+                self.memory = new_pos
         except KeyError:
             self.rep.log.exception("Keyword 'bounds' or 'position' missing")
             raise
@@ -245,20 +246,12 @@ class BoundaryHandler(object):
             new_pos = k["position"]
             new_pos[greater_than_bound[0]] = np.array(
                 [
-                    (ub[i] - lb[i]) * randr + lb[i]
-                    for randr, i in (
-                        np.random.sample((k["position"].shape[0],)),
-                        k["position"].shape[0],
-                    )
+                    (ub - lb) * np.random.random_sample((k["position"].shape[1],)) + lb
                 ]
             )
             new_pos[lower_than_bound[0]] = np.array(
                 [
-                    (ub[i] - lb[i]) * randr + lb[i]
-                    for randr, i in (
-                        np.random.sample((k["position"].shape[0],)),
-                        k["position"].shape[0],
-                    )
+                    (ub - lb) * np.random.random_sample((k["position"].shape[1],)) + lb
                 ]
             )
         except KeyError:
@@ -268,32 +261,139 @@ class BoundaryHandler(object):
             return new_pos
 
     def intermediate(self, **k):
-        """Set the particle to an intermediate position
+        r"""Set the particle to an intermediate position
 
         This method resets particles that exceed the bounds to an intermediate
         position between the bound and their earlier position. Namely, it changes
         the coordinate of the out-of-bounds axis to the middle value between the
         previous position and the boundary of the axis.
+        The follwing equation describes this strategy:
+
+        .. math::
+
+            x_{i, t, d} = \begin{cases}
+                                \frac{1}{2} \left (x_{i, t-1, d} + lb_d \right) & \quad \text{if }x_{i, t, d} < lb_d \\
+                                \frac{1}{2} \left (x_{i, t-1, d} + ub_d \right) & \quad \text{if }x_{i, t, d} > ub_d \\
+                                x_{i, t, d} & \quad \text{otherwise}
+                          \end{cases}
+
         """
         try:
-            lb, ub = k["bounds"]
-            lower_than_bound, greater_than_bound = self.__out_of_bounds(
-                k["position"], k["bounds"]
-            )
-            new_pos = k["position"]
-            new_pos[lower_than_bound] = 0.5 * (
-                self.memory[lower_than_bound] + lb[lower_than_bound[1]]
-            )
-            new_pos[greater_than_bound] = 0.5 * (
-                self.memory[greater_than_bound] + ub[greater_than_bound[1]]
-            )
-            self.memory = new_pos
+            if self.memory is None:
+                new_pos = k["position"]
+                self.memory = new_pos
+            else:
+                lb, ub = k["bounds"]
+                lower_than_bound, greater_than_bound = self.__out_of_bounds(
+                    k["position"], k["bounds"]
+                )
+                new_pos = k["position"]
+                new_pos[lower_than_bound] = 0.5 * (
+                    self.memory[lower_than_bound] + lb[lower_than_bound[1]]
+                )
+                new_pos[greater_than_bound] = 0.5 * (
+                    self.memory[greater_than_bound] + ub[greater_than_bound[1]]
+                )
+                self.memory = new_pos
         except KeyError:
             self.rep.log.exception("Keyword 'bound' or 'position' missing")
             raise
         else:
             return new_pos
 
+    def periodic(self, **k):
+        r"""Sets the particles a periodic fashion
+
+        This method resets the particles that exeed the bounds by using the
+        modulo function to cut down the position. This creates a virtual,
+        periodic plane which is tiled with the search space.
+        The follwing equation describtes this strategy:
+
+        .. math::
+            :nowrap:
+
+            \begin{gather*}
+            x_{i, t, d} = \begin{cases}
+                                ub_d - (lb_d - x_{i, t, d}) \mod s_d & \quad \text{if }x_{i, t, d} < lb_d \\
+                                lb_d + (x_{i, t, d} - ub_d) \mod s_d & \quad \text{if }x_{i, t, d} > ub_d \\
+                                x_{i, t, d} & \quad \text{otherwise}
+                          \end{cases}\\
+            \\
+            \text{with}\\
+            \\
+            s_d = |ub_d - lb_d|
+            \end{gather*}
+
+        """
+        try:
+            lb, ub = k["bounds"]
+            lower_than_bound, greater_than_bound = self.__out_of_bounds(
+                k["position"], k["bounds"]
+            )
+            bound_d = np.abs(ub - lb)
+            new_pos = k["position"]
+            new_pos[lower_than_bound[0]] = np.remainder(
+                (ub - lb + new_pos[lower_than_bound[0]]), bound_d
+            )
+            new_pos[greater_than_bound[0]] = np.remainder(
+                (lb + (new_pos[greater_than_bound[0]] - ub)), bound_d
+            )
+        except KeyError:
+            self.rep.log.exception("Keyword 'bound' or 'position' missing")
+            raise
+        else:
+            return new_pos
+
+# TODO Finish it
+class VelocityHandler(object):
+    def __init__(self, strategy):
+        """ A VelocityHandler class
+
+        This class offers a way to handle velocities. It contains
+        methods to repair the velocities of particles that exceeded the
+        defined boundaries. Following strategies are available for the handling:
+
+        * Resample:
+            Redraw the velocity until the next position is inside the bounds.
+        """
+        self.strategy = strategy
+        self.strategies = self.__get_all_strategies()
+        self.rep = Reporter(logger=logging.getLogger(__name__))
+        self.memory = None
+
+    def __call__(self, velocity, clamp, **kwargs):
+        """Apply the selected strategy to the velocity-matrix given the bounds
+
+        Parameters
+        ----------
+        velocity : np.ndarray
+            The swarm position to be handled
+        clamp : tuple of :code:`np.ndarray` or list
+            a tuple of size 2 where the first entry is the minimum clamp while
+            the second entry is the maximum clamp. Each array must be of shape
+            :code:`(dimensions,)`
+        kwargs : dict
+
+        Returns
+        -------
+        numpy.ndarray
+            the adjusted positions of the swarm
+        """
+        # Combine `position` and `bounds` with extra keyword args
+        kwargs_ = self.__merge_dicts(
+            {"position": position, "bounds": bounds}, kwargs
+        )
+
+        try:
+            new_position = self.strategies[self.strategy](**kwargs_)
+        except KeyError:
+            message = "Unrecognized strategy: {}. Choose one among: " + str(
+                [strat for strat in self.strategies.keys()]
+            )
+            self.rep.log.exception(message.format(self.strategy))
+            raise
+        else:
+            return new_position
     def resample(self, **k):
         """Redraw velocity until the particle is feasible
 
@@ -326,28 +426,3 @@ class BoundaryHandler(object):
             raise
         else:
             return new_vel
-
-    def periodic(self, **k):
-        """Sets the particles a perodic fashion
-        This method resets the particles that exeed the bounds by using the
-        modulo function to cut down the position. This creates a virtual,
-        periodic plane which is tiled with the search space.
-        """
-        try:
-            lb, ub = k["bounds"]
-            lower_than_bound, greater_than_bound = sel.__out_of_bounds(
-                k["position"], k["bounds"]
-            )
-            bound_d = np.abs(ub - lb)
-            new_pos = k["position"]
-            new_pos[lower_than_bound] = np.remainder(
-                (ub - lb + new_pos[lower_than_bound[0]]), bound_d
-            )
-            new_pos[greater_than_bound] = np.remainder(
-                (lb + (new_pos[greater_than_bound[0]] - ub)), bound_d
-            )
-        except KeyError:
-            self.rep.log.exception("Keyword 'bound' or 'position' missing")
-            raise
-        else:
-            return new_pos
