@@ -145,11 +145,12 @@ def compute_velocity(swarm, clamp):
         return updated_velocity
 
 
-def compute_position(swarm, bounds):
+def compute_position(swarm, bounds, bh):
     """Update the position matrix
 
     This method updates the position matrix given the current position and
-    the velocity. If bounded, it waives updating the position.
+    the velocity. If bounded, the positions are handled by a :code:`BoundaryHandler`
+    instance.
 
     Parameters
     ----------
@@ -159,6 +160,8 @@ def compute_position(swarm, bounds):
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
+    bh : pyswarms.backend.handlers.BoundaryHandler
+        a :code:`BoundaryHandler` instance
 
     Returns
     -------
@@ -170,18 +173,8 @@ def compute_position(swarm, bounds):
         temp_position += swarm.velocity
 
         if bounds is not None:
-            lb, ub = bounds
-            min_bounds = np.repeat(
-                np.array(lb)[np.newaxis, :], swarm.n_particles, axis=0
-            )
-            max_bounds = np.repeat(
-                np.array(ub)[np.newaxis, :], swarm.n_particles, axis=0
-            )
-            mask = np.all(min_bounds <= temp_position, axis=1) * np.all(
-                temp_position <= max_bounds, axis=1
-            )
-            mask = np.repeat(mask[:, np.newaxis], swarm.dimensions, axis=1)
-            temp_position = np.where(~mask, swarm.position, temp_position)
+            temp_position = bh(temp_position, bounds)
+
         position = temp_position
     except AttributeError:
         rep.logger.exception(
