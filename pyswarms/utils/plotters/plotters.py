@@ -16,7 +16,7 @@ cost history from the optimizer instance, and pass it to the
 .. code-block:: python
 
     import pyswarms as ps
-    from pyswarms.utils.functions.single_obj import sphere_func
+    from pyswarms.utils.functions.single_obj import sphere
     from pyswarms.utils.plotters import plot_cost_history
 
     # Set up optimizer
@@ -46,7 +46,7 @@ the position history of your swarm (obtainable from swarm instance):
 .. code-block:: python
 
     import pyswarms as ps
-    from pyswarms.utils.functions.single_obj import sphere_func
+    from pyswarms.utils.functions.single_obj import sphere
     from pyswarms.utils.plotters import plot_cost_history
 
     # Set up optimizer
@@ -58,14 +58,13 @@ the position history of your swarm (obtainable from swarm instance):
     pos_history = optimizer.pos_history
 
     # Plot!
-    plot_trajectory2D(pos_history)
+    plot_contour(pos_history)
 
 You can also supply various arguments in this method: the indices of the
 specific dimensions to be used, the limits of the axes, and the interval/
 speed of animation.
 """
 
-# Import modules
 import logging
 
 import matplotlib.pyplot as plt
@@ -73,11 +72,10 @@ import numpy as np
 from matplotlib import animation, cm
 from mpl_toolkits.mplot3d import Axes3D
 
-# Import from package
 from .formatters import Designer, Animator
+from ..reporter import Reporter
 
-# Initialize logger
-logger = logging.getLogger(__name__)
+rep = Reporter(logger=logging.getLogger(__name__))
 
 
 def plot_cost_history(
@@ -132,6 +130,7 @@ def plot_cost_history(
         ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
         ax.tick_params(labelsize=designer.text_fontsize)
     except TypeError:
+        rep.logger.exception("Please check your input type")
         raise
     else:
         return ax
@@ -234,6 +233,7 @@ def plot_contour(
             repeat_delay=animator.repeat_delay,
         )
     except TypeError:
+        rep.logger.exception("Please check your input type")
         raise
     else:
         return anim
@@ -267,7 +267,7 @@ def plot_surface(
     .. code-block:: python
 
         import pyswarms as ps
-        from pyswarms.utils.functions.single_obj import sphere_func
+        from pyswarms.utils.functions.single_obj import sphere
         from pyswarms.utils.plotters import plot_surface
         from pyswarms.utils.plotters.formatters import Mesher
 
@@ -276,7 +276,7 @@ def plot_surface(
         optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options)
 
         # Prepare position history
-        m = Mesher(func=sphere_func)
+        m = Mesher(func=sphere)
         pos_history_3d = m.compute_history_3d(optimizer.pos_history)
 
         # Plot!
@@ -376,6 +376,7 @@ def plot_surface(
             repeat_delay=animator.repeat_delay,
         )
     except TypeError:
+        rep.logger.exception("Please check your input type")
         raise
     else:
         return anim

@@ -6,18 +6,16 @@ A Von Neumann Network Topology
 This class implements a Von Neumann topology.
 """
 
-# Import from stdlib
 import logging
 
 from .ring import Ring
-
-# Create a logger
-logger = logging.getLogger(__name__)
+from ...utils.reporter import Reporter
 
 
 class VonNeumann(Ring):
     def __init__(self):
         super(VonNeumann, self).__init__(static=True)
+        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, p, r):
         """Updates the global best using a neighborhood approach
@@ -71,8 +69,9 @@ class VonNeumann(Ring):
         if d == 0 or r == 0:
             return 1
         else:
-            del_number = (VonNeumann.delannoy(d - 1, r)
-                          + VonNeumann.delannoy(d - 1, r - 1)
-                          + VonNeumann.delannoy(d, r - 1)
-                          )
+            del_number = (
+                VonNeumann.delannoy(d - 1, r)
+                + VonNeumann.delannoy(d - 1, r - 1)
+                + VonNeumann.delannoy(d, r - 1)
+            )
             return del_number

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
-import pytest
 import numpy as np
+import pytest
 
-# Import from package
 from pyswarms.single import GlobalBestPSO
-from pyswarms.utils.functions.single_obj import sphere_func
+from pyswarms.utils.functions.single_obj import sphere
 
 
 @pytest.mark.parametrize(
@@ -109,5 +107,5 @@ def test_training_history_shape(gbest_history, history, expected_shape):
 def test_ftol_effect(options):
     """Test if setting the ftol breaks the optimization process accodingly"""
     pso = GlobalBestPSO(10, 2, options=options, ftol=1e-1)
-    pso.optimize(sphere_func, 2000, verbose=0)
+    pso.optimize(sphere, 2000)
     assert np.array(pso.cost_history).shape != (2000,)

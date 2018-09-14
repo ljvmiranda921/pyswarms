@@ -17,35 +17,29 @@ in order to check if all functions implemented adheres to
 the design pattern stated above.
 
 Function list:
-- Ackley's, ackley_func
-- Beale, beale_func
-- Booth, booth_func
-- Bukin's No 6, bukin6_func
-- Cross-in-Tray, crossintray_func
-- Easom, easom_func
-- Eggholder, eggholder_func
-- Goldstein, goldstein_func
-- Himmelblau's, himmelblau_func
-- Holder Table, holdertable_func
-- Levi, levi_func
-- Matyas, matyas_func
-- Rastrigin, rastrigin_func
-- Rosenbrock, rosenbrock_func
-- Schaffer No 2, schaffer2_func
-- Sphere, sphere_func
-- Three Hump Camel, threehump_func
+- Ackley's, ackley
+- Beale, beale
+- Booth, booth
+- Bukin's No 6, bukin6
+- Cross-in-Tray, crossintray
+- Easom, easom
+- Eggholder, eggholder
+- Goldstein, goldstein
+- Himmelblau's, himmelblau
+- Holder Table, holdertable
+- Levi, levi
+- Matyas, matyas
+- Rastrigin, rastrigin
+- Rosenbrock, rosenbrock
+- Schaffer No 2, schaffer2
+- Sphere, sphere
+- Three Hump Camel, threehump
 """
 
-# Import from __future__
-from __future__ import with_statement
-from __future__ import absolute_import
-from __future__ import print_function
-
-# Import modules
 import numpy as np
 
 
-def ackley_func(x):
+def ackley(x):
     """Ackley's objective function.
 
     Has a global minimum of `0` at :code:`f(0,0,...,0)` with a search
@@ -81,7 +75,7 @@ def ackley_func(x):
     return j
 
 
-def beale_func(x):
+def beale(x):
     """Beale objective function.
 
     Only takes two dimensions and has a global minimum of `0` at
@@ -124,7 +118,7 @@ def beale_func(x):
     return j
 
 
-def booth_func(x):
+def booth(x):
     """Booth's objective function.
 
     Only takes two dimensions and has a global minimum of `0` at
@@ -161,7 +155,7 @@ def booth_func(x):
     return j
 
 
-def bukin6_func(x):
+def bukin6(x):
     """Bukin N. 6 Objective Function
 
     Only takes two dimensions and has a global minimum  of `0` at
@@ -210,7 +204,7 @@ def bukin6_func(x):
     return j
 
 
-def crossintray_func(x):
+def crossintray(x):
     """Cross-in-tray objective function.
 
     Only takes two dimensions and has a four equal global minimums
@@ -264,7 +258,7 @@ def crossintray_func(x):
     return j
 
 
-def easom_func(x):
+def easom(x):
     """Easom objective function.
 
     Only takes two dimensions and has a global minimum of
@@ -312,7 +306,7 @@ def easom_func(x):
     return j
 
 
-def eggholder_func(x):
+def eggholder(x):
     """Eggholder objective function.
 
     Only takes two dimensions and has a global minimum of
@@ -359,7 +353,7 @@ def eggholder_func(x):
     return j
 
 
-def goldstein_func(x):
+def goldstein(x):
     """Goldstein-Price's objective function.
 
     Only takes two dimensions and has a global minimum at
@@ -424,7 +418,7 @@ def goldstein_func(x):
     return j
 
 
-def himmelblau_func(x):
+def himmelblau(x):
     """Himmelblau's  objective function
 
     Only takes two dimensions and has a four equal global minimums
@@ -470,7 +464,7 @@ def himmelblau_func(x):
     return j
 
 
-def holdertable_func(x):
+def holdertable(x):
     """Holder Table objective function
 
     Only takes two dimensions and has a four equal global minimums
@@ -520,7 +514,7 @@ def holdertable_func(x):
     return j
 
 
-def levi_func(x):
+def levi(x):
     """Levi objective function
 
     Only takes two dimensions and has a global minimum at
@@ -569,7 +563,7 @@ def levi_func(x):
     return j
 
 
-def matyas_func(x):
+def matyas(x):
     """Matyas objective function
 
     Only takes two dimensions and has a global minimum at
@@ -599,7 +593,7 @@ def matyas_func(x):
     return j
 
 
-def rastrigin_func(x):
+def rastrigin(x):
     """Rastrigin objective function.
 
     Has a global minimum at :code:`f(0,0,...,0)` with a search
@@ -632,7 +626,7 @@ def rastrigin_func(x):
     return j
 
 
-def rosenbrock_func(x):
+def rosenbrock(x):
     """Rosenbrock objective function.
 
     Also known as the Rosenbrock's valley or Rosenbrock's banana
@@ -658,7 +652,7 @@ def rosenbrock_func(x):
     return r
 
 
-def schaffer2_func(x):
+def schaffer2(x):
     """Schaffer N.2 objective function
 
     Only takes two dimensions and has a global minimum at
@@ -703,7 +697,7 @@ def schaffer2_func(x):
     return j
 
 
-def sphere_func(x):
+def sphere(x):
     """Sphere objective function.
 
     Has a global minimum at :code:`0` and with a search domain of
@@ -724,7 +718,7 @@ def sphere_func(x):
     return j
 
 
-def threehump_func(x):
+def threehump(x):
     """Three-hump camel objective function
 
     Only takes two dimensions and has a global minimum of `0` at

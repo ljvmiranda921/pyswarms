@@ -6,20 +6,15 @@ A Random Network Topology
 This class implements a random topology. All particles are connected in a random fashion.
 """
 
-# Import from stdlib
-import logging
 import itertools
+import logging
 
-# Import modules
 import numpy as np
 from scipy.sparse.csgraph import connected_components, dijkstra
 
-# Import from package
-from ..import operators as ops
+from .. import operators as ops
+from ...utils.reporter import Reporter
 from .base import Topology
-
-# Create a logger
-logger = logging.getLogger(__name__)
 
 
 class Random(Topology):
@@ -32,6 +27,7 @@ class Random(Topology):
             a boolean that decides whether the topology
             is static or dynamic"""
         super(Random, self).__init__(static)
+        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, k):
         """Update the global best using a random neighborhood approach
@@ -65,10 +61,23 @@ class Random(Topology):
             # Check if the topology is static or dynamic and assign neighbors
             if (self.static and self.neighbor_idx is None) or not self.static:
                 adj_matrix = self.__compute_neighbors(swarm, k)
-                self.neighbor_idx = np.array([adj_matrix[i].nonzero()[0] for i in range(swarm.n_particles)])
-            idx_min = np.array([swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))])
+                self.neighbor_idx = np.array(
+                    [
+                        adj_matrix[i].nonzero()[0]
+                        for i in range(swarm.n_particles)
+                    ]
+                )
+            idx_min = np.array(
+                [
+                    swarm.pbest_cost[self.neighbor_idx[i]].argmin()
+                    for i in range(len(self.neighbor_idx))
+                ]
+            )
             best_neighbor = np.array(
-                [self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]
+                [
+                    self.neighbor_idx[i][idx_min[i]]
+                    for i in range(len(self.neighbor_idx))
+                ]
             ).astype(int)
 
             # Obtain best cost and position
@@ -78,10 +87,9 @@ class Random(Topology):
             ]
 
         except AttributeError:
-            msg = "Please pass a Swarm class. You passed {}".format(
-                type(swarm)
+            self.rep.logger.exception(
+                "Please pass a Swarm class. You passed {}".format(type(swarm))
             )
-            logger.error(msg)
             raise
         else:
             return (best_pos, best_cost)
@@ -186,23 +194,43 @@ class Random(Topology):
         adj_matrix = np.identity(swarm.n_particles, dtype=int)
 
         neighbor_matrix = np.array(
-            [np.random.choice(
-                # Exclude i from the array
-                np.setdiff1d(
-                    np.arange(swarm.n_particles), np.array([i])
-                ), k, replace=False
-            ) for i in range(swarm.n_particles)])
+            [
+                np.random.choice(
+                    # Exclude i from the array
+                    np.setdiff1d(np.arange(swarm.n_particles), np.array([i])),
+                    k,
+                    replace=False,
+                )
+                for i in range(swarm.n_particles)
+            ]
+        )
 
         # Set random elements to one using the neighbor matrix
-        adj_matrix[np.arange(swarm.n_particles).reshape(swarm.n_particles, 1), neighbor_matrix] = 1
-        adj_matrix[neighbor_matrix, np.arange(swarm.n_particles).reshape(swarm.n_particles, 1)] = 1
+        adj_matrix[
+            np.arange(swarm.n_particles).reshape(swarm.n_particles, 1),
+            neighbor_matrix,
+        ] = 1
+        adj_matrix[
+            neighbor_matrix,
+            np.arange(swarm.n_particles).reshape(swarm.n_particles, 1),
+        ] = 1
 
-        dist_matrix = dijkstra(adj_matrix, directed=False, return_predecessors=False, unweighted=True)
+        dist_matrix = dijkstra(
+            adj_matrix,
+            directed=False,
+            return_predecessors=False,
+            unweighted=True,
+        )
 
         # Generate connected graph.
-        while connected_components(adj_matrix, directed=False, return_labels=False) != 1:
+        while (
+            connected_components(
+                adj_matrix, directed=False, return_labels=False
+            )
+            != 1
+        ):
             for i, j in itertools.product(range(swarm.n_particles), repeat=2):
-                    if dist_matrix[i][j] == np.inf:
-                        adj_matrix[i][j] = 1
+                if dist_matrix[i][j] == np.inf:
+                    adj_matrix[i][j] = 1
 
         return adj_matrix
