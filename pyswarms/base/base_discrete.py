@@ -28,18 +28,16 @@ See Also
 
 """
 
-import os
-import yaml
-import logging
-import numpy as np
-import logging.config
+import abc
 from collections import namedtuple
+
+import numpy as np
 
 # Import from package
 from ..backend import create_swarm
 
 
-class DiscreteSwarmOptimizer(object):
+class DiscreteSwarmOptimizer(abc.ABC):
     def assertions(self):
         """Check inputs and throw assertions
 
@@ -73,34 +71,6 @@ class DiscreteSwarmOptimizer(object):
         # Required keys in options argument
         if not all(key in self.options for key in ("c1", "c2", "w")):
             raise KeyError("Missing either c1, c2, or w in options")
-
-    def setup_logging(
-        self,
-        default_path="./config/logging.yaml",
-        default_level=logging.INFO,
-        env_key="LOG_CFG",
-    ):
-        """Setup logging configuration
-
-        Parameters
-        ----------
-        default_path : str (default is `./config/logging.yaml`)
-            the path where the logging configuration is stored
-        default_level: logging.LEVEL (default is `logging.INFO`)
-            the default logging level
-        env_key : str
-            the environment key for accessing the setup
-        """
-        path = default_path
-        value = os.getenv(env_key, None)
-        if value:
-            path = value
-        if os.path.exists(path):
-            with open(path, "rt") as f:
-                config = yaml.safe_load(f.read())
-            logging.config.dictConfig(config)
-        else:
-            logging.basicConfig(level=default_level)
 
     def __init__(
         self,
@@ -146,7 +116,6 @@ class DiscreteSwarmOptimizer(object):
             a dictionary containing the parameters for a specific
             optimization technique
         """
-        self.setup_logging()
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dimensions = dimensions
@@ -193,7 +162,8 @@ class DiscreteSwarmOptimizer(object):
         self.pos_history.append(hist.position)
         self.velocity_history.append(hist.velocity)
 
-    def optimize(self, objective_func, iters, print_step=1, verbose=1, **kwargs):
+    @abc.abstractmethod
+    def optimize(self, objective_func, iters, fast=False, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -206,10 +176,8 @@ class DiscreteSwarmOptimizer(object):
             objective function to be evaluated
         iters : int
             number of iterations
-        print_step : int (the default is 1)
-            amount of steps for printing into console.
-        verbose : int (the default is 1)
-            verbosity setting.
+        fast : bool (default is False)
+            if True, time.sleep is not executed
         kwargs : dict
             arguments for objective function
 

@@ -33,26 +33,25 @@ b = {
 }
 
 
-
 def test_ackley_bound_fail(outbound):
     """Test ackley bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["ackley"].low, b["ackley"].high, size=(3, 2))
-        fx.ackley_func(x)
+        fx.ackley(x)
 
 
 def test_beale_bound_fail(outbound):
     """Test beale bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["beale"].low, b["beale"].high, size=(3, 2))
-        fx.beale_func(x)
+        fx.beale(x)
 
 
 def test_booth_bound_fail(outbound):
     """Test booth bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["booth"].low, b["booth"].high, size=(3, 2))
-        fx.booth_func(x)
+        fx.booth(x)
 
 
 @pytest.mark.parametrize(
@@ -66,70 +65,70 @@ def test_booth_bound_fail(outbound):
 def test_bukin6_bound_fail(x):
     """Test bukin6 bound exception"""
     with pytest.raises(ValueError):
-        fx.bukin6_func(x)
+        fx.bukin6(x)
 
 
 def test_crossintray_bound_fail(outbound):
     """Test crossintray bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["crossintray"].low, b["crossintray"].high, size=(3, 2))
-        fx.crossintray_func(x)
+        fx.crossintray(x)
 
 
 def test_easom_bound_fail(outbound):
     """Test easom bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["easom"].low, b["easom"].high, size=(3, 2))
-        fx.easom_func(x)
+        fx.easom(x)
 
 
 def test_eggholder_bound_fail(outbound):
     """Test eggholder bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["eggholder"].low, b["eggholder"].high, size=(3, 2))
-        fx.eggholder_func(x)
+        fx.eggholder(x)
 
 
 def test_goldstein_bound_fail(outbound):
     """Test goldstein bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["goldstein"].low, b["goldstein"].high, size=(3, 2))
-        fx.goldstein_func(x)
+        fx.goldstein(x)
 
 
 def test_himmelblau_bound_fail(outbound):
     """Test himmelblau bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["himmelblau"].low, b["himmelblau"].high, size=(3, 2))
-        fx.himmelblau_func(x)
+        fx.himmelblau(x)
 
 
 def test_holdertable_bound_fail(outbound):
     """Test holdertable bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["holdertable"].low, b["holdertable"].high, size=(3, 2))
-        fx.holdertable_func(x)
+        fx.holdertable(x)
 
 
 def test_levi_bound_fail(outbound):
     """Test levi bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["levi"].low, b["levi"].high, size=(3, 2))
-        fx.levi_func(x)
+        fx.levi(x)
 
 
 def test_matyas_bound_fail(outbound):
     """Test matyas bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["matyas"].low, b["matyas"].high, size=(3, 2))
-        fx.matyas_func(x)
+        fx.matyas(x)
 
 
 def test_rastrigin_bound_fail(outbound):
     """Test rastrigin bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["rastrigin"].low, b["rastrigin"].high, size=(3, 2))
-        fx.rastrigin_func(x)
+        fx.rastrigin(x)
 
 
 def test_schaffer2_bound_fail(outbound):
@@ -138,11 +137,11 @@ def test_schaffer2_bound_fail(outbound):
         x = outbound(
             b["schaffer2"].low, b["schaffer2"].high, tol=200, size=(3, 2)
         )
-        fx.schaffer2_func(x)
+        fx.schaffer2(x)
 
 
 def test_threehump_bound_fail(outbound):
     """Test threehump bound exception"""
     with pytest.raises(ValueError):
         x = outbound(b["threehump"].low, b["threehump"].high, size=(3, 2))
-        fx.threehump_func(x)
+        fx.threehump(x)

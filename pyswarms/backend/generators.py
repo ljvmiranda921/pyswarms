@@ -9,11 +9,14 @@ here to dictate how a swarm is initialized for your custom PSO.
 
 """
 
-# Import modules
+import logging
+
 import numpy as np
 
-# Import from package
+from ..utils.reporter import Reporter
 from .swarms import Swarm
+
+rep = Reporter(logger=logging.getLogger(__name__))
 
 
 def generate_swarm(
@@ -67,7 +70,12 @@ def generate_swarm(
                 low=min_bounds, high=max_bounds, size=(n_particles, dimensions)
             )
     except ValueError:
+        rep.logger.exception(
+            "Please check the size and value of bounds and dimensions"
+        )
         raise
+    except TypeError:
+        rep.logger.exception("Invalid input type!")
     else:
         return pos
 
@@ -91,8 +99,9 @@ def generate_discrete_swarm(
     """
     try:
         if (init_pos is not None) and binary:
-            if not len(np.unique(init_pos)) == 2:
+            if not len(np.unique(init_pos)) <= 2:
                 raise ValueError("User-defined init_pos is not binary!")
+            # init_pos maybe ones
             pos = init_pos
         elif (init_pos is not None) and not binary:
             pos = init_pos
@@ -103,7 +112,11 @@ def generate_discrete_swarm(
                 size=(n_particles, dimensions)
             ).argsort(axis=1)
     except ValueError:
-        raise
+        rep.logger.exception(
+            "Please check the size and value of bounds and dimensions"
+        )
+    except TypeError:
+        rep.logger.exception("Invalid input type!")
     else:
         return pos
 
@@ -132,8 +145,12 @@ def generate_velocity(n_particles, dimensions, clamp=None):
         velocity = (max_velocity - min_velocity) * np.random.random_sample(
             size=(n_particles, dimensions)
         ) + min_velocity
-    except (ValueError, TypeError):
-        raise
+    except ValueError:
+        rep.logger.exception(
+            "Please check the size and value of clamp and dimensions"
+        )
+    except TypeError:
+        rep.logger.exception("Invalid input type!")
     else:
         return velocity
 
@@ -184,7 +201,7 @@ def create_swarm(
     """
     if discrete:
         position = generate_discrete_swarm(
-            n_particles, dimensions, binary=binary
+            n_particles, dimensions, binary=binary, init_pos=init_pos
         )
     else:
         position = generate_swarm(

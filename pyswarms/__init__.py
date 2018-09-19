@@ -16,5 +16,6 @@ __version__ = "0.3.1"
 
 from .single import global_best, local_best, general_optimizer
 from .discrete import binary
+from .utils.decorators import cost
 
-__all__ = ["global_best", "local_best", "general_optimizer", "binary"]
+__all__ = ["global_best", "local_best", "general_optimizer", "binary", "cost"]

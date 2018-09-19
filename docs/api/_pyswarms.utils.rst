@@ -7,7 +7,9 @@ functionalities.
 
 .. toctree::
 
+   pyswarms.utils.decorators
    pyswarms.utils.functions
-   pyswarms.utils.search
    pyswarms.utils.plotters
-   pyswarms.utils.environments
+   pyswarms.utils.reporter
+   pyswarms.utils.search
+   
