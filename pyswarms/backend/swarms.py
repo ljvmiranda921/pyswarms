@@ -68,7 +68,9 @@ class Swarm(object):
     pbest_pos : numpy.ndarray (default is :code:`None`)
         personal best positions of each particle of shape :code:`(n_particles, dimensions)`
     best_pos : numpy.ndarray (default is empty array)
-        best position found by the swarm of shape :code:`(dimensions, )`
+        best position found by the swarm of shape :code:`(dimensions, )` for the
+        :code:`Star`topology and :code:`(dimensions, particles)` for the other
+        topologies
     pbest_cost : numpy.ndarray (default is empty array)
         personal best costs of each particle of shape :code:`(n_particles, )`
     best_cost : float (default is :code:`np.inf`)
