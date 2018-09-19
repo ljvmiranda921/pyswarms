@@ -72,9 +72,8 @@ class Ring(Topology):
             # independently of each other.
             if self.k == 1:
                 # The minimum index is itself, no mapping needed.
-                best_neighbor = swarm.pbest_cost[self.neighbor_idx][
-                    :, np.newaxis
-                ].argmin(axis=0)
+                self.neighbor_idx = self.neighbor_idx[:, np.newaxis]
+                best_neighbor = np.arange(swarm.n_particles)
             else:
                 idx_min = swarm.pbest_cost[self.neighbor_idx].argmin(axis=1)
                 best_neighbor = self.neighbor_idx[
