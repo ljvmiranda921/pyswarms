@@ -430,3 +430,38 @@ class VelocityHandler(object):
             raise
         else:
             return new_vel
+
+    def unmodified(self, **k):
+        """Leaves the velocity unchanged"""
+        try:
+            return k["velocity"]
+        except KeyError:
+            self.rep.log.exceptions("Keyword 'velocity' missing")
+            raise
+
+    def adjust(self, **k):
+        r"""Adjust the velocity to the new position
+
+        The velocity is adjusted such that the follwing equation holds:
+        .. math::
+
+                \mathbf{v_{i,t}} = \mathbf{x_{i,t}} - \mathbf{x_{i,t-1}}
+
+        .. note::
+            This method should only be used in combination with a position handling
+            operation.
+
+        """
+        try:
+            if self.memory is None:
+                new_vel = k["velocity"]
+                self.memory = k["position"]
+            else:
+                new_vel = k["position"] - self.memory
+                self.memory = k["position"]
+        except KeyError:
+            self.rep.log.exception("Keyword 'position' or 'velocity' missing")
+            raise
+        else:
+            return new_vel
+
