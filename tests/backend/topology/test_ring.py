@@ -16,7 +16,6 @@ def test_update_gbest_neighborhood(swarm, p, k, static):
     """Test if update_gbest_neighborhood gives the expected return values"""
     topology = Ring(static=static, p=p, k=k)
     pos, cost = topology.compute_gbest(swarm)
-    expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
     if p == 1:
         if k == 9:
             expected_pos = np.array(

@@ -252,7 +252,11 @@ class LocalBestPSO(SwarmOptimizer):
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.position[self.swarm.pbest_cost.argmin(axis=0)].copy()
-        end_report(
-            final_best_cost, final_best_pos, verbose, logger=self.logger
+        # Write report in log and return final cost and position
+        self.rep.log(
+            "Optimization finished | best cost: {}, best pos: {}".format(
+                final_best_cost, final_best_pos
+            ),
+            lvl=20,
         )
         return (final_best_cost, final_best_pos)

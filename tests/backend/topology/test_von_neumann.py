@@ -13,8 +13,8 @@ from pyswarms.backend.topology import VonNeumann
 @pytest.mark.parametrize("p", [1, 2])
 def test_update_gbest_neighborhood(swarm, p, r):
     """Test if update_gbest_neighborhood gives the expected return values"""
-    topology = VonNeumann()
-    pos, cost = topology.compute_gbest(swarm, p=p, r=r)
+    topology = VonNeumann(p=p, r=r)
+    pos, cost = topology.compute_gbest(swarm)
     if p==2 and r==1:
         expected_pos = np.array([[ 9.90438476e-01,  2.50379538e-03,  1.87405987e-05],
                                 [ 9.90438476e-01,  2.50379538e-03,  1.87405987e-05],

@@ -14,8 +14,8 @@ from pyswarms.backend.topology import Random
 def test_update_gbest_neighborhood(swarm, k, static):
     """Test if update_gbest_neighborhood gives the expected return values"""
     np.random.seed(4135157)
-    topology = Random(static=static)
-    pos, cost = topology.compute_gbest(swarm, k=k)
+    topology = Random(static=static, k=k)
+    pos, cost = topology.compute_gbest(swarm)
     if k == 1:
         expected_pos = np.array(
             [
