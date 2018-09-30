@@ -27,6 +27,7 @@ class HandlerMixin(object):
 
     This class offers some basic functionality for the Handlers.
     """
+
     def __merge_dicts(self, *dict_args):
         """Backward-compatible helper method to combine two dicts"""
         result = {}
@@ -126,7 +127,9 @@ class BoundaryHandler(HandlerMixin):
             the adjusted positions of the swarm
         """
         try:
-            new_position = self.strategies[self.strategy](position, bounds, **kwargs)
+            new_position = self.strategies[self.strategy](
+                position, bounds, **kwargs
+            )
         except KeyError:
             message = "Unrecognized strategy: {}. Choose one among: " + str(
                 [strat for strat in self.strategies.keys()]
@@ -168,9 +171,9 @@ class BoundaryHandler(HandlerMixin):
         r"""Set the particle to the boundary
 
         This methods resets particles that exceed the bounds to the intersection
-        of its previous velocity and the bound. This can be imagined as shrinpositionng
+        of its previous velocity and the bound. This can be imagined as shrinking
         the previous velocity until the particle is back in the valid search space.
-        Let :math:`\sigma_{i, t, d}` be the :math:`d` th shrinpositionng value of the
+        Let :math:`\sigma_{i, t, d}` be the :math:`d` th shrinking value of the
         :math:`i` th particle at the time :math:`t` and :math:`v_{i, t}` the velocity
         of the :math:`i` th particle at the time :math:`t`. Then the new position
         computed by the follwing equation:
@@ -233,18 +236,10 @@ class BoundaryHandler(HandlerMixin):
         # Set indices that are greater than bounds
         new_pos = position
         new_pos[greater_than_bound[0]] = np.array(
-            [
-                (ub - lb)
-                * np.random.random_sample((position.shape[1],))
-                + lb
-            ]
+            [(ub - lb) * np.random.random_sample((position.shape[1],)) + lb]
         )
         new_pos[lower_than_bound[0]] = np.array(
-            [
-                (ub - lb)
-                * np.random.random_sample((position.shape[1],))
-                + lb
-            ]
+            [(ub - lb) * np.random.random_sample((position.shape[1],)) + lb]
         )
         return new_pos
 
@@ -362,7 +357,9 @@ class VelocityHandler(HandlerMixin):
             the adjusted positions of the swarm
         """
         try:
-            new_position = self.strategies[self.strategy](velocity, clamp, **kwargs)
+            new_position = self.strategies[self.strategy](
+                velocity, clamp, **kwargs
+            )
         except KeyError:
             message = "Unrecognized strategy: {}. Choose one among: " + str(
                 [strat for strat in self.strategies.keys()]
@@ -372,7 +369,7 @@ class VelocityHandler(HandlerMixin):
         else:
             return new_position
 
-    def unmodified(self, velocity, clamp,**kwargs):
+    def unmodified(self, velocity, clamp, **kwargs):
         """Leaves the velocity unchanged"""
         if clamp is None:
             new_vel = velocity
@@ -410,7 +407,9 @@ class VelocityHandler(HandlerMixin):
                     lower_than_clamp = new_vel <= min_velocity
                     greater_than_clamp = new_vel >= max_velocity
                     new_vel = np.where(lower_than_clamp, min_velocity, new_vel)
-                    new_vel = np.where(greater_than_clamp, max_velocity, new_vel)
+                    new_vel = np.where(
+                        greater_than_clamp, max_velocity, new_vel
+                    )
         except KeyError:
             self.rep.log.exception("Keyword 'position' missing")
             raise
@@ -433,9 +432,12 @@ class VelocityHandler(HandlerMixin):
                 z = 0.5
             else:
                 z = kwargs["z"]
-            lower_than_bound, greater_than_bound = self.__out_of_bounds(kwargs["position"])
-            out_of_bounds= np.concatenate((lower_than_bound, greater_than_bound),
-                    axis=0)
+            lower_than_bound, greater_than_bound = self.__out_of_bounds(
+                kwargs["position"]
+            )
+            out_of_bounds = np.concatenate(
+                (lower_than_bound, greater_than_bound), axis=0
+            )
             new_vel = velocity
             new_vel[out_of_bounds[0]] = (-z) * new_vel[out_of_bounds[0]]
             if clamp is not None:
