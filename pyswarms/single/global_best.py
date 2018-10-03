@@ -110,6 +110,9 @@ class GlobalBestPSO(SwarmOptimizer):
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
+        init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+            option to explicitly set the particles' initial positions. Set to
+            :code:`None` if you wish to generate the particles randomly.
         """
         super(GlobalBestPSO, self).__init__(
             n_particles=n_particles,
