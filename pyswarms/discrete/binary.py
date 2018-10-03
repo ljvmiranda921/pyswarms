@@ -82,10 +82,6 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        velocity_clamp : tuple (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
         options : dict with keys :code:`{'c1', 'c2', 'k', 'p'}`
             a dictionary containing the parameters for the specific
             optimization technique
@@ -102,6 +98,16 @@ class BinaryPSO(DiscreteSwarmOptimizer):
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
                     the Euclidean (or L2) distance.
+        init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+            option to explicitly set the particles' initial positions. Set to
+            :code:`None` if you wish to generate the particles randomly.
+        velocity_clamp : tuple (default is :code:`None`)
+            a tuple of size 2 where the first entry is the minimum velocity
+            and the second entry is the maximum velocity. It
+            sets the limits for velocity clamping.
+        ftol : float
+            relative error in objective_func(best_pos) acceptable for
+            convergence
         """
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))

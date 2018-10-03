@@ -127,6 +127,9 @@ class LocalBestPSO(SwarmOptimizer):
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
                     the Euclidean (or L2) distance.
+        init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+            option to explicitly set the particles' initial positions. Set to
+            :code:`None` if you wish to generate the particles randomly.
         static: bool (Default is :code:`False`)
             a boolean that decides whether the Ring topology
             used is static or dynamic
