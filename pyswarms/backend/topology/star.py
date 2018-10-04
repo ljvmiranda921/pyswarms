@@ -43,7 +43,7 @@ class Star(Topology):
             my_topology = Star()
 
             # Update best_cost and position
-            swarm.best_pos, swarm.best_cost = my_topology.compute_best_particle(my_swarm)
+            swarm.best_pos, swarm.best_cost = my_topology.compute_gbest(my_swarm)
 
         Parameters
         ----------
