@@ -420,8 +420,9 @@ class VelocityHandler(HandlerMixin):
         r"""Invert the velocity if the particle is out of bounds
 
         The velocity is inverted and shrinked. The shrinking is determined by the
-        kwarg :code:`z`. For all velocities whose particles are out of bounds the
-        follwing equation is applied:
+        kwarg :code:`z`. The default shrinking factor is :code:`0.5`. For all
+        velocities whose particles are out of bounds the follwing equation is
+        applied:
         .. math::
 
             \mathbf{v_{i,t}} = -z\mathbf{v_{i,t}}
@@ -446,6 +447,23 @@ class VelocityHandler(HandlerMixin):
                 greater_than_clamp = new_vel >= max_velocity
                 new_vel = np.where(lower_than_clamp, min_velocity, new_vel)
                 new_vel = np.where(greater_than_clamp, max_velocity, new_vel)
+        except KeyError:
+            self.rep.log.exception("Keyword 'position' missing")
+            raise
+        else:
+            return new_vel
+
+    def zero(self, velocity, clamp, **kwargs):
+        """Set velocity to zero if the particle is out of bounds"""
+        try:
+            lower_than_bound, greater_than_bound = self.__out_of_bounds(
+                kwargs["position"]
+            )
+            out_of_bounds = np.concatenate(
+                (lower_than_bounds, greater_than_bounds), axis=0
+            )
+            new_vel = velocity
+            new_vel[out_of_bounds[0]] = np.zeros(velocity.shape[1])
         except KeyError:
             self.rep.log.exception("Keyword 'position' missing")
             raise
