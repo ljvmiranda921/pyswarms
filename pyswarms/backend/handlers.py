@@ -35,15 +35,11 @@ class HandlerMixin(object):
             result.update(dictionary)
         return result
 
-    def __out_of_bounds(self, position, bounds, velocity=None):
+    def __out_of_bounds(self, position, bounds):
         """Helper method to find indices of out-of-bound positions
 
-        This method finds the indices of the particles that are out-of-bound
-        if a velocity is specified it returns the indices of the particles that
-        will be out-of-bounds after the velocity is applied.
+        This method finds the indices of the particles that are out-of-bound.
         """
-        if velocity is not None:
-            position += velocity
         lb, ub = bounds
         greater_than_bound = np.nonzero(position > ub)
         lower_than_bound = np.nonzero(position < lb)

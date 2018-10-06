@@ -32,6 +32,11 @@ def bounds():
     return bounds_
 
 @pytest.fixture
+def clamp():
+    clamp_ = (np.array([2, 3, 1]), np.array([4, 7, 8]))
+    return clamp_
+
+@pytest.fixture
 def positions_inbound():
     pos_ = np.array([[3.3, 4.4, 2.3],
                      [3.7, 5.2, 7.0],

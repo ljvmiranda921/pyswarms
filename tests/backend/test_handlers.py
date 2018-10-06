@@ -1,7 +1,25 @@
 import pytest
 import numpy as np
 
-from pyswarms.backend.handlers import BoundaryHandler
+from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler, HandlerMixin
+
+def test_out_of_bounds(bounds, positions_inbound, positions_out_of_bound):
+    hm = HandlerMixin()
+    out_of_bounds = hm._HandlerMixin__out_of_bounds
+    idx_inbound = out_of_bounds(positions_inbound, bounds)
+    idx_out_of_bounds = out_of_bounds(positions_out_of_bounds, bounds)
+
+    expected_idx = np.array([[0, 1],
+                             [1, 2],
+                             [2, 1],
+                             [2, 2],
+                             [3, 3],
+                             [4, 2],
+                             [5, 1],
+                             [5, 3]
+                            ])
+    assert idx_inbound.all() == None
+    assert idx_out_of_bounds.all() == expected_idx
 
 def test_nearest_strategy(bounds, positions_inbound, positions_out_of_bound):
     bh = BoundaryHandler(strategy="nearest")
