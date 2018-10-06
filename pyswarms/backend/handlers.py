@@ -327,10 +327,14 @@ class VelocityHandler(HandlerMixin):
         defined boundaries. Following strategies are available for the handling:
 
         * Unmodified:
-            Returns the unmodified velocites
+            Returns the unmodified velocites.
         * Adjust
             Returns the velocity that is adjusted to be the distance between the current
             and the previous position.
+        * Invert
+            Inverts and shrinks the velocity by the factor :code:`-z`.
+        * Zero
+            Sets the velocity of out-of-bounds particles to zero.
 
         """
         self.strategy = strategy
@@ -369,20 +373,26 @@ class VelocityHandler(HandlerMixin):
         else:
             return new_position
 
-    def unmodified(self, velocity, clamp, **kwargs):
+    def __apply_clamp(velocity, clamp):
+        """Helper method to apply a clamp to a velocity vector"""
+        clamped_vel = velocity
+        min_velocity, max_velocity = clamp
+        lower_than_clamp = clamped_vel <= min_velocity
+        greater_than_clamp = clamped_vel >= max_velocity
+        clamped_vel = np.where(lower_than_clamp, min_velocity, clamped_vel)
+        clamped_vel = np.where(greater_than_clamp, max_velocity, clamped_vel)
+        return clamped_vel
+
+    def unmodified(self, velocity, clamp=None, **kwargs):
         """Leaves the velocity unchanged"""
         if clamp is None:
             new_vel = velocity
         else:
-            new_vel = velocity
-            min_velocity, max_velocity = clamp
-            lower_than_clamp = new_vel <= min_velocity
-            greater_than_clamp = new_vel >= max_velocity
-            new_vel = np.where(lower_than_clamp, min_velocity, new_vel)
-            new_vel = np.where(greater_than_clamp, max_velocity, new_vel)
+            if clamp is not None:
+                new_vel = self.__apply_clamp(velocity, clamp)
         return new_vel
 
-    def adjust(self, velocity, clamp, **kwargs):
+    def adjust(self, velocity, clamp=None, **kwargs):
         r"""Adjust the velocity to the new position
 
         The velocity is adjusted such that the follwing equation holds:
@@ -403,20 +413,14 @@ class VelocityHandler(HandlerMixin):
                 new_vel = kwargs["position"] - self.memory
                 self.memory = kwargs["position"]
                 if clamp is not None:
-                    min_velocity, max_velocity = clamp
-                    lower_than_clamp = new_vel <= min_velocity
-                    greater_than_clamp = new_vel >= max_velocity
-                    new_vel = np.where(lower_than_clamp, min_velocity, new_vel)
-                    new_vel = np.where(
-                        greater_than_clamp, max_velocity, new_vel
-                    )
+                    new_vel = self.__apply_clamp(new_vel, clamp)
         except KeyError:
             self.rep.log.exception("Keyword 'position' missing")
             raise
         else:
             return new_vel
 
-    def invert(self, velocity, clamp, **kwargs):
+    def invert(self, velocity, clamp=None, **kwargs):
         r"""Invert the velocity if the particle is out of bounds
 
         The velocity is inverted and shrinked. The shrinking is determined by the
@@ -442,18 +446,14 @@ class VelocityHandler(HandlerMixin):
             new_vel = velocity
             new_vel[out_of_bounds[0]] = (-z) * new_vel[out_of_bounds[0]]
             if clamp is not None:
-                min_velocity, max_velocity = clamp
-                lower_than_clamp = new_vel <= min_velocity
-                greater_than_clamp = new_vel >= max_velocity
-                new_vel = np.where(lower_than_clamp, min_velocity, new_vel)
-                new_vel = np.where(greater_than_clamp, max_velocity, new_vel)
+                new_vel = self.__apply_clamp(new_vel, clamp)
         except KeyError:
             self.rep.log.exception("Keyword 'position' missing")
             raise
         else:
             return new_vel
 
-    def zero(self, velocity, clamp, **kwargs):
+    def zero(self, velocity, clamp=None, **kwargs):
         """Set velocity to zero if the particle is out of bounds"""
         try:
             lower_than_bound, greater_than_bound = self.__out_of_bounds(
