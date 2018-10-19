@@ -28,14 +28,14 @@ class HandlerMixin(object):
     This class offers some basic functionality for the Handlers.
     """
 
-    def __merge_dicts(self, *dict_args):
+    def _merge_dicts(self, *dict_args):
         """Backward-compatible helper method to combine two dicts"""
         result = {}
         for dictionary in dict_args:
             result.update(dictionary)
         return result
 
-    def __out_of_bounds(self, position, bounds):
+    def _out_of_bounds(self, position, bounds):
         """Helper method to find indices of out-of-bound positions
 
         This method finds the indices of the particles that are out-of-bound.
@@ -45,7 +45,7 @@ class HandlerMixin(object):
         lower_than_bound = np.nonzero(position < lb)
         return (lower_than_bound, greater_than_bound)
 
-    def __get_all_strategies(self):
+    def _get_all_strategies(self):
         """Helper method to automatically generate a dict of strategies"""
         return {
             k: v
@@ -100,7 +100,7 @@ class BoundaryHandler(HandlerMixin):
             call :code:`BoundaryHandler.strategies`
         """
         self.strategy = strategy
-        self.strategies = self.__get_all_strategies()
+        self.strategies = self._get_all_strategies()
         self.rep = Reporter(logger=logging.getLogger(__name__))
         self.memory = None
 
@@ -200,7 +200,7 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         else:
             lb, ub = bounds
-            lower_than_bound, greater_than_bound = self.__out_of_bounds(
+            lower_than_bound, greater_than_bound = self._out_of_bounds(
                 position, bounds
             )
             velocity = position - self.memory
@@ -226,7 +226,7 @@ class BoundaryHandler(HandlerMixin):
         inside the boundary conditions.
         """
         lb, ub = bounds
-        lower_than_bound, greater_than_bound = self.__out_of_bounds(
+        lower_than_bound, greater_than_bound = self._out_of_bounds(
             position, bounds
         )
         # Set indices that are greater than bounds
@@ -262,7 +262,7 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         else:
             lb, ub = bounds
-            lower_than_bound, greater_than_bound = self.__out_of_bounds(
+            lower_than_bound, greater_than_bound = self._out_of_bounds(
                 position, bounds
             )
             new_pos = position
@@ -300,7 +300,7 @@ class BoundaryHandler(HandlerMixin):
 
         """
         lb, ub = bounds
-        lower_than_bound, greater_than_bound = self.__out_of_bounds(
+        lower_than_bound, greater_than_bound = self._out_of_bounds(
             position, bounds
         )
         bound_d = np.abs(ub - lb)
@@ -334,7 +334,7 @@ class VelocityHandler(HandlerMixin):
 
         """
         self.strategy = strategy
-        self.strategies = self.__get_all_strategies()
+        self.strategies = self._get_all_strategies()
         self.rep = Reporter(logger=logging.getLogger(__name__))
         self.memory = None
 
@@ -369,7 +369,7 @@ class VelocityHandler(HandlerMixin):
         else:
             return new_position
 
-    def __apply_clamp(velocity, clamp):
+    def __apply_clamp(self, velocity, clamp):
         """Helper method to apply a clamp to a velocity vector"""
         clamped_vel = velocity
         min_velocity, max_velocity = clamp
@@ -433,7 +433,7 @@ class VelocityHandler(HandlerMixin):
                 z = 0.5
             else:
                 z = kwargs["z"]
-            lower_than_bound, greater_than_bound = self.__out_of_bounds(
+            lower_than_bound, greater_than_bound = self._out_of_bounds(
                 kwargs["position"]
             )
             out_of_bounds = np.concatenate(
@@ -452,7 +452,7 @@ class VelocityHandler(HandlerMixin):
     def zero(self, velocity, clamp=None, **kwargs):
         """Set velocity to zero if the particle is out of bounds"""
         try:
-            lower_than_bound, greater_than_bound = self.__out_of_bounds(
+            lower_than_bound, greater_than_bound = self._out_of_bounds(
                 kwargs["position"]
             )
             out_of_bounds = np.concatenate(

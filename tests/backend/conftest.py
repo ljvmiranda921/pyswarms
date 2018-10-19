@@ -57,3 +57,25 @@ def positions_out_of_bound():
                      [1.5, 5.1, 9.2]
                     ])
     return pos_
+
+@pytest.fixture
+def velocities_inbound():
+    pos_ = np.array([[3.3, 4.4, 2.3],
+                     [3.7, 5.2, 7.0],
+                     [2.5, 6.8, 2.3],
+                     [2.1, 6.9, 4.7],
+                     [2.7, 3.2, 3.5],
+                     [2.5, 5.1, 1.2]
+                    ])
+    return pos_
+
+@pytest.fixture
+def velocities_out_of_bound():
+    pos_ = np.array([[5.3, 4.4, 2.3],
+                     [3.7, 9.2, 7.0],
+                     [8.5, 0.8, 2.3],
+                     [2.1, 6.9, 0.7],
+                     [2.7, 9.2, 3.5],
+                     [1.5, 5.1, 9.2]
+                    ])
+    return pos_
