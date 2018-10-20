@@ -434,17 +434,15 @@ class VelocityHandler(HandlerMixin):
             else:
                 z = kwargs["z"]
             lower_than_bound, greater_than_bound = self._out_of_bounds(
-                kwargs["position"]
-            )
-            out_of_bounds = np.concatenate(
-                (lower_than_bound, greater_than_bound), axis=0
+                kwargs["position"], kwargs["bounds"]
             )
             new_vel = velocity
-            new_vel[out_of_bounds[0]] = (-z) * new_vel[out_of_bounds[0]]
+            new_vel[lower_than_bound[0]] = (-z) * new_vel[lower_than_bound[0]]
+            new_vel[greater_than_bound[0]] = (-z) * new_vel[greater_than_bound[0]]
             if clamp is not None:
                 new_vel = self.__apply_clamp(new_vel, clamp)
         except KeyError:
-            self.rep.log.exception("Keyword 'position' missing")
+            self.rep.log.exception("Keyword 'position' or 'bounds' missing")
             raise
         else:
             return new_vel
@@ -453,15 +451,13 @@ class VelocityHandler(HandlerMixin):
         """Set velocity to zero if the particle is out of bounds"""
         try:
             lower_than_bound, greater_than_bound = self._out_of_bounds(
-                kwargs["position"]
-            )
-            out_of_bounds = np.concatenate(
-                (lower_than_bounds, greater_than_bounds), axis=0
+                kwargs["position"], kwargs["bounds"]
             )
             new_vel = velocity
-            new_vel[out_of_bounds[0]] = np.zeros(velocity.shape[1])
+            new_vel[lower_than_bound[0]] = np.zeros(velocity.shape[1])
+            new_vel[greater_than_bound[0]] = np.zeros(velocity.shape[1])
         except KeyError:
-            self.rep.log.exception("Keyword 'position' missing")
+            self.rep.log.exception("Keyword 'position' or 'bounds' missing")
             raise
         else:
             return new_vel

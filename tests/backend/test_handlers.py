@@ -40,10 +40,20 @@ def assert_bounds(bounds, positions_inbound, positions_out_of_bound, bh):
     assert not lower_than_bound.all()
     assert not greater_than_bound.all()
 
+def assert_clamp(clamp, velocities_inbound, velocities_out_of_bound, positions_inbound,
+        positions_out_of_bound, vh, bounds=None):
+    # Test if it doesn't handle inclamp velocities
+    inbound_handled = vh(velocities_inbound, clamp, position=positions_inbound,
+            bounds=bounds)
+    assert inbound_handled.all() == velocities_inbound.all()
 
-def assert_clamp():
-    pass
-
+    # Test if all particles are handled to a velocity inside the clamp
+    outbound_handled = vh(velocities_out_of_bound,
+            clamp,position=positions_out_of_bound, bounds=bounds)
+    lower_than_clamp = outbound_handled < clamp[0]
+    greater_than_clamp = outbound_handled > clamp[1]
+    assert not lower_than_clamp.all()
+    assert not greater_than_clamp.all()
 
 def test_nearest_strategy(bounds, positions_inbound, positions_out_of_bound):
     bh = BoundaryHandler(strategy="nearest")
@@ -95,19 +105,26 @@ def test_unmodified_strategy(
     assert outbound_handled.all() == velocities_out_of_bound.all()
 
 
-def test_adjust_strategy(clamp, velocities_inbound, velocities_out_of_bound):
+def test_adjust_strategy(clamp, velocities_inbound, velocities_out_of_bound,
+        positions_inbound, positions_out_of_bound):
     vh = VelocityHandler(strategy="adjust")
+    assert_clamp(clamp, velocities_inbound, velocities_out_of_bound,
+        positions_inbound, positions_out_of_bound, vh)
     # TODO Add strategy specific tests
     pass
 
 
-def test_invert_strategy(clamp, velocities_inbound, velocities_out_of_bound):
+def test_invert_strategy(clamp, velocities_inbound, velocities_out_of_bound,
+        positions_inbound, positions_out_of_bound, bounds):
     vh = VelocityHandler(strategy="invert")
+    assert_clamp(clamp, velocities_inbound, velocities_out_of_bound,
+        positions_inbound, positions_out_of_bound, vh, bounds=bounds)
     # TODO Add strategy specific tests
     pass
 
 
-def test_zero_strategy(clamp, velocities_inbound, velocities_out_of_bound):
+def test_zero_strategy(clamp, velocities_inbound, velocities_out_of_bound,
+        positions_inbound, positions_out_of_bound, bounds):
     vh = VelocityHandler(strategy="zero")
     # TODO Add strategy specific tests
     pass
