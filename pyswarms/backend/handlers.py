@@ -130,7 +130,7 @@ class BoundaryHandler(HandlerMixin):
             message = "Unrecognized strategy: {}. Choose one among: " + str(
                 [strat for strat in self.strategies.keys()]
             )
-            self.rep.log.exception(message.format(self.strategy))
+            self.rep.exception(message.format(self.strategy))
             raise
         else:
             return new_position
@@ -364,7 +364,7 @@ class VelocityHandler(HandlerMixin):
             message = "Unrecognized strategy: {}. Choose one among: " + str(
                 [strat for strat in self.strategies.keys()]
             )
-            self.rep.log.exception(message.format(self.strategy))
+            self.rep.exception(message.format(self.strategy))
             raise
         else:
             return new_position
@@ -411,7 +411,7 @@ class VelocityHandler(HandlerMixin):
                 if clamp is not None:
                     new_vel = self.__apply_clamp(new_vel, clamp)
         except KeyError:
-            self.rep.log.exception("Keyword 'position' missing")
+            self.rep.exception("Keyword 'position' missing")
             raise
         else:
             return new_vel
@@ -442,7 +442,7 @@ class VelocityHandler(HandlerMixin):
             if clamp is not None:
                 new_vel = self.__apply_clamp(new_vel, clamp)
         except KeyError:
-            self.rep.log.exception("Keyword 'position' or 'bounds' missing")
+            self.rep.exception("Keyword 'position' or 'bounds' missing")
             raise
         else:
             return new_vel
@@ -457,7 +457,7 @@ class VelocityHandler(HandlerMixin):
             new_vel[lower_than_bound[0]] = np.zeros(velocity.shape[1])
             new_vel[greater_than_bound[0]] = np.zeros(velocity.shape[1])
         except KeyError:
-            self.rep.log.exception("Keyword 'position' or 'bounds' missing")
+            self.rep.exception("Keyword 'position' or 'bounds' missing")
             raise
         else:
             return new_vel
