@@ -122,8 +122,9 @@ def generate_discrete_swarm(
     """
     try:
         if (init_pos is not None) and binary:
-            if not len(np.unique(init_pos)) == 2:
+            if not len(np.unique(init_pos)) <= 2:
                 raise ValueError("User-defined init_pos is not binary!")
+            # init_pos maybe ones
             pos = init_pos
         elif (init_pos is not None) and not binary:
             pos = init_pos
@@ -226,7 +227,7 @@ def create_swarm(
     """
     if discrete:
         position = generate_discrete_swarm(
-            n_particles, dimensions, binary=binary
+            n_particles, dimensions, binary=binary, init_pos=init_pos
         )
     else:
         position = generate_swarm(
