@@ -29,13 +29,12 @@ yield the minimum score, yet maximum score can also be evaluated.
 """
 
 # Import from __future__
-from __future__ import with_statement
-from __future__ import absolute_import
-from __future__ import print_function
+from __future__ import absolute_import, print_function, with_statement
 
-# Import modules
+# Import standard library
 import itertools
 
+# Import from pyswarms
 # Import from package
 from pyswarms.utils.search.base_search import SearchBase
 

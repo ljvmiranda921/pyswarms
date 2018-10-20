@@ -65,15 +65,17 @@ specific dimensions to be used, the limits of the axes, and the interval/
 speed of animation.
 """
 
+# Import standard library
 import logging
 
+# Import modules
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import animation, cm
 from mpl_toolkits.mplot3d import Axes3D
 
-from .formatters import Designer, Animator
 from ..reporter import Reporter
+from .formatters import Animator, Designer
 
 rep = Reporter(logger=logging.getLogger(__name__))
 

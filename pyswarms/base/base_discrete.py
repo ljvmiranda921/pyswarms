@@ -28,9 +28,11 @@ See Also
 
 """
 
+# Import standard library
 import abc
 from collections import namedtuple
 
+# Import modules
 import numpy as np
 
 # Import from package
@@ -38,40 +40,6 @@ from ..backend import create_swarm
 
 
 class DiscreteSwarmOptimizer(abc.ABC):
-    def assertions(self):
-        """Check inputs and throw assertions
-
-        Raises
-        ------
-        TypeError
-            When the :code:`bounds` is not of type tuple
-        IndexError
-            When the :code:`bounds` is not of size 2.
-            When the arrays in :code:`bounds` is not of equal size.
-            When the shape of :code:`bounds` is not the same as `dimensions`.
-        ValueError
-            When the value of :code:`bounds[1]` is less than
-            :code:`bounds[0]`.
-        """
-
-        # Check clamp settings
-        if self.velocity_clamp is not None:
-            if not isinstance(self.velocity_clamp, tuple):
-                raise TypeError("Parameter `velocity_clamp` must be a tuple")
-            if not len(self.velocity_clamp) == 2:
-                raise IndexError(
-                    "Parameter `velocity_clamp` must be of " "size 2"
-                )
-            if not self.velocity_clamp[0] < self.velocity_clamp[1]:
-                raise ValueError(
-                    "Make sure that velocity_clamp is in the "
-                    "form (v_min, v_max)"
-                )
-
-        # Required keys in options argument
-        if not all(key in self.options for key in ("c1", "c2", "w")):
-            raise KeyError("Missing either c1, c2, or w in options")
-
     def __init__(
         self,
         n_particles,
@@ -136,8 +104,6 @@ class DiscreteSwarmOptimizer(abc.ABC):
                 "velocity",
             ],
         )
-        # Invoke assertions
-        self.assertions()
 
         # Initialize resettable attributes
         self.reset()
