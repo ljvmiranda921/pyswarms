@@ -9,6 +9,8 @@ import pytest
 from pyswarms.backend.topology import Random
 from .abc_test_topology import ABCTestTopology
 
+np.random.seed(4135157)
+
 
 class TestRandomTopology(ABCTestTopology):
     @pytest.fixture

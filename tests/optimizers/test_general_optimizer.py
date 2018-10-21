@@ -13,32 +13,7 @@ import pyswarms.backend.topology as t
 from pyswarms.single import GeneralOptimizerPSO
 from pyswarms.utils.functions.single_obj import sphere
 
-<<<<<<< HEAD
-
-@pytest.mark.parametrize("topology", [object(), int(), dict()])
-def test_topology_type_exception(options, topology):
-    """Tests if exceptions are thrown when the topology has the wrong type"""
-    with pytest.raises(TypeError):
-        GeneralOptimizerPSO(5, 2, options, topology)
-
-
-@pytest.mark.parametrize(
-    "bounds",
-    [
-        tuple(np.array([-5, -5])),
-        (np.array([-5, -5, -5]), np.array([5, 5])),
-        (np.array([-5, -5, -5]), np.array([5, 5, 5])),
-    ],
-)
-def test_bounds_size_exception(bounds, options, topology):
-    """Tests if exceptions are raised when bound sizes are wrong"""
-    with pytest.raises(IndexError):
-        GeneralOptimizerPSO(
-            5, 2, options=options, topology=topology, bounds=bounds
-        )
-=======
 from .abc_test_optimizer import ABCTestOptimizer
->>>>>>> upstream/refactor/general
 
 
 def istopology(x):
@@ -48,7 +23,7 @@ def istopology(x):
 
 # Get all classes in the topology module, then
 # Instatiate topologies, no need to suppy static param
-topologies = [topo() for _, topo in inspect.getmembers(t, istopology)]
+topologies = [topo for _, topo in inspect.getmembers(t, istopology)]
 
 
 class TestGeneralOptimizer(ABCTestOptimizer):
@@ -84,39 +59,6 @@ class TestGeneralOptimizer(ABCTestOptimizer):
             options=options,
             topology=request.param,
         )
-<<<<<<< HEAD
-
-def test_reset_default_values(gbest_reset):
-    """Tests if best cost and best pos are set properly when the reset()
-    method is called"""
-    assert gbest_reset.swarm.best_cost == np.inf
-    assert set(gbest_reset.swarm.best_pos) == set(np.array([]))
-
-
-@pytest.mark.parametrize(
-    "history, expected_shape",
-    [
-        ("cost_history", (1000,)),
-        ("mean_pbest_history", (1000,)),
-        ("mean_neighbor_history", (1000,)),
-        ("pos_history", (1000, 10, 2)),
-        ("velocity_history", (1000, 10, 2)),
-    ],
-)
-def test_training_history_shape(gbest_history, history, expected_shape):
-    """Test if training histories are of expected shape"""
-    pso = vars(gbest_history)
-    assert np.array(pso[history]).shape == expected_shape
-
-
-def test_ftol_effect(options, topology):
-    """Test if setting the ftol breaks the optimization process accordingly"""
-    pso = GeneralOptimizerPSO(
-        10, 2, options=options, topology=topology, ftol=1e-1
-    )
-    pso.optimize(sphere, 2000)
-    assert np.array(pso.cost_history).shape != (2000,)
-=======
         opt.optimize(sphere, 1000)
         opt.reset()
         return opt
@@ -152,4 +94,3 @@ def test_ftol_effect(options, topology):
         with pytest.raises(TypeError):
             # Wrong kwargs
             cost, pos = optimizer.optimize(obj_with_args, 1000, c=1, d=100)
->>>>>>> upstream/refactor/general
