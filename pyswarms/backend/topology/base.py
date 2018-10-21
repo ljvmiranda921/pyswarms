@@ -12,6 +12,7 @@ In addition, this class must interface with any class found in the
 :mod:`pyswarms.backend.swarms.Swarm` module.
 """
 
+# Import standard library
 import abc
 import logging
 
@@ -33,7 +34,7 @@ class Topology(abc.ABC):
             self.rep.log(
                 "Running on `dynamic` topology,"
                 "set `static=True` for fixed neighbors.",
-                lvl=10,
+                lvl=logging.DEBUG,
             )
 
     @abc.abstractmethod

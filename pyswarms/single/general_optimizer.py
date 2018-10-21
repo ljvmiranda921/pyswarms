@@ -56,13 +56,15 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
+# Import standard library
 import logging
 from time import sleep
 
+# Import modules
 import numpy as np
 
 from ..backend.operators import compute_pbest
-from ..backend.topology import Random, Ring, Topology, VonNeumann
+from ..backend.topology import Topology
 from ..base import SwarmOptimizer
 from ..utils.reporter import Reporter
 
@@ -88,7 +90,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1', 'c2', 'w', 'k', 'p'}`
+        options : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1',
+                'c2', 'w', 'k', 'p'}`
             a dictionary containing the parameters for the specific
             optimization technique.
                 * c1 : float
@@ -97,27 +100,26 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                     social parameter
                 * w : float
                     inertia parameter
-                if used with the :code:`Ring`, :code:`VonNeumann` or :code:`Random` topology the additional
-                parameter k must be included
+                if used with the :code:`Ring`, :code:`VonNeumann` or
+                :code:`Random` topology the additional parameter k must be
+                included
                 * k : int
-                    number of neighbors to be considered. Must be a
-                    positive integer less than :code:`n_particles`
+                    number of neighbors to be considered. Must be a positive
+                    integer less than :code:`n_particles`
                 if used with the :code:`Ring` topology the additional
                 parameters k and p must be included
                 * p: int {1,2}
-                    the Minkowski p-norm to use. 1 is the
-                    sum-of-absolute values (or L1 distance) while 2 is
-                    the Euclidean (or L2) distance.
+                    the Minkowski p-norm to use. 1 is the sum-of-absolute
+                    values (or L1 distance) while 2 is the Euclidean (or L2)
+                    distance.
                 if used with the :code:`VonNeumann` topology the additional
                 parameters p and r must be included
                 * r: int
-                    the range of the VonNeumann topology.
-                    This is used to determine the number of
-                    neighbours in the topology.
+                    the range of the VonNeumann topology.  This is used to
+                    determine the number of neighbours in the topology.
         topology : pyswarms.backend.topology.Topology
-            a :code:`Topology` object that defines the topology to use
-            in the optimization process. The currently available topologies
-            are:
+            a :code:`Topology` object that defines the topology to use in the
+            optimization process. The currently available topologies are:
                 * Star
                     All particles are connected
                 * Ring (static and dynamic)
@@ -128,22 +130,25 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                     Particles are connected in N-dimensional simplices
                 * Random (static and dynamic)
                     Particles are connected to k random particles
-                Static variants of the topologies remain with the same neighbours
-                over the course of the optimization. Dynamic variants calculate
-                new neighbours every time step.
+                Static variants of the topologies remain with the same
+                neighbours over the course of the optimization. Dynamic
+                variants calculate new neighbours every time step.
         bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum bound
-            while the second entry is the maximum bound. Each array must
-            be of shape :code:`(dimensions,)`.
+            a tuple of size 2 where the first entry is the minimum bound while
+            the second entry is the maximum bound. Each array must be of shape
+            :code:`(dimensions,)`.
         velocity_clamp : tuple (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
+            a tuple of size 2 where the first entry is the minimum velocity and
+            the second entry is the maximum velocity. It sets the limits for
+            velocity clamping.
         center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
+        init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+            option to explicitly set the particles' initial positions. Set to
+            :code:`None` if you wish to generate the particles randomly.
         """
         super(GeneralOptimizerPSO, self).__init__(
             n_particles,
@@ -158,8 +163,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
-        # Invoke assertions
-        self.assertions()
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology and check for type
@@ -194,28 +197,24 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         if not fast:
             sleep(0.01)
 
-        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=10)
+        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
-            "Optimize for {} iters with {}".format(iters, self.options), lvl=20
+            "Optimize for {} iters with {}".format(iters, self.options),
+            lvl=logging.INFO,
         )
 
         for i in self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
-            self.swarm.current_cost = objective_func(
-                self.swarm.position, **kwargs
-            )
-            self.swarm.pbest_cost = objective_func(
-                self.swarm.pbest_pos, **kwargs
-            )
-            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
-                self.swarm
-            )
+            # fmt: off
+            self.swarm.current_cost = objective_func(self.swarm.position, **kwargs)
+            self.swarm.pbest_cost = objective_func(self.swarm.pbest_pos, **kwargs)
+            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
             best_cost_yet_found = self.swarm.best_cost
+            # fmt: on
             # Update swarm
-            if np.min(self.swarm.pbest_cost) < self.swarm.best_cost:
-                self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                    self.swarm
-                )
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
+                self.swarm, **self.options
+            )
             # Print to console
             self.rep.hook(best_cost=self.swarm.best_cost)
             hist = self.ToHistory(
@@ -248,6 +247,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             "Optimization finished | best cost: {}, best pos: {}".format(
                 final_best_cost, final_best_pos
             ),
-            lvl=20,
+            lvl=logging.INFO,
         )
         return (final_best_cost, final_best_pos)

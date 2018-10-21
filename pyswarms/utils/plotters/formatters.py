@@ -6,6 +6,7 @@ Plot Formatters
 This module implements helpful classes to format your plots or create meshes.
 """
 
+# Import modules
 import numpy as np
 from attr import attrib, attrs
 from attr.validators import instance_of

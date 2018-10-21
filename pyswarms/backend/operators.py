@@ -8,8 +8,10 @@ the personal best, finding neighbors, etc. You can use these methods
 to specify how the swarm will behave.
 """
 
+# Import standard library
 import logging
 
+# Import modules
 import numpy as np
 
 from ..utils.reporter import Reporter
@@ -69,6 +71,7 @@ def compute_pbest(swarm):
         rep.logger.exception(
             "Please pass a Swarm class. You passed {}".format(type(swarm))
         )
+        raise
     else:
         return (new_pbest_pos, new_pbest_cost)
 
@@ -139,8 +142,10 @@ def compute_velocity(swarm, clamp):
         rep.logger.exception(
             "Please pass a Swarm class. You passed {}".format(type(swarm))
         )
+        raise
     except KeyError:
         rep.logger.exception("Missing keyword in swarm.options")
+        raise
     else:
         return updated_velocity
 
@@ -187,5 +192,6 @@ def compute_position(swarm, bounds):
         rep.logger.exception(
             "Please pass a Swarm class. You passed {}".format(type(swarm))
         )
+        raise
     else:
         return position

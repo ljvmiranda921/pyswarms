@@ -1,19 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Fixtures for tests"""
+"""Fixtures for tests
+
+isort:skip_file
+"""
+
+# Import standard library
+import os
 
 # Import modules
-import os
-import pytest
-import numpy as np
-from mock import Mock
 import matplotlib as mpl
+import numpy as np
+import pytest
 
 if os.environ.get("DISPLAY", "") == "":
     mpl.use("Agg")
 
-# Import from package
+# Import from pyswarms
 from pyswarms.single import GlobalBestPSO
 from pyswarms.utils.functions.single_obj import sphere
 from pyswarms.utils.plotters.formatters import Mesher

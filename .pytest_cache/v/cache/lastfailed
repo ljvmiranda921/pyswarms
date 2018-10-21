@@ -1,0 +1,5 @@
+{
+  "tests/optimizers/test_objective_func_with_kwargs.py::test_local_no_kwargs[rosenbrock_func]": true,
+  "tests/utils/functions/test_singleobj_return.py::test_ackley3_output": true,
+  "tests/utils/functions/test_singleobj_return.py::test_ackley3_output[x0]": true
+}
