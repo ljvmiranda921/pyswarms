@@ -15,6 +15,7 @@ import logging
 import numpy as np
 
 from ..utils.reporter import Reporter
+from .handlers import BoundaryHandler
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
@@ -150,7 +151,7 @@ def compute_velocity(swarm, clamp):
         return updated_velocity
 
 
-def compute_position(swarm, bounds, bh):
+def compute_position(swarm, bounds):
     """Update the position matrix
 
     This method updates the position matrix given the current position and
@@ -174,6 +175,7 @@ def compute_position(swarm, bounds, bh):
         New position-matrix
     """
     try:
+        bh = BoundaryHandler(strategy="nearest")
         temp_position = swarm.position.copy()
         temp_position += swarm.velocity
 

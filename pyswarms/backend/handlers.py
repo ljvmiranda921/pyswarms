@@ -19,7 +19,6 @@ import logging
 import numpy as np
 
 from ..utils.reporter import Reporter
-from .operators import compute_velocity
 
 
 class HandlerMixin(object):
