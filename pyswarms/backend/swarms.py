@@ -8,6 +8,7 @@ the swarm such as position, velocity, options, etc. You can use this
 as input to most backend cases.
 """
 
+# Import modules
 import numpy as np
 from attr import attrib, attrs
 from attr.validators import instance_of

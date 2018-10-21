@@ -64,9 +64,11 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
     Symposium on Micromachine and Human Science, 1995, pp. 39–43.
 """
 
+# Import standard library
 import logging
 from time import sleep
 
+# Import modules
 import numpy as np
 
 from ..backend.operators import compute_pbest
@@ -76,31 +78,6 @@ from ..utils.reporter import Reporter
 
 
 class LocalBestPSO(SwarmOptimizer):
-    def assertions(self):
-        """Check inputs and throw assertions
-
-        Raises
-        ------
-        KeyError
-            When one of the required dictionary keys is missing.
-        ValueError
-            When the number of neighbors is not within the range :code:`[0, n_particles]`.
-            When the p-value is not in the list of values :code:`[1,2]`.
-        """
-        super(LocalBestPSO, self).assertions()
-
-        if not all(key in self.options for key in ("k", "p")):
-            raise KeyError("Missing either k or p in options")
-        if not 0 <= self.k <= self.n_particles:
-            raise ValueError(
-                "No. of neighbors must be between 0 and no. " "of particles."
-            )
-        if self.p not in [1, 2]:
-            raise ValueError(
-                "p-value should either be 1 (for L1/Minkowski) "
-                "or 2 (for L2/Euclidean)."
-            )
-
     def __init__(
         self,
         n_particles,
@@ -150,6 +127,9 @@ class LocalBestPSO(SwarmOptimizer):
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
                     the Euclidean (or L2) distance.
+        init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+            option to explicitly set the particles' initial positions. Set to
+            :code:`None` if you wish to generate the particles randomly.
         static: bool (Default is :code:`False`)
             a boolean that decides whether the Ring topology
             used is static or dynamic
@@ -171,8 +151,6 @@ class LocalBestPSO(SwarmOptimizer):
         )
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
-        # Invoke assertions
-        self.assertions()
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
@@ -202,9 +180,10 @@ class LocalBestPSO(SwarmOptimizer):
             the local best cost and the local best position among the
             swarm.
         """
-        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=10)
+        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
-            "Optimize for {} iters with {}".format(iters, self.options), lvl=20
+            "Optimize for {} iters with {}".format(iters, self.options),
+            lvl=logging.INFO,
         )
 
         for i in self.rep.pbar(iters, self.name):
@@ -223,7 +202,7 @@ class LocalBestPSO(SwarmOptimizer):
             best_cost_yet_found = np.min(self.swarm.best_cost)
             # Update gbest from neighborhood
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                self.swarm, self.p, self.k
+                self.swarm, p=self.p, k=self.k
             )
             self.rep.hook(best_cost=np.min(self.swarm.best_cost))
             # Save to history
@@ -257,6 +236,6 @@ class LocalBestPSO(SwarmOptimizer):
             "Optimization finished | best cost: {}, best pos: {}".format(
                 final_best_cost, final_best_pos
             ),
-            lvl=20,
+            lvl=logging.INFO,
         )
         return (final_best_cost, final_best_pos)

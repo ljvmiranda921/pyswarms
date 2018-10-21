@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-import os
-import yaml
-import pprint
+# Import standard library
 import logging
 import logging.config
+import os
+import pprint
+
+# Import modules
+import yaml
 from tqdm import trange
 
 
@@ -17,7 +20,7 @@ class Reporter(object):
         from pyswarms.utils import Reporter
 
         rep = Reporter()
-        rep.log("Here's my message", lvl=20)
+        rep.log("Here's my message", lvl=logging.INFO)
 
     This will set-up a reporter with a default configuration that
     logs to a file, `report.log`, on the current working directory.
@@ -29,7 +32,7 @@ class Reporter(object):
         from pyswarms.utils import Reporter
 
         rep = Reporter(log_path="/path/to/log/file.log")
-        rep.log("Here's my message", lvl=20)
+        rep.log("Here's my message", lvl=logging.INFO)
 
     If you are working on a module and you have an existing logger,
     you can pass that logger instance during initialization:
@@ -52,7 +55,7 @@ class Reporter(object):
         from pyswarms.utils import Reporter
 
         rep = Reporter(config_path="/path/to/config/file.yml")
-        rep.log("Here's my message", lvl=20)
+        rep.log("Here's my message", lvl=logging.INFO)
 
     """
 
@@ -114,7 +117,7 @@ class Reporter(object):
         }
         self._setup_logger(config_path)
 
-    def log(self, msg, lvl=20, *args, **kwargs):
+    def log(self, msg, lvl=logging.INFO, *args, **kwargs):
         """Log a message within a set level
 
         This method abstracts the logging.Logger.log() method. We use this

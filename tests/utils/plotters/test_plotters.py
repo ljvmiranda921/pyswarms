@@ -1,26 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
+# Import from standard library
 import os
+
+# Import modules
 import pytest
 import matplotlib as mpl
 
+# Set $DISPLAY environmental variable
 if os.environ.get("DISPLAY", "") == "":
+    print("No display found. Using non-interactive Agg backend.")
     mpl.use("Agg")
 
-from matplotlib.axes._subplots import SubplotBase
 from matplotlib.animation import FuncAnimation
+from matplotlib.axes._subplots import SubplotBase
 
-# Import from package
+# Import from pyswarms
 from pyswarms.utils.plotters import (
-    plot_cost_history,
     plot_contour,
+    plot_cost_history,
     plot_surface,
 )
-
-from pyswarms.utils.plotters.plotters import _mesh, _animate
-from pyswarms.utils.plotters.formatters import Mesher
+from pyswarms.utils.plotters.plotters import _animate, _mesh
 
 
 @pytest.mark.parametrize(

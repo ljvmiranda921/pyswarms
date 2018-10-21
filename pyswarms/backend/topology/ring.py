@@ -9,8 +9,10 @@ This social behavior is often found in LocalBest PSO
 optimizers.
 """
 
+# Import standard library
 import logging
 
+# Import modules
 import numpy as np
 from scipy.spatial import cKDTree
 
@@ -27,11 +29,12 @@ class Ring(Topology):
         ----------
         static : bool (Default is :code:`False`)
             a boolean that decides whether the topology
-            is static or dynamic"""
+            is static or dynamic
+        """
         super(Ring, self).__init__(static)
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
-    def compute_gbest(self, swarm, p, k):
+    def compute_gbest(self, swarm, p, k, **kwargs):
         """Update the global best using a ring-like neighborhood approach
 
         This uses the cKDTree method from :code:`scipy` to obtain the nearest
@@ -41,13 +44,13 @@ class Ring(Topology):
         ----------
         swarm : pyswarms.backend.swarms.Swarm
             a Swarm instance
-        k : int
-            number of neighbors to be considered. Must be a
-            positive integer less than :code:`n_particles`
         p: int {1,2}
             the Minkowski p-norm to use. 1 is the
             sum-of-absolute values (or L1 distance) while 2 is
             the Euclidean (or L2) distance.
+        k : int
+            number of neighbors to be considered. Must be a
+            positive integer less than :code:`n_particles`
 
         Returns
         -------

@@ -6,18 +6,21 @@ A Von Neumann Network Topology
 This class implements a Von Neumann topology.
 """
 
+# Import standard library
 import logging
 
-from .ring import Ring
 from ...utils.reporter import Reporter
+from .ring import Ring
 
 
 class VonNeumann(Ring):
-    def __init__(self):
+    def __init__(self, static=None):
+        # static = None is just an artifact to make the API consistent
+        # Setting it will not change swarm behavior
         super(VonNeumann, self).__init__(static=True)
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
-    def compute_gbest(self, swarm, p, r):
+    def compute_gbest(self, swarm, p, r, **kwargs):
         """Updates the global best using a neighborhood approach
 
         The Von Neumann topology inherits from the Ring topology and uses
@@ -43,8 +46,8 @@ class VonNeumann(Ring):
         float
             Best cost
         """
-        neighbors = VonNeumann.delannoy(swarm.dimensions, r)
-        return super(VonNeumann, self).compute_gbest(swarm, p, neighbors)
+        k = VonNeumann.delannoy(swarm.dimensions, r)
+        return super(VonNeumann, self).compute_gbest(swarm, p, k)
 
     @staticmethod
     def delannoy(d, r):
