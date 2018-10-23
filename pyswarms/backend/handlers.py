@@ -231,10 +231,10 @@ class BoundaryHandler(HandlerMixin):
         # Set indices that are greater than bounds
         new_pos = position
         new_pos[greater_than_bound[0]] = np.array(
-            [(ub - lb) * np.random.random_sample((position.shape[1],)) + lb]
+            [np.array([u - l for u,l in zip(ub,lb)]) * np.random.random_sample((position.shape[1],)) + lb]
         )
         new_pos[lower_than_bound[0]] = np.array(
-            [(ub - lb) * np.random.random_sample((position.shape[1],)) + lb]
+            [np.array([u - l for u,l in zip(ub,lb)]) * np.random.random_sample((position.shape[1],)) + lb]
         )
         return new_pos
 
@@ -302,13 +302,14 @@ class BoundaryHandler(HandlerMixin):
         lower_than_bound, greater_than_bound = self._out_of_bounds(
             position, bounds
         )
-        bound_d = np.abs(ub - lb)
+        diff = np.array([u - l for u, l in zip(ub, lb)])
+        bound_d = np.abs(diff)
         new_pos = position
         new_pos[lower_than_bound[0]] = np.remainder(
-            (ub - lb + new_pos[lower_than_bound[0]]), bound_d
+            (diff + new_pos[lower_than_bound[0]]), bound_d
         )
         new_pos[greater_than_bound[0]] = np.remainder(
-            (lb + (new_pos[greater_than_bound[0]] - ub)), bound_d
+            (np.array(lb) + (new_pos[greater_than_bound[0]] - np.array(ub))), bound_d
         )
         return new_pos
 

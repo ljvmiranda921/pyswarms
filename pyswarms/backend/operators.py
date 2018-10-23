@@ -175,7 +175,7 @@ def compute_position(swarm, bounds):
         New position-matrix
     """
     try:
-        bh = BoundaryHandler(strategy="intermediate")
+        bh = BoundaryHandler(strategy="nearest")
         temp_position = swarm.position.copy()
         temp_position += swarm.velocity
 
