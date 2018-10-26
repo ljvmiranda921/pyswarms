@@ -15,7 +15,7 @@ import logging
 import numpy as np
 
 from ..utils.reporter import Reporter
-from .handlers import BoundaryHandler
+from .handlers import BoundaryHandler, VelocityHandler
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
@@ -77,12 +77,13 @@ def compute_pbest(swarm):
         return (new_pbest_pos, new_pbest_cost)
 
 
-def compute_velocity(swarm, clamp):
+def compute_velocity(swarm, clamp, strategy="unmodified", bounds=None):
     """Update the velocity matrix
 
     This method updates the velocity matrix using the best and current
     positions of the swarm. The velocity matrix is computed using the
-    cognitive and social terms of the swarm.
+    cognitive and social terms of the swarm. The velocity is handled
+    by a :code:`VelocityHandler`.
 
     A sample usage can be seen with the following:
 
@@ -105,6 +106,14 @@ def compute_velocity(swarm, clamp):
         a tuple of size 2 where the first entry is the minimum velocity
         and the second entry is the maximum velocity. It
         sets the limits for velocity clamping.
+    strategy : String
+        a strategy that is to be used when handling velocities of particles
+        that went out of bounds. For further information see
+        :mod:`pyswarms.backend.handlers`.
+    bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
+        a tuple of size 2 where the first entry is the minimum bound while
+        the second entry is the maximum bound. Each array must be of shape
+        :code:`(dimensions,)`.
 
     Returns
     -------
@@ -117,6 +126,7 @@ def compute_velocity(swarm, clamp):
         c1 = swarm.options["c1"]
         c2 = swarm.options["c2"]
         w = swarm.options["w"]
+        vh = VelocityHandler(strategy=strategy)
         # Compute for cognitive and social terms
         cognitive = (
             c1
@@ -130,15 +140,10 @@ def compute_velocity(swarm, clamp):
         )
         # Compute temp velocity (subject to clamping if possible)
         temp_velocity = (w * swarm.velocity) + cognitive + social
+        updated_velocity = vh(
+            temp_velocity, clamp, position=swarm.position, bounds=bounds
+        )
 
-        if clamp is None:
-            updated_velocity = temp_velocity
-        else:
-            min_velocity, max_velocity = clamp
-            mask = np.logical_and(
-                temp_velocity >= min_velocity, temp_velocity <= max_velocity
-            )
-            updated_velocity = np.where(~mask, swarm.velocity, temp_velocity)
     except AttributeError:
         rep.logger.exception(
             "Please pass a Swarm class. You passed {}".format(type(swarm))
@@ -151,7 +156,7 @@ def compute_velocity(swarm, clamp):
         return updated_velocity
 
 
-def compute_position(swarm, bounds):
+def compute_position(swarm, bounds, strategy="periodic"):
     """Update the position matrix
 
     This method updates the position matrix given the current position and
@@ -166,8 +171,9 @@ def compute_position(swarm, bounds):
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
-    bh : pyswarms.backend.handlers.BoundaryHandler
-        a :code:`BoundaryHandler` instance
+    strategy : String
+        a strategy that is to be used when handling boundary conditions. For
+        further information see :mod:`pyswarms.backend.handlers`.
 
     Returns
     -------
@@ -175,7 +181,7 @@ def compute_position(swarm, bounds):
         New position-matrix
     """
     try:
-        bh = BoundaryHandler(strategy="nearest")
+        bh = BoundaryHandler(strategy=strategy)
         temp_position = swarm.position.copy()
         temp_position += swarm.velocity
 

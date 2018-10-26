@@ -302,15 +302,20 @@ class BoundaryHandler(HandlerMixin):
         lower_than_bound, greater_than_bound = self._out_of_bounds(
             position, bounds
         )
-        diff = np.array([u - l for u, l in zip(ub, lb)])
-        bound_d = np.abs(diff)
+        bound_d = np.tile(np.abs(np.array(ub)-np.array(lb)), (position.shape[0],1))
+        ub = np.tile(ub, (position.shape[0],1))
+        lb = np.tile(lb, (position.shape[0],1))
         new_pos = position
-        new_pos[lower_than_bound[0]] = np.remainder(
-            (diff + new_pos[lower_than_bound[0]]), bound_d
-        )
-        new_pos[greater_than_bound[0]] = np.remainder(
-            (np.array(lb) + (new_pos[greater_than_bound[0]] - np.array(ub))), bound_d
-        )
+        if lower_than_bound[0].size != 0 and lower_than_bound[1].size != 0:
+            new_pos[lower_than_bound] = np.mod(
+                (ub[lower_than_bound] - (lb[lower_than_bound] -
+                    new_pos[lower_than_bound])), bound_d[lower_than_bound]
+            )
+        if greater_than_bound[0].size != 0 and greater_than_bound[1].size != 0:
+            new_pos[greater_than_bound] = np.mod(
+                (lb[greater_than_bound] + (new_pos[greater_than_bound] -
+                    ub[greater_than_bound])), bound_d[greater_than_bound]
+            )
         return new_pos
 
 
