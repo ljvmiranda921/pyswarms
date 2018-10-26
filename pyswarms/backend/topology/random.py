@@ -20,7 +20,7 @@ from .base import Topology
 
 
 class Random(Topology):
-    def __init__(self, k, static=False):
+    def __init__(self, static=False):
         """Initializes the class
 
         Parameters
@@ -33,7 +33,6 @@ class Random(Topology):
             is static or dynamic
         """
         super(Random, self).__init__(static)
-        self.k = k
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, k, **kwargs):
@@ -64,7 +63,7 @@ class Random(Topology):
         try:
             # Check if the topology is static or dynamic and assign neighbors
             if (self.static and self.neighbor_idx is None) or not self.static:
-                adj_matrix = self.__compute_neighbors(swarm, self.k)
+                adj_matrix = self.__compute_neighbors(swarm, k)
                 self.neighbor_idx = np.array(
                     [
                         adj_matrix[i].nonzero()[0]

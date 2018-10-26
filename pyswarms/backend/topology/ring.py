@@ -22,7 +22,7 @@ from .base import Topology
 
 
 class Ring(Topology):
-    def __init__(self, p, k, static=False):
+    def __init__(self, static=False):
         """Initializes the class
 
         Parameters
@@ -32,7 +32,6 @@ class Ring(Topology):
             is static or dynamic
         """
         super(Ring, self).__init__(static)
-        self.p, self.k = p, k
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, p, k, **kwargs):
@@ -66,13 +65,13 @@ class Ring(Topology):
                 # Obtain the nearest-neighbors for each particle
                 tree = cKDTree(swarm.position)
                 _, self.neighbor_idx = tree.query(
-                    swarm.position, p=self.p, k=self.k
+                    swarm.position, p=p, k=k
                 )
 
             # Map the computed costs to the neighbour indices and take the
             # argmin. If k-neighbors is equal to 1, then the swarm acts
             # independently of each other.
-            if self.k == 1:
+            if k == 1:
                 # The minimum index is itself, no mapping needed.
                 self.neighbor_idx = self.neighbor_idx[:, np.newaxis]
                 best_neighbor = np.arange(swarm.n_particles)
