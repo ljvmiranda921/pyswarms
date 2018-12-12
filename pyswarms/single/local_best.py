@@ -154,7 +154,7 @@ class LocalBestPSO(SwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
-        self.top = Ring(static=static, p=self.p, k=self.k)
+        self.top = Ring(static=static)
         self.name = __name__
 
     def optimize(self, objective_func, iters, fast=False, **kwargs):

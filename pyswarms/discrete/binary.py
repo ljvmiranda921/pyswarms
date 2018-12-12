@@ -126,7 +126,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
-        self.top = Ring(static=False, p=self.p, k=self.k)
+        self.top = Ring(static=False)
         self.name = __name__
 
     def optimize(self, objective_func, iters, fast=False, **kwargs):
