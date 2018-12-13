@@ -25,9 +25,6 @@ class Random(Topology):
 
         Parameters
         ----------
-        k : int
-            number of neighbors to be considered. Must be a
-            positive integer less than :code:`n_particles-1`
         static : bool (Default is :code:`False`)
             a boolean that decides whether the topology
             is static or dynamic
@@ -52,6 +49,9 @@ class Random(Topology):
         ----------
         swarm : pyswarms.backend.swarms.Swarm
             a Swarm instance
+        k : int
+            number of neighbors to be considered. Must be a
+            positive integer less than :code:`n_particles-1`
 
         Returns
         -------
