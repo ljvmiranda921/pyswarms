@@ -23,7 +23,7 @@ def istopology(x):
 
 # Get all classes in the topology module, then
 # Instatiate topologies, no need to suppy static param
-topologies = [topo for _, topo in inspect.getmembers(t, istopology)]
+topologies = [topo() for _, topo in inspect.getmembers(t, istopology)]
 
 
 class TestGeneralOptimizer(ABCTestOptimizer):
@@ -68,6 +68,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         # Set optimizer tolerance
         optimizer.ftol = 1e-1
         optimizer.optimize(sphere, 2000)
+        print(optimizer.swarm.pbest_pos)
         assert np.array(optimizer.cost_history).shape != (2000,)
 
     def test_obj_with_kwargs(self, obj_with_args, optimizer):
