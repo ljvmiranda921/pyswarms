@@ -44,7 +44,6 @@ def test_bound_handling(bounds, positions_inbound, positions_out_of_bound, strat
     outbound_handled = bh(positions_out_of_bound, bounds)
     lower_than_bound = outbound_handled >= bounds[0]
     greater_than_bound = outbound_handled <= bounds[1]
-    print(strategy, outbound_handled, lower_than_bound, greater_than_bound)
     assert lower_than_bound.all()
     assert greater_than_bound.all()
 
@@ -73,7 +72,6 @@ def assert_clamp(
     )
     lower_than_clamp = outbound_handled < clamp[0]
     greater_than_clamp = outbound_handled > clamp[1]
-    print(lower_than_clamp, greater_than_clamp)
     assert not lower_than_clamp.all()
     assert not greater_than_clamp.all()
 

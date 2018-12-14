@@ -204,16 +204,28 @@ class BoundaryHandler(HandlerMixin):
             )
             velocity = position - self.memory
             # Create a coefficient matrix
-            sigma = np.tile(1, position.shape)
+            sigma = np.tile(1.0, position.shape)
             sigma[lower_than_bound] = (
                 lb[lower_than_bound[1]] - self.memory[lower_than_bound]
             ) / velocity[lower_than_bound]
+            sigma[greater_than_bound] = (
+                ub[greater_than_bound[1]] - self.memory[greater_than_bound]
+            ) / velocity[greater_than_bound]
             min_sigma = np.amin(sigma, axis=1)
             new_pos = position
             new_pos[lower_than_bound[0]] = (
                 self.memory[lower_than_bound[0]]
-                + min_sigma[lower_than_bound[0]]
-                * velocity[lower_than_bound[0]]
+                + np.multiply(
+                    min_sigma[lower_than_bound[0]],
+                    velocity[lower_than_bound[0]].T
+                ).T
+            )
+            new_pos[greater_than_bound[0]] = (
+                self.memory[greater_than_bound[0]]
+                + np.multiply(
+                    min_sigma[greater_than_bound[0]],
+                    velocity[greater_than_bound[0]].T
+                ).T
             )
             self.memory = new_pos
         return new_pos
@@ -307,14 +319,14 @@ class BoundaryHandler(HandlerMixin):
         lb = np.tile(lb, (position.shape[0],1))
         new_pos = position
         if lower_than_bound[0].size != 0 and lower_than_bound[1].size != 0:
-            new_pos[lower_than_bound] = np.mod(
-                (ub[lower_than_bound] - (lb[lower_than_bound] -
-                    new_pos[lower_than_bound])), bound_d[lower_than_bound]
+            new_pos[lower_than_bound] =  ub[lower_than_bound] - np.mod(
+                (lb[lower_than_bound] - new_pos[lower_than_bound]),
+                bound_d[lower_than_bound]
             )
         if greater_than_bound[0].size != 0 and greater_than_bound[1].size != 0:
-            new_pos[greater_than_bound] = np.mod(
-                (lb[greater_than_bound] + (new_pos[greater_than_bound] -
-                    ub[greater_than_bound])), bound_d[greater_than_bound]
+            new_pos[greater_than_bound] = lb[greater_than_bound] + np.mod(
+                (new_pos[greater_than_bound] - ub[greater_than_bound]),
+                bound_d[greater_than_bound]
             )
         return new_pos
 
