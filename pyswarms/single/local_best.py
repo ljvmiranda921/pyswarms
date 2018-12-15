@@ -73,6 +73,7 @@ import numpy as np
 
 from ..backend.operators import compute_pbest
 from ..backend.topology import Ring
+from ..backend.handlers import BoundaryHandler, VelocityHandler
 from ..base import SwarmOptimizer
 from ..utils.reporter import Reporter
 
@@ -84,7 +85,9 @@ class LocalBestPSO(SwarmOptimizer):
         dimensions,
         options,
         bounds=None,
+        bh_strategy="periodic",
         velocity_clamp=None,
+        vh_strategy="unmodified",
         center=1.00,
         ftol=-np.inf,
         init_pos=None,
@@ -102,10 +105,14 @@ class LocalBestPSO(SwarmOptimizer):
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
+        bh_strategy : String
+            a strategy for the handling of out-of-bounds particles.
         velocity_clamp : tuple (default is :code:`(0,1)`)
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
+        vh_strategy : String
+            a strategy for the handling of the velocity of out-of-bounds particles.
         center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
@@ -155,6 +162,8 @@ class LocalBestPSO(SwarmOptimizer):
         self.reset()
         # Initialize the topology
         self.top = Ring(static=static)
+        self.bh = BoundaryHandler(strategy=bh_strategy)
+        self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
     def optimize(self, objective_func, iters, fast=False, **kwargs):
@@ -223,10 +232,10 @@ class LocalBestPSO(SwarmOptimizer):
                 break
             # Perform position velocity update
             self.swarm.velocity = self.top.compute_velocity(
-                self.swarm, self.velocity_clamp
+                self.swarm, self.velocity_clamp, self.vh
             )
             self.swarm.position = self.top.compute_position(
-                self.swarm, self.bounds
+                self.swarm, self.bounds, self.bh
             )
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()

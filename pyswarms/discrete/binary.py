@@ -60,6 +60,7 @@ import numpy as np
 
 from ..backend.operators import compute_pbest
 from ..backend.topology import Ring
+from ..backend.handlers import BoundaryHandler, VelocityHandler
 from ..base import DiscreteSwarmOptimizer
 from ..utils.reporter import Reporter
 
@@ -72,6 +73,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         options,
         init_pos=None,
         velocity_clamp=None,
+        vh_strategy="unmodified",
         ftol=-np.inf,
     ):
         """Initialize the swarm
@@ -105,6 +107,8 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
+        vh_strategy : String
+            a strategy for the handling of the velocity of out-of-bounds particles.
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
@@ -127,6 +131,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         self.reset()
         # Initialize the topology
         self.top = Ring(static=False)
+        self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
     def optimize(self, objective_func, iters, fast=False, **kwargs):
@@ -196,7 +201,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
                 break
             # Perform position velocity update
             self.swarm.velocity = self.top.compute_velocity(
-                self.swarm, self.velocity_clamp
+                self.swarm, self.velocity_clamp, self.vh
             )
             self.swarm.position = self._compute_position(self.swarm)
         # Obtain the final best_cost and the final best_position

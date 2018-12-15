@@ -15,6 +15,7 @@ import numpy as np
 from scipy.sparse.csgraph import connected_components, dijkstra
 
 from .. import operators as ops
+from ..handlers import BoundaryHandler, VelocityHandler
 from ...utils.reporter import Reporter
 from .base import Topology
 
@@ -101,7 +102,8 @@ class Random(Topology):
         else:
             return (best_pos, best_cost)
 
-    def compute_velocity(self, swarm, clamp=None):
+    def compute_velocity(self, swarm, clamp=None,
+    vh=VelocityHandler(strategy="unmodified")):
         """Compute the velocity matrix
 
         This method updates the velocity matrix using the best and current
@@ -131,15 +133,18 @@ class Random(Topology):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
+        vh : pyswarms.backend.handlers.VelocityHandler
+            a VelocityHandler instance
 
         Returns
         -------
         numpy.ndarray
             Updated velocity matrix
         """
-        return ops.compute_velocity(swarm, clamp)
+        return ops.compute_velocity(swarm, clamp, vh)
 
-    def compute_position(self, swarm, bounds=None):
+    def compute_position(self, swarm, bounds=None,
+    bh=BoundaryHandler(strategy="periodic")):
         """Update the position matrix
 
         This method updates the position matrix given the current position and
@@ -153,13 +158,15 @@ class Random(Topology):
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
+        bh : pyswarms.backend.handlers.BoundaryHandler
+            a BoundaryHandler instance
 
         Returns
         -------
         numpy.ndarray
             New position-matrix
         """
-        return ops.compute_position(swarm, bounds)
+        return ops.compute_position(swarm, bounds, bh)
 
     def __compute_neighbors(self, swarm, k):
         """Helper method to compute the adjacency matrix of the topology

@@ -77,7 +77,7 @@ def compute_pbest(swarm):
         return (new_pbest_pos, new_pbest_cost)
 
 
-def compute_velocity(swarm, clamp, strategy="unmodified", bounds=None):
+def compute_velocity(swarm, clamp, vh, bounds=None):
     """Update the velocity matrix
 
     This method updates the velocity matrix using the best and current
@@ -90,13 +90,14 @@ def compute_velocity(swarm, clamp, strategy="unmodified", bounds=None):
     .. code-block :: python
 
         import pyswarms.backend as P
-        from pyswarms.swarms.backend import Swarm
+        from pyswarms.swarms.backend import Swarm, VelocityHandler
 
         my_swarm = P.create_swarm(n_particles, dimensions)
+        my_vh = VelocityHandler(strategy="invert")
 
         for i in range(iters):
             # Inside the for-loop
-            my_swarm.velocity = update_velocity(my_swarm, clamp)
+            my_swarm.velocity = compute_velocity(my_swarm, clamp, my_vh)
 
     Parameters
     ----------
@@ -106,10 +107,9 @@ def compute_velocity(swarm, clamp, strategy="unmodified", bounds=None):
         a tuple of size 2 where the first entry is the minimum velocity
         and the second entry is the maximum velocity. It
         sets the limits for velocity clamping.
-    strategy : String
-        a strategy that is to be used when handling velocities of particles
-        that went out of bounds. For further information see
-        :mod:`pyswarms.backend.handlers`.
+    vh : pyswarms.backend.handlers.VelocityHandler
+        a VelocityHandler object with a specified handling strategy.
+        For further information see :mod:`pyswarms.backend.handlers`.
     bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
@@ -126,7 +126,6 @@ def compute_velocity(swarm, clamp, strategy="unmodified", bounds=None):
         c1 = swarm.options["c1"]
         c2 = swarm.options["c2"]
         w = swarm.options["w"]
-        vh = VelocityHandler(strategy=strategy)
         # Compute for cognitive and social terms
         cognitive = (
             c1
@@ -156,12 +155,24 @@ def compute_velocity(swarm, clamp, strategy="unmodified", bounds=None):
         return updated_velocity
 
 
-def compute_position(swarm, bounds, strategy="periodic"):
+def compute_position(swarm, bounds, bh):
     """Update the position matrix
 
     This method updates the position matrix given the current position and
     the velocity. If bounded, the positions are handled by a :code:`BoundaryHandler`
     instance.
+
+    .. code-block :: python
+
+        import pyswarms.backend as P
+        from pyswarms.swarms.backend import Swarm, VelocityHandler
+
+        my_swarm = P.create_swarm(n_particles, dimensions)
+        my_bh = BoundaryHandler(strategy="intermediate")
+
+        for i in range(iters):
+            # Inside the for-loop
+            my_swarm.position = compute_position(my_swarm, bounds, my_bh)
 
     Parameters
     ----------
@@ -171,9 +182,9 @@ def compute_position(swarm, bounds, strategy="periodic"):
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
-    strategy : String
-        a strategy that is to be used when handling boundary conditions. For
-        further information see :mod:`pyswarms.backend.handlers`.
+    bh : pyswarms.backend.handlers.BoundaryHandler
+        a BoundaryHandler object with a specified handling strategy
+        For further information see :mod:`pyswarms.backend.handlers`.
 
     Returns
     -------
@@ -181,7 +192,6 @@ def compute_position(swarm, bounds, strategy="periodic"):
         New position-matrix
     """
     try:
-        bh = BoundaryHandler(strategy=strategy)
         temp_position = swarm.position.copy()
         temp_position += swarm.velocity
 
