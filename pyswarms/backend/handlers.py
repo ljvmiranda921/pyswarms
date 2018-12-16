@@ -160,7 +160,23 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def reflective(self, position, bounds, **kwargs):
-        pass
+            lb, ub = bounds
+            lower_than_bound, greater_than_bound = self._out_of_bounds(
+                position, bounds
+            )
+            new_pos = position
+            while lower_than_bound[0].size != 0 or greater_than_bound[0].size != 0:
+                if lower_than_bound[0].size > 0:
+                    new_pos[lower_than_bound] = 2 * lb[lower_than_bound[1]] - \
+                    new_pos[lower_than_bound]
+                if greater_than_bound[0].size > 0:
+                    new_pos[greater_than_bound] = 2 * ub[greater_than_bound[1]] - \
+                    new_pos[greater_than_bound]
+                lower_than_bound, greater_than_bound = self._out_of_bounds(
+                        new_pos, bounds
+                )
+
+            return new_pos
 
     def shrink(self, position, bounds, **kwargs):
         r"""Set the particle to the boundary
