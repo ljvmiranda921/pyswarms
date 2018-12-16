@@ -29,12 +29,11 @@ def test_out_of_bounds(bounds, positions_inbound, positions_out_of_bound):
 
 
 @pytest.mark.parametrize(
-        "strategy",
-        ["nearest", "random",
-         "shrink", "intermediate",
-         "periodic"]
+    "strategy", ["nearest", "random", "shrink", "intermediate", "periodic"]
 )
-def test_bound_handling(bounds, positions_inbound, positions_out_of_bound, strategy):
+def test_bound_handling(
+    bounds, positions_inbound, positions_out_of_bound, strategy
+):
     bh = BoundaryHandler(strategy=strategy)
     # Test if it doesn't handle inbound positions
     inbound_handled = bh(positions_inbound, bounds)

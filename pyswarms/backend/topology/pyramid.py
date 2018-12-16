@@ -108,8 +108,13 @@ class Pyramid(Topology):
         else:
             return (best_pos, best_cost)
 
-    def compute_velocity(self, swarm, clamp=None,
-    vh=VelocityHandler(strategy="unmodified"), bounds=None):
+    def compute_velocity(
+        self,
+        swarm,
+        clamp=None,
+        vh=VelocityHandler(strategy="unmodified"),
+        bounds=None,
+    ):
         """Compute the velocity matrix
 
         This method updates the velocity matrix using the best and current
@@ -156,8 +161,9 @@ class Pyramid(Topology):
         """
         return ops.compute_velocity(swarm, clamp, vh, bounds=bounds)
 
-    def compute_position(self, swarm, bounds=None,
-    bh=BoundaryHandler(strategy="periodic")):
+    def compute_position(
+        self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
+    ):
         """Update the position matrix
 
         This method updates the position matrix given the current position and

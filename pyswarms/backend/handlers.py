@@ -217,14 +217,14 @@ class BoundaryHandler(HandlerMixin):
                 self.memory[lower_than_bound[0]]
                 + np.multiply(
                     min_sigma[lower_than_bound[0]],
-                    velocity[lower_than_bound[0]].T
+                    velocity[lower_than_bound[0]].T,
                 ).T
             )
             new_pos[greater_than_bound[0]] = (
                 self.memory[greater_than_bound[0]]
                 + np.multiply(
                     min_sigma[greater_than_bound[0]],
-                    velocity[greater_than_bound[0]].T
+                    velocity[greater_than_bound[0]].T,
                 ).T
             )
             self.memory = new_pos
@@ -243,10 +243,18 @@ class BoundaryHandler(HandlerMixin):
         # Set indices that are greater than bounds
         new_pos = position
         new_pos[greater_than_bound[0]] = np.array(
-            [np.array([u - l for u,l in zip(ub,lb)]) * np.random.random_sample((position.shape[1],)) + lb]
+            [
+                np.array([u - l for u, l in zip(ub, lb)])
+                * np.random.random_sample((position.shape[1],))
+                + lb
+            ]
         )
         new_pos[lower_than_bound[0]] = np.array(
-            [np.array([u - l for u,l in zip(ub,lb)]) * np.random.random_sample((position.shape[1],)) + lb]
+            [
+                np.array([u - l for u, l in zip(ub, lb)])
+                * np.random.random_sample((position.shape[1],))
+                + lb
+            ]
         )
         return new_pos
 
@@ -314,19 +322,21 @@ class BoundaryHandler(HandlerMixin):
         lower_than_bound, greater_than_bound = self._out_of_bounds(
             position, bounds
         )
-        bound_d = np.tile(np.abs(np.array(ub)-np.array(lb)), (position.shape[0],1))
-        ub = np.tile(ub, (position.shape[0],1))
-        lb = np.tile(lb, (position.shape[0],1))
+        bound_d = np.tile(
+            np.abs(np.array(ub) - np.array(lb)), (position.shape[0], 1)
+        )
+        ub = np.tile(ub, (position.shape[0], 1))
+        lb = np.tile(lb, (position.shape[0], 1))
         new_pos = position
         if lower_than_bound[0].size != 0 and lower_than_bound[1].size != 0:
-            new_pos[lower_than_bound] =  ub[lower_than_bound] - np.mod(
+            new_pos[lower_than_bound] = ub[lower_than_bound] - np.mod(
                 (lb[lower_than_bound] - new_pos[lower_than_bound]),
-                bound_d[lower_than_bound]
+                bound_d[lower_than_bound],
             )
         if greater_than_bound[0].size != 0 and greater_than_bound[1].size != 0:
             new_pos[greater_than_bound] = lb[greater_than_bound] + np.mod(
                 (new_pos[greater_than_bound] - ub[greater_than_bound]),
-                bound_d[greater_than_bound]
+                bound_d[greater_than_bound],
             )
         return new_pos
 
@@ -455,7 +465,9 @@ class VelocityHandler(HandlerMixin):
             )
             new_vel = velocity
             new_vel[lower_than_bound[0]] = (-z) * new_vel[lower_than_bound[0]]
-            new_vel[greater_than_bound[0]] = (-z) * new_vel[greater_than_bound[0]]
+            new_vel[greater_than_bound[0]] = (-z) * new_vel[
+                greater_than_bound[0]
+            ]
             if clamp is not None:
                 new_vel = self.__apply_clamp(new_vel, clamp)
         except KeyError:
