@@ -243,7 +243,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 break
             # Perform velocity and position updates
             self.swarm.velocity = self.top.compute_velocity(
-                self.swarm, self.velocity_clamp, self.vh
+                self.swarm, self.velocity_clamp, self.vh, self.bounds
             )
             self.swarm.position = self.top.compute_position(
                 self.swarm, self.bounds, self.bh

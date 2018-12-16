@@ -97,7 +97,7 @@ def compute_velocity(swarm, clamp, vh, bounds=None):
 
         for i in range(iters):
             # Inside the for-loop
-            my_swarm.velocity = compute_velocity(my_swarm, clamp, my_vh)
+            my_swarm.velocity = compute_velocity(my_swarm, clamp, my_vh, bounds)
 
     Parameters
     ----------

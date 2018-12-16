@@ -109,6 +109,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             sets the limits for velocity clamping.
         vh_strategy : String
             a strategy for the handling of the velocity of out-of-bounds particles.
+            Only the "unmodified" and the "adjust" strategies are allowed.
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
