@@ -10,6 +10,8 @@ from pyswarms.backend.topology import Star
 
 from .abc_test_topology import ABCTestTopology
 
+np.random.seed(4135157)
+
 
 class TestStarTopology(ABCTestTopology):
     @pytest.fixture
