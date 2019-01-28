@@ -9,35 +9,13 @@ from setuptools import find_packages, setup
 with open("README.md", encoding="utf8") as readme_file:
     readme = readme_file.read()
 
-requirements = [
-    "PyYAML==3.13",
-    "future==0.16.0",
-    "scipy>=0.17.0",
-    "numpy>=1.13.0",
-    "matplotlib>=1.3.1",
-    "mock==2.0.0",
-    "pytest==3.6.4",
-    "attrs==18.1.0",
-    "tqdm==4.24.0",
-    "pre-commit",
-]
 
-setup_requirements = [
-    # TODO(ljvmiranda921): put setup requirements (distutils extensions, etc.) here
-]
+with open("requirements.txt") as f:
+    requirements = f.read().splitlines()
 
-test_requirements = [
-    "PyYAML==3.13",
-    "future==0.16.0",
-    "scipy>=0.17.0",
-    "numpy>=1.13.0",
-    "matplotlib>=1.3.1",
-    "mock==2.0.0",
-    "tqdm==4.24.0",
-    "pytest==3.6.4",
-    "attrs==18.1.0",
-    "pre-commit",
-]
+with open("requirements-dev.txt") as f:
+    dev_requirements = f.read().splitlines()
+
 
 setup(
     name="pyswarms",
@@ -51,6 +29,8 @@ setup(
     packages=find_packages(exclude=["docs", "tests"]),
     include_package_data=True,
     install_requires=requirements,
+    tests_require=dev_requirements,
+    extras_require={"test": dev_requirements},
     license="MIT license",
     zip_safe=False,
     keywords="pyswarms",
@@ -67,6 +47,4 @@ setup(
         "Programming Language :: Python :: 3.6",
     ],
     test_suite="tests",
-    tests_require=test_requirements,
-    setup_requires=setup_requirements,
 )
