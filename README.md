@@ -30,7 +30,7 @@ interaction with swarm optimizations. Check out more features below!
 
 * **Free software:** MIT license
 * **Documentation:** https://pyswarms.readthedocs.io.
-* **Python versions:** 3.4 and above
+* **Python versions:** 3.5 and above
 
 ## Features
 
