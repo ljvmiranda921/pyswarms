@@ -59,7 +59,7 @@ interaction with swarm optimizations. Check out more features below!
 
 * **Free software:** MIT license
 * **Github repository:** https://github.com/ljvmiranda921/pyswarms
-* **Python versions:** 3.4, 3.5 and 3.6
+* **Python versions:** 3.5 and 3.6
 
 Launching pad
 -------------
