@@ -186,15 +186,13 @@ class LocalBestPSO(SwarmOptimizer):
             lvl=logging.INFO,
         )
 
+        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         for i in self.rep.pbar(iters, self.name):
             if not fast:
                 sleep(0.01)
             # Compute cost for current position and personal best
             self.swarm.current_cost = objective_func(
                 self.swarm.position, **kwargs
-            )
-            self.swarm.pbest_cost = objective_func(
-                self.swarm.pbest_pos, **kwargs
             )
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
                 self.swarm
@@ -230,7 +228,9 @@ class LocalBestPSO(SwarmOptimizer):
             )
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
-        final_best_pos = self.swarm.position[self.swarm.pbest_cost.argmin(axis=0)].copy()
+        final_best_pos = self.swarm.position[
+            self.swarm.pbest_cost.argmin(axis=0)
+        ].copy()
         # Write report in log and return final cost and position
         self.rep.log(
             "Optimization finished | best cost: {}, best pos: {}".format(
