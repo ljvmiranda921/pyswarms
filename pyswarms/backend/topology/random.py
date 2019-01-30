@@ -85,14 +85,8 @@ class Random(Topology):
             ).astype(int)
 
             # Obtain best cost and position
-            if np.min(swarm.pbest_cost) < swarm.best_cost:
-                best_cost = np.min(swarm.pbest_cost[best_neighbor])
-                best_pos = swarm.pbest_pos[
-                    best_neighbor[np.argmin(swarm.pbest_cost[best_neighbor])]
-                ]
-            else:
-                # Just get the previous best_pos and best_cost
-                best_pos, best_cost = swarm.best_pos, swarm.best_cost
+            best_cost = np.min(swarm.pbest_cost[best_neighbor])
+            best_pos = swarm.pbest_pos[best_neighbor]
 
         except AttributeError:
             self.rep.logger.exception(
