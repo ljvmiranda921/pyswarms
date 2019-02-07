@@ -6,11 +6,16 @@ of particles. This is necessary when boundary conditions are imposed on the PSO
 algorithm. Particles that do not stay inside these boundary conditions have to
 be handled by either adjusting their position after they left the bounded
 search space or adjusting their velocity when it would position them outside
-the search space.
-For the follwing documentation let :math:`x_{i, t, d}` be the :math:`d` th
+the search space. In particular, this approach is important if the optimium of
+a function is near the boundaries.
+For the following documentation let :math:`x_{i, t, d}` be the :math:`d` th
 coordinate of the particle :math:`i` 's position vector at the time :math:`t`,
 :math:`lb` the vector of the lower boundaries and :math:`ub` the vector of the
 upper boundaries.
+The algorithms in this module are adapted from [SH2010]
+
+[SH2010] Sabine Helwig, "Particle Swarms for Constrained Optimization",
+PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 """
 
 import inspect
@@ -88,7 +93,7 @@ class BoundaryHandler(HandlerMixin):
             bh = BoundaryHandler(strategy="reflective")
             ops.compute_position(swarm, bounds, handler=bh)
 
-        By passing the handler, the :func:`compute_position()` functions now has
+        By passing the handler, the :func:`compute_position()` function now has
         the ability to reset the particles by calling the :code:`BoundaryHandler`
         inside.
 
@@ -138,7 +143,7 @@ class BoundaryHandler(HandlerMixin):
         r"""Set position to nearest bound
 
         This method resets particles that exceed the bounds to the nearest
-        available bound. For every axis on which the coordiantes of the particle
+        available boundary. For every axis on which the coordiantes of the particle
         surpasses the boundary conditions the coordinate is set to the respective
         bound that it surpasses.
         The following equation describes this strategy:
@@ -160,34 +165,57 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def reflective(self, position, bounds, **kwargs):
-            lb, ub = bounds
-            lower_than_bound, greater_than_bound = self._out_of_bounds(
-                position, bounds
-            )
-            new_pos = position
-            while lower_than_bound[0].size != 0 or greater_than_bound[0].size != 0:
-                if lower_than_bound[0].size > 0:
-                    new_pos[lower_than_bound] = 2 * lb[lower_than_bound[1]] - \
-                    new_pos[lower_than_bound]
-                if greater_than_bound[0].size > 0:
-                    new_pos[greater_than_bound] = 2 * ub[greater_than_bound[1]] - \
-                    new_pos[greater_than_bound]
-                lower_than_bound, greater_than_bound = self._out_of_bounds(
-                        new_pos, bounds
-                )
+        r"""Reflect the particle at the boundary
 
-            return new_pos
+        This method reflects the particles that exceed the bounds at the respective
+        boundary. This means that the amount that the component which is orthogonal to
+        the exceeds the boundary is mirrored at the boundary. The reflection is repeated
+        until the position of the particle is within the boundaries. The following
+        algorithm describes the behaviour of this strategy:
+
+        .. math::
+            :nowrap:
+
+            \begin{gather*}
+                \text{while } x_{i, t, d} \not\in \left[lb_d,\,ub_d\right] \text{ do the
+                following:}
+                x_{i, t, d} =   \begin{cases}
+                                    2\cdot lb_d - x_{i, t, d} & \quad \text{if } x_{i,
+                                    t, d} < lb_d
+                                    2\cdot ub_d - x_{i, t, d} & \quad \text{if } x_{i,
+                                    t, d} > ub_d
+                                    x_{i, t, d} & \quad \text{otherwise}
+                                \end{cases}
+            \end{gather*}
+        """
+        lb, ub = bounds
+        lower_than_bound, greater_than_bound = self._out_of_bounds(
+            position, bounds
+        )
+        new_pos = position
+        while lower_than_bound[0].size != 0 or greater_than_bound[0].size != 0:
+            if lower_than_bound[0].size > 0:
+                new_pos[lower_than_bound] = 2 * lb[lower_than_bound[1]] - \
+                new_pos[lower_than_bound]
+            if greater_than_bound[0].size > 0:
+                new_pos[greater_than_bound] = 2 * ub[greater_than_bound[1]] - \
+                new_pos[greater_than_bound]
+            lower_than_bound, greater_than_bound = self._out_of_bounds(
+                    new_pos, bounds
+            )
+
+        return new_pos
 
     def shrink(self, position, bounds, **kwargs):
         r"""Set the particle to the boundary
 
-        This methods resets particles that exceed the bounds to the intersection
-        of its previous velocity and the bound. This can be imagined as shrinking
+        This method resets particles that exceed the bounds to the intersection
+        of its previous velocity and the boundary. This can be imagined as shrinking
         the previous velocity until the particle is back in the valid search space.
         Let :math:`\sigma_{i, t, d}` be the :math:`d` th shrinking value of the
         :math:`i` th particle at the time :math:`t` and :math:`v_{i, t}` the velocity
-        of the :math:`i` th particle at the time :math:`t`. Then the new position
-        computed by the follwing equation:
+        of the :math:`i` th particle at the time :math:`t`. Then the new position is
+        computed by the following equation:
 
         .. math::
             :nowrap:
@@ -278,10 +306,10 @@ class BoundaryHandler(HandlerMixin):
         r"""Set the particle to an intermediate position
 
         This method resets particles that exceed the bounds to an intermediate
-        position between the bound and their earlier position. Namely, it changes
+        position between the boundary and their earlier position. Namely, it changes
         the coordinate of the out-of-bounds axis to the middle value between the
         previous position and the boundary of the axis.
-        The follwing equation describes this strategy:
+        The following equation describes this strategy:
 
         .. math::
 
@@ -316,7 +344,7 @@ class BoundaryHandler(HandlerMixin):
         This method resets the particles that exeed the bounds by using the
         modulo function to cut down the position. This creates a virtual,
         periodic plane which is tiled with the search space.
-        The follwing equation describtes this strategy:
+        The following equation describtes this strategy:
 
         .. math::
             :nowrap:
@@ -434,7 +462,7 @@ class VelocityHandler(HandlerMixin):
     def adjust(self, velocity, clamp=None, **kwargs):
         r"""Adjust the velocity to the new position
 
-        The velocity is adjusted such that the follwing equation holds:
+        The velocity is adjusted such that the following equation holds:
         .. math::
 
                 \mathbf{v_{i,t}} = \mathbf{x_{i,t}} - \mathbf{x_{i,t-1}}
@@ -464,7 +492,7 @@ class VelocityHandler(HandlerMixin):
 
         The velocity is inverted and shrinked. The shrinking is determined by the
         kwarg :code:`z`. The default shrinking factor is :code:`0.5`. For all
-        velocities whose particles are out of bounds the follwing equation is
+        velocities whose particles are out of bounds the following equation is
         applied:
         .. math::
 
