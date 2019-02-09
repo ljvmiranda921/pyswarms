@@ -14,6 +14,7 @@ import numpy as np
 from scipy.spatial import Delaunay
 
 from .. import operators as ops
+from ..handlers import BoundaryHandler, VelocityHandler
 from ...utils.reporter import Reporter
 from .base import Topology
 
@@ -105,7 +106,13 @@ class Pyramid(Topology):
         else:
             return (best_pos, best_cost)
 
-    def compute_velocity(self, swarm, clamp=None):
+    def compute_velocity(
+        self,
+        swarm,
+        clamp=None,
+        vh=VelocityHandler(strategy="unmodified"),
+        bounds=None,
+    ):
         """Compute the velocity matrix
 
         This method updates the velocity matrix using the best and current
@@ -117,15 +124,18 @@ class Pyramid(Topology):
         .. code-block :: python
 
             import pyswarms.backend as P
-            from pyswarms.swarms.backend import Swarm
+            from pyswarms.backend.swarm import Swarm
+            from pyswarms.backend.handlers import VelocityHandler
             from pyswarms.backend.topology import Pyramid
 
             my_swarm = P.create_swarm(n_particles, dimensions)
             my_topology = Pyramid(static=False)
+            my_vh = VelocityHandler(strategy="zero")
 
             for i in range(iters):
                 # Inside the for-loop
-                my_swarm.velocity = my_topology.update_velocity(my_swarm, clamp)
+                my_swarm.velocity = my_topology.update_velocity(my_swarm, clamp, my_vh,
+                bounds=bounds)
 
         Parameters
         ----------
@@ -135,15 +145,23 @@ class Pyramid(Topology):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
+        vh : pyswarms.backend.handlers.VelocityHandler
+            a VelocityHandler instance
+        bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
+            a tuple of size 2 where the first entry is the minimum bound while
+            the second entry is the maximum bound. Each array must be of shape
+            :code:`(dimensions,)`.
 
         Returns
         -------
         numpy.ndarray
             Updated velocity matrix
         """
-        return ops.compute_velocity(swarm, clamp)
+        return ops.compute_velocity(swarm, clamp, vh, bounds=bounds)
 
-    def compute_position(self, swarm, bounds=None):
+    def compute_position(
+        self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
+    ):
         """Update the position matrix
 
         This method updates the position matrix given the current position and
@@ -157,10 +175,11 @@ class Pyramid(Topology):
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
+        bh : a BoundaryHandler instance
 
         Returns
         -------
         numpy.ndarray
             New position-matrix
         """
-        return ops.compute_position(swarm, bounds)
+        return ops.compute_position(swarm, bounds, bh)

@@ -15,6 +15,8 @@ import logging
 import numpy as np
 
 from ..utils.reporter import Reporter
+from .handlers import BoundaryHandler, VelocityHandler
+
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
@@ -76,25 +78,27 @@ def compute_pbest(swarm):
         return (new_pbest_pos, new_pbest_cost)
 
 
-def compute_velocity(swarm, clamp):
+def compute_velocity(swarm, clamp, vh, bounds=None):
     """Update the velocity matrix
 
     This method updates the velocity matrix using the best and current
     positions of the swarm. The velocity matrix is computed using the
-    cognitive and social terms of the swarm.
+    cognitive and social terms of the swarm. The velocity is handled
+    by a :code:`VelocityHandler`.
 
     A sample usage can be seen with the following:
 
     .. code-block :: python
 
         import pyswarms.backend as P
-        from pyswarms.swarms.backend import Swarm
+        from pyswarms.swarms.backend import Swarm, VelocityHandler
 
         my_swarm = P.create_swarm(n_particles, dimensions)
+        my_vh = VelocityHandler(strategy="invert")
 
         for i in range(iters):
             # Inside the for-loop
-            my_swarm.velocity = update_velocity(my_swarm, clamp)
+            my_swarm.velocity = compute_velocity(my_swarm, clamp, my_vh, bounds)
 
     Parameters
     ----------
@@ -104,6 +108,13 @@ def compute_velocity(swarm, clamp):
         a tuple of size 2 where the first entry is the minimum velocity
         and the second entry is the maximum velocity. It
         sets the limits for velocity clamping.
+    vh : pyswarms.backend.handlers.VelocityHandler
+        a VelocityHandler object with a specified handling strategy.
+        For further information see :mod:`pyswarms.backend.handlers`.
+    bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
+        a tuple of size 2 where the first entry is the minimum bound while
+        the second entry is the maximum bound. Each array must be of shape
+        :code:`(dimensions,)`.
 
     Returns
     -------
@@ -129,15 +140,10 @@ def compute_velocity(swarm, clamp):
         )
         # Compute temp velocity (subject to clamping if possible)
         temp_velocity = (w * swarm.velocity) + cognitive + social
+        updated_velocity = vh(
+            temp_velocity, clamp, position=swarm.position, bounds=bounds
+        )
 
-        if clamp is None:
-            updated_velocity = temp_velocity
-        else:
-            min_velocity, max_velocity = clamp
-            mask = np.logical_and(
-                temp_velocity >= min_velocity, temp_velocity <= max_velocity
-            )
-            updated_velocity = np.where(~mask, swarm.velocity, temp_velocity)
     except AttributeError:
         rep.logger.exception(
             "Please pass a Swarm class. You passed {}".format(type(swarm))
@@ -150,11 +156,24 @@ def compute_velocity(swarm, clamp):
         return updated_velocity
 
 
-def compute_position(swarm, bounds):
+def compute_position(swarm, bounds, bh):
     """Update the position matrix
 
     This method updates the position matrix given the current position and
-    the velocity. If bounded, it waives updating the position.
+    the velocity. If bounded, the positions are handled by a :code:`BoundaryHandler`
+    instance.
+
+    .. code-block :: python
+
+        import pyswarms.backend as P
+        from pyswarms.swarms.backend import Swarm, VelocityHandler
+
+        my_swarm = P.create_swarm(n_particles, dimensions)
+        my_bh = BoundaryHandler(strategy="intermediate")
+
+        for i in range(iters):
+            # Inside the for-loop
+            my_swarm.position = compute_position(my_swarm, bounds, my_bh)
 
     Parameters
     ----------
@@ -164,6 +183,9 @@ def compute_position(swarm, bounds):
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
+    bh : pyswarms.backend.handlers.BoundaryHandler
+        a BoundaryHandler object with a specified handling strategy
+        For further information see :mod:`pyswarms.backend.handlers`.
 
     Returns
     -------
@@ -175,18 +197,8 @@ def compute_position(swarm, bounds):
         temp_position += swarm.velocity
 
         if bounds is not None:
-            lb, ub = bounds
-            min_bounds = np.repeat(
-                np.array(lb)[np.newaxis, :], swarm.n_particles, axis=0
-            )
-            max_bounds = np.repeat(
-                np.array(ub)[np.newaxis, :], swarm.n_particles, axis=0
-            )
-            mask = np.all(min_bounds <= temp_position, axis=1) * np.all(
-                temp_position <= max_bounds, axis=1
-            )
-            mask = np.repeat(mask[:, np.newaxis], swarm.dimensions, axis=1)
-            temp_position = np.where(~mask, swarm.position, temp_position)
+            temp_position = bh(temp_position, bounds)
+
         position = temp_position
     except AttributeError:
         rep.logger.exception(
