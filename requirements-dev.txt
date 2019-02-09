@@ -28,7 +28,7 @@ mccabe==0.6.1
 mock==2.0.0
 more-itertools==5.0.0
 nodeenv==1.3.3
-numpy==1.16.0
+numpy==1.16.1
 packaging==19.0
 pathtools==0.1.2
 pbr==5.1.1
