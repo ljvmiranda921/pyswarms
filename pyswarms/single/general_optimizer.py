@@ -211,7 +211,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             "Optimize for {} iters with {}".format(iters, self.options),
             lvl=logging.INFO,
         )
-
         for i in self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             # fmt: off

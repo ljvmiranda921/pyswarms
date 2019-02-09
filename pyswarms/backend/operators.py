@@ -17,6 +17,7 @@ import numpy as np
 from ..utils.reporter import Reporter
 from .handlers import BoundaryHandler, VelocityHandler
 
+
 rep = Reporter(logger=logging.getLogger(__name__))
 
 

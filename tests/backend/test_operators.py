@@ -74,7 +74,7 @@ class TestComputePosition(object):
         assert p.shape == swarm.velocity.shape
         if bounds is not None:
             assert (bounds[0] <= p).all() and (bounds[1] >= p).all()
-
+            
     @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])
     @pytest.mark.parametrize("bh_strat", ["nearest", "random", "shrink",
     "intermediate"])
@@ -83,3 +83,4 @@ class TestComputePosition(object):
         bh = BoundaryHandler(strategy=bh_strat)
         with pytest.raises(AttributeError):
             P.compute_position(swarm, bounds=([-5, -5], [5, 5]), bh=bh)
+
