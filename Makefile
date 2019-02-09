@@ -26,11 +26,11 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-build: venv requirements.txt
-	venv/bib/pip-sync
+build: venv requirements.txt ## Sync virtual environment with dependencies
+	venv/bin/pip-sync
 
-dev: venv requirements-dev.txt
-	venv/bib/pip-sync requirements-dev.txt
+dev: venv requirements-dev.txt ## Create development environment
+	venv/bin/pip-sync requirements-dev.txt
 
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 
@@ -92,12 +92,12 @@ dist: clean ## builds source and wheel package
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
 
-venv:
+venv: ## Create virtualenv and install pip-tools
 	python3 -m venv venv
 	venv/bin/pip3 install pip-tools
 
-requirements.txt: requirements.in
+requirements.txt: requirements.in ## Generate requirements.txt file
 	venv/bin/pip-compile -o requirements.txt --no-header --no-annotate requirements.in
 
-requirements-dev.txt: requirements-dev.in
+requirements-dev.txt: requirements-dev.in ## Generate requirements-dev.txt file
 	venv/bin/pip-compile -o requirements-dev.txt --no-header --no-annotate requirements-dev.in 
