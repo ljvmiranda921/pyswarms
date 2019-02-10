@@ -42,6 +42,17 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "SioKCronin",
+      "name": "Siobhán K Cronin",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/19956669?v=4",
+      "profile": "http://www.siobhankcronin.com/",
+      "contributions": [
+        "code",
+        "maintenance",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7
