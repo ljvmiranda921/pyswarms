@@ -53,6 +53,16 @@
         "maintenance",
         "ideas"
       ]
+    },
+    {
+      "login": "jazcap53",
+      "name": "Andrew Jarcho",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1452951?v=4",
+      "profile": "http://andrewjarcho.com",
+      "contributions": [
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
