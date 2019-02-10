@@ -81,6 +81,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "slek120",
+      "name": "Eric",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/3589574?v=4",
+      "profile": "https://github.com/slek120",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
