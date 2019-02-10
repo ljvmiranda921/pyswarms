@@ -63,6 +63,15 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "mamadyonline",
+      "name": "Mamady",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/20543370?v=4",
+      "profile": "https://github.com/mamadyonline",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
