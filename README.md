@@ -1,4 +1,5 @@
 ![PySwarms Logo](https://i.imgur.com/eX8oqPQ.png)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 ---
 
 
@@ -322,3 +323,15 @@ Not on the list? Ping us in the Issue Tracker!
 Like it? Love it? Leave us a star on [Github] to show your appreciation! 
 
 [Github]: https://github.com/ljvmiranda921/pyswarms
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://github.com/all-contributors/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+| [<img src="https://avatars3.githubusercontent.com/u/39431903?v=4" width="100px;" alt="Aaron"/><br /><sub><b>Aaron</b></sub>](https://github.com/whzup)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Code") [🚇](#infra-whzup "Infrastructure (Hosting, Build-Tools, etc)") [📖](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Documentation") [🤔](#ideas-whzup "Ideas, Planning, & Feedback") |
+| :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
