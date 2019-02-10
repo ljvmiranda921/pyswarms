@@ -146,6 +146,16 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "fluencer",
+      "name": "fluencer",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6614307?v=4",
+      "profile": "https://github.com/fluencer",
+      "contributions": [
+        "example",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
