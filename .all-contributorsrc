@@ -1,0 +1,24 @@
+{
+  "projectName": "pyswarms",
+  "projectOwner": "ljvmiranda921",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "danielcorreia96",
+      "name": "Daniel Correia",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/17486065?v=4",
+      "profile": "https://github.com/danielcorreia96",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
