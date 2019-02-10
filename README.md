@@ -1,4 +1,5 @@
 ![PySwarms Logo](https://i.imgur.com/eX8oqPQ.png)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 ---
 
 
@@ -322,3 +323,15 @@ Not on the list? Ping us in the Issue Tracker!
 Like it? Love it? Leave us a star on [Github] to show your appreciation! 
 
 [Github]: https://github.com/ljvmiranda921/pyswarms
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://github.com/all-contributors/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+| [<img src="https://avatars0.githubusercontent.com/u/17486065?v=4" width="100px;" alt="Daniel Correia"/><br /><sub><b>Daniel Correia</b></sub>](https://github.com/danielcorreia96)<br />[🐛](https://github.com/ljvmiranda921/pyswarms/issues?q=author%3Adanielcorreia96 "Bug reports") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=danielcorreia96 "Code") |
+| :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
