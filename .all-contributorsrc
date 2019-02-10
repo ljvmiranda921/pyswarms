@@ -32,6 +32,16 @@
         "ideas",
         "review"
       ]
+    },
+    {
+      "login": "Carl-K",
+      "name": "Carl-K",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/13661469?v=4",
+      "profile": "https://github.com/Carl-K",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7
