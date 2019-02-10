@@ -1,5 +1,5 @@
 ![PySwarms Logo](https://i.imgur.com/eX8oqPQ.png)
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors)
 ---
 
 
@@ -330,8 +330,8 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/all-contri
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-| [<img src="https://avatars0.githubusercontent.com/u/17486065?v=4" width="100px;" alt="Daniel Correia"/><br /><sub><b>Daniel Correia</b></sub>](https://github.com/danielcorreia96)<br />[🐛](https://github.com/ljvmiranda921/pyswarms/issues?q=author%3Adanielcorreia96 "Bug reports") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=danielcorreia96 "Code") | [<img src="https://avatars3.githubusercontent.com/u/39431903?v=4" width="100px;" alt="Aaron"/><br /><sub><b>Aaron</b></sub>](https://github.com/whzup)<br />[🚧](#maintenance-whzup "Maintenance") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Code") [📖](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Documentation") [⚠️](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Tests") [🤔](#ideas-whzup "Ideas, Planning, & Feedback") [👀](#review-whzup "Reviewed Pull Requests") |
-| :---: | :---: |
+| [<img src="https://avatars0.githubusercontent.com/u/17486065?v=4" width="100px;" alt="Daniel Correia"/><br /><sub><b>Daniel Correia</b></sub>](https://github.com/danielcorreia96)<br />[🐛](https://github.com/ljvmiranda921/pyswarms/issues?q=author%3Adanielcorreia96 "Bug reports") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=danielcorreia96 "Code") | [<img src="https://avatars3.githubusercontent.com/u/39431903?v=4" width="100px;" alt="Aaron"/><br /><sub><b>Aaron</b></sub>](https://github.com/whzup)<br />[🚧](#maintenance-whzup "Maintenance") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Code") [📖](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Documentation") [⚠️](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Tests") [🤔](#ideas-whzup "Ideas, Planning, & Feedback") [👀](#review-whzup "Reviewed Pull Requests") | [<img src="https://avatars2.githubusercontent.com/u/13661469?v=4" width="100px;" alt="Carl-K"/><br /><sub><b>Carl-K</b></sub>](https://github.com/Carl-K)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=Carl-K "Code") [⚠️](https://github.com/ljvmiranda921/pyswarms/commits?author=Carl-K "Tests") |
+| :---: | :---: | :---: |
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
