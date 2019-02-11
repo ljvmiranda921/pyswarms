@@ -211,6 +211,10 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             "Optimize for {} iters with {}".format(iters, self.options),
             lvl=logging.INFO,
         )
+        # Populate memory of the handlers
+        self.bh.memory = self.swarm.position
+        self.vh.memory = self.swarm.position
+
         for i in self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             # fmt: off

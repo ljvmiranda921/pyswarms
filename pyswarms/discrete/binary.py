@@ -163,6 +163,8 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             "Optimize for {} iters with {}".format(iters, self.options),
             lvl=logging.INFO,
         )
+        # Populate memory of the handlers
+        self.vh.memory = self.swarm.position
 
         for i in self.rep.pbar(iters, self.name):
             if not fast:
