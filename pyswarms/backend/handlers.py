@@ -177,13 +177,14 @@ class BoundaryHandler(HandlerMixin):
             :nowrap:
 
             \begin{gather*}
-                \text{while } x_{i, t, d} \not\in \left[lb_d,\,ub_d\right] \text{ do the
-                following:}
+                \text{while } x_{i, t, d} \not\in \left[lb_d,\,ub_d\right] \\
+                \text{ do the following:}\\
+                \\
                 x_{i, t, d} =   \begin{cases}
                                     2\cdot lb_d - x_{i, t, d} & \quad \text{if } x_{i,
-                                    t, d} < lb_d
+                                    t, d} < lb_d \\
                                     2\cdot ub_d - x_{i, t, d} & \quad \text{if } x_{i,
-                                    t, d} > ub_d
+                                    t, d} > ub_d \\
                                     x_{i, t, d} & \quad \text{otherwise}
                                 \end{cases}
             \end{gather*}
