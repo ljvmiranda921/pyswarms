@@ -198,15 +198,13 @@ class LocalBestPSO(SwarmOptimizer):
         self.bh.memory = self.swarm.position
         self.vh.memory = self.swarm.position
 
+        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         for i in self.rep.pbar(iters, self.name):
             if not fast:
                 sleep(0.01)
             # Compute cost for current position and personal best
             self.swarm.current_cost = objective_func(
                 self.swarm.position, **kwargs
-            )
-            self.swarm.pbest_cost = objective_func(
-                self.swarm.pbest_pos, **kwargs
             )
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
                 self.swarm
