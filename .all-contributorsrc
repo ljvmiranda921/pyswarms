@@ -156,6 +156,16 @@
         "example",
         "doc"
       ]
+    },
+    {
+      "login": "miguelcocruz",
+      "name": "miguelcocruz",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/45034603?v=4",
+      "profile": "https://github.com/miguelcocruz",
+      "contributions": [
+        "doc",
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7
