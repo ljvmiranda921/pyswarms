@@ -42,11 +42,6 @@ interaction with swarm optimizations. Check out more features below!
 
 [this link]: https://pyswarms.readthedocs.io/en/latest/features.html
 
-## Dependencies
-* numpy >= 1.13.0
-* scipy >= 0.17.0
-* matplotlib >= 1.3.1
-
 ## Installation
 
 To install PySwarms, run this command in your terminal:
