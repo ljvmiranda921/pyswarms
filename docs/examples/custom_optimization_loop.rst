@@ -12,10 +12,10 @@ implementation. The idea is simple, again, let's refer to this diagram:
     :align: center
     :alt: Writing your own optimization loop
 
-Some things to note: 
+Some things to note:
 
-- Initialize a ``Swarm`` class and update its attributes for every iteration. 
-- Initialize a ``Topology`` class (in this case, we'll use a ``Star`` topology), and use its methods to operate on the Swarm. 
+- Initialize a ``Swarm`` class and update its attributes for every iteration.
+- Initialize a ``Topology`` class (in this case, we'll use a ``Star`` topology), and use its methods to operate on the Swarm.
 - We can also use some additional methods in ``pyswarms.backend`` depending on our needs.
 
 Thus, for each iteration: 1. We take an attribute from the ``Swarm``
@@ -25,16 +25,34 @@ new attributes.
 
 .. code-block:: python
 
+    import sys
+    # Change directory to access the pyswarms module
+    sys.path.append('../')
+
+
+.. code-block:: python
+
+    print('Running on Python version: {}'.format(sys.version))
+
+
+.. code::
+
+    Running on Python version: 3.6.3 |Anaconda custom (64-bit)| (default, Oct 13 2017, 12:02:49)
+    [GCC 7.2.0]
+
+
+.. code-block:: python
+
     # Import modules
     import numpy as np
-    
+
     # Import sphere function as objective function
     from pyswarms.utils.functions.single_obj import sphere as f
-    
+
     # Import backend modules
     import pyswarms.backend as P
     from pyswarms.backend.topology import Star
-    
+
     # Some more magic so that the notebook will reload external python modules;
     # see http://stackoverflow.com/questions/1907993/autoreload-of-modules-in-ipython
     %load_ext autoreload
@@ -78,7 +96,7 @@ our algorithm
     my_topology = Star() # The Topology Class
     my_options = {'c1': 0.6, 'c2': 0.3, 'w': 0.4} # arbitrarily set
     my_swarm = P.create_swarm(n_particles=50, dimensions=2, options=my_options) # The Swarm Class
-    
+
     print('The following are the attributes of our swarm: {}'.format(my_swarm.__dict__.keys()))
 
 
@@ -97,21 +115,21 @@ Now, let's write our optimization loop!
         my_swarm.current_cost = f(my_swarm.position) # Compute current cost
         my_swarm.pbest_cost = f(my_swarm.pbest_pos)  # Compute personal best pos
         my_swarm.pbest_pos, my_swarm.pbest_cost = P.compute_pbest(my_swarm) # Update and store
-        
+
         # Part 2: Update global best
         # Note that gbest computation is dependent on your topology
         if np.min(my_swarm.pbest_cost) < my_swarm.best_cost:
             my_swarm.best_pos, my_swarm.best_cost = my_topology.compute_gbest(my_swarm)
-        
+
         # Let's print our output
         if i%20==0:
             print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
-        
+
         # Part 3: Update position and velocity matrices
         # Note that position and velocity updates are dependent on your topology
         my_swarm.velocity = my_topology.compute_velocity(my_swarm)
         my_swarm.position = my_topology.compute_position(my_swarm)
-        
+
     print('The best cost found by our swarm is: {:.4f}'.format(my_swarm.best_cost))
     print('The best position found by our swarm is: {}'.format(my_swarm.best_pos))
 
@@ -133,7 +151,7 @@ PySwarms (it has boundary support, tolerance, initial positions, etc.):
 .. code-block:: python
 
     from pyswarms.single import GlobalBestPSO
-    
+
     optimizer = GlobalBestPSO(n_particles=50, dimensions=2, options=my_options) # Reuse our previous options
     optimizer.optimize(f, iters=100, print_step=20, verbose=2)
 
@@ -149,4 +167,3 @@ PySwarms (it has boundary support, tolerance, initial positions, etc.):
     Optimization finished!
     Final cost: 0.0001
     Best value: [0.007417861777661566, 0.004421058167808941]
-    
