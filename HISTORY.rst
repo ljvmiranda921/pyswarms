@@ -170,3 +170,39 @@ Thanks for all the wonderful Pull Requests, `@mamadyonline <https://github.com/m
 .. _#263: https://github.com/ljvmiranda921/pyswarms/pull/263
 .. _@nik1082: https://github.com/nik1082
 .. _@dfhljf: https://github.com/dfhljf
+
+1.0.0 (2019-02-08)
+------------------
+
+This is the first major release of PySwarms. Starting today, we will be adhering to a `better semantic versioning guidelines`_. We will be updating the project wikis shortly after. The maintainers believe that PySwarms is mature enough to merit a version 1, this would also help us release more often (mostly minor releases) and create patch releases as soon as possible.
+
+Also, we will be maintaining a quarterly release cycle, where the **next minor release (v.1.0.0) will be on June**. All enhancements and new features will be staged on the :code:`development` branch, then will be merged back to the :code:`master` branch at the end of the cycle. However, bug fixes and documentation errors will merit a patch release, and will be merged to :code:`master` immediately.
+
+* **NEW:** Boundary and velocity handlers to resolve stuck particles - `#238`_ . All thanks for our maintainer, `@whzup`_ !
+* **FIX:** Duplication function calls during optimization, hopefully your long-running objective functions won't take doubly long. - `#266`_. Thank you `@danielcorreia96`_ !
+
+.. _better semantic versioning guidelines: https://semver.org/
+.. _#238: https://github.com/ljvmiranda921/pyswarms/pull/238
+.. _#266: https://github.com/ljvmiranda921/pyswarms/pull/266
+.. _@whzup: https://github.com/whzup
+.. _@danielcorreia96: https://github.com/danielcorreia96
+
+
+1.0.1 (2019-02-14)
+~~~~~~~~~~~~~~~~~~
+
+* **FIX:** Handlers memory management so that it works all the time - `#286`_ . Thanks for this `@whzup`_ !
+* **FIX:** Re-introduce fix for multiple optimization function calls - `#290`_ . Thank you once more `@danielcorreia96`_ !
+
+.. _#286: https://github.com/ljvmiranda921/pyswarms/pull/286
+.. _#290: https://github.com/ljvmiranda921/pyswarms/pull/290
+.. _@whzup: https://github.com/whzup
+.. _@danielcorreia96: https://github.com/danielcorreia96
+
+1.0.2 (2019-02-17)
+~~~~~~~~~~~~~~~~~~
+
+* **FIX:** BinaryPSO should return final best position instead of final swarm - `#293`_ . Thank you once more `@danielcorreia96`_ !
+
+.. _#293: https://github.com/ljvmiranda921/pyswarms/pull/293
+.. _@danielcorreia96: https://github.com/danielcorreia96
