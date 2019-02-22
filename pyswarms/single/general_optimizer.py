@@ -58,7 +58,6 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 
 # Import standard library
 import logging
-from time import sleep
 
 # Import modules
 import numpy as np
@@ -181,7 +180,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, fast=False, **kwargs):
+    def optimize(self, objective_func, iters, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -193,8 +192,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             objective function to be evaluated
         iters : int
             number of iterations
-        fast : bool (default is False)
-            if True, time.sleep is not executed
         kwargs : dict
             arguments for the objective function
 
@@ -203,9 +200,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         tuple
             the global best cost and the global best position.
         """
-        if not fast:
-            sleep(0.01)
-
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),

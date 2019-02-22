@@ -129,7 +129,7 @@ class SwarmOptimizer(abc.ABC):
         self.velocity_history.append(hist.velocity)
 
     @abc.abstractmethod
-    def optimize(self, objective_func, iters, fast=False, **kwargs):
+    def optimize(self, objective_func, iters, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -142,8 +142,6 @@ class SwarmOptimizer(abc.ABC):
             objective function to be evaluated
         iters : int
             number of iterations
-        fast : bool (default is False)
-            if True, time.sleep is not executed
         kwargs : dict
             arguments for objective function
 
