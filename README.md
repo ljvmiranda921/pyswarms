@@ -82,7 +82,7 @@ $ vagrant provision
 $ vagrant up
 $ vagrant ssh
 ```
-Now you're ready to develop your contributions in a premade virtual enviroment. 
+Now you're ready to develop your contributions in a premade virtual environment. 
 
 ## Basic Usage
 
@@ -177,7 +177,7 @@ best_score, best_options = g.search()
 ```
 
 This then returns the best score found during optimization, and the
-hyperparameter options that enables it.
+hyperparameter options that enable it.
 
 ```s
 >>> best_score
@@ -191,7 +191,7 @@ hyperparameter options that enables it.
 ### Swarm visualization
 
 It is also possible to plot optimizer performance for the sake of formatting.
-The plotters moule is built on top of `matplotlib`, making it
+The plotters module is built on top of `matplotlib`, making it
 highly-customizable.
 
 
@@ -267,7 +267,7 @@ Moreover, you can also see the list of features that need some help in our
 [contributing guide]: https://pyswarms.readthedocs.io/en/development/contributing.html
 [Issues]: https://github.com/ljvmiranda921/pyswarms/issues
 
-**Most importantly**, first time contributors are welcome to join! I try my
+**Most importantly**, first-time contributors are welcome to join! I try my
 best to help you get started and enable you to make your first Pull Request!
 Let's learn from each other!
 
