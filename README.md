@@ -108,7 +108,8 @@ optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=option
 # Perform optimization
 best_cost, best_pos = optimizer.optimize(fx.sphere, iters=100)
 ```
-![Sphere Optimization](https://i.imgur.com/F8gbnsR.gif)
+
+[Sphere Optimization](https://i.imgur.com/5LtjROf.gif)
 
 This will run the optimizer for `100` iterations, then returns the best cost
 and best position found by the swarm. In addition, you can also access
