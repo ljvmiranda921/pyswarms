@@ -166,6 +166,15 @@
         "doc",
         "example"
       ]
+    },
+    {
+      "login": "ndngo",
+      "name": "Nathaniel Ngo",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/16291290?v=4",
+      "profile": "https://github.com/ndngo",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
