@@ -42,11 +42,6 @@ interaction with swarm optimizations. Check out more features below!
 
 [this link]: https://pyswarms.readthedocs.io/en/latest/features.html
 
-## Dependencies
-* numpy >= 1.13.0
-* scipy >= 0.17.0
-* matplotlib >= 1.3.1
-
 ## Installation
 
 To install PySwarms, run this command in your terminal:
@@ -111,18 +106,10 @@ options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
 # Call instance of PSO
 optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options)
 # Perform optimization
-best_cost, best_pos = optimizer.optimize(fx.sphere, iters=100, verbose=3, print_step=25)
+best_cost, best_pos = optimizer.optimize(fx.sphere, iters=100)
 ```
-```s
->>> 2017-10-03 10:12:33,859 - pyswarms.single.global_best - INFO - Iteration 1/100, cost: 0.131244226714
->>> 2017-10-03 10:12:33,878 - pyswarms.single.global_best - INFO - Iteration 26/100, cost: 1.60297958653e-05
->>> 2017-10-03 10:12:33,893 - pyswarms.single.global_best - INFO - Iteration 51/100, cost: 1.60297958653e-05
->>> 2017-10-03 10:12:33,906 - pyswarms.single.global_best - INFO - Iteration 76/100, cost: 2.12638727702e-06
->>> 2017-10-03 10:12:33,921 - pyswarms.single.global_best - INFO - ================================
-Optimization finished!
-Final cost: 0.0000
-Best value: [-0.0003521098028145481, -0.00045459382339127453]
-```
+
+![Sphere Optimization](https://i.imgur.com/5LtjROf.gif)
 
 This will run the optimizer for `100` iterations, then returns the best cost
 and best position found by the swarm. In addition, you can also access
@@ -198,7 +185,8 @@ highly-customizable.
 ```python
 import pyswarms as ps
 from pyswarms.utils.functions import single_obj as fx
-from pyswarms.utils.plotters import plot_cost_history
+from pyswarms.utils.plotters import plot_cost_history, plot_contour, plot_surface
+import matplotlib.pyplot as plt
 # Set-up optimizer
 options = {'c1':0.5, 'c2':0.3, 'w':0.9}
 optimizer = ps.single.GlobalBestPSO(n_particles=50, dimensions=2, options=options)
@@ -213,10 +201,9 @@ plt.show()
 We can also plot the animation...
 
 ```python
-from pyswarms.utils.plotters.formatters import Mesher
-from pyswarms.utils.plotters.formatters import Designer
+from pyswarms.utils.plotters.formatters import Mesher, Designer
 # Plot the sphere function's mesh for better plots
-m = Mesher(func=fx.sphere_func,
+m = Mesher(func=fx.sphere,
            limits=[(-1,1), (-1,1)])
 # Adjust figure limits
 d = Designer(limits=[(-1,1), (-1,1), (-0.1,1)],
@@ -248,6 +235,7 @@ PySwarms is currently maintained by a small yet dedicated team:
 - Lester James V. Miranda ([@ljvmiranda921](https://github.com/ljvmiranda921))
 - Siobhán K. Cronin ([@SioKCronin](https://github.com/SioKCronin))
 - Aaron Moser ([@whzup](https://github.com/whzup))
+- Steven Beardwell ([@stevenbw](https://github.com/stevenbw))
 
 And we would appreciate it if you can lend a hand with the following:
 
@@ -306,6 +294,10 @@ Not on the list? Ping us in the Issue Tracker!
 * Nandy, Abhishek, and Manisha Biswas., "Applying Python to Reinforcement Learning." *Reinforcement Learning*. Apress, Berkeley, CA, 2018. 89-128.
 * Benedetti, Marcello, et al., "A generative modeling approach for benchmarking and training shallow quantum circuits." *arXiv preprint arXiv:1801.07686* (2018).
 * Vrbančič et al., "NiaPy: Python microframework for building nature-inspired algorithms." Journal of Open Source Software, 3(23), 613, https://doi.org/10.21105/joss.00613
+* Häse, Florian, et al. "Phoenics: A Bayesian optimizer for chemistry." *ACS Central Science.* 4.9 (2018): 1134-1145. 
+* Szynkiewicz, Pawel. "A Comparative Study of PSO and CMA-ES Algorithms on Black-box Optimization Benchmarks." *Journal of Telecommunications and Information Technology* 4 (2018): 5.
+* Mistry, Miten, et al. "Mixed-Integer Convex Nonlinear Optimization with Gradient-Boosted Trees Embedded." Imperial College London (2018).
+* Vishwakarma, Gaurav. *Machine Learning Model Selection for Predicting Properties of High Refractive Index Polymers* Dissertation. State University of New York at Buffalo, 2018.
 
 ## Others
 Like it? Love it? Leave us a star on [Github] to show your appreciation! 
@@ -321,7 +313,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/all-contri
 | [<img src="https://avatars3.githubusercontent.com/u/39431903?v=4" width="100px;" alt="Aaron"/><br /><sub><b>Aaron</b></sub>](https://github.com/whzup)<br />[🚧](#maintenance-whzup "Maintenance") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Code") [📖](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Documentation") [⚠️](https://github.com/ljvmiranda921/pyswarms/commits?author=whzup "Tests") [🤔](#ideas-whzup "Ideas, Planning, & Feedback") [👀](#review-whzup "Reviewed Pull Requests") | [<img src="https://avatars2.githubusercontent.com/u/13661469?v=4" width="100px;" alt="Carl-K"/><br /><sub><b>Carl-K</b></sub>](https://github.com/Carl-K)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=Carl-K "Code") [⚠️](https://github.com/ljvmiranda921/pyswarms/commits?author=Carl-K "Tests") | [<img src="https://avatars2.githubusercontent.com/u/19956669?v=4" width="100px;" alt="Siobhán K Cronin"/><br /><sub><b>Siobhán K Cronin</b></sub>](http://www.siobhankcronin.com/)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=SioKCronin "Code") [🚧](#maintenance-SioKCronin "Maintenance") [🤔](#ideas-SioKCronin "Ideas, Planning, & Feedback") | [<img src="https://avatars3.githubusercontent.com/u/1452951?v=4" width="100px;" alt="Andrew Jarcho"/><br /><sub><b>Andrew Jarcho</b></sub>](http://andrewjarcho.com)<br />[⚠️](https://github.com/ljvmiranda921/pyswarms/commits?author=jazcap53 "Tests") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=jazcap53 "Code") | [<img src="https://avatars1.githubusercontent.com/u/20543370?v=4" width="100px;" alt="Mamady"/><br /><sub><b>Mamady</b></sub>](https://github.com/mamadyonline)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=mamadyonline "Code") | [<img src="https://avatars3.githubusercontent.com/u/26357788?v=4" width="100px;" alt="Jay Speidell"/><br /><sub><b>Jay Speidell</b></sub>](https://github.com/jayspeidell)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=jayspeidell "Code") | [<img src="https://avatars2.githubusercontent.com/u/3589574?v=4" width="100px;" alt="Eric"/><br /><sub><b>Eric</b></sub>](https://github.com/slek120)<br />[🐛](https://github.com/ljvmiranda921/pyswarms/issues?q=author%3Aslek120 "Bug reports") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=slek120 "Code") |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [<img src="https://avatars1.githubusercontent.com/u/13984473?v=4" width="100px;" alt="CPapadim"/><br /><sub><b>CPapadim</b></sub>](https://github.com/CPapadim)<br />[🐛](https://github.com/ljvmiranda921/pyswarms/issues?q=author%3ACPapadim "Bug reports") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=CPapadim "Code") | [<img src="https://avatars1.githubusercontent.com/u/7887642?v=4" width="100px;" alt="JiangHui"/><br /><sub><b>JiangHui</b></sub>](https://github.com/dfhljf)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=dfhljf "Code") | [<img src="https://avatars3.githubusercontent.com/u/17260188?v=4" width="100px;" alt="Jericho Arcelao"/><br /><sub><b>Jericho Arcelao</b></sub>](https://github.com/nik1082)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=nik1082 "Code") | [<img src="https://avatars2.githubusercontent.com/u/27848025?v=4" width="100px;" alt="James D. Bohrman"/><br /><sub><b>James D. Bohrman</b></sub>](http://www.jdbohrman.xyz)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=jdbohrman "Code") | [<img src="https://avatars2.githubusercontent.com/u/24660861?v=4" width="100px;" alt="bradahoward"/><br /><sub><b>bradahoward</b></sub>](https://github.com/bradahoward)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=bradahoward "Code") | [<img src="https://avatars2.githubusercontent.com/u/18325841?v=4" width="100px;" alt="ThomasCES"/><br /><sub><b>ThomasCES</b></sub>](https://github.com/ThomasCES)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=ThomasCES "Code") | [<img src="https://avatars0.githubusercontent.com/u/17486065?v=4" width="100px;" alt="Daniel Correia"/><br /><sub><b>Daniel Correia</b></sub>](https://github.com/danielcorreia96)<br />[🐛](https://github.com/ljvmiranda921/pyswarms/issues?q=author%3Adanielcorreia96 "Bug reports") [💻](https://github.com/ljvmiranda921/pyswarms/commits?author=danielcorreia96 "Code") |
-| [<img src="https://avatars3.githubusercontent.com/u/6614307?v=4" width="100px;" alt="fluencer"/><br /><sub><b>fluencer</b></sub>](https://github.com/fluencer)<br />[💡](#example-fluencer "Examples") [📖](https://github.com/ljvmiranda921/pyswarms/commits?author=fluencer "Documentation") | [<img src="https://avatars0.githubusercontent.com/u/45034603?v=4" width="100px;" alt="miguelcocruz"/><br /><sub><b>miguelcocruz</b></sub>](https://github.com/miguelcocruz)<br />[📖](https://github.com/ljvmiranda921/pyswarms/commits?author=miguelcocruz "Documentation") [💡](#example-miguelcocruz "Examples") |
+| [<img src="https://avatars3.githubusercontent.com/u/6614307?v=4" width="100px;" alt="fluencer"/><br /><sub><b>fluencer</b></sub>](https://github.com/fluencer)<br />[💡](#example-fluencer "Examples") [📖](https://github.com/ljvmiranda921/pyswarms/commits?author=fluencer "Documentation") | [<img src="https://avatars0.githubusercontent.com/u/45034603?v=4" width="100px;" alt="miguelcocruz"/><br /><sub><b>miguelcocruz</b></sub>](https://github.com/miguelcocruz)<br />[📖](https://github.com/ljvmiranda921/pyswarms/commits?author=miguelcocruz "Documentation") [💡](#example-miguelcocruz "Examples") | [<img src="https://avatars1.githubusercontent.com/u/46458390?v=4" width="100px;" alt="Steven Beardwell"/><br /><sub><b>Steven Beardwell</b></sub>](https://github.com/stevenbw)<br />[💻](https://github.com/ljvmiranda921/pyswarms/commits?author=stevenbw "Code") [🚧](#maintenance-stevenbw "Maintenance") [📖](https://github.com/ljvmiranda921/pyswarms/commits?author=stevenbw "Documentation") [🤔](#ideas-stevenbw "Ideas, Planning, & Feedback") | [<img src="https://avatars1.githubusercontent.com/u/16291290?v=4" width="100px;" alt="Nathaniel Ngo"/><br /><sub><b>Nathaniel Ngo</b></sub>](https://github.com/ndngo)<br />[📖](https://github.com/ljvmiranda921/pyswarms/commits?author=ndngo "Documentation") |
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
