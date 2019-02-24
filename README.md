@@ -295,7 +295,7 @@ Not on the list? Ping us in the Issue Tracker!
 * Benedetti, Marcello, et al., "A generative modeling approach for benchmarking and training shallow quantum circuits." *arXiv preprint arXiv:1801.07686* (2018).
 * Vrbančič et al., "NiaPy: Python microframework for building nature-inspired algorithms." Journal of Open Source Software, 3(23), 613, https://doi.org/10.21105/joss.00613
 * Häse, Florian, et al. "Phoenics: A Bayesian optimizer for chemistry." *ACS Central Science.* 4.9 (2018): 1134-1145. 
-* Szynkiewicz, Pawel. "A Comparative Study of PSO and CMA-ES Algorithms on Black-box Optimization Benchmarks." *Journal of Telecommunications and Information Technology 4 (2018): 5.
+* Szynkiewicz, Pawel. "A Comparative Study of PSO and CMA-ES Algorithms on Black-box Optimization Benchmarks." *Journal of Telecommunications and Information Technology* 4 (2018): 5.
 * Mistry, Miten, et al. "Mixed-Integer Convex Nonlinear Optimization with Gradient-Boosted Trees Embedded." Imperial College London (2018).
 * Vishwakarma, Gaurav. *Machine Learning Model Selection for Predicting Properties of High Refractive Index Polymers* Dissertation. State University of New York at Buffalo, 2018.
 
