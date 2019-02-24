@@ -42,11 +42,6 @@ interaction with swarm optimizations. Check out more features below!
 
 [this link]: https://pyswarms.readthedocs.io/en/latest/features.html
 
-## Dependencies
-* numpy >= 1.13.0
-* scipy >= 0.17.0
-* matplotlib >= 1.3.1
-
 ## Installation
 
 To install PySwarms, run this command in your terminal:
@@ -111,18 +106,10 @@ options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
 # Call instance of PSO
 optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options)
 # Perform optimization
-best_cost, best_pos = optimizer.optimize(fx.sphere, iters=100, verbose=3, print_step=25)
+best_cost, best_pos = optimizer.optimize(fx.sphere, iters=100)
 ```
-```s
->>> 2017-10-03 10:12:33,859 - pyswarms.single.global_best - INFO - Iteration 1/100, cost: 0.131244226714
->>> 2017-10-03 10:12:33,878 - pyswarms.single.global_best - INFO - Iteration 26/100, cost: 1.60297958653e-05
->>> 2017-10-03 10:12:33,893 - pyswarms.single.global_best - INFO - Iteration 51/100, cost: 1.60297958653e-05
->>> 2017-10-03 10:12:33,906 - pyswarms.single.global_best - INFO - Iteration 76/100, cost: 2.12638727702e-06
->>> 2017-10-03 10:12:33,921 - pyswarms.single.global_best - INFO - ================================
-Optimization finished!
-Final cost: 0.0000
-Best value: [-0.0003521098028145481, -0.00045459382339127453]
-```
+
+![Sphere Optimization](https://i.imgur.com/5LtjROf.gif)
 
 This will run the optimizer for `100` iterations, then returns the best cost
 and best position found by the swarm. In addition, you can also access
@@ -198,7 +185,8 @@ highly-customizable.
 ```python
 import pyswarms as ps
 from pyswarms.utils.functions import single_obj as fx
-from pyswarms.utils.plotters import plot_cost_history
+from pyswarms.utils.plotters import plot_cost_history, plot_contour, plot_surface
+import matplotlib.pyplot as plt
 # Set-up optimizer
 options = {'c1':0.5, 'c2':0.3, 'w':0.9}
 optimizer = ps.single.GlobalBestPSO(n_particles=50, dimensions=2, options=options)
@@ -213,10 +201,9 @@ plt.show()
 We can also plot the animation...
 
 ```python
-from pyswarms.utils.plotters.formatters import Mesher
-from pyswarms.utils.plotters.formatters import Designer
+from pyswarms.utils.plotters.formatters import Mesher, Designer
 # Plot the sphere function's mesh for better plots
-m = Mesher(func=fx.sphere_func,
+m = Mesher(func=fx.sphere,
            limits=[(-1,1), (-1,1)])
 # Adjust figure limits
 d = Designer(limits=[(-1,1), (-1,1), (-0.1,1)],
@@ -248,6 +235,7 @@ PySwarms is currently maintained by a small yet dedicated team:
 - Lester James V. Miranda ([@ljvmiranda921](https://github.com/ljvmiranda921))
 - Siobhán K. Cronin ([@SioKCronin](https://github.com/SioKCronin))
 - Aaron Moser ([@whzup](https://github.com/whzup))
+- Steven Beardwell ([@stevenbw](https://github.com/stevenbw))
 
 And we would appreciate it if you can lend a hand with the following:
 
@@ -306,6 +294,10 @@ Not on the list? Ping us in the Issue Tracker!
 * Nandy, Abhishek, and Manisha Biswas., "Applying Python to Reinforcement Learning." *Reinforcement Learning*. Apress, Berkeley, CA, 2018. 89-128.
 * Benedetti, Marcello, et al., "A generative modeling approach for benchmarking and training shallow quantum circuits." *arXiv preprint arXiv:1801.07686* (2018).
 * Vrbančič et al., "NiaPy: Python microframework for building nature-inspired algorithms." Journal of Open Source Software, 3(23), 613, https://doi.org/10.21105/joss.00613
+* Häse, Florian, et al. "Phoenics: A Bayesian optimizer for chemistry." *ACS Central Science.* 4.9 (2018): 1134-1145. 
+* Szynkiewicz, Pawel. "A Comparative Study of PSO and CMA-ES Algorithms on Black-box Optimization Benchmarks." *Journal of Telecommunications and Information Technology* 4 (2018): 5.
+* Mistry, Miten, et al. "Mixed-Integer Convex Nonlinear Optimization with Gradient-Boosted Trees Embedded." Imperial College London (2018).
+* Vishwakarma, Gaurav. *Machine Learning Model Selection for Predicting Properties of High Refractive Index Polymers* Dissertation. State University of New York at Buffalo, 2018.
 
 ## Others
 Like it? Love it? Leave us a star on [Github] to show your appreciation! 
