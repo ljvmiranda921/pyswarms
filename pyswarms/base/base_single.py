@@ -129,7 +129,7 @@ class SwarmOptimizer(abc.ABC):
         self.velocity_history.append(hist.velocity)
 
     @abc.abstractmethod
-    def optimize(self, objective_func, iters, **kwargs):
+    def optimize(self, objective_func, iters, n_processes=None, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -142,6 +142,8 @@ class SwarmOptimizer(abc.ABC):
             objective function to be evaluated
         iters : int
             number of iterations
+        n_processes : int
+            number of processes to use for parallel particle evaluation (default: None = no parallelization)
         kwargs : dict
             arguments for objective function
 

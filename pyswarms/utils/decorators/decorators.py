@@ -1,5 +1,6 @@
 # Import modules
 import numpy as np
+from functools import wraps
 
 
 def cost(cost_func):
@@ -39,6 +40,7 @@ def cost(cost_func):
         The vectorized output for all particles as defined by :code:`cost_func`
     """
 
+    @wraps(cost_func)
     def cost_dec(particles, **kwargs):
         n_particles = particles.shape[0]
         vector = np.array(

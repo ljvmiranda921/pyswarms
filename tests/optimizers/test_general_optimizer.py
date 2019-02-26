@@ -70,6 +70,12 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         optimizer.optimize(sphere, 2000)
         assert np.array(optimizer.cost_history).shape != (2000,)
 
+    def test_parallel_evaluation(self, obj_without_args, optimizer):
+        """Test if parallelization breaks the optimization process"""
+        import multiprocessing
+        optimizer.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())
+        assert np.array(optimizer.cost_history).shape == (2000,)
+
     @pytest.mark.skip(reason="Some topologies converge too slowly")
     def test_obj_with_kwargs(self, obj_with_args, optimizer):
         """Test if kwargs are passed properly in objfunc"""

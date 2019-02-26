@@ -83,6 +83,13 @@ class ABCTestOptimizer(abc.ABC):
         opt.optimize(sphere, 2000)
         assert np.array(opt.cost_history).shape != (2000,)
 
+    def test_parallel_evaluation(self, obj_without_args, optimizer, options):
+        """Test if parallelization breaks the optimization process"""
+        import multiprocessing
+        opt = optimizer(100, 2, options=options)
+        opt.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())
+        assert np.array(opt.cost_history).shape == (2000,)
+
     def test_obj_with_kwargs(self, obj_with_args, optimizer, options):
         """Test if kwargs are passed properly in objfunc"""
         x_max = 10 * np.ones(2)
