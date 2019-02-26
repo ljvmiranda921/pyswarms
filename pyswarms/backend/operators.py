@@ -16,6 +16,7 @@ import numpy as np
 
 from ..utils.reporter import Reporter
 from .handlers import BoundaryHandler, VelocityHandler
+from functools import partial
 
 
 rep = Reporter(logger=logging.getLogger(__name__))
@@ -207,3 +208,32 @@ def compute_position(swarm, bounds, bh):
         raise
     else:
         return position
+
+
+def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
+    """Evaluate particles using the objective function
+
+    This method evaluates each particle in the swarm according to the objective function passed.
+
+    If a pool is passed, then the evaluation of the particles is done in parallel using multiple processes.
+
+    Parameters
+    ----------
+    swarm : pyswarms.backend.swarms.Swarm
+        a Swarm instance
+    objective_func : function
+        objective function to be evaluated
+    pool: multiprocessing.Pool
+        multiprocessing.Pool to be used for parallel particle evaluation
+    kwargs : dict
+        arguments for the objective function
+    Returns
+    -------
+    numpy.ndarray
+        Cost-matrix for the given swarm
+    """
+    if pool is None:
+        return objective_func(swarm.position, **kwargs)
+    else:
+        results = pool.map(partial(objective_func, **kwargs), np.array_split(swarm.position, pool._processes))
+        return np.concatenate(results)

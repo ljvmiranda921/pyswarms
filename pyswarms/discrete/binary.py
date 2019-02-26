@@ -56,8 +56,9 @@ import logging
 
 # Import modules
 import numpy as np
+import multiprocessing as mp
 
-from ..backend.operators import compute_pbest
+from ..backend.operators import compute_pbest, compute_objective_function
 from ..backend.topology import Ring
 from ..backend.handlers import BoundaryHandler, VelocityHandler
 from ..base import DiscreteSwarmOptimizer
@@ -134,7 +135,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, **kwargs):
+    def optimize(self, objective_func, iters, n_processes=None, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -146,6 +147,8 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             objective function to be evaluated
         iters : int
             number of iterations
+        n_processes : int
+            number of processes to use for parallel particle evaluation (default: None = no parallelization)
         kwargs : dict
             arguments for objective function
 
@@ -163,11 +166,14 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         # Populate memory of the handlers
         self.vh.memory = self.swarm.position
 
+        # Setup Pool of processes for parallel evaluation
+        pool = None if n_processes is None else mp.Pool(n_processes)
+
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         for i in self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
-            self.swarm.current_cost = objective_func(
-                self.swarm.position, **kwargs
+            self.swarm.current_cost = compute_objective_function(
+                self.swarm, objective_func, pool, **kwargs
             )
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
                 self.swarm
