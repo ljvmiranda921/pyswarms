@@ -93,6 +93,13 @@ Ready to contribute? Here's how to set up `pyswarms` for local development.
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
+    Commit messages should adhere to the following [commit message guidelines]. In brief, commit messages should follow these conventions:
+        * Always contain a subject line which briefly describes the changes made. For example "Update CONTRIBUTING.rst".
+        * Subject lines should not exceed 50 characters.
+        * The commit body should contain context about the change - how the code worked before, how it works now and why you decided to solve the issue in the way you did.
+
+    [commit message guidelines]: https://chris.beams.io/posts/git-commit/
+
 7. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
