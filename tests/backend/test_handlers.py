@@ -9,21 +9,10 @@ from pyswarms.backend.handlers import (
 )
 import pyswarms.backend.handlers as h
 
-bh_strategies = [
-    name
-    for name, _ in inspect.getmembers(
-        h.BoundaryHandler(""), predicate=inspect.ismethod
-    )
-    if not name.startswith(("__", "_"))
-]
-vh_strategies = [
-    name
-    for name, _ in inspect.getmembers(
-        h.VelocityHandler(""), predicate=inspect.ismethod
-    )
-    if not name.startswith(("__", "_"))
-]
-
+bh_strategies = [name for name, _ in inspect.getmembers(h.BoundaryHandler(""),
+    predicate=inspect.ismethod) if not name.startswith(("__", "_"))]
+vh_strategies = [name for name, _ in inspect.getmembers(h.VelocityHandler(""),
+    predicate=inspect.ismethod) if not name.startswith(("__", "_"))]
 
 def test_out_of_bounds(bounds, positions_inbound, positions_out_of_bound):
     hm = HandlerMixin()
@@ -45,8 +34,9 @@ def test_out_of_bounds(bounds, positions_inbound, positions_out_of_bound):
         np.ravel(idx_out_of_bounds[1]).all() == np.ravel(expected_idx[1]).all()
     )
 
-
-@pytest.mark.parametrize("strategy", bh_strategies)
+@pytest.mark.parametrize(
+    "strategy", bh_strategies
+)
 def test_bound_handling(
     bounds, positions_inbound, positions_out_of_bound, strategy
 ):
@@ -61,7 +51,6 @@ def test_bound_handling(
     greater_than_bound = outbound_handled <= bounds[1]
     assert lower_than_bound.all()
     assert greater_than_bound.all()
-
 
 def test_nearest_strategy(bounds, positions_inbound, positions_out_of_bound):
     bh = BoundaryHandler(strategy="nearest")
@@ -97,17 +86,16 @@ def test_periodic_strategy(bounds, positions_inbound, positions_out_of_bound):
     bh = BoundaryHandler(strategy="periodic")
     # TODO Add strategy specific tests
 
-
 def assert_clamp(
-    clamp,
-    velocities_inbound,
-    velocities_out_of_bound,
-    positions_inbound,
-    positions_out_of_bound,
-    vh,
-    bounds=None,
+clamp,
+velocities_inbound,
+velocities_out_of_bound,
+positions_inbound,
+positions_out_of_bound,
+vh,
+bounds=None,
 ):
-    # Test if it doesn't handle inclamp velocities
+# Test if it doesn't handle inclamp velocities
     inbound_handled = vh(
         velocities_inbound, clamp, position=positions_inbound, bounds=bounds
     )
@@ -124,6 +112,8 @@ def assert_clamp(
     greater_than_clamp = outbound_handled > clamp[1]
     assert not lower_than_clamp.all()
     assert not greater_than_clamp.all()
+
+
 
 
 def test_unmodified_strategy(

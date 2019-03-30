@@ -41,9 +41,7 @@ class TestComputeVelocity(object):
             assert (clamp[0] <= v).all() and (clamp[1] >= v).all()
 
     @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])
-    @pytest.mark.parametrize(
-        "vh_strat", ["unmodified", "zero", "invert", "adjust"]
-    )
+    @pytest.mark.parametrize("vh_strat", ["unmodified", "zero", "invert", "adjust"])
     def test_input_swarm(self, swarm, vh_strat):
         """Test if method raises AttributeError with wrong swarm"""
         vh = VelocityHandler(strategy=vh_strat)
@@ -51,9 +49,7 @@ class TestComputeVelocity(object):
             P.compute_velocity(swarm, clamp=(0, 1), vh=vh)
 
     @pytest.mark.parametrize("options", [{"c1": 0.5, "c2": 0.3}])
-    @pytest.mark.parametrize(
-        "vh_strat", ["unmodified", "zero", "invert", "adjust"]
-    )
+    @pytest.mark.parametrize("vh_strat", ["unmodified", "zero", "invert", "adjust"])
     def test_missing_kwargs(self, swarm, options, vh_strat):
         """Test if method raises KeyError with missing kwargs"""
         vh = VelocityHandler(strategy=vh_strat)
@@ -78,13 +74,13 @@ class TestComputePosition(object):
         assert p.shape == swarm.velocity.shape
         if bounds is not None:
             assert (bounds[0] <= p).all() and (bounds[1] >= p).all()
-
+            
     @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])
-    @pytest.mark.parametrize(
-        "bh_strat", ["nearest", "random", "shrink", "intermediate"]
-    )
+    @pytest.mark.parametrize("bh_strat", ["nearest", "random", "shrink",
+    "intermediate"])
     def test_input_swarm(self, swarm, bh_strat):
         """Test if method raises AttributeError with wrong swarm"""
         bh = BoundaryHandler(strategy=bh_strat)
         with pytest.raises(AttributeError):
             P.compute_position(swarm, bounds=([-5, -5], [5, 5]), bh=bh)
+
