@@ -3,7 +3,6 @@
 
 # Import modules
 import pytest
-import numpy as np
 
 # Import from pyswarms
 from pyswarms.discrete import BinaryPSO
