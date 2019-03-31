@@ -29,11 +29,8 @@ class TestLocalBestOptimizer(ABCTestOptimizer):
         opt.reset()
         return opt
 
-    def local_eg(self, options):
-        opt = LocalBestPSO(n_particles=10, dimensions=2, options=options)
-        return opt.optimize(sphere, iters=5)
-
     def test_local_correct_pos(self, options):
-        print("Running local test")
-        cost, pos = self.local_eg(options)
+        """ Test to check local optimiser returns the correct position corresponding to the best cost """
+        opt = LocalBestPSO(n_particles=10, dimensions=2, options=options)
+        cost, pos = opt.optimize(sphere, iters=5)
         assert sum(pos ** 2) == cost

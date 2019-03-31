@@ -12,7 +12,6 @@ import pytest
 import pyswarms.backend.topology as t
 from pyswarms.single import GeneralOptimizerPSO
 from pyswarms.utils.functions.single_obj import sphere
-from pyswarms.backend.topology import Pyramid
 
 from .abc_test_optimizer import ABCTestOptimizer
 
@@ -97,13 +96,8 @@ class TestGeneralOptimizer(ABCTestOptimizer):
             # Wrong kwargs
             cost, pos = optimizer.optimize(obj_with_args, 1000, c=1, d=100)
 
-    def general_eg(self, options):
-        my_topology = Pyramid(static=False)
-        opt = GeneralOptimizerPSO(
-            n_particles=10, dimensions=2, options=options, topology=my_topology
-        )
-        return opt.optimize(sphere, iters=5)
-
-    def test_general_correct_pos(self, options):
-        cost, pos = self.general_eg(options)
+    def test_general_correct_pos(self, options, optimizer):
+        """ Test to check general optimiser returns the correct position corresponding to the best cost """
+        cost, pos = optimizer.optimize(sphere, iters=5)
+        print(cost, '---', pos)
         assert sum(pos ** 2) == cost

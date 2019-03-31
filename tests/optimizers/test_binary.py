@@ -31,22 +31,7 @@ class TestDiscreteOptimizer(ABCTestDiscreteOptimizer):
         return opt
 
     def test_binary_correct_pos(self, options):
-        dim = 10
-        x = np.random.rand(dim, dim)
-
-        def f_per_particle(m):
-            if np.count_nonzero(m) == 0:
-                return sum(x)
-            return sum(x[:, m == 1]).mean()
-
-        def binary_eg(options):
-            def f(x):
-                n_particles = x.shape[0]
-                j = [f_per_particle(x[i]) for i in range(n_particles)]
-                return np.array(j)
-
-            opt = BinaryPSO(n_particles=5, dimensions=dim, options=options)
-            return opt.optimize(f, iters=5)
-
-        cost, pos = binary_eg(options)
-        assert f_per_particle(pos) == cost
+        """ Test to check binary optimiser returns the correct position corresponding to the best cost """
+        opt = BinaryPSO(10, 2, options=options)
+        cost, pos = opt.optimize(sphere, 10)
+        assert sum(pos**2) == cost

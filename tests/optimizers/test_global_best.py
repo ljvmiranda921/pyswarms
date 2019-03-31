@@ -29,11 +29,8 @@ class TestGlobalBestOptimizer(ABCTestOptimizer):
         opt.reset()
         return opt
 
-    def global_eg(self, options):
-        opt = GlobalBestPSO(n_particles=10, dimensions=2, options=options)
-        return opt.optimize(sphere, iters=5)
-
     def test_global_correct_pos(self, options):
-        print("Running local test")
-        cost, pos = self.global_eg(options)
+        """ Test to check global optimiser returns the correct position corresponding to the best cost """
+        opt = GlobalBestPSO(n_particles=10, dimensions=2, options=options)
+        cost, pos = opt.optimize(sphere, iters=5)
         assert sum(pos ** 2) == cost
