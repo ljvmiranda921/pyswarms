@@ -98,7 +98,7 @@ class SearchBase(object):
 
         # Intialize optimizer
         f = self.optimizer(
-            self.n_particles, self.dims, options, self.bounds, self.vclamp
+            self.n_particles, self.dims, options, self.bounds, velocity_clamp=self.vclamp
         )
 
         # Return score
