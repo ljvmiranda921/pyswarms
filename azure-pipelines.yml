@@ -38,3 +38,20 @@ jobs:
       testResultsFiles: '**/test-results.xml'
       testRunTitle: 'Python $(python.version)'
     condition: succeededOrFailed()
+
+- job: 'Publish'
+  dependsOn: 'Test'
+  pool:
+    vmImage: 'Ubuntu-16.04'
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      architecture: 'x64'
+
+  - script: python -m pip install --upgrade pip && pip install -r requirements-dev.txt
+    displayName: 'Install dependencies'
+
+  - script: make dist 
+    displayName: 'Build dist'
