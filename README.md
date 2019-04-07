@@ -3,7 +3,7 @@
 
 
 [![PyPI version](https://badge.fury.io/py/pyswarms.svg)](https://badge.fury.io/py/pyswarms)
-[![Build Status](https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=master)](https://travis-ci.org/ljvmiranda921/pyswarms)
+[![Build Status](https://dev.azure.com/ljvmiranda/ljvmiranda/_apis/build/status/ljvmiranda921.pyswarms?branchName=master)](https://dev.azure.com/ljvmiranda/ljvmiranda/_build/latest?definitionId=1&branchName=master)
 [![Documentation Status](https://readthedocs.org/projects/pyswarms/badge/?version=master)](https://pyswarms.readthedocs.io/en/master/?badge=development)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg )](https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE)
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.00433/status.svg)](https://doi.org/10.21105/joss.00433)
@@ -17,16 +17,6 @@ It is intended for swarm intelligence researchers, practitioners, and
 students who prefer a high-level declarative interface for implementing PSO
 in their problems. PySwarms enables basic optimization with PSO and
 interaction with swarm optimizations. Check out more features below!
-
-| Branch      | Status              | Documentation            | Description                   |
-|-------------|---------------------|--------------------------|-------------------------------|
-| master      | ![alt text][master] | ![alt text][master-docs] | Stable, official PyPI version |
-| development | ![alt text][dev]    | ![alt text][dev-docs]    | Bleeding-edge, experimental   |
-
-[master]: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=master "Master"
-[dev]: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=development "Development"
-[master-docs]: https://readthedocs.org/projects/pyswarms/badge/?version=master
-[dev-docs]: https://readthedocs.org/projects/pyswarms/badge/?version=development
 
 * **Free software:** MIT license
 * **Documentation:** https://pyswarms.readthedocs.io.

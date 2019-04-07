@@ -9,8 +9,8 @@ Welcome to PySwarms's documentation!
         :target: https://badge.fury.io/py/pyswarms
         :alt: PyPI Version
 
-.. image:: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=master
-        :target: https://travis-ci.org/ljvmiranda921/pyswarms
+.. image:: https://dev.azure.com/ljvmiranda/ljvmiranda/_apis/build/status/ljvmiranda921.pyswarms?branchName=master
+        :target: https://dev.azure.com/ljvmiranda/ljvmiranda/_build/latest?definitionId=1&branchName=master
         :alt: Build Status
 
 .. image:: https://readthedocs.org/projects/pyswarms/badge/?version=latest
@@ -36,26 +36,6 @@ It is intended for swarm intelligence researchers, practitioners, and
 students who prefer a high-level declarative interface for implementing PSO
 in their problems. PySwarms enables basic optimization with PSO and
 interaction with swarm optimizations. Check out more features below!
-
-+------------+------------+---------------+------------------------------+
-| Branch     | Status     | Documentation | Description                  |
-+============+============+===============+==============================+
-| master     | |master|   | |master-docs| |Stable, official PyPI version |
-+------------+------------+---------------+------------------------------+
-| development| |dev|      | |dev-docs|    |Bleeding-edge, experimental   |
-+------------+------------+---------------+------------------------------+
-
-.. |dev| image:: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=development
-    :target: https://travis-ci.org/ljvmiranda921/pyswarms
-
-.. |master| image:: https://travis-ci.org/ljvmiranda921/pyswarms.svg?branch=master
-        :target: https://travis-ci.org/ljvmiranda921/pyswarms
-
-.. |master-docs| image:: https://readthedocs.org/projects/pyswarms/badge/?version=master
-        :target: https://pyswarms.readthedocs.io/en/master/
-
-.. |dev-docs| image:: https://readthedocs.org/projects/pyswarms/badge/?version=development
-        :target: https://pyswarms.readthedocs.io/en/development/
 
 * **Free software:** MIT license
 * **Github repository:** https://github.com/ljvmiranda921/pyswarms
