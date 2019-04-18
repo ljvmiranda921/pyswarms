@@ -71,7 +71,7 @@ several variables at once.
     optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options=options)
     
     # Perform optimization
-    cost, pos = optimizer.optimize(fx.sphere, print_step=100, iters=1000, verbose=3)
+    cost, pos = optimizer.optimize(fx.sphere, iters=1000)
 
 
 .. parsed-literal::

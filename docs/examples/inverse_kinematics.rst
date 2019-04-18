@@ -241,7 +241,7 @@ Braced with these preparations we can finally start using the algorithm:
                                         bounds=constraints)
 
     # Perform optimization
-    cost, joint_vars = optimizer.optimize(opt_func, print_step=100, iters=1000, verbose=3)
+    cost, joint_vars = optimizer.optimize(opt_func, iters=1000)
 
 
 .. parsed-literal::
