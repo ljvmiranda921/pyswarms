@@ -99,5 +99,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
     def test_general_correct_pos(self, options, optimizer):
         """ Test to check general optimiser returns the correct position corresponding to the best cost """
         cost, pos = optimizer.optimize(sphere, iters=5)
-        print(cost, '---', pos)
-        assert sum(pos ** 2) == cost
+        # find best pos from history
+        min_cost_idx = np.argmin(optimizer.cost_history)
+        min_pos_idx = np.argmin(sphere(optimizer.pos_history[min_cost_idx]))
+        assert np.array_equal(optimizer.pos_history[min_cost_idx][min_pos_idx], pos)

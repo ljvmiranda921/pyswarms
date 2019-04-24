@@ -3,6 +3,7 @@
 
 # Import modules
 import pytest
+import numpy as np
 
 # Import from pyswarms
 from pyswarms.single import GlobalBestPSO
@@ -33,4 +34,7 @@ class TestGlobalBestOptimizer(ABCTestOptimizer):
         """ Test to check global optimiser returns the correct position corresponding to the best cost """
         opt = GlobalBestPSO(n_particles=10, dimensions=2, options=options)
         cost, pos = opt.optimize(sphere, iters=5)
-        assert sum(pos ** 2) == cost
+        # find best pos from history
+        min_cost_idx = np.argmin(opt.cost_history)
+        min_pos_idx = np.argmin(sphere(opt.pos_history[min_cost_idx]))
+        assert np.array_equal(opt.pos_history[min_cost_idx][min_pos_idx], pos)
