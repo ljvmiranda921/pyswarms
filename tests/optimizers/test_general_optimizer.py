@@ -101,3 +101,11 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         with pytest.raises(TypeError):
             # Wrong kwargs
             cost, pos = optimizer.optimize(obj_with_args, 1000, c=1, d=100)
+
+    def test_general_correct_pos(self, options, optimizer):
+        """ Test to check general optimiser returns the correct position corresponding to the best cost """
+        cost, pos = optimizer.optimize(sphere, iters=5)
+        # find best pos from history
+        min_cost_idx = np.argmin(optimizer.cost_history)
+        min_pos_idx = np.argmin(sphere(optimizer.pos_history[min_cost_idx]))
+        assert np.array_equal(optimizer.pos_history[min_cost_idx][min_pos_idx], pos)

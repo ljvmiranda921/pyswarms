@@ -3,6 +3,7 @@
 
 # Import modules
 import pytest
+import numpy as np
 
 # Import from pyswarms
 from pyswarms.discrete import BinaryPSO
@@ -28,3 +29,13 @@ class TestDiscreteOptimizer(ABCTestDiscreteOptimizer):
         opt.optimize(sphere, 10)
         opt.reset()
         return opt
+
+    def test_binary_correct_pos(self, options):
+        """ Test to check binary optimiser returns the correct position
+        corresponding to the best cost """
+        opt = BinaryPSO(10, 2, options=options)
+        cost, pos = opt.optimize(sphere, 10)
+        # find best pos from history
+        min_cost_idx = np.argmin(opt.cost_history)
+        min_pos_idx = np.argmin(sphere(opt.pos_history[min_cost_idx]))
+        assert np.array_equal(opt.pos_history[min_cost_idx][min_pos_idx], pos)
