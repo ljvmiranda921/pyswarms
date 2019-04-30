@@ -215,6 +215,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "Kutim",
+      "name": "Kutim",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/8309533?v=4",
+      "profile": "https://github.com/Kutim",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7
