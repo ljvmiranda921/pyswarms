@@ -234,6 +234,16 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "IanBoyanZhang",
+      "name": "Ian Zhang",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4110995?v=4",
+      "profile": "https://github.com/IanBoyanZhang",
+      "contributions": [
+        "doc",
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7
