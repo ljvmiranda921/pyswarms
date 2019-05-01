@@ -25,9 +25,6 @@ Welcome to PySwarms's documentation!
         :target: https://doi.org/10.21105/joss.00433
         :alt: Citation
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-        :target: https://gitter.im/pyswarms/Issues
-        :alt: Gitter Chat
 
 PySwarms is an extensible research toolkit for particle swarm optimization
 (PSO) in Python.
@@ -39,7 +36,8 @@ interaction with swarm optimizations. Check out more features below!
 
 * **Free software:** MIT license
 * **Github repository:** https://github.com/ljvmiranda921/pyswarms
-* **Python versions:** 3.5 and 3.6
+* **Python versions:** 3.5, 3.6, and 3.7
+* **Chat with us:** https://gitter.im/pyswarms/Issues 
 
 Launching pad
 -------------
