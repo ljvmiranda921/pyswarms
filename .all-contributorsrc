@@ -244,6 +244,15 @@
         "doc",
         "example"
       ]
+    },
+    {
+      "login": "craymichael",
+      "name": "Zach",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/20629897?v=4",
+      "profile": "https://www.zachariahcarmichael.com/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
