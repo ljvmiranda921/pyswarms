@@ -18,3 +18,4 @@ ipython
 ipykernel
 nbstripout
 scikit-learn # for running some notebooks
+seaborn
