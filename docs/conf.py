@@ -45,10 +45,13 @@ sys.path.insert(0, os.path.abspath("../"))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
+    "nbsphinx",
+    "sphinx.ext.intersphinx",
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinx.ext.mathjax",
+    "sphinx.ext.ifconfig",
 ]
 
 exclude_patterns = ["_build", "**.ipynb_checkpoints"]
@@ -90,7 +93,7 @@ release = pyswarms.__version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ["_build"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -128,6 +131,9 @@ html_theme = "sphinx_rtd_theme"
 # theme further.  For a list of options available for each theme, see the
 # documentation.
 # html_theme_options = {}
+
+# Set the timeout for executing notebooks to three minutes
+nbsphinx_timeout = 180
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -299,3 +305,11 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+    "https://docs.python.org/": None,
+    "http://matplotlib.org": None,
+    "http://docs.scipy.org/doc/numpy/": None,
+    "https://docs.scipy.org/doc/scipy/reference": None,
+}
