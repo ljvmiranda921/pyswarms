@@ -18,7 +18,7 @@ with open("requirements-dev.txt") as f:
 
 setup(
     name="pyswarms",
-    version="1.0.2",
+    version="1.1.0",
     description="A Python-based Particle Swarm Optimization (PSO) library.",
     long_description=readme,
     long_description_content_type="text/markdown",
