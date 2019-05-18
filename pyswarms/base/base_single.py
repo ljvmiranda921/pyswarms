@@ -71,18 +71,19 @@ class SwarmOptimizer(abc.ABC):
                     social parameter
                 * w : float
                     inertia parameter
-        bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
+        bounds : tuple of numpy.ndarray, optional
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
-        velocity_clamp : tuple (default is :code:`None`)
+        velocity_clamp : tuple, optional
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        center : list (default is :code:`None`)
+        center : list, optional
             an array of size :code:`dimensions`
-        ftol : float
-            relative error in objective_func(best_pos) acceptable for convergence
+        ftol : float, optional
+            relative error in objective_func(best_pos) acceptable for
+            convergence. Default is :code:`-np.inf`.
         """
         # Initialize primary swarm attributes
         self.n_particles = n_particles
@@ -119,7 +120,7 @@ class SwarmOptimizer(abc.ABC):
 
         Parameters
         ----------
-        hist : namedtuple
+        hist : collections.namedtuple
             Must be of the same type as self.ToHistory
         """
         self.cost_history.append(hist.best_cost)
@@ -143,7 +144,8 @@ class SwarmOptimizer(abc.ABC):
         iters : int
             number of iterations
         n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
+            number of processes to use for parallel particle evaluation
+            Default is None with no parallelization
         kwargs : dict
             arguments for objective function
 

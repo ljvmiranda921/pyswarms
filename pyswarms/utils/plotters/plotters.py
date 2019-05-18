@@ -88,15 +88,15 @@ def plot_cost_history(
 
     Parameters
     ----------
-    cost_history : list or numpy.ndarray
+    cost_history : array_like
         Cost history of shape :code:`(iters, )` or length :code:`iters` where
         each element contains the cost for the given iteration.
-    ax : :class:`matplotlib.axes.Axes` (default is :code:`None`)
+    ax : :obj:`matplotlib.axes.Axes`, optional
         The axes where the plot is to be drawn. If :code:`None` is
         passed, then the plot will be drawn to a new set of axes.
-    title : str (default is :code:`'Cost History'`)
-        The title of the plotted graph.
-    designer : pyswarms.utils.formatters.Designer (default is :code:`None`)
+    title : str, optional
+        The title of the plotted graph. Default is `Cost History`
+    designer : :obj:`pyswarms.utils.formatters.Designer`, optional
         Designer class for custom attributes
     **kwargs : dict
         Keyword arguments that are passed as a keyword argument to
@@ -104,7 +104,7 @@ def plot_cost_history(
 
     Returns
     -------
-    :class:`matplotlib.axes._subplots.AxesSubplot`
+    :obj:`matplotlib.axes._subplots.AxesSubplot`
         The axes on which the plot was drawn.
     """
     try:
@@ -159,27 +159,27 @@ def plot_contour(
     pos_history : numpy.ndarray or list
         Position history of the swarm with shape
         :code:`(iteration, n_particles, dimensions)`
-    canvas : tuple of :class:`matplotlib.figure.Figure` and :class:`matplotlib.axes.Axes` (default is :code:`None`)
-        The (figure, axis) where all the events will be draw. If :code:`None` is
-        supplied, then plot will be drawn to a fresh set of canvas.
-    title : str (default is :code:`'Trajectory'`)
-        The title of the plotted graph.
-    mark : tuple (default is :code:`None`)
+    canvas : (:obj:`matplotlib.figure.Figure`, :obj:`matplotlib.axes.Axes`),
+        The (figure, axis) where all the events will be draw. If :code:`None`
+        is supplied, then plot will be drawn to a fresh set of canvas.
+    title : str, optional
+        The title of the plotted graph. Default is `Trajectory`
+    mark : tuple, optional
         Marks a particular point with a red crossmark. Useful for marking
         the optima.
-    designer : pyswarms.utils.formatters.Designer (default is :code:`None`)
+    designer : :obj:`pyswarms.utils.formatters.Designer`, optional
         Designer class for custom attributes
-    mesher : pyswarms.utils.formatters.Mesher (default is :code:`None`)
+    mesher : :obj:`pyswarms.utils.formatters.Mesher`, optional
         Mesher class for mesh plots
-    animator : pyswarms.utils.formatters.Animator (default is :code:`None`)
+    animator : :obj:`pyswarms.utils.formatters.Animator`, optional
         Animator class for custom animation
     **kwargs : dict
         Keyword arguments that are passed as a keyword argument to
-        :class:`matplotlib.axes.Axes` plotting function
+        :obj:`matplotlib.axes.Axes` plotting function
 
     Returns
     -------
-    :class:`matplotlib.animation.FuncAnimation`
+    :obj:`matplotlib.animation.FuncAnimation`
         The drawn animation that can be saved to mp4 or other
         third-party tools
     """
@@ -293,20 +293,19 @@ def plot_surface(
         The objective function that takes a swarm of shape
         :code:`(n_particles, 2)` and returns a fitness array
         of :code:`(n_particles, )`
-    canvas : tuple of :class:`matplotlib.figure.Figure` and
-    :class:`matplotlib.axes.Axes` (default is :code:`None`)
+    canvas : (:obj:`matplotlib.figure.Figure`, :obj:`matplotlib.axes.Axes`),
         The (figure, axis) where all the events will be draw. If :code:`None`
         is supplied, then plot will be drawn to a fresh set of canvas.
-    title : str (default is :code:`'Trajectory'`)
-        The title of the plotted graph.
-    mark : tuple (default is :code:`None`)
+    title : str, optional
+        The title of the plotted graph. Default is `Trajectory`
+    mark : tuple, optional
         Marks a particular point with a red crossmark. Useful for marking the
         optima.
-    designer : pyswarms.utils.formatters.Designer (default is :code:`None`)
+    designer : :obj:`pyswarms.utils.formatters.Designer`, optional
         Designer class for custom attributes
-    mesher : pyswarms.utils.formatters.Mesher (default is :code:`None`)
+    mesher : :obj:`pyswarms.utils.formatters.Mesher`, optional
         Mesher class for mesh plots
-    animator : pyswarms.utils.formatters.Animator (default is :code:`None`)
+    animator : :obj:`pyswarms.utils.formatters.Animator`, optional
         Animator class for custom animation
     **kwargs : dict
         Keyword arguments that are passed as a keyword argument to

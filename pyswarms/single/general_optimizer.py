@@ -136,24 +136,24 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 Static variants of the topologies remain with the same
                 neighbours over the course of the optimization. Dynamic
                 variants calculate new neighbours every time step.
-        bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
+        bounds : tuple of numpy.ndarray, optional
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
-        bh_strategy : String
+        bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
-        velocity_clamp : tuple (default is :code:`None`)
+        velocity_clamp : tuple, optional
             a tuple of size 2 where the first entry is the minimum velocity and
             the second entry is the maximum velocity. It sets the limits for
             velocity clamping.
-        vh_strategy : String
+        vh_strategy : str
             a strategy for the handling of the velocity of out-of-bounds particles.
         center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
-            convergence
-        init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+            convergence. Default is :code:`-np.inf`
+        init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
         """
@@ -189,7 +189,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
         Parameters
         ----------
-        objective_func : function
+        objective_func : callable
             objective function to be evaluated
         iters : int
             number of iterations
@@ -254,7 +254,9 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             )
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
-        final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
+        final_best_pos = self.swarm.pbest_pos[
+            self.swarm.pbest_cost.argmin()
+        ].copy()
         # Write report in log and return final cost and position
         self.rep.log(
             "Optimization finished | best cost: {}, best pos: {}".format(

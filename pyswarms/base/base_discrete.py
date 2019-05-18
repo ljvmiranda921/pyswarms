@@ -76,7 +76,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
                     social parameter
                 * w : float
                     inertia parameter
-        velocity_clamp : tuple (default is :code:`None`)
+        velocity_clamp : tuple, optional
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
@@ -119,7 +119,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
 
         Parameters
         ----------
-        hist : namedtuple
+        hist : collections.namedtuple
             Must be of the same type as self.ToHistory
         """
         self.cost_history.append(hist.best_cost)
@@ -138,12 +138,13 @@ class DiscreteSwarmOptimizer(abc.ABC):
 
         Parameters
         ----------
-        objective_func : function
+        objective_func : callable
             objective function to be evaluated
         iters : int
             number of iterations
         n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
+            number of processes to use for parallel particle evaluation
+            Default is None with no parallelization
         kwargs : dict
             arguments for objective function
 

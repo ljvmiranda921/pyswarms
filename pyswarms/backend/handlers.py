@@ -113,9 +113,9 @@ class BoundaryHandler(HandlerMixin):
 
         Parameters
         ----------
-        position : np.ndarray
+        position : numpy.ndarray
             The swarm position to be handled
-        bounds : tuple of :code:`np.ndarray` or list
+        bounds : tuple of numpy.ndarray or list
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`
@@ -140,7 +140,7 @@ class BoundaryHandler(HandlerMixin):
             return new_position
 
     def nearest(self, position, bounds, **kwargs):
-        r"""Set position to nearest bound
+        """Set position to nearest bound
 
         This method resets particles that exceed the bounds to the nearest
         available boundary. For every axis on which the coordiantes of the particle
@@ -165,13 +165,14 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def reflective(self, position, bounds, **kwargs):
-        r"""Reflect the particle at the boundary
+        """Reflect the particle at the boundary
 
-        This method reflects the particles that exceed the bounds at the respective
-        boundary. This means that the amount that the component which is orthogonal to
-        the exceeds the boundary is mirrored at the boundary. The reflection is repeated
-        until the position of the particle is within the boundaries. The following
-        algorithm describes the behaviour of this strategy:
+        This method reflects the particles that exceed the bounds at the
+        respective boundary. This means that the amount that the component
+        which is orthogonal to the exceeds the boundary is mirrored at the
+        boundary. The reflection is repeated until the position of the particle
+        is within the boundaries. The following algorithm describes the
+        behaviour of this strategy:
 
         .. math::
             :nowrap:
@@ -196,19 +197,21 @@ class BoundaryHandler(HandlerMixin):
         new_pos = position
         while lower_than_bound[0].size != 0 or greater_than_bound[0].size != 0:
             if lower_than_bound[0].size > 0:
-                new_pos[lower_than_bound] = 2 * lb[lower_than_bound[1]] - \
-                new_pos[lower_than_bound]
+                new_pos[lower_than_bound] = (
+                    2 * lb[lower_than_bound[1]] - new_pos[lower_than_bound]
+                )
             if greater_than_bound[0].size > 0:
-                new_pos[greater_than_bound] = 2 * ub[greater_than_bound[1]] - \
-                new_pos[greater_than_bound]
+                new_pos[greater_than_bound] = (
+                    2 * ub[greater_than_bound[1]] - new_pos[greater_than_bound]
+                )
             lower_than_bound, greater_than_bound = self._out_of_bounds(
-                    new_pos, bounds
+                new_pos, bounds
             )
 
         return new_pos
 
     def shrink(self, position, bounds, **kwargs):
-        r"""Set the particle to the boundary
+        """Set the particle to the boundary
 
         This method resets particles that exceed the bounds to the intersection
         of its previous velocity and the boundary. This can be imagined as shrinking
@@ -415,9 +418,9 @@ class VelocityHandler(HandlerMixin):
 
         Parameters
         ----------
-        velocity : np.ndarray
+        velocity : numpy.ndarray
             The swarm position to be handled
-        clamp : tuple of :code:`np.ndarray` or list
+        clamp : tuple of numpy.ndarray or list
             a tuple of size 2 where the first entry is the minimum clamp while
             the second entry is the maximum clamp. Each array must be of shape
             :code:`(dimensions,)`
@@ -489,7 +492,7 @@ class VelocityHandler(HandlerMixin):
             return new_vel
 
     def invert(self, velocity, clamp=None, **kwargs):
-        r"""Invert the velocity if the particle is out of bounds
+        """Invert the velocity if the particle is out of bounds
 
         The velocity is inverted and shrinked. The shrinking is determined by the
         kwarg :code:`z`. The default shrinking factor is :code:`0.5`. For all
