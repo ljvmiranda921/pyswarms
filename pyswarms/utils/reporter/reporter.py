@@ -66,15 +66,15 @@ class Reporter(object):
 
         Attributes
         ----------
-        log_path : str (default is :code:`None`)
+        log_path : str, optional
             Sets the default log path (overriden when :code:`path` is given to
             :code:`_setup_logger()`)
-        config_path : str (default is :code:`None`)
+        config_path : str, optional
             Sets the configuration path for custom loggers
-        logger : logging.Logger (default is :code:`None`)
+        logger : logging.Logger, optional
             The logger object. By default, it creates a new :code:`Logger`
             instance
-        printer : pprint.PrettyPrinter (default is :code:`None`)
+        printer : pprint.PrettyPrinter, optional
             A printer object. By default, it creates a :code:`PrettyPrinter`
             instance with default values
         """
@@ -133,8 +133,8 @@ class Reporter(object):
         ----------
         msg : str
             Message to be logged
-        lvl : int (default is 20)
-            Logging level
+        lvl : int, optional
+            Logging level. Default is `logging.INFO`
         """
         self.logger.log(lvl, msg, *args, **kwargs)
 
@@ -152,9 +152,9 @@ class Reporter(object):
         verbosity : int
             Verbosity parameter, prints message when it's greater than the
             threshold
-        threshold : int (default is 0)
-            Threshold parameer, prints message when it's lesser than the
-            verbosity
+        threshold : int, optional
+            Threshold parameter, prints message when it's lesser than the
+            verbosity. Default is `0`
         """
         if verbosity > threshold:
             self.printer.pprint(msg)
@@ -171,7 +171,7 @@ class Reporter(object):
 
         Parameters
         ----------
-        path : str
+        path : str, optional
             Path to a YAML configuration. If not supplied, uses
             a default config.
         """
@@ -206,12 +206,12 @@ class Reporter(object):
         ----------
         iters : int
             Maximum range passed to the tqdm instance
-        desc : str
+        desc : str, optional
             Name of the progress bar that will be displayed
 
         Returns
         -------
-        tqdm._tqdm.tqdm
+        :obj:`tqdm._tqdm.tqdm`
             A tqdm iterable
         """
         self.t = trange(iters, desc=desc, bar_format=self._bar_fmt)

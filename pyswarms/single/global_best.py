@@ -100,24 +100,24 @@ class GlobalBestPSO(SwarmOptimizer):
                     social parameter
                 * w : float
                     inertia parameter
-        bounds : tuple of :code:`np.ndarray` (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum bound
-            while the second entry is the maximum bound. Each array must
-            be of shape :code:`(dimensions,)`.
-        bh_strategy : String
+        bounds : tuple of numpy.ndarray, optional
+            a tuple of size 2 where the first entry is the minimum bound while
+            the second entry is the maximum bound. Each array must be of shape
+            :code:`(dimensions,)`.
+        bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
-        velocity_clamp : tuple (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
-        vh_strategy : String
+        velocity_clamp : tuple, optional
+            a tuple of size 2 where the first entry is the minimum velocity and
+            the second entry is the maximum velocity. It sets the limits for
+            velocity clamping.
+        vh_strategy : str
             a strategy for the handling of the velocity of out-of-bounds particles.
         center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
-            convergence
-        init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+            convergence. Default is :code:`-np.inf`
+        init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
         """
@@ -150,7 +150,7 @@ class GlobalBestPSO(SwarmOptimizer):
 
         Parameters
         ----------
-        objective_func : function
+        objective_func : callable
             objective function to be evaluated
         iters : int
             number of iterations

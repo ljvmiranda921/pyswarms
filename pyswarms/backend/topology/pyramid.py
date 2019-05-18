@@ -35,10 +35,13 @@ class Pyramid(Topology):
     def compute_gbest(self, swarm, **kwargs):
         """Update the global best using a pyramid neighborhood approach
 
-        This topology uses the :code:`Delaunay` class from :code:`scipy`. To prevent precision errors in the Delaunay
-        class, custom :code:`qhull_options` were added. Namely, :code:`QJ0.001 Qbb Qc Qx`. The meaning of those options
-        is explained in [qhull]. This method is used to triangulate N-dimensional space into simplices. The vertices of
-        the simplicies consist of swarm particles. This method is adapted from the work of Lane et al.[SIS2008]
+        This topology uses the :code:`Delaunay` class from :code:`scipy`. To
+        prevent precision errors in the Delaunay class, custom
+        :code:`qhull_options` were added. Namely, :code:`QJ0.001 Qbb Qc Qx`.
+        The meaning of those options is explained in [qhull]. This method is
+        used to triangulate N-dimensional space into simplices. The vertices of
+        the simplicies consist of swarm particles. This method is adapted from
+        the work of Lane et al.[SIS2008]
 
         [SIS2008] J. Lane, A. Engelbrecht and J. Gain, "Particle swarm optimization with spatially
         meaningful neighbours," 2008 IEEE Swarm Intelligence Symposium, St. Louis, MO, 2008,

@@ -32,15 +32,17 @@ def generate_swarm(
         number of particles to be generated in the swarm.
     dimensions: int
         number of dimensions to be generated in the swarm
-    bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
+    bounds : tuple of numpy.ndarray or list, optional
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
-        :code:`(dimensions,)`.
-    center : :code:`numpy.ndarray` or :code:`float` (default is :code:`1`)
+        :code:`(dimensions,)`. Default is :code:`None`
+    center : numpy.ndarray or float, optional
         controls the mean or center whenever the swarm is generated randomly.
-    init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+        Default is :code:`1`
+    init_pos : numpy.ndarray, optional
         option to explicitly set the particles' initial positions. Set to
         :code:`None` if you wish to generate the particles randomly.
+        Default is :code:`None`.
 
     Returns
     -------
@@ -102,11 +104,12 @@ def generate_discrete_swarm(
         number of particles to be generated in the swarm.
     dimensions: int
         number of dimensions to be generated in the swarm.
-    binary : bool (default is :code:`False`)
-        generate a binary matrix
-    init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+    binary : bool
+        generate a binary matrix. Default is :code:`False`
+    init_pos : numpy.ndarray, optional
         option to explicitly set the particles' initial positions. Set to
         :code:`None` if you wish to generate the particles randomly.
+        Default is :code:`None`
 
     Returns
     -------
@@ -154,10 +157,10 @@ def generate_velocity(n_particles, dimensions, clamp=None):
         number of particles to be generated in the swarm.
     dimensions: int
         number of dimensions to be generated in the swarm.
-    clamp : tuple of floats (default is :code:`None`)
+    clamp : tuple of floats, optional
         a tuple of size 2 where the first entry is the minimum velocity
         and the second entry is the maximum velocity. It
-        sets the limits for velocity clamping.
+        sets the limits for velocity clamping. Default is :code:`None`
 
     Returns
     -------
@@ -200,22 +203,22 @@ def create_swarm(
         number of particles to be generated in the swarm.
     dimensions: int
         number of dimensions to be generated in the swarm
-    options : dict (default is empty dict :code:`{}`)
+    discrete : bool
+        Creates a discrete swarm. Default is `False`
+    options : dict, optional
         Swarm options, for example, c1, c2, etc.
-    discrete : bool (default is :code:`False`)
-        Creates a discrete swarm
-    binary : bool (default is :code:`False`)
-        generate a binary matrix
-    bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
+    binary : bool
+        generate a binary matrix, Default is `False`
+    bounds : tuple of np.ndarray or list
         a tuple of size 2 where the first entry is the minimum bound while
         the second entry is the maximum bound. Each array must be of shape
-        :code:`(dimensions,)`.
-    center : :code:`numpy.ndarray` (default is :code:`1`)
-        a list of initial positions for generating the swarm
-    init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+        :code:`(dimensions,)`. Default is `None`
+    center : numpy.ndarray, optional
+        a list of initial positions for generating the swarm. Default is `1`
+    init_pos : numpy.ndarray, optional
         option to explicitly set the particles' initial positions. Set to
         :code:`None` if you wish to generate the particles randomly.
-    clamp : tuple of floats (default is :code:`None`)
+    clamp : tuple of floats, optional
         a tuple of size 2 where the first entry is the minimum velocity
         and the second entry is the maximum velocity. It
         sets the limits for velocity clamping.

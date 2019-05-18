@@ -34,23 +34,25 @@ class Designer(object):
 
     Attributes
     ----------
-    figsize : tuple (default is :code:`(10,8)`)
-        Overall figure size.
-    title_fontsize : str, int, or float (default is :code:`large`)
-        Size of the plot's title.
-    text_fontsize : str, int, or float (default is :code:`medium`)
-        Size of the plot's labels and legend.
-    legend : str (default is :code:`Cost`)
+    figsize : tuple
+        Overall figure size. Default is `(10, 8)`
+    title_fontsize : str, int, or float
+        Size of the plot's title. Default is `large`
+    text_fontsize : str, int, or float
+        Size of the plot's labels and legend. Default is `medium`
+    legend : str
         Label to show in the legend. For cost histories, it states
-        the label of the line plot.
-    label : str, list, or tuple (default is :code:`['x-axis', 'y-axis', 'z-axis']`)
-        Label to show in the x, y, or z-axis. For a 3D plot, please pass
-        an iterable with three elements.
-    limits : list (default is :code:`[(-1, 1), (-1, 1), (-1, 1)]`)
-        The x-, y-, z- limits of the axes. Pass an iterable with the number of elements
-        representing the number of axes.
-    colormap : matplotlib.cm.Colormap (default is :code:`cm.viridis`)
-        Colormap for contour plots
+        the label of the line plot. Default is `Cost`
+    label : array_like
+        Label to show in the x, y, or z-axis. For a 3D plot, please pass an
+        iterable with three elements. Default is :code:`['x-axis', 'y-axis',
+        'z-axis']`
+    limits : list
+        The x-, y-, z- limits of the axes. Pass an iterable with the number of
+        elements representing the number of axes. Default is :code:`[(-1, 1),
+        (-1, 1), (-1, 1)]`
+    colormap : matplotlib.cm.Colormap
+        Colormap for contour plots. Default is `cm.viridis`
     """
 
     # Overall plot design
@@ -96,12 +98,14 @@ class Animator(object):
 
     Attributes
     ----------
-    interval : int (default is :code:`80`)
+    interval : int
         Sets the interval or speed into which the animation is played.
-    repeat_delay : int, float (default is :code:`None`)
+        Default is `80`
+    repeat_delay : int or float, optional
         Sets the delay before repeating the animation again.
-    repeat : bool (default is :code:`True`)
-        Pass :code:`False` if you don't want to repeat the animation.
+    repeat : bool, optional
+        Pass `False` if you don't want to repeat the animation.
+        Default is `True`
     """
 
     interval = attrib(type=int, validator=instance_of(int), default=80)
@@ -133,18 +137,22 @@ class Mesher(object):
     ----------
     func : callable
         Objective function to plot a surface of.
-    delta : float (default is :code:`0.001`)
+    delta : float
         Number of steps when generating the surface plot
-    limits : list, tuple (default is :code:`[(-1,1), (-1,1)]`)
+        Default is `0.001`
+    limits : list or tuple
         The range, in each axis, where the mesh will be drawn.
-    levels : list or int (default is :code:`np.arange(-2.0, 2.0, 0.070)`)
+        Default is :code:`[(-1,1), (-1,1)]`
+    levels : list or int, optional
         Levels on which the contours are shown. If :code:`int` is passed,
         then `matplotlib` automatically computes for the level positions.
-    alpha : float (default is :code:`0.3`)
-        Transparency of the surface plot
-    limits : list (default is :code:`[(-1, 1), (-1, 1)]`)
-        The x-, y-, z- limits of the axes. Pass an iterable with the number of elements
-        representing the number of axes.
+        Default is :code:`numpy.arange(-2.0, 2.0, 0.070)`
+    alpha : float, optional
+        Transparency of the surface plot. Default is `0.3`
+    limits : list, optional
+        The x-, y-, z- limits of the axes. Pass an iterable with the number of
+        elements representing the number of axes. Default is :code:`[(-1, 1),
+        (-1, 1)]`
     """
 
     func = attrib()

@@ -26,9 +26,9 @@ class Random(Topology):
 
         Parameters
         ----------
-        static : bool (Default is :code:`False`)
+        static : bool
             a boolean that decides whether the topology
-            is static or dynamic
+            is static or dynamic. Defaulg is `False`
         """
         super(Random, self).__init__(static)
         self.rep = Reporter(logger=logging.getLogger(__name__))
@@ -131,13 +131,13 @@ class Random(Topology):
         ----------
         swarm : pyswarms.backend.swarms.Swarm
             a Swarm instance
-        clamp : tuple of floats (default is :code:`None`)
+        clamp : tuple of floats
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
+            sets the limits for velocity clamping. Default is `None`
         vh : pyswarms.backend.handlers.VelocityHandler
             a VelocityHandler instance
-        bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
+        bounds : tuple of numpy.ndarray or list
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
@@ -161,7 +161,7 @@ class Random(Topology):
         ----------
         swarm : pyswarms.backend.swarms.Swarm
             a Swarm instance
-        bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
+        bounds : tuple of numpy.ndarray or list
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.

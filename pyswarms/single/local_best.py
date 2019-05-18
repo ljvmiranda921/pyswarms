@@ -101,23 +101,23 @@ class LocalBestPSO(SwarmOptimizer):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        bounds : tuple of np.ndarray, optional (default is :code:`None`)
+        bounds : tuple of numpy.ndarray
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
-        bh_strategy : String
+        bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
         velocity_clamp : tuple (default is :code:`(0,1)`)
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        vh_strategy : String
+        vh_strategy : str
             a strategy for the handling of the velocity of out-of-bounds particles.
-        center : list (default is :code:`None`)
+        center : list, optional
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
-            convergence
+            convergence. Default is :code:`-np.inf`
         options : dict with keys :code:`{'c1', 'c2', 'w', 'k', 'p'}`
             a dictionary containing the parameters for the specific
             optimization technique
@@ -134,12 +134,12 @@ class LocalBestPSO(SwarmOptimizer):
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
                     the Euclidean (or L2) distance.
-        init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+        init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
-        static: bool (Default is :code:`False`)
+        static: bool
             a boolean that decides whether the Ring topology
-            used is static or dynamic
+            used is static or dynamic. Default is `False`
         """
         # Initialize logger
         self.logger = logging.getLogger(__name__)
@@ -174,7 +174,7 @@ class LocalBestPSO(SwarmOptimizer):
 
         Parameters
         ----------
-        objective_func : function
+        objective_func : callable
             objective function to be evaluated
         iters : int
             number of iterations

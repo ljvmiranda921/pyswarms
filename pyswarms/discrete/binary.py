@@ -100,10 +100,10 @@ class BinaryPSO(DiscreteSwarmOptimizer):
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
                     the Euclidean (or L2) distance.
-        init_pos : :code:`numpy.ndarray` (default is :code:`None`)
+        init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
-        velocity_clamp : tuple (default is :code:`None`)
+        velocity_clamp : tuple, optional
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
@@ -147,8 +147,9 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             objective function to be evaluated
         iters : int
             number of iterations
-        n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
+        n_processes : int, optional
+            number of processes to use for parallel particle evaluation
+            Defaut is None with no parallelization.
         kwargs : dict
             arguments for objective function
 

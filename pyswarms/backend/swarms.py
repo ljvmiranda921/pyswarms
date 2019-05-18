@@ -60,23 +60,24 @@ class Swarm(object):
         position-matrix at a given timestep of shape :code:`(n_particles, dimensions)`
     velocity : numpy.ndarray
         velocity-matrix at a given timestep of shape :code:`(n_particles, dimensions)`
-    n_particles : int (default is :code:`position.shape[0]`)
+    n_particles : int
         number of particles in a swarm.
-    dimensions : int (default is :code:`position.shape[1]`)
+    dimensions : int
         number of dimensions in a swarm.
-    options : dict (default is empty dictionary)
+    options : dict
         various options that govern a swarm's behavior.
-    pbest_pos : numpy.ndarray (default is :code:`None`)
+    pbest_pos : numpy.ndarray
         personal best positions of each particle of shape :code:`(n_particles, dimensions)`
-    best_pos : numpy.ndarray (default is empty array)
-        best position found by the swarm of shape :code:`(dimensions, )` for the
-        :code:`Star`topology and :code:`(dimensions, particles)` for the other
-        topologies
-    pbest_cost : numpy.ndarray (default is empty array)
+        Default is `None`
+    best_pos : numpy.ndarray
+        best position found by the swarm of shape :code:`(dimensions, )` for
+        the :obj:`pyswarms.backend.topology.Star` topology and
+        :code:`(dimensions, particles)` for the other topologies
+    pbest_cost : numpy.ndarray
         personal best costs of each particle of shape :code:`(n_particles, )`
-    best_cost : float (default is :code:`np.inf`)
-        best cost found by the swarm
-    current_cost : numpy.ndarray (default is empty array)
+    best_cost : float
+        best cost found by the swarm, default is :obj:`numpy.inf`
+    current_cost : numpy.ndarray
         the current cost found by the swarm of shape :code:`(n_particles, dimensions)`
     """
 
