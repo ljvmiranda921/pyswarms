@@ -60,6 +60,7 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+None0000000.png
 
 # PyBuilder
 target/
