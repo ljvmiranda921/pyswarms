@@ -3,15 +3,18 @@
 bumpversion==0.5.3
 PyYAML==3.13 # pyup: ignore
 wheel==0.31.1
-watchdog==0.8.3
-cryptography==2.3
 # Tests
-pytest==3.7.1
+pytest
 coverage==4.5.1
 flake8==3.5.0
 mock==2.0.0
-tox==3.2.1
-# Workflow
-pre-commit==1.10.5
+tox
 # Docs
-Sphinx==1.7.6
+Sphinx
+sphinxcontrib-napoleon
+sphinx_rtd_theme
+nbsphinx
+ipython
+ipykernel
+nbstripout
+scikit-learn # for running some notebooks
