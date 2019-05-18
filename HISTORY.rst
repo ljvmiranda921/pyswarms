@@ -206,3 +206,38 @@ Also, we will be maintaining a quarterly release cycle, where the **next minor r
 
 .. _#293: https://github.com/ljvmiranda921/pyswarms/pull/293
 .. _@danielcorreia96: https://github.com/danielcorreia96
+
+1.1.0 (2019-05-18)
+------------------
+
+This new version adds support for parallel particle evaluation, better
+documentation, multiple fixes, and updated build dependencies.
+
+- **NEW**: Updated API documentation - `#344`_
+- **NEW**: Relaxed dependencies when installing pyswarms - `#345`_
+- **NEW**: We're now using Azure Pipelines for our builds! - `#327`_ 
+- **NEW**: Add notebook for electric circuits  - `#288`_ . Thank you `@miguelcocruz`_ !
+- **NEW**: Parallel particle evaluation - `#312`_ . Thahnk you once more `@danielcorreia96`_ !
+- **FIX**: Fix optimise methods returning incorrect best_pos - `#322`_ . Thank you `@ichbinjakes`_ !
+- **FIX**: Fix SearchBase parameter - `#328`_ . Thank you `@Kutim` !
+- **FIX**: Fix basic optimization example - `#329`_ . Thank you `@IanBoyanZhang`_ !
+- **FIX**: Fix global best velocity equation - `#330`_ . Thank you `@craymichael`_ !
+- **FIX**: Update sample code to new API - `#296`_ . Thank you `@ndngo`_ !
+
+.. _#288: https://github.com/ljvmiranda921/pyswarms/pull/288
+.. _#296: https://github.com/ljvmiranda921/pyswarms/pull/296
+.. _#312: https://github.com/ljvmiranda921/pyswarms/pull/312
+.. _#322: https://github.com/ljvmiranda921/pyswarms/pull/322
+.. _#327: https://github.com/ljvmiranda921/pyswarms/pull/327
+.. _#328: https://github.com/ljvmiranda921/pyswarms/pull/328
+.. _#329: https://github.com/ljvmiranda921/pyswarms/pull/329
+.. _#330: https://github.com/ljvmiranda921/pyswarms/pull/330
+.. _#344: https://github.com/ljvmiranda921/pyswarms/pull/344
+.. _#345: https://github.com/ljvmiranda921/pyswarms/pull/345
+.. _@danielcorreia96: https://github.com/danielcorreia96
+.. _@miguelcocruz: https://github.com/miguelcocruz
+.. _@ichbinjakes: https://github.com/ichbinjakes
+.. _@Kutim: https://github.com/Kutim
+.. _@IanBoyanZhang: https://github.com/IanBoyanZhang
+.. _@craymichael: https://github.com/craymichael
+.. _@ndngo: https://github.com/ndngo
