@@ -33,7 +33,7 @@ Utilities
 ---------
 
 Benchmark Functions
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 These functions can be used as benchmarks for assessing the performance of
 the optimization algorithm.
