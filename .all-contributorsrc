@@ -253,6 +253,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "miek770",
+      "name": "Michel Lavoie",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/3951483?v=4",
+      "profile": "https://www.linkedin.com/in/michel-lavoie-71841526/",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7
