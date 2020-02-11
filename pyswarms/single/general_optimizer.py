@@ -203,6 +203,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         tuple
             the global best cost and the global best position.
         """
+        self.reset()
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),
