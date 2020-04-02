@@ -107,16 +107,16 @@ various histories by calling on properties of the class:
 
 ```python
 # Obtain the cost history
-optimizer.get_cost_history
+optimizer.cost_history
 # Obtain the position history
-optimizer.get_pos_history
+optimizer.pos_history
 # Obtain the velocity history
-optimizer.get_velocity_history
+optimizer.velocity_history
 ```
 
 At the same time, you can also obtain the mean personal best and mean neighbor
-history for local best PSO implementations. Simply call `mean_pbest_history`
-and `optimizer.get_mean_neighbor_history` respectively.
+history for local best PSO implementations. Simply call `optimizer.mean_pbest_history`
+and `optimizer.mean_neighbor_history` respectively.
 
 ### Hyperparameter search tools
 
