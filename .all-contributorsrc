@@ -262,7 +262,17 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "ewekam",
+      "name": "ewekam",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/42674710?v=4",
+      "profile": "http://linkedin.com/in/ewelinakaminska/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
-  "contributorsPerLine": 7
+  "contributorsPerLine": 7,
+  "skipCi": true
 }
