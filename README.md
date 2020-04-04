@@ -289,6 +289,19 @@ Not on the list? Ping us in the Issue Tracker!
 * Mistry, Miten, et al. "Mixed-Integer Convex Nonlinear Optimization with Gradient-Boosted Trees Embedded." Imperial College London (2018).
 * Vishwakarma, Gaurav. *Machine Learning Model Selection for Predicting Properties of High Refractive Index Polymers* Dissertation. State University of New York at Buffalo, 2018.
 * Uluturk Ismail, et al. "Efficient 3D Placement of Access Points in an Aerial Wireless Network." *2019 16th IEEE Anual Consumer Communications and Networking Conference (CCNC)* IEEE (2019): 1-7.
+* Downey A., Theisen C., et al. "Cam-based passive variable friction device for structural control." *Engineering Structures* Elsevier (2019): 430-439.
+* Thaler S., Paehler L., Adams, N.A. "Sparse identification of truncation errors." *Journal of Computational Physics* Elsevier (2019): vol. 397
+* Lin, Y.H., He, D., Wang, Y. Lee, L.J. "Last-mile Delivery: Optimal Locker locatuion under Multinomial Logit Choice Model" https://arxiv.org/abs/2002.10153
+* Park J., Kim S., Lee, J. "Supplemental Material for Ultimate Light trapping in free-form plasmonic waveguide" KAIST, University of Cambridge, and Cornell University http://www.jlab.or.kr/documents/publications/2019PRApplied_SI.pdf
+* Pasha A., Latha P.H., "Bio-inspired dimensionality reduction for Parkinson's Disease Classification," *Health Information Science and Systems*, Springer (2020).
+* Carmichael Z., Syed, H., et al. "Analysis of Wide and Deep Echo State Networks for Multiscale Spatiotemporal Time-Series Forecasting," *Proceedings of the 7th Annual Neuro-inspired Computational Elements* ACM (2019), nb. 7: 1-10 https://doi.org/10.1145/3320288.3320303
+* Klonowski, J. "Optimizing Message to Virtual Link Assignment in Avionics Full-Duplex Switched Ethernet Networks" Proquest
+* Haidar, A., Jan, ZM. "Evolving One-Dimensional Deep Convolutional Neural Netowrk: A Swarm-based Approach," *IEEE Congress on Evolutionary Computation* (2019) https://doi.org/10.1109/CEC.2019.8790036
+* Shang, Z. "Performance Evaluation of the Control Plane in OpenFlow Networks," Freie Universitat Berlin (2020)
+* Linker, F. "Industrial Benchmark for Fuzzy Particle Swarm Reinforcement Learning," Liezpic University (2020)
+* Vetter, A. Yan, C. et al. "Computational rule-based approach for corner correction of non-Manhattan geometries in mask aligner photolithography," Optics (2019). vol. 27, issue 22: 32523-32535 https://doi.org/10.1364/OE.27.032523
+* Wang, Q., Megherbi, N., Breckon T.P., "A Reference Architecture for Plausible Thread Image Projection (TIP) Within 3D X-ray Computed Tomography Volumes" https://arxiv.org/abs/2001.05459
+* Menke, Tim, Hase, Florian, et al. "Automated discovery of superconducting circuits and its application to 4-local coupler design," arxiv preprint: https://arxiv.org/abs/1912.03322 
 
 ## Others
 Like it? Love it? Leave us a star on [Github] to show your appreciation! 
