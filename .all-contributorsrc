@@ -271,6 +271,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "ivynasantino",
+      "name": "Ivyna Santino",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/18709508?v=4",
+      "profile": "https://www.linkedin.com/in/ivyna-alves",
+      "contributions": [
+        "doc",
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7,
