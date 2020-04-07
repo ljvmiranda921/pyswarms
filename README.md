@@ -350,6 +350,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/all-contri
     <td align="center"><a href="https://www.zachariahcarmichael.com/"><img src="https://avatars2.githubusercontent.com/u/20629897?v=4" width="100px;" alt=""/><br /><sub><b>Zach</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=craymichael" title="Documentation">📖</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/michel-lavoie-71841526/"><img src="https://avatars3.githubusercontent.com/u/3951483?v=4" width="100px;" alt=""/><br /><sub><b>Michel Lavoie</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/issues?q=author%3Amiek770" title="Bug reports">🐛</a></td>
     <td align="center"><a href="http://linkedin.com/in/ewelinakaminska/"><img src="https://avatars1.githubusercontent.com/u/42674710?v=4" width="100px;" alt=""/><br /><sub><b>ewekam</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=ewekam" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/ivyna-alves"><img src="https://avatars2.githubusercontent.com/u/18709508?v=4" width="100px;" alt=""/><br /><sub><b>Ivyna Santino</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=ivynasantino" title="Documentation">📖</a> <a href="#example-ivynasantino" title="Examples">💡</a></td>
   </tr>
 </table>
 
