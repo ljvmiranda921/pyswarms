@@ -352,6 +352,9 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/all-contri
     <td align="center"><a href="http://linkedin.com/in/ewelinakaminska/"><img src="https://avatars1.githubusercontent.com/u/42674710?v=4" width="100px;" alt=""/><br /><sub><b>ewekam</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=ewekam" title="Documentation">📖</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/ivyna-alves"><img src="https://avatars2.githubusercontent.com/u/18709508?v=4" width="100px;" alt=""/><br /><sub><b>Ivyna Santino</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=ivynasantino" title="Documentation">📖</a> <a href="#example-ivynasantino" title="Examples">💡</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/yasirroni"><img src="https://avatars2.githubusercontent.com/u/48709672?v=4" width="100px;" alt=""/><br /><sub><b>Muhammad Yasirroni</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=yasirroni" title="Documentation">📖</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
