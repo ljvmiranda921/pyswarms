@@ -281,6 +281,15 @@
         "doc",
         "example"
       ]
+    },
+    {
+      "login": "yasirroni",
+      "name": "Muhammad Yasirroni",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/48709672?v=4",
+      "profile": "https://github.com/yasirroni",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
