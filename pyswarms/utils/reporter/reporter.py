@@ -127,7 +127,7 @@ class Reporter(object):
         You can check logging levels on this `link`_. In essence, DEBUG is 10,
         INFO is 20, WARNING is 30, ERROR is 40, and CRITICAL is 50.
 
-        .. link: https://docs.python.org/3/library/logging.html#logging-levels
+        .. _link: https://docs.python.org/3/library/logging.html#logging-levels
 
         Parameters
         ----------

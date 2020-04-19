@@ -140,7 +140,7 @@ class BoundaryHandler(HandlerMixin):
             return new_position
 
     def nearest(self, position, bounds, **kwargs):
-        """Set position to nearest bound
+        r"""Set position to nearest bound
 
         This method resets particles that exceed the bounds to the nearest
         available boundary. For every axis on which the coordiantes of the particle
@@ -165,7 +165,7 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def reflective(self, position, bounds, **kwargs):
-        """Reflect the particle at the boundary
+        r"""Reflect the particle at the boundary
 
         This method reflects the particles that exceed the bounds at the
         respective boundary. This means that the amount that the component
@@ -211,7 +211,7 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def shrink(self, position, bounds, **kwargs):
-        """Set the particle to the boundary
+        r"""Set the particle to the boundary
 
         This method resets particles that exceed the bounds to the intersection
         of its previous velocity and the boundary. This can be imagined as shrinking
@@ -492,7 +492,7 @@ class VelocityHandler(HandlerMixin):
             return new_vel
 
     def invert(self, velocity, clamp=None, **kwargs):
-        """Invert the velocity if the particle is out of bounds
+        r"""Invert the velocity if the particle is out of bounds
 
         The velocity is inverted and shrinked. The shrinking is determined by the
         kwarg :code:`z`. The default shrinking factor is :code:`0.5`. For all

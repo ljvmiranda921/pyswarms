@@ -47,6 +47,7 @@ class SearchBase(object):
         options : dict with keys :code:`{'c1', 'c2', 'w', 'k', 'p'}`
             a dictionary containing the parameters for the specific
             optimization technique
+
                 * c1 : float
                     cognitive parameter
                 * c2 : float
@@ -60,6 +61,7 @@ class SearchBase(object):
                     the Minkowski p-norm to use. 1 is the
                     sum-of-absolute values (or L1 distance) while 2 is
                     the Euclidean (or L2) distance.
+
         objective_func: function
             objective function to be evaluated
         iters: int
