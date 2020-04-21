@@ -49,6 +49,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         velocity_clamp=None,
         init_pos=None,
         ftol=-np.inf,
+        ftol_iter=1,
     ):
         """Initialize the swarm.
 
@@ -80,6 +81,13 @@ class DiscreteSwarmOptimizer(abc.ABC):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
+        ftol : float, optional
+            relative error in objective_func(best_pos) acceptable for
+            convergence. Default is :code:`-np.inf`.
+        ftol_iter : int
+            number of iterations over which the relative error in
+            objective_func(best_pos) is acceptable for convergence.
+            Default is :code:`1`
         options: dict
             a dictionary containing the parameters for a specific
             optimization technique
@@ -93,6 +101,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         self.options = options
         self.init_pos = init_pos
         self.ftol = ftol
+        self.ftol_iter=ftol_iter
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple(
             "ToHistory",
