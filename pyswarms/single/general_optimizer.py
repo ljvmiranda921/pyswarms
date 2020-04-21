@@ -83,6 +83,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         vh_strategy="unmodified",
         center=1.00,
         ftol=-np.inf,
+        ftol_iter=1,
         init_pos=None,
     ):
         """Initialize the swarm
@@ -153,6 +154,10 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence. Default is :code:`-np.inf`
+        ftol_iter : int
+            number of iterations over which the relative error in
+            objective_func(best_pos) is acceptable for convergence.
+            Default is :code:`1`
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
@@ -165,6 +170,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             velocity_clamp=velocity_clamp,
             center=center,
             ftol=ftol,
+            ftol_iter=ftol_iter,
             init_pos=init_pos,
         )
 
@@ -217,6 +223,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         pool = None if n_processes is None else mp.Pool(n_processes)
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
+        ftol_history = [None] * self.ftol_iter
         for i in self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             # fmt: off
@@ -240,11 +247,13 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            if (
-                np.abs(self.swarm.best_cost - best_cost_yet_found)
-                < relative_measure
-            ):
-                break
+            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
+            if i < self.ftol_iter:
+                ftol_history[i] = delta
+            else:
+                ftol_history = ftol_history[1:] + [delta]
+                if all(ftol_history):
+                    break
             # Perform velocity and position updates
             self.swarm.velocity = self.top.compute_velocity(
                 self.swarm, self.velocity_clamp, self.vh, self.bounds
