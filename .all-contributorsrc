@@ -300,6 +300,15 @@
         "doc",
         "platform"
       ]
+    },
+    {
+      "login": "nishnash54",
+      "name": "Nishant Rodrigues",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/25393122?v=4",
+      "profile": "https://github.com/nishnash54",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
