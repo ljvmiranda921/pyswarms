@@ -101,7 +101,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         self.options = options
         self.init_pos = init_pos
         self.ftol = ftol
-        self.ftol_iter=ftol_iter
+        self.ftol_iter = ftol_iter
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple(
             "ToHistory",
