@@ -50,6 +50,7 @@ class SwarmOptimizer(abc.ABC):
         velocity_clamp=None,
         center=1.0,
         ftol=-np.inf,
+        ftol_iter=1,
         init_pos=None,
     ):
         """Initialize the swarm
@@ -84,6 +85,10 @@ class SwarmOptimizer(abc.ABC):
         ftol : float, optional
             relative error in objective_func(best_pos) acceptable for
             convergence. Default is :code:`-np.inf`.
+        ftol_iter : int
+            number of iterations over which the relative error in
+            objective_func(best_pos) is acceptable for convergence.
+            Default is :code:`1`
         """
         # Initialize primary swarm attributes
         self.n_particles = n_particles
@@ -94,6 +99,7 @@ class SwarmOptimizer(abc.ABC):
         self.options = options
         self.center = center
         self.ftol = ftol
+        self.ftol_iter = ftol_iter
         self.init_pos = init_pos
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple(

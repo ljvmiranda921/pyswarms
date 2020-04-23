@@ -109,3 +109,11 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         min_cost_idx = np.argmin(optimizer.cost_history)
         min_pos_idx = np.argmin(sphere(optimizer.pos_history[min_cost_idx]))
         assert np.array_equal(optimizer.pos_history[min_cost_idx][min_pos_idx], pos)
+
+    def test_ftol_iter_effect(self, optimizer):
+        """Test if setting the ftol breaks the optimization process after the set number of iterations"""
+        # Set optimizer tolerance
+        optimizer.ftol = 1e-1
+        optimizer.ftol_iter = 5
+        optimizer.optimize(sphere, 2000)
+        assert np.array(optimizer.cost_history).shape[0] >= optimizer.ftol_iter

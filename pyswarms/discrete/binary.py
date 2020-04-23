@@ -75,6 +75,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         velocity_clamp=None,
         vh_strategy="unmodified",
         ftol=-np.inf,
+        ftol_iter=1,
     ):
         """Initialize the swarm
 
@@ -127,6 +128,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             init_pos=init_pos,
             velocity_clamp=velocity_clamp,
             ftol=ftol,
+            ftol_iter=ftol_iter,
         )
         # Initialize the resettable attributes
         self.reset()
@@ -171,6 +173,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         pool = None if n_processes is None else mp.Pool(n_processes)
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
+        ftol_history = [None] * self.ftol_iter
         for i in self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             self.swarm.current_cost = compute_objective_function(
@@ -197,11 +200,13 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            if (
-                np.abs(self.swarm.best_cost - best_cost_yet_found)
-                < relative_measure
-            ):
-                break
+            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
+            if i < self.ftol_iter:
+                ftol_history[i] = delta
+            else:
+                ftol_history = ftol_history[1:] + [delta]
+                if all(ftol_history):
+                    break
             # Perform position velocity update
             self.swarm.velocity = self.top.compute_velocity(
                 self.swarm, self.velocity_clamp, self.vh
