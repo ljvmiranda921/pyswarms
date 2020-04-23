@@ -355,6 +355,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/all-contri
   <tr>
     <td align="center"><a href="https://github.com/yasirroni"><img src="https://avatars2.githubusercontent.com/u/48709672?v=4" width="100px;" alt=""/><br /><sub><b>Muhammad Yasirroni</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=yasirroni" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/ckastner"><img src="https://avatars0.githubusercontent.com/u/15859947?v=4" width="100px;" alt=""/><br /><sub><b>Christian Kastner</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=ckastner" title="Documentation">📖</a> <a href="#platform-ckastner" title="Packaging/porting to new platform">📦</a></td>
+    <td align="center"><a href="https://github.com/nishnash54"><img src="https://avatars1.githubusercontent.com/u/25393122?v=4" width="100px;" alt=""/><br /><sub><b>Nishant Rodrigues</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=nishnash54" title="Code">💻</a></td>
   </tr>
 </table>
 
