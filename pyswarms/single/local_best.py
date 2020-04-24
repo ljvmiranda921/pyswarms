@@ -231,7 +231,7 @@ class LocalBestPSO(SwarmOptimizer):
                 self.swarm, p=self.p, k=self.k
             )
             if not verbose:
-                self.rep.hook(best_cost=self.swarm.best_cost)
+                self.rep.hook(best_cost=np.min(self.swarm.best_cost))
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
@@ -267,4 +267,6 @@ class LocalBestPSO(SwarmOptimizer):
             ),
             lvl=logginglevel,
         )
+        # Close Pool of Processes
+        pool.close()
         return (final_best_cost, final_best_pos)
