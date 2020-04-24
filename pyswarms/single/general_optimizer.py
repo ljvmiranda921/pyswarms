@@ -187,7 +187,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, n_processes=None, **kwargs):
+    def optimize(self, objective_func, iters, n_processes=None, verbose=False, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -201,6 +201,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             number of iterations
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
+        verbose : bool
+            enable or disable the logs and progress bar (default: False = enable logs)
         kwargs : dict
             arguments for the objective function
 
@@ -209,10 +211,16 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         tuple
             the global best cost and the global best position.
         """
+        # Apply verbosity
+        if verbose:
+            logginglevel = logging.NOTSET
+        else:
+            logginglevel = logging.INFO
+            
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),
-            lvl=logging.INFO,
+            lvl=logginglevel,
         )
 
         # Populate memory of the handlers
@@ -224,7 +232,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         ftol_history = [None] * self.ftol_iter
-        for i in self.rep.pbar(iters, self.name):
+        for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             # fmt: off
             self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=pool, **kwargs)
@@ -236,7 +244,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 self.swarm, **self.options
             )
             # Print to console
-            self.rep.hook(best_cost=self.swarm.best_cost)
+            if not verbose:
+                self.rep.hook(best_cost=self.swarm.best_cost)
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),
@@ -271,6 +280,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             "Optimization finished | best cost: {}, best pos: {}".format(
                 final_best_cost, final_best_pos
             ),
-            lvl=logging.INFO,
+            lvl=logginglevel,
         )
+        # Close Pool of Processes
+        pool.close()
         return (final_best_cost, final_best_pos)
