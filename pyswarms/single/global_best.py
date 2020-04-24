@@ -239,4 +239,6 @@ class GlobalBestPSO(SwarmOptimizer):
             ),
             lvl=logginglevel,
         )
+        # Close Pool of Processes
+        pool.close()
         return (final_best_cost, final_best_pos)
