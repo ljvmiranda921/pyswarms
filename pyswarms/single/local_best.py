@@ -268,5 +268,6 @@ class LocalBestPSO(SwarmOptimizer):
             lvl=logginglevel,
         )
         # Close Pool of Processes
-        pool.close()
+        if n_processes is not None:
+            pool.close()
         return (final_best_cost, final_best_pos)
