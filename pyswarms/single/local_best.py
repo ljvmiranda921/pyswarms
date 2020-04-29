@@ -172,7 +172,7 @@ class LocalBestPSO(SwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, n_processes=None, **kwargs):
+    def optimize(self, objective_func, iters, n_processes=None, verbose=False, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -186,6 +186,8 @@ class LocalBestPSO(SwarmOptimizer):
             number of iterations
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
+        verbose : bool
+            enable or disable the logs and progress bar (default: False = enable logs)
         kwargs : dict
             arguments for the objective function
 
@@ -195,10 +197,16 @@ class LocalBestPSO(SwarmOptimizer):
             the local best cost and the local best position among the
             swarm.
         """
+        # Apply verbosity
+        if verbose:
+            logginglevel = logging.NOTSET
+        else:
+            logginglevel = logging.INFO
+            
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),
-            lvl=logging.INFO,
+            lvl=logginglevel,
         )
         # Populate memory of the handlers
         self.bh.memory = self.swarm.position
@@ -209,7 +217,7 @@ class LocalBestPSO(SwarmOptimizer):
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         ftol_history = [None] * self.ftol_iter
-        for i in self.rep.pbar(iters, self.name):
+        for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             self.swarm.current_cost = compute_objective_function(
                 self.swarm, objective_func, pool=pool, **kwargs
@@ -222,7 +230,8 @@ class LocalBestPSO(SwarmOptimizer):
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
                 self.swarm, p=self.p, k=self.k
             )
-            self.rep.hook(best_cost=np.min(self.swarm.best_cost))
+            if not verbose:
+                self.rep.hook(best_cost=np.min(self.swarm.best_cost))
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
@@ -256,6 +265,9 @@ class LocalBestPSO(SwarmOptimizer):
             "Optimization finished | best cost: {}, best pos: {}".format(
                 final_best_cost, final_best_pos
             ),
-            lvl=logging.INFO,
+            lvl=logginglevel,
         )
+        # Close Pool of Processes
+        if n_processes is not None:
+            pool.close()
         return (final_best_cost, final_best_pos)
