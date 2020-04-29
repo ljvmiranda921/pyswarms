@@ -309,6 +309,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "msat59",
+      "name": "msat59",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/20813541?v=4",
+      "profile": "https://github.com/msat59",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
