@@ -222,11 +222,11 @@ class GlobalBestPSO(SwarmOptimizer):
             costs_diff = np.abs(self.swarm.best_cost - best_cost_yet_found)
             isBelow_ftol =  costs_diff < relative_measure
             
-            # Check if ftol reached, exclude no change in best_cost
+            # Check if ftol reached, exclude no change in the best_cost
             if isBelow_ftol and costs_diff != 0:
                 stop_reason = "«ftol={}» reached".format(self.ftol)
                 break
-            # Check if ftol_iter reached, include no change in best_cost
+            # Check if ftol_iter reached, include no change in the best_cost
             if self.ftol_iter:
                 if i < self.ftol_iter:
                     ftol_history[i] = isBelow_ftol
