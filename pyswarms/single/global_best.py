@@ -81,7 +81,7 @@ class GlobalBestPSO(SwarmOptimizer):
         vh_strategy="unmodified",
         center=1.00,
         ftol=-np.inf,
-        ftol_iter=1,
+        ftol_iter=0,
         init_pos=None,
     ):
         """Initialize the swarm
@@ -117,11 +117,12 @@ class GlobalBestPSO(SwarmOptimizer):
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
-            convergence. Default is :code:`-np.inf`
+            convergence. Default is :code:`-np.inf` (disabled)
         ftol_iter : int
             number of iterations over which the relative error in
             objective_func(best_pos) is acceptable for convergence.
-            Default is :code:`1`
+            Set to greater than 5 to avoid stopping too early and getting an immature solution.
+            Default is :code:`0` (disabled)
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
@@ -193,6 +194,9 @@ class GlobalBestPSO(SwarmOptimizer):
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         ftol_history = [None] * self.ftol_iter
+        # Default reason for optimization completion
+        stop_reason = "«iters={}» reached".format(iters)
+        
         for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             # fmt: off
@@ -215,13 +219,22 @@ class GlobalBestPSO(SwarmOptimizer):
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            if i < self.ftol_iter:
-                ftol_history[i] = delta
-            else:
-                ftol_history = ftol_history[1:] + [delta]
-                if all(ftol_history):
-                    break
+            costs_diff = np.abs(self.swarm.best_cost - best_cost_yet_found)
+            isBelow_ftol =  costs_diff < relative_measure
+            
+            # Check if ftol reached, exclude no change in best_cost
+            if isBelow_ftol and costs_diff != 0:
+                stop_reason = "«ftol={}» reached".format(self.ftol)
+                break
+            # Check if ftol_iter reached, include no change in best_cost
+            if self.ftol_iter:
+                if i < self.ftol_iter:
+                    ftol_history[i] = isBelow_ftol
+                else:
+                    ftol_history = ftol_history[1:] + [isBelow_ftol]
+                    if all(ftol_history):
+                        stop_reason = "«ftol_iter={}» reached".format(self.ftol_iter)
+                        break
            # Perform velocity and position updates
             self.swarm.velocity = self.top.compute_velocity(
                 self.swarm, self.velocity_clamp, self.vh, self.bounds
@@ -232,10 +245,12 @@ class GlobalBestPSO(SwarmOptimizer):
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
+        # close the progress bar
+        if not verbose: self.rep.t.close()
         # Write report in log and return final cost and position
         self.rep.log(
-            "Optimization finished | best cost: {}, best pos: {}".format(
-                final_best_cost, final_best_pos
+            "Optimization finished | {} | Last iteration: {}) |\nbest cost: {}, best pos: {}".format(
+                stop_reason, i+1, final_best_cost, final_best_pos
             ),
             lvl=logginglevel,
         )
