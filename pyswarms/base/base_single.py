@@ -50,7 +50,7 @@ class SwarmOptimizer(abc.ABC):
         velocity_clamp=None,
         center=1.0,
         ftol=-np.inf,
-        ftol_iter=1,
+        ftol_iter=0,
         init_pos=None,
     ):
         """Initialize the swarm
@@ -84,11 +84,12 @@ class SwarmOptimizer(abc.ABC):
             an array of size :code:`dimensions`
         ftol : float, optional
             relative error in objective_func(best_pos) acceptable for
-            convergence. Default is :code:`-np.inf`.
+            convergence. Default is :code:`-np.inf` (disabled).
         ftol_iter : int
             number of iterations over which the relative error in
             objective_func(best_pos) is acceptable for convergence.
-            Default is :code:`1`
+            Set to greater than 5 to avoid stopping too early and getting an immature solution.
+            Default is :code:`0` (disabled)
         """
         # Initialize primary swarm attributes
         self.n_particles = n_particles
