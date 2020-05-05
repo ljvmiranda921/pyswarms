@@ -49,7 +49,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         velocity_clamp=None,
         init_pos=None,
         ftol=-np.inf,
-        ftol_iter=1,
+        ftol_iter=0,
     ):
         """Initialize the swarm.
 
@@ -83,11 +83,12 @@ class DiscreteSwarmOptimizer(abc.ABC):
             sets the limits for velocity clamping.
         ftol : float, optional
             relative error in objective_func(best_pos) acceptable for
-            convergence. Default is :code:`-np.inf`.
+            convergence. Default is :code:`-np.inf` (disabled)
         ftol_iter : int
             number of iterations over which the relative error in
             objective_func(best_pos) is acceptable for convergence.
-            Default is :code:`1`
+            Set to greater than 5 to avoid stopping too early and getting an immature solution.
+            Default is :code:`0` (disabled)
         options: dict
             a dictionary containing the parameters for a specific
             optimization technique
