@@ -149,7 +149,7 @@ class GlobalBestPSO(SwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, n_processes=None, verbose=False, **kwargs):
+    def optimize(self, objective_func, iters, n_processes=None, verbose=True, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -164,7 +164,7 @@ class GlobalBestPSO(SwarmOptimizer):
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
         verbose : bool
-            enable or disable the logs and progress bar (default: False = enable logs)
+            enable or disable the logs and progress bar (default: True = enable logs)
         kwargs : dict
             arguments for the objective function
 
@@ -176,9 +176,9 @@ class GlobalBestPSO(SwarmOptimizer):
         
         # Apply verbosity
         if verbose:
-            logginglevel = logging.NOTSET
-        else:
             logginglevel = logging.INFO
+        else:
+            logginglevel = logging.NOTSET
 
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
@@ -205,7 +205,7 @@ class GlobalBestPSO(SwarmOptimizer):
             best_cost_yet_found = self.swarm.best_cost
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
             # fmt: on
-            if not verbose:
+            if verbose:
                 self.rep.hook(best_cost=self.swarm.best_cost)
             # Save to history
             hist = self.ToHistory(
@@ -245,7 +245,7 @@ class GlobalBestPSO(SwarmOptimizer):
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
         # close the progress bar
-        if not verbose: self.rep.t.close()
+        if verbose: self.rep.t.close()
         # Write report in log and return final cost and position
         self.rep.log(
             "Optimization finished | {} | Last iteration: {}) |\nbest cost: {}, best pos: {}".format(
