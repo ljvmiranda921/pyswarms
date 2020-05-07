@@ -203,7 +203,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
         verbose : bool
-            enable or disable the logs and progress bar (default: False = enable logs)
+            enable or disable the logs and progress bar (default: True = enable logs)
         kwargs : dict
             arguments for the objective function
 
