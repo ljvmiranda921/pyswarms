@@ -220,7 +220,7 @@ class LocalBestPSO(SwarmOptimizer):
         ftol_history = [None] * self.ftol_iter
         # Default reason for optimization completion
         stop_reason = "«iters={}» reached".format(iters)
-        for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
+        for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
             # Compute cost for current position and personal best
             self.swarm.current_cost = compute_objective_function(
                 self.swarm, objective_func, pool=pool, **kwargs
