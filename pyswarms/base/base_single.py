@@ -99,6 +99,12 @@ class SwarmOptimizer(abc.ABC):
         self.options = options
         self.center = center
         self.ftol = ftol
+
+        try:
+            assert ftol_iter > 0 and isinstance(ftol_iter, int)
+        except AssertionError:
+            raise AssertionError('ftol_iter expects an integer value greater than 0')
+
         self.ftol_iter = ftol_iter
         self.init_pos = init_pos
         # Initialize named tuple for populating the history list
