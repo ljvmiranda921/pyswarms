@@ -63,6 +63,8 @@ import logging
 import numpy as np
 import multiprocessing as mp
 
+from collections import deque
+
 from ..backend.operators import compute_pbest, compute_objective_function
 from ..backend.topology import Topology
 from ..backend.handlers import BoundaryHandler, VelocityHandler
@@ -231,7 +233,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         pool = None if n_processes is None else mp.Pool(n_processes)
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history = [None] * self.ftol_iter
+        ftol_history = deque()
         for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             # fmt: off
@@ -258,9 +260,10 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
             delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
             if i < self.ftol_iter:
-                ftol_history[i] = delta
+                ftol_history.append(delta)
             else:
-                ftol_history = ftol_history[1:] + [delta]
+                ftol_history.popleft()
+                ftol_history.append(delta)
                 if all(ftol_history):
                     break
             # Perform velocity and position updates
