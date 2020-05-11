@@ -105,7 +105,9 @@ class DiscreteSwarmOptimizer(abc.ABC):
         try:
             assert ftol_iter > 0 and isinstance(ftol_iter, int)
         except AssertionError:
-            raise AssertionError('ftol_iter expects an integer value greater than 0')
+            raise AssertionError(
+                "ftol_iter expects an integer value greater than 0"
+            )
 
         self.ftol_iter = ftol_iter
         # Initialize named tuple for populating the history list
