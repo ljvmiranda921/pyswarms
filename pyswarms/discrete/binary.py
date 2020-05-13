@@ -58,7 +58,7 @@ import logging
 import numpy as np
 import multiprocessing as mp
 
-from ..backend.operators import compute_pbest, compute_objective_function
+from ..backend.operators import compute_pbest, compute_objective_function, compute_velocity
 from ..backend.topology import Ring
 from ..backend.handlers import BoundaryHandler, VelocityHandler
 from ..base import DiscreteSwarmOptimizer
@@ -217,7 +217,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
                 if all(ftol_history):
                     break
             # Perform position velocity update
-            self.swarm.velocity = self.top.compute_velocity(
+            self.swarm.velocity = compute_velocity(
                 self.swarm, self.velocity_clamp, self.vh
             )
             self.swarm.position = self._compute_position(self.swarm)

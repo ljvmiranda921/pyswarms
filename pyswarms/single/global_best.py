@@ -62,7 +62,7 @@ import logging
 import numpy as np
 import multiprocessing as mp
 
-from ..backend.operators import compute_pbest, compute_objective_function
+from ..backend.operators import compute_pbest, compute_objective_function, compute_velocity, compute_position
 from ..backend.topology import Star
 from ..backend.handlers import BoundaryHandler, VelocityHandler
 from ..base import SwarmOptimizer
@@ -223,10 +223,10 @@ class GlobalBestPSO(SwarmOptimizer):
                 if all(ftol_history):
                     break
            # Perform velocity and position updates
-            self.swarm.velocity = self.top.compute_velocity(
+            self.swarm.velocity = compute_velocity(
                 self.swarm, self.velocity_clamp, self.vh, self.bounds
             )
-            self.swarm.position = self.top.compute_position(
+            self.swarm.position = compute_position(
                 self.swarm, self.bounds, self.bh
             )
         # Obtain the final best_cost and the final best_position
