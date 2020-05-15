@@ -116,6 +116,10 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
+        ftol_iter : int
+            number of iterations over which the relative error in
+            objective_func(best_pos) is acceptable for convergence.
+            Default is :code:`1`
         """
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
