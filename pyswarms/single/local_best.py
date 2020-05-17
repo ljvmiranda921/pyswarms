@@ -220,7 +220,7 @@ class LocalBestPSO(SwarmOptimizer):
         pool = None if n_processes is None else mp.Pool(n_processes)
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history = deque()
+        ftol_history = deque(maxlen=self.ftol_iter)
         for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             self.swarm.current_cost = compute_objective_function(
@@ -254,7 +254,6 @@ class LocalBestPSO(SwarmOptimizer):
             if i < self.ftol_iter:
                 ftol_history.append(delta)
             else:
-                ftol_history.popleft()
                 ftol_history.append(delta)
                 if all(ftol_history):
                     break
