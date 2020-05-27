@@ -80,7 +80,7 @@ class Reporter(object):
         """
         self.logger = logger or logging.getLogger(__name__)
         self.printer = printer or pprint.PrettyPrinter()
-        self.log_path = log_path or (os.getcwd() + "/report.log")
+        # self.log_path = log_path or (os.getcwd() + "/report.log")
         self._bar_fmt = "{l_bar}{bar}|{n_fmt}/{total_fmt}{postfix}"
         self._env_key = "LOG_CFG"
         self._default_config = {
@@ -97,15 +97,15 @@ class Reporter(object):
                     "class": "logging.StreamHandler",
                     "formatter": "standard",
                 },
-                "file_default": {
-                    "level": "INFO",
-                    "formatter": "standard",
-                    "class": "logging.handlers.RotatingFileHandler",
-                    "filename": self.log_path,
-                    "encoding": "utf8",
-                    "maxBytes": 10485760,
-                    "backupCount": 20,
-                },
+                # "file_default": {
+                #     "level": "INFO",
+                #     "formatter": "standard",
+                #     "class": "logging.handlers.RotatingFileHandler",
+                #     "filename": self.log_path,
+                #     "encoding": "utf8",
+                #     "maxBytes": 10485760,
+                #     "backupCount": 20,
+                # },
             },
             "loggers": {
                 "": {
