@@ -109,7 +109,7 @@ class Reporter(object):
             },
             "loggers": {
                 "": {
-                    "handlers": ["default", "file_default"],
+                    "handlers": ["default"],
                     "level": "INFO",
                     "propagate": True,
                 }
