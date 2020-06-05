@@ -63,6 +63,8 @@ import logging
 import numpy as np
 import multiprocessing as mp
 
+from collections import deque
+
 from ..backend.operators import compute_pbest, compute_objective_function
 from ..backend.topology import Topology
 from ..backend.handlers import BoundaryHandler, VelocityHandler
@@ -187,7 +189,9 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, n_processes=None, verbose=False, **kwargs):
+    def optimize(
+        self, objective_func, iters, n_processes=None, verbose=False, **kwargs
+    ):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -216,7 +220,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             logginglevel = logging.NOTSET
         else:
             logginglevel = logging.INFO
-            
+
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),
@@ -231,7 +235,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         pool = None if n_processes is None else mp.Pool(n_processes)
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history = [None] * self.ftol_iter
+        ftol_history = deque(maxlen=self.ftol_iter)
         for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             # fmt: off
@@ -256,11 +260,14 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
+            delta = (
+                np.abs(self.swarm.best_cost - best_cost_yet_found)
+                < relative_measure
+            )
             if i < self.ftol_iter:
-                ftol_history[i] = delta
+                ftol_history.append(delta)
             else:
-                ftol_history = ftol_history[1:] + [delta]
+                ftol_history.append(delta)
                 if all(ftol_history):
                     break
             # Perform velocity and position updates

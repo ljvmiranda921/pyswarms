@@ -58,6 +58,8 @@ import logging
 import numpy as np
 import multiprocessing as mp
 
+from collections import deque
+
 from ..backend.operators import compute_pbest, compute_objective_function
 from ..backend.topology import Ring
 from ..backend.handlers import BoundaryHandler, VelocityHandler
@@ -114,6 +116,10 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
+        ftol_iter : int
+            number of iterations over which the relative error in
+            objective_func(best_pos) is acceptable for convergence.
+            Default is :code:`1`
         """
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
@@ -137,7 +143,9 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, n_processes=None, verbose=False, **kwargs):
+    def optimize(
+        self, objective_func, iters, n_processes=None, verbose=False, **kwargs
+    ):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -168,7 +176,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             logginglevel = logging.NOTSET
         else:
             logginglevel = logging.INFO
-            
+
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),
@@ -181,7 +189,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         pool = None if n_processes is None else mp.Pool(n_processes)
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history = [None] * self.ftol_iter
+        ftol_history = deque(maxlen=self.ftol_iter)
         for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             self.swarm.current_cost = compute_objective_function(
@@ -209,11 +217,14 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
+            delta = (
+                np.abs(self.swarm.best_cost - best_cost_yet_found)
+                < relative_measure
+            )
             if i < self.ftol_iter:
-                ftol_history[i] = delta
+                ftol_history.append(delta)
             else:
-                ftol_history = ftol_history[1:] + [delta]
+                ftol_history.append(delta)
                 if all(ftol_history):
                     break
             # Perform position velocity update
@@ -223,7 +234,9 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             self.swarm.position = self._compute_position(self.swarm)
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
-        final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
+        final_best_pos = self.swarm.pbest_pos[
+            self.swarm.pbest_cost.argmin()
+        ].copy()
         self.rep.log(
             "Optimization finished | best cost: {}, best pos: {}".format(
                 final_best_cost, final_best_pos
@@ -233,7 +246,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         # Close Pool of Processes
         if n_processes is not None:
             pool.close()
-            
+
         return (final_best_cost, final_best_pos)
 
     def _compute_position(self, swarm):
