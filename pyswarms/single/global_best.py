@@ -62,7 +62,12 @@ import logging
 import numpy as np
 import multiprocessing as mp
 
-from ..backend.operators import compute_pbest, compute_objective_function, compute_velocity, compute_position
+from ..backend.operators import (
+    compute_pbest,
+    compute_objective_function,
+    compute_velocity,
+    compute_position,
+)
 from ..backend.topology import Star
 from ..backend.handlers import BoundaryHandler, VelocityHandler
 from ..base import SwarmOptimizer
@@ -148,7 +153,9 @@ class GlobalBestPSO(SwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, n_processes=None, verbose=False, **kwargs):
+    def optimize(
+        self, objective_func, iters, n_processes=None, verbose=False, **kwargs
+    ):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -172,7 +179,7 @@ class GlobalBestPSO(SwarmOptimizer):
         tuple
             the global best cost and the global best position.
         """
-        
+
         # Apply verbosity
         if verbose:
             logginglevel = logging.NOTSET
@@ -215,14 +222,17 @@ class GlobalBestPSO(SwarmOptimizer):
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
+            delta = (
+                np.abs(self.swarm.best_cost - best_cost_yet_found)
+                < relative_measure
+            )
             if i < self.ftol_iter:
                 ftol_history[i] = delta
             else:
                 ftol_history = ftol_history[1:] + [delta]
                 if all(ftol_history):
                     break
-           # Perform velocity and position updates
+            # Perform velocity and position updates
             self.swarm.velocity = compute_velocity(
                 self.swarm, self.velocity_clamp, self.vh, self.bounds
             )
@@ -231,7 +241,9 @@ class GlobalBestPSO(SwarmOptimizer):
             )
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
-        final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
+        final_best_pos = self.swarm.pbest_pos[
+            self.swarm.pbest_cost.argmin()
+        ].copy()
         # Write report in log and return final cost and position
         self.rep.log(
             "Optimization finished | best cost: {}, best pos: {}".format(
