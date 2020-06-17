@@ -358,6 +358,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/all-contri
     <td align="center"><a href="https://github.com/nishnash54"><img src="https://avatars1.githubusercontent.com/u/25393122?v=4" width="100px;" alt=""/><br /><sub><b>Nishant Rodrigues</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=nishnash54" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/msat59"><img src="https://avatars2.githubusercontent.com/u/20813541?v=4" width="100px;" alt=""/><br /><sub><b>msat59</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=msat59" title="Code">💻</a> <a href="https://github.com/ljvmiranda921/pyswarms/issues?q=author%3Amsat59" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/diegoroman17"><img src="https://avatars0.githubusercontent.com/u/1294358?v=4" width="100px;" alt=""/><br /><sub><b>Diego</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=diegoroman17" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://www.aquanova-mp.com/"><img src="https://avatars2.githubusercontent.com/u/6449766?v=4" width="100px;" alt=""/><br /><sub><b>Shaad Alaka</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=Archer6621" title="Documentation">📖</a></td>
   </tr>
 </table>
 
