@@ -319,6 +319,24 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "diegoroman17",
+      "name": "Diego",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1294358?v=4",
+      "profile": "https://github.com/diegoroman17",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "Archer6621",
+      "name": "Shaad Alaka",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/6449766?v=4",
+      "profile": "http://www.aquanova-mp.com/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

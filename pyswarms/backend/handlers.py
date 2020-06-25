@@ -467,6 +467,7 @@ class VelocityHandler(HandlerMixin):
         r"""Adjust the velocity to the new position
 
         The velocity is adjusted such that the following equation holds:
+
         .. math::
 
                 \mathbf{v_{i,t}} = \mathbf{x_{i,t}} - \mathbf{x_{i,t-1}}
@@ -498,6 +499,7 @@ class VelocityHandler(HandlerMixin):
         kwarg :code:`z`. The default shrinking factor is :code:`0.5`. For all
         velocities whose particles are out of bounds the following equation is
         applied:
+
         .. math::
 
             \mathbf{v_{i,t}} = -z\mathbf{v_{i,t}}

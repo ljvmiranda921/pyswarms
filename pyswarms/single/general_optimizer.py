@@ -63,6 +63,8 @@ import logging
 import numpy as np
 import multiprocessing as mp
 
+from collections import deque
+
 from ..backend.operators import (
     compute_pbest,
     compute_objective_function,
@@ -193,7 +195,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         self.name = __name__
 
     def optimize(
-        self, objective_func, iters, n_processes=None, verbose=False, **kwargs
+        self, objective_func, iters, n_processes=None, verbose=True, **kwargs
     ):
         """Optimize the swarm for a number of iterations
 
@@ -209,7 +211,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
         verbose : bool
-            enable or disable the logs and progress bar (default: False = enable logs)
+            enable or disable the logs and progress bar (default: True = enable logs)
         kwargs : dict
             arguments for the objective function
 
@@ -220,14 +222,14 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         """
         # Apply verbosity
         if verbose:
-            logginglevel = logging.NOTSET
+            log_level = logging.INFO
         else:
-            logginglevel = logging.INFO
+            log_level = logging.NOTSET
 
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),
-            lvl=logginglevel,
+            lvl=log_level,
         )
 
         # Populate memory of the handlers
@@ -238,8 +240,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         pool = None if n_processes is None else mp.Pool(n_processes)
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history = [None] * self.ftol_iter
-        for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
+        ftol_history = deque(maxlen=self.ftol_iter)
+        for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
             # Compute cost for current position and personal best
             # fmt: off
             self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=pool, **kwargs)
@@ -251,7 +253,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 self.swarm, **self.options
             )
             # Print to console
-            if not verbose:
+            if verbose:
                 self.rep.hook(best_cost=self.swarm.best_cost)
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
@@ -268,9 +270,9 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 < relative_measure
             )
             if i < self.ftol_iter:
-                ftol_history[i] = delta
+                ftol_history.append(delta)
             else:
-                ftol_history = ftol_history[1:] + [delta]
+                ftol_history.append(delta)
                 if all(ftol_history):
                     break
             # Perform velocity and position updates
@@ -290,7 +292,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             "Optimization finished | best cost: {}, best pos: {}".format(
                 final_best_cost, final_best_pos
             ),
-            lvl=logginglevel,
+            lvl=log_level,
         )
         # Close Pool of Processes
         if n_processes is not None:
