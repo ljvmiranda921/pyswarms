@@ -60,7 +60,6 @@ import logging
 
 # Import modules
 import numpy as np
-import multiprocessing as mp
 
 from ..backend.operators import compute_pbest, compute_objective_function
 from ..backend.topology import Star
@@ -81,7 +80,6 @@ class GlobalBestPSO(SwarmOptimizer):
         vh_strategy="unmodified",
         center=1.00,
         ftol=-np.inf,
-        ftol_iter=1,
         init_pos=None,
     ):
         """Initialize the swarm
@@ -118,10 +116,6 @@ class GlobalBestPSO(SwarmOptimizer):
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence. Default is :code:`-np.inf`
-        ftol_iter : int
-            number of iterations over which the relative error in
-            objective_func(best_pos) is acceptable for convergence.
-            Default is :code:`1`
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
@@ -134,7 +128,6 @@ class GlobalBestPSO(SwarmOptimizer):
             velocity_clamp=velocity_clamp,
             center=center,
             ftol=ftol,
-            ftol_iter=ftol_iter,
             init_pos=init_pos,
         )
 
@@ -148,7 +141,7 @@ class GlobalBestPSO(SwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, n_processes=None, verbose=False, **kwargs):
+    def optimize(self, objective_func, iters, n_processes=None, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -162,8 +155,6 @@ class GlobalBestPSO(SwarmOptimizer):
             number of iterations
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
-        verbose : bool
-            enable or disable the logs and progress bar (default: False = enable logs)
         kwargs : dict
             arguments for the objective function
 
@@ -172,38 +163,29 @@ class GlobalBestPSO(SwarmOptimizer):
         tuple
             the global best cost and the global best position.
         """
-        
-        # Apply verbosity
-        if verbose:
-            logginglevel = logging.NOTSET
-        else:
-            logginglevel = logging.INFO
 
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),
-            lvl=logginglevel,
+            lvl=logging.INFO,
         )
         # Populate memory of the handlers
         self.bh.memory = self.swarm.position
         self.vh.memory = self.swarm.position
 
-        # Setup Pool of processes for parallel evaluation
-        pool = None if n_processes is None else mp.Pool(n_processes)
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history = [None] * self.ftol_iter
-        for i in range(iters) if verbose else self.rep.pbar(iters, self.name):
+        for i in self.rep.pbar(iters, self.name):
             # Compute cost for current position and personal best
             # fmt: off
-            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=pool, **kwargs)
+            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func,
+                                                                 no_processes=n_processes, **kwargs)
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
             # Set best_cost_yet_found for ftol
             best_cost_yet_found = self.swarm.best_cost
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
             # fmt: on
-            if not verbose:
-                self.rep.hook(best_cost=self.swarm.best_cost)
+            self.rep.hook(best_cost=self.swarm.best_cost)
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
@@ -215,14 +197,12 @@ class GlobalBestPSO(SwarmOptimizer):
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            if i < self.ftol_iter:
-                ftol_history[i] = delta
-            else:
-                ftol_history = ftol_history[1:] + [delta]
-                if all(ftol_history):
-                    break
-           # Perform velocity and position updates
+            if (
+                np.abs(self.swarm.best_cost - best_cost_yet_found)
+                < relative_measure
+            ):
+                break
+            # Perform velocity and position updates
             self.swarm.velocity = self.top.compute_velocity(
                 self.swarm, self.velocity_clamp, self.vh, self.bounds
             )
@@ -237,9 +217,6 @@ class GlobalBestPSO(SwarmOptimizer):
             "Optimization finished | best cost: {}, best pos: {}".format(
                 final_best_cost, final_best_pos
             ),
-            lvl=logginglevel,
+            lvl=logging.INFO,
         )
-        # Close Pool of Processes
-        if n_processes is not None:
-            pool.close()
         return (final_best_cost, final_best_pos)

@@ -17,6 +17,8 @@ import numpy as np
 from ..utils.reporter import Reporter
 from .handlers import BoundaryHandler, VelocityHandler
 from functools import partial
+from multiprocessing import Process, Pipe
+import multiprocessing
 
 
 rep = Reporter(logger=logging.getLogger(__name__))
@@ -210,7 +212,7 @@ def compute_position(swarm, bounds, bh):
         return position
 
 
-def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
+def compute_objective_function(swarm, objective_func, no_processes=5, **kwargs):
     """Evaluate particles using the objective function
 
     This method evaluates each particle in the swarm according to the objective
@@ -235,11 +237,37 @@ def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
     numpy.ndarray
         Cost-matrix for the given swarm
     """
-    if pool is None:
+
+    if no_processes is None:
         return objective_func(swarm.position, **kwargs)
+
     else:
-        results = pool.map(
-            partial(objective_func, **kwargs),
-            np.array_split(swarm.position, pool._processes),
-        )
-        return np.concatenate(results)
+
+
+        positions = [swarm.position[i:i+no_processes] for i in range(0,len(swarm.position),no_processes)]
+
+        jobs = []
+        pipe_list = []
+        for i in positions:
+            recv_end, send_end = multiprocessing.Pipe(False)
+            p = multiprocessing.Process(target=sender, args=(objective_func, send_end, i), kwargs=kwargs)
+            jobs.append(p)
+            pipe_list.append(recv_end)
+            p.start()
+
+        for proc in jobs:
+            proc.join()
+        result_list = [x.recv() for x in pipe_list]
+
+    return np.concatenate(result_list)
+
+def sender(func, send_end, *args, **kwargs):
+    result = func(args[0], **kwargs)
+    send_end.send(result)
+
+def task(pipe, xfunc, xargs, xkwargs):
+    res = []
+    for i in xargs:
+        rtn = xfunc(i, **xkwargs)
+        res.append(rtn)
+    pipe.send([res])
