@@ -337,6 +337,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "blazewicz",
+      "name": "Krzysztof Błażewicz",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/13185945?v=4",
+      "profile": "https://github.com/blazewicz",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
