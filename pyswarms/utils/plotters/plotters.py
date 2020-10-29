@@ -72,7 +72,6 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 import multiprocessing as mp
-from functools import partial
 from matplotlib import animation, cm
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -402,8 +401,6 @@ def _animate(i, data, plot):
         plot._offsets3d = current_pos.T
     return (plot,)
 
-def f(x):
-    return x*x
 
 def _mesh(mesher, n_processes=None):
     """Helper function to make a mesh"""
