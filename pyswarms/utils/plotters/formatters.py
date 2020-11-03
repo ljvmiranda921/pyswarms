@@ -11,6 +11,7 @@ import numpy as np
 from attr import attrib, attrs
 from attr.validators import instance_of
 from matplotlib import cm, colors
+import multiprocessing as mp
 
 
 @attrs
@@ -165,7 +166,7 @@ class Mesher(object):
     # Surface transparency
     alpha = attrib(type=float, validator=instance_of(float), default=0.3)
 
-    def compute_history_3d(self, pos_history):
+    def compute_history_3d(self, pos_history, n_processes=None):
         """Compute a 3D position matrix
 
         The first two columns are the 2D position in the x and y axes
@@ -177,11 +178,35 @@ class Mesher(object):
         pos_history : numpy.ndarray
             Two-dimensional position matrix history of shape
             :code:`(iterations, n_particles, 2)`
+        n_processes : int
+        number of processes to use for parallel mesh point calculation (default: None = no parallelization)
 
         Returns
         -------
         numpy.ndarray
             3D position matrix of shape :code:`(iterations, n_particles, 3)`
         """
-        fitness = np.array(list(map(self.func, pos_history)))
+
+        # Setup Pool of processes for parallel evaluation
+        pool = None if n_processes is None else mp.Pool(n_processes)
+
+        if pool is None:
+            fitness = np.array(list(map(self.func, pos_history)))
+        else:
+            iter_r = []
+            # Iterate over iterations
+            for i in range(len(pos_history)):
+
+                # Parallelize particles
+                r_map_split = pool.map(
+                    self.func,
+                    np.array_split(np.array(pos_history[i]), pool._processes),
+                )
+                iter_r.append(np.array(np.concatenate(r_map_split)))
+            fitness = np.array(iter_r)
+
+        # Close Pool of Processes
+        if n_processes is not None:
+            pool.close()
+
         return np.dstack((pos_history, fitness))
