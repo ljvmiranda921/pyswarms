@@ -57,6 +57,12 @@ def test_mesh_hidden_function_shape(mesher):
     xx, yy, zz = _mesh(mesher)
     assert xx.shape == yy.shape == zz.shape == (20, 20)
 
+def test_parallel_mesh(mesher):
+    """Test if parallelization breaks the optimization process"""
+    import multiprocessing
+    xx, yy, zz = _mesh(mesher)
+    xx_p, yy_p, zz_p = _mesh(mesher, n_processes=multiprocessing.cpu_count())
+    assert xx.shape == yy.shape == zz.shape == xx_p.shape == yy_p.shape == zz_p.shape == (20, 20)
 
 def test_animate_hidden_function_type(pos_history):
     """Tests if the hidden _animate() function returns the expected type"""
