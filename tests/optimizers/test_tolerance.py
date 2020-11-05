@@ -35,7 +35,7 @@ kwargs = {"value": value, "weight": weight, "capacity": capacity}
 
 
 def get_particle_obj(X, **kwargs):
-    """ Calculates the objective function value which is
+    """Calculates the objective function value which is
     total revenue minus penalty of capacity violations"""
     # X is the decision variable. X is vector in the lenght of number of items
     # $ value of items

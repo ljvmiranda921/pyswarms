@@ -23,7 +23,7 @@ def test_generate_grid_combinations(random_bounded):
 @pytest.mark.parametrize("options", ["c1", "c2", "k", "w"])
 def test_generate_grid_parameter_mapping(random_bounded, options):
     """Test that generated values are correctly mapped to each parameter and
-    are within the specified bounds """
+    are within the specified bounds"""
     grid = random_bounded.generate_grid()
     values = [x[options] for x in grid]
     for val in values:

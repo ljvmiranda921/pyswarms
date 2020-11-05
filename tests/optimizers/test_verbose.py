@@ -19,7 +19,11 @@ from pyswarms.single import GlobalBestPSO, LocalBestPSO, GeneralOptimizerPSO
 # Instantiate optimizers
 optimizers = [GlobalBestPSO, LocalBestPSO, GeneralOptimizerPSO]
 options = {"c1": 2, "c2": 2, "w": 0.7, "k": 3, "p": 2}
-parameters = dict(n_particles=20, dimensions=10, options=options,)
+parameters = dict(
+    n_particles=20,
+    dimensions=10,
+    options=options,
+)
 
 
 class TestToleranceOptions:

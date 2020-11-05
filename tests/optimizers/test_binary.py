@@ -31,8 +31,8 @@ class TestDiscreteOptimizer(ABCTestDiscreteOptimizer):
         return opt
 
     def test_binary_correct_pos(self, options):
-        """ Test to check binary optimiser returns the correct position
-        corresponding to the best cost """
+        """Test to check binary optimiser returns the correct position
+        corresponding to the best cost"""
         opt = BinaryPSO(10, 2, options=options)
         cost, pos = opt.optimize(sphere, 10)
         # find best pos from history
