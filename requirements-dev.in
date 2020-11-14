@@ -5,6 +5,7 @@ PyYAML==3.13 # pyup: ignore
 wheel==0.31.1
 # Tests
 pytest
+pytest-cov
 coverage==4.5.1
 flake8==3.5.0
 mock==2.0.0
