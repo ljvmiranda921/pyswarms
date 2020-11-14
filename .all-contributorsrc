@@ -346,6 +346,24 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "a310883",
+      "name": "Jorge Castillo",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/48936633?v=4",
+      "profile": "https://github.com/a310883",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "dannerph",
+      "name": "Philipp Danner",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/11915163?v=4",
+      "profile": "https://danner-web.de/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

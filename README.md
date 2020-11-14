@@ -361,6 +361,10 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/all-contri
     <td align="center"><a href="http://www.aquanova-mp.com/"><img src="https://avatars2.githubusercontent.com/u/6449766?v=4" width="100px;" alt=""/><br /><sub><b>Shaad Alaka</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=Archer6621" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/blazewicz"><img src="https://avatars1.githubusercontent.com/u/13185945?v=4" width="100px;" alt=""/><br /><sub><b>Krzysztof Błażewicz</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/issues?q=author%3Ablazewicz" title="Bug reports">🐛</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/a310883"><img src="https://avatars2.githubusercontent.com/u/48936633?v=4" width="100px;" alt=""/><br /><sub><b>Jorge Castillo</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=a310883" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://danner-web.de/"><img src="https://avatars3.githubusercontent.com/u/11915163?v=4" width="100px;" alt=""/><br /><sub><b>Philipp Danner</b></sub></a><br /><a href="https://github.com/ljvmiranda921/pyswarms/commits?author=dannerph" title="Code">💻</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
