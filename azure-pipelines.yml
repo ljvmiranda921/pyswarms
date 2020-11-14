@@ -4,54 +4,86 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
-- master
+  branches:
+    include:
+    - master
+    - refs/tags/*
+  tags:
+    include:
+    - v*
 
-jobs:
 
-- job: 'Test'
-  pool:
-    vmImage: 'Ubuntu-16.04'
-  strategy:
-    matrix:
-      Python35:
-        python.version: '3.5'
-      Python36:
-        python.version: '3.6'
-      Python37:
-        python.version: '3.7'
-    maxParallel: 3
 
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      architecture: 'x64'
+stages:
+- stage: build
+  displayName: BuildLibrary
+  jobs:
+  - job: 'Test'
+    pool:
+      vmImage: 'Ubuntu-16.04'
+    strategy:
+        matrix:
+          Python36:
+            python.version: '3.6'
+          Python37:
+            python.version: '3.7'
 
-  - script: python -m pip install --upgrade pip && pip install -r requirements-dev.txt
-    displayName: 'Install dependencies'
-
-  - script: tox -e py
-    displayName: 'Run Tox'
-
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFiles: '**/test-results.xml'
-      testRunTitle: 'Python $(python.version)'
-    condition: succeededOrFailed()
-
-- job: 'Publish'
-  dependsOn: 'Test'
-  pool:
-    vmImage: 'Ubuntu-16.04'
-
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      architecture: 'x64'
-
-  - script: python -m pip install --upgrade pip setuptools wheel
-    displayName: 'Install dependencies'
-
-  - script: make dist 
-    displayName: 'Build dist'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
+        architecture: 'x64'
+      displayName: 'Use Python version'
+    - script: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install -r requirements-dev.txt
+      displayName: 'Install dependencies'
+    - script: | 
+        pytest tests/ --cov pyswarms --junit-xml=junit/test-results.xml --cov-report=xml --cov-report=html
+      displayName: 'Run tests with coverage'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: '**/test-*.xml'
+        testRunTitle: 'Python $(python.version)'
+      condition: succeededOrFailed()
+      displayName: 'Publish test results'
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+        reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
+      displayName: 'Publish coverage results in Azure'
+    - script: |
+        pip install wheel
+        python setup.py sdist bdist_wheel
+      displayName: 'Create artifacts'
+    - task: PublishPipelineArtifact@0
+      condition: and(eq(variables['python.version'], '3.7'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+      inputs:
+          artifactName: 'pyswarms'
+          targetPath: 'dist'
+      displayName: 'Publish pipeline artifact'
+- stage: publish
+  condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+  displayName: PublishArtifacts
+  jobs:
+  - job: Publish
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+        architecture: 'x64'
+      displayName: 'Use Python version'
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: 'pyswarms'
+        path: 'dist'
+      displayName: 'Download artifacts'
+    - task: TwineAuthenticate@1
+      inputs:
+        pythonUploadServiceConnection: 'pypi-upload'
+      displayName: 'Authenticate twine to PyPI'
+    - script: |
+        python -m pip install twine
+        twine upload -r pypi --config-file $(PYPIRC_PATH) dist/* 
+      displayName: 'Upload files to PyPI'
