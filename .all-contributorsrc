@@ -355,6 +355,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "dannerph",
+      "name": "Philipp Danner",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/11915163?v=4",
+      "profile": "https://danner-web.de/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
