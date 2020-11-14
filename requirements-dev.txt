@@ -1,5 +1,4 @@
 alabaster==0.7.12
-atomicwrites==1.2.1
 attrs==18.1.0
 babel==2.6.0
 backcall==0.1.0
@@ -17,6 +16,7 @@ flake8==3.5.0
 future==0.16.0
 idna==2.8
 imagesize==1.1.0
+iniconfig==1.1.1
 ipykernel==5.1.1
 ipython-genutils==0.2.0
 ipython==7.5.0
@@ -32,7 +32,6 @@ matplotlib==3.0.2
 mccabe==0.6.1
 mistune==0.8.4
 mock==2.0.0
-more-itertools==5.0.0
 nbconvert==5.5.0
 nbformat==4.4.0
 nbsphinx==0.4.2
@@ -45,17 +44,18 @@ parso==0.4.0
 pbr==5.1.1
 pexpect==4.7.0
 pickleshare==0.7.5
-pluggy==0.8.1
+pluggy==0.13.1
 pockets==0.7.2
 prompt-toolkit==2.0.9
 ptyprocess==0.6.0
-py==1.7.0
+py==1.9.0
 pycodestyle==2.3.1
 pyflakes==1.6.0
 pygments==2.3.1
 pyparsing==2.3.1
 pyrsistent==0.15.2
-pytest==3.7.1
+pytest-cov==2.10.1
+pytest==6.1.2
 python-dateutil==2.7.5
 pytz==2018.9
 pyyaml==3.13
@@ -71,6 +71,7 @@ sphinx==1.7.6
 sphinxcontrib-napoleon==0.7
 sphinxcontrib-websupport==1.1.0
 testpath==0.4.2
+toml==0.10.2
 tornado==6.0.2
 tox==3.2.1
 tqdm==4.24.0
@@ -80,3 +81,6 @@ virtualenv==16.3.0
 wcwidth==0.1.7
 webencodings==0.5.1
 wheel==0.31.1
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
