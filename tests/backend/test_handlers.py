@@ -219,12 +219,21 @@ def assert_option_strategy(strategy, init_opts, exp_opts, **kwargs):
 
 
 def test_option_strategy():
-    init_opts = OrderedDict([('c1', 0.5), ('c2', 0.3), ('w', 0.9)])
-    end_opts = OrderedDict([('c2', 0.1), ('w', 0.2)])  # use default for c1
-    strategy = ("lin_decay", "nonlin_mod", "exp_decay")
-    exp_opts = OrderedDict([('c1', 0.4), ('c2', 0.1), ('w', 0.567)])
+    init_opts = OrderedDict([("c1", 0.5), ("c2", 0.3), ("w", 0.9)])
+    end_opts = OrderedDict([("c2", 0.1), ("w", 0.2)])  # use default for c1
+    strategy = OrderedDict(
+        [("w", "exp_decay"), ("c1", "lin_decay"), ("c2", "nonlin_mod")]
+    )
+    exp_opts = OrderedDict([("c1", 0.4), ("c2", 0.1), ("w", 0.567)])
     try:
-        assert_option_strategy(strategy, init_opts, exp_opts, iternow=100, itermax=100, end_opts=end_opts)
+        assert_option_strategy(
+            strategy,
+            init_opts,
+            exp_opts,
+            iternow=100,
+            itermax=100,
+            end_opts=end_opts,
+        )
         print("Test passed.")
     except:
         print("Test failed")

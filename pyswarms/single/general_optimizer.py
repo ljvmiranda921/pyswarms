@@ -80,7 +80,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         options,
         topology,
         bounds=None,
-        oh_strategy=(),
+        oh_strategy=None,
         bh_strategy="periodic",
         velocity_clamp=None,
         vh_strategy="unmodified",
@@ -144,8 +144,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
-        oh_strategy : tuple
-            a tuple of update strategies for each option.
+        oh_strategy : dict, optional, default=None(constant options)
+            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
         velocity_clamp : tuple, optional
@@ -178,7 +178,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             ftol_iter=ftol_iter,
             init_pos=init_pos,
         )
-
+        if oh_strategy is None:
+            oh_strategy = {}
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
         # Initialize the resettable attributes

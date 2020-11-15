@@ -597,19 +597,14 @@ class OptionsHandler(HandlerMixin):
 
     def __call__(self, start_opts, **kwargs):
         try:
-            if not any(self.strategy):
+            if not self.strategy:
                 return start_opts
-            assert len(self.strategy) == len(
-                start_opts
-            ), "Number of strategies are not same as number of options. Create a 'None' strategy to keep unmodified"
-
             return_opts = copy(start_opts)
-            for key, strat in zip(start_opts.keys(), self.strategy):
-                if strat is None:
-                    continue
-                return_opts[key] = self.strategies[strat](
-                    start_opts, key, **kwargs
-                )
+            for key in start_opts.keys():
+                if key in self.strategy.keys():
+                    return_opts[key] = self.strategies[self.strategy[key]](
+                        start_opts, key, **kwargs
+                    )
         except KeyError:
             message = "Unrecognized strategy: {}. Choose one among: " + str(
                 [strat for strat in self.strategies.keys()]
