@@ -37,6 +37,11 @@ def pos_history():
     """Returns a list containing a swarms' position history"""
     return np.random.uniform(size=(10, 5, 2))
 
+@pytest.fixture
+def pos_history_3d():
+    """Returns a list containing a swarms' position history"""
+    return np.random.uniform(size=(10, 5, 3))
+
 
 @pytest.fixture
 def mesher():

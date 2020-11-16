@@ -47,9 +47,9 @@ def test_plot_contour_return_type(pos_history):
     assert isinstance(plot_contour(pos_history), FuncAnimation)
 
 
-def test_plot_surface_return_type(pos_history):
+def test_plot_surface_return_type(pos_history_3d):
     """Tests if the animation function returns the expected type"""
-    assert isinstance(plot_surface(pos_history), FuncAnimation)
+    assert isinstance(plot_surface(pos_history_3d), FuncAnimation)
 
 
 def test_mesh_hidden_function_shape(mesher):

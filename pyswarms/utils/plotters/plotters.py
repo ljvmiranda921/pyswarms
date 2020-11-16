@@ -148,6 +148,9 @@ def plot_contour(
     mesher=None,
     animator=None,
     n_processes=None,
+    x=0,
+    y=1,
+    best_pos=None,
     **kwargs
 ):
     """Draw a 2D contour map for particle trajectories
@@ -177,6 +180,12 @@ def plot_contour(
         Animator class for custom animation
     n_processes : int
         number of processes to use for parallel mesh point calculation (default: None = no parallelization)
+    x : int, optional
+        index of dimension to plot on x axis
+    y : int, optional
+        index of dimension to plot on y axis
+    best_pos : tuple, optional
+        final position of optimizaiton to be set as hidden dimensions when plotting the mesh.
     **kwargs : dict
         Keyword arguments that are passed as a keyword argument to
         :obj:`matplotlib.axes.Axes` plotting function
@@ -205,28 +214,62 @@ def plot_contour(
             fig, ax = plt.subplots(1, 1, figsize=designer.figsize)
         else:
             fig, ax = canvas
+        
+        # Get number of dimensions
+        n_dim = pos_history[0].shape[1]
+
+        # Input checks
+        if n_dim < 2:
+            rep.logger.warn("Given pos_history has too less dimensions to be plotted in 2D.")
+        # designer
+        if len(designer.limits) is not (n_dim):
+            rep.logger.warn("Limits in designer has incorrect dimensions.")
+        if len(designer.label) is not (n_dim):
+            rep.logger.warn("Labels in designer has incorrect dimensions.")
+        # dimensions to plot
+        if x < 0 or x >= n_dim:
+            rep.logger.warn("Index of dimension to plot on x-axis out of bound.")
+        if y < 0 or y >= n_dim:
+            rep.logger.warn("Index of dimension to plot on y-axis out of bound.")
+        if x is y:
+            rep.logger.warn("Index for plotting x- and y-axis is the same, that is probably not what you want.")
 
         # Get number of iterations
         n_iters = len(pos_history)
 
         # Customize plot
         ax.set_title(title, fontsize=designer.title_fontsize)
-        ax.set_xlabel(designer.label[0], fontsize=designer.text_fontsize)
-        ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
-        ax.set_xlim(designer.limits[0])
-        ax.set_ylim(designer.limits[1])
+        ax.set_xlabel(designer.label[x], fontsize=designer.text_fontsize)
+        ax.set_ylabel(designer.label[y], fontsize=designer.text_fontsize)
+        ax.set_xlim(designer.limits[x])
+        ax.set_ylim(designer.limits[y])
 
         # Make a contour map if possible
         if mesher is not None:
-            xx, yy, zz, = _mesh(mesher, n_processes=n_processes)
+            if len(mesher.limits) is not (n_dim): # no fitness in this one
+                rep.logger.warn("Limits in mesher has incorrect dimensions.")
+
+            # Calculate surface
+            xx, yy, zz, = _mesh(mesher, n_processes, x, y, best_pos)
             ax.contour(xx, yy, zz, levels=mesher.levels)
 
         # Mark global best if possible
         if mark is not None:
-            ax.scatter(mark[0], mark[1], color="red", marker="x")
+            if len(mark) < 2:
+                rep.logger.warn("Given mark has too less values to be plotted.")
+            elif len(mark) is 2: # 2D mark given
+                ax.scatter(mark[0], mark[1], color="red", marker="x")
+            elif len(mark) is (n_dim): # length of mark fits all dimensions plus fitness -> use given indices
+                ax.scatter(mark[x], mark[y], color="red", marker="x")
+            else:
+                rep.logger.warn("Number of dimensions of given mark does not fit plotting dimension nor problem dimension.")
 
         # Put scatter skeleton
         plot = ax.scatter(x=[], y=[], c="black", alpha=0.6, **kwargs)
+
+        # Prepare pos_history
+        pos_history = np.array(pos_history)
+        pos_history = pos_history[:, :, [x, y]]
 
         # Do animation
         anim = animation.FuncAnimation(
@@ -254,6 +297,9 @@ def plot_surface(
     animator=None,
     mark=None,
     n_processes=None,
+    x=0,
+    y=1,
+    best_pos=None,
     **kwargs
 ):
     """Plot a swarm's trajectory in 3D
@@ -312,8 +358,14 @@ def plot_surface(
         Mesher class for mesh plots
     animator : :obj:`pyswarms.utils.formatters.Animator`, optional
         Animator class for custom animation
-    n_processes : int
+    n_processes : int, optional
         number of processes to use for parallel mesh point calculation (default: None = no parallelization)
+    x : int, optional
+        index of dimension to plot on x axis
+    y : int, optional
+        index of dimension to plot on y axis
+    best_pos : tuple, optional
+        final position of optimizaiton to be set as hidden dimensions when plotting the mesh.
     **kwargs : dict
         Keyword arguments that are passed as a keyword argument to
         :class:`matplotlib.axes.Axes` plotting function
@@ -345,33 +397,69 @@ def plot_surface(
         else:
             fig, ax = canvas
 
+        # Get number of dimensions
+        # pos_history was already extended by fitness thus the actual number of dimensions is one less
+        n_dim = pos_history[0].shape[1] - 1
+
+        # Input checks
+        if n_dim < 2:
+            rep.logger.warn("Given pos_history has too less dimensions to be plotted in 3D.")
+        # designer
+        if len(designer.limits) is not (n_dim + 1): # one more as we have also limits for the z-dimension (fitness)
+            rep.logger.warn("Limits in designer has incorrect dimensions.")
+        if len(designer.label) is not (n_dim + 1): # one more as we have also limits for the z-dimension (fitness)
+            rep.logger.warn("Labels in designer has incorrect dimensions.")
+        # dimensions to plot
+        if x < 0 or x >= n_dim:
+            rep.logger.warn("Index of dimension to plot on x-axis out of bound.")
+        if y < 0 or y >= n_dim:
+            rep.logger.warn("Index of dimension to plot on y-axis out of bound.")
+        if x is y:
+            rep.logger.warn("Index for plotting x- and y-axis is the same, that is probably not what you want.")
+        
         # Initialize 3D-axis
-        ax = Axes3D(fig)
+        if not hasattr(ax, 'get_zlim'):
+            ax = Axes3D(fig)
 
         n_iters = len(pos_history)
 
         # Customize plot
         ax.set_title(title, fontsize=designer.title_fontsize)
-        ax.set_xlabel(designer.label[0], fontsize=designer.text_fontsize)
-        ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
-        ax.set_zlabel(designer.label[2], fontsize=designer.text_fontsize)
-        ax.set_xlim(designer.limits[0])
-        ax.set_ylim(designer.limits[1])
-        ax.set_zlim(designer.limits[2])
-
-        # Make a contour map if possible
+        ax.set_xlabel(designer.label[x], fontsize=designer.text_fontsize)
+        ax.set_ylabel(designer.label[y], fontsize=designer.text_fontsize)
+        ax.set_zlabel(designer.label[n_dim], fontsize=designer.text_fontsize) # using last column where fitness is stored
+        ax.set_xlim(designer.limits[x])
+        ax.set_ylim(designer.limits[y])
+        ax.set_zlim(designer.limits[n_dim]) # using last column where fitness is stored
+        
+        # mesher
         if mesher is not None:
-            xx, yy, zz, = _mesh(mesher, n_processes=n_processes)
+            if len(mesher.limits) is not (n_dim): # no fitness in this one
+                rep.logger.warn("Limits in mesher has incorrect dimensions.")
+
+            # Calculate surface
+            xx, yy, zz, = _mesh(mesher, n_processes, x, y, best_pos)
             ax.plot_surface(
                 xx, yy, zz, cmap=designer.colormap, alpha=mesher.alpha
             )
 
         # Mark global best if possible
         if mark is not None:
-            ax.scatter(mark[0], mark[1], mark[2], color="red", marker="x")
+            if len(mark) < 3:
+                rep.logger.warn("Given mark has too less values to be plotted.")
+            elif len(mark) == 3: # 3D mark given
+                ax.scatter(mark[0], mark[1], mark[2], color="red", marker="x")
+            elif len(mark) == (n_dim + 1): # length of mark fits all dimensions plus fitness -> use given indices
+                ax.scatter(mark[x], mark[y], mark[n_dim], color="red", marker="x")
+            else:
+                rep.logger.warn("Number of dimensions of given mark does not fit plotting dimension nor problem dimension.")
 
         # Put scatter skeleton
         plot = ax.scatter(xs=[], ys=[], zs=[], c="black", alpha=0.6, **kwargs)
+
+        # Prepare pos_history
+        pos_history = np.array(pos_history)
+        pos_history = pos_history[:, :, [x, y, (pos_history[0].shape[1] - 1)]]
 
         # Do animation
         anim = animation.FuncAnimation(
@@ -402,14 +490,22 @@ def _animate(i, data, plot):
     return (plot,)
 
 
-def _mesh(mesher, n_processes=None):
+def _mesh(mesher, n_processes=None, x_index=0, y_index=1, best_pos=None):
     """Helper function to make a mesh"""
-    xlim = mesher.limits[0]
-    ylim = mesher.limits[1]
+    xlim = mesher.limits[x_index]
+    ylim = mesher.limits[y_index]
     x = np.arange(xlim[0], xlim[1], mesher.delta)
     y = np.arange(ylim[0], ylim[1], mesher.delta)
     xx, yy = np.meshgrid(x, y)
     xypairs = np.vstack([xx.reshape(-1), yy.reshape(-1)]).T
+
+    # multi dimension case:
+    if x_index != 0 or y_index != 1 or best_pos is not None:
+        #Prepare parameter set
+        best_pos_column = np.tile(best_pos, (xypairs.shape[0], 1))
+        best_pos_column[:,x_index] = xypairs[:,0]
+        best_pos_column[:,y_index] = xypairs[:,1]
+        xypairs = best_pos_column
 
     # Get z-value
 
