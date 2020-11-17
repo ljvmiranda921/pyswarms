@@ -364,6 +364,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "nikhil-sethi",
+      "name": "Nikhil Sethi",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/50928699?v=4",
+      "profile": "https://github.com/nikhil-sethi",
+      "contributions": [
+        "code",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
