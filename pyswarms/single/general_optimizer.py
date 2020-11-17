@@ -67,7 +67,7 @@ from collections import deque
 
 from ..backend.operators import compute_pbest, compute_objective_function
 from ..backend.topology import Topology
-from ..backend.handlers import BoundaryHandler, VelocityHandler
+from ..backend.handlers import BoundaryHandler, VelocityHandler, OptionsHandler
 from ..base import SwarmOptimizer
 from ..utils.reporter import Reporter
 
@@ -80,6 +80,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         options,
         topology,
         bounds=None,
+        oh_strategy=None,
         bh_strategy="periodic",
         velocity_clamp=None,
         vh_strategy="unmodified",
@@ -143,6 +144,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
+        oh_strategy : dict, optional, default=None(constant options)
+            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
         velocity_clamp : tuple, optional
@@ -175,7 +178,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             ftol_iter=ftol_iter,
             init_pos=init_pos,
         )
-
+        if oh_strategy is None:
+            oh_strategy = {}
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
         # Initialize the resettable attributes
@@ -187,6 +191,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self.top = topology
         self.bh = BoundaryHandler(strategy=bh_strategy)
         self.vh = VelocityHandler(strategy=vh_strategy)
+        self.oh = OptionsHandler(strategy=oh_strategy)
         self.name = __name__
 
     def optimize(
@@ -270,6 +275,10 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 ftol_history.append(delta)
                 if all(ftol_history):
                     break
+            # Perform options update
+            self.swarm.options = self.oh(
+                self.options, iternow=i, itermax=iters
+            )
             # Perform velocity and position updates
             self.swarm.velocity = self.top.compute_velocity(
                 self.swarm, self.velocity_clamp, self.vh, self.bounds

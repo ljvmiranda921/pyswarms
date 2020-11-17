@@ -218,7 +218,11 @@ def plot_contour(
 
         # Make a contour map if possible
         if mesher is not None:
-            xx, yy, zz, = _mesh(mesher, n_processes=n_processes)
+            (
+                xx,
+                yy,
+                zz,
+            ) = _mesh(mesher, n_processes=n_processes)
             ax.contour(xx, yy, zz, levels=mesher.levels)
 
         # Mark global best if possible
@@ -361,7 +365,11 @@ def plot_surface(
 
         # Make a contour map if possible
         if mesher is not None:
-            xx, yy, zz, = _mesh(mesher, n_processes=n_processes)
+            (
+                xx,
+                yy,
+                zz,
+            ) = _mesh(mesher, n_processes=n_processes)
             ax.plot_surface(
                 xx, yy, zz, cmap=designer.colormap, alpha=mesher.alpha
             )

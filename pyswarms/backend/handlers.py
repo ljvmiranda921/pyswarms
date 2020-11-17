@@ -22,12 +22,14 @@ import inspect
 import logging
 
 import numpy as np
+import math
+from copy import copy
 
 from ..utils.reporter import Reporter
 
 
 class HandlerMixin(object):
-    """ A HandlerMixing class
+    """A HandlerMixing class
 
     This class offers some basic functionality for the Handlers.
     """
@@ -60,7 +62,7 @@ class HandlerMixin(object):
 
 class BoundaryHandler(HandlerMixin):
     def __init__(self, strategy):
-        """ A BoundaryHandler class
+        """A BoundaryHandler class
 
         This class offers a way to handle boundary conditions. It contains
         methods to repair particle positions outside of the defined boundaries.
@@ -391,7 +393,7 @@ class BoundaryHandler(HandlerMixin):
 
 class VelocityHandler(HandlerMixin):
     def __init__(self, strategy):
-        """ A VelocityHandler class
+        """A VelocityHandler class
 
         This class offers a way to handle velocities. It contains
         methods to repair the velocities of particles that exceeded the
@@ -540,3 +542,188 @@ class VelocityHandler(HandlerMixin):
             raise
         else:
             return new_vel
+
+
+class OptionsHandler(HandlerMixin):
+    def __init__(self, strategy):
+        """An OptionsHandler class
+
+        This class offers a way to handle options. It contains
+        methods to vary the options at runtime.
+        Following strategies are available for the handling:
+
+        * exp_decay:
+            Decreases the parameter exponentially between limits.
+
+        * lin_decay:
+            Decreases the parameter linearly between limits.
+
+        * random:
+            takes a uniform random value between (0.5,1)
+
+        * nonlin_mod:
+            Decreases the parameter between limits according to a nonlinear modulation index .
+
+        The OptionsHandler can be called as a function to use the strategy
+        that is passed at initialization to account for time-varying coefficients. An example
+        for the usage:
+
+        .. code-block :: python
+
+            from pyswarms.backend import operators as op
+            from pyswarms.backend.handlers import OptionsHandler
+
+
+            oh = OptionsHandler(strategy=(None, None, "exp_decay"))
+
+            for i in range(iters)
+                # some initial stuff
+                new_options = oh(default_options, iternow=i, itermax=iters, end_opts={"w":0.4})
+                # more updates using new_options
+
+        By passing the handler, the :func:`compute_position()` function now has
+        the ability to reset the particles by calling the :code:`BoundaryHandler`
+        inside.
+
+        Attributes
+        ----------
+        strategy : str
+            The strategy to use. To see all available strategies,
+            call :code:`OptionsHandler.strategies`
+        """
+        self.strategy = strategy
+        self.strategies = self._get_all_strategies()
+        self.rep = Reporter(logger=logging.getLogger(__name__))
+
+    def __call__(self, start_opts, **kwargs):
+        try:
+            if not self.strategy:
+                return start_opts
+            return_opts = copy(start_opts)
+            for key in start_opts.keys():
+                if key in self.strategy.keys():
+                    return_opts[key] = self.strategies[self.strategy[key]](
+                        start_opts, key, **kwargs
+                    )
+        except KeyError:
+            message = "Unrecognized strategy: {}. Choose one among: " + str(
+                [strat for strat in self.strategies.keys()]
+            )
+            self.rep.logger.exception(message.format(self.strategy))
+            raise
+        else:
+            return return_opts
+
+    def exp_decay(self, start_opts, key, **kwargs):
+        """Exponentially decreasing between start and end
+
+        Ref: Li, H.-R., & Gao, Y.-L. (2009). Particle Swarm Optimization Algorithm with Exponent
+        Decreasing Inertia Weight and Stochastic Mutation. 2009 Second International Conference
+        on Information and Computing Science. doi:10.1109/icic.2009.24
+        """
+
+        try:
+            # default values from reference paper
+            if "d1" not in kwargs:
+                d1 = 0.2
+            else:
+                d1 = kwargs["d1"]
+            if "d2" not in kwargs:
+                d2 = 7
+            else:
+                d2 = kwargs["d2"]
+
+            end_opts = {
+                "w": 0.4,
+                "c1": 0.8 * start_opts["c1"],
+                "c2": 1 * start_opts["c2"],
+            }
+            if "end_opts" in kwargs:
+                if key in kwargs["end_opts"].keys():
+                    end_opts[key] = kwargs["end_opts"][key]
+            start = start_opts[key]
+            end = end_opts[key]
+            new_val = (start - end - d1) * math.exp(
+                1 / (1 + d2 * kwargs["iternow"] / kwargs["itermax"])
+            )
+        except KeyError:
+            self.rep.logger.exception("Keyword 'itermax' or 'iternow' missing")
+            raise
+        else:
+            return new_val
+
+    def lin_decay(self, start_opts, key, **kwargs):
+        """
+        Linearly decreasing between start and end
+
+        Ref: Shi Y, Eberhart R.: Empirical study of particle swarm optimization Proc
+        of Congress on Computational Intelligence,Washington DC ,USA
+        1999, pp.1945 - 1950.
+        """
+
+        try:
+            end_opts = {
+                "w": 0.4,
+                "c1": 0.8 * start_opts["c1"],
+                "c2": 1 * start_opts["c2"],
+            }
+            if "end_opts" in kwargs:
+                if key in kwargs["end_opts"].keys():
+                    end_opts[key] = kwargs["end_opts"][key]
+            start = start_opts[key]
+            end = end_opts[key]
+            new_val = (
+                end
+                + (start - end)
+                * (kwargs["iternow"] - kwargs["itermax"])
+                / kwargs["itermax"]
+            )
+        except KeyError:
+            self.rep.logger.exception("Keyword 'itermax' or 'iternow' missing")
+            raise
+        else:
+            return new_val
+
+    def random(self, *args, **kwargs):
+        """Random value between 0.5 and 1
+
+        Reference: ] R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
+        swarms, in: Congress on Evolutionary Computation, Korea, 2001
+        """
+
+        return 0.5 + np.random.rand() / 2
+
+    def nonlin_mod(self, start_opts, key, **kwargs):
+        """Non linear decreasing with modulation index
+
+        Reference:  A. Chatterjee, P. Siarry, Nonlinear inertia weight variation for dynamic adaption
+        in particle swarm optimization, Computer and Operations Research 33 (2006)
+        859–871, March 2006
+        """
+
+        try:
+            if "n" not in kwargs:
+                n = 1.2
+            else:
+                n = kwargs["n"]
+
+            end_opts = {
+                "w": 0.4,
+                "c1": 0.8 * start_opts["c1"],
+                "c2": 1 * start_opts["c2"],
+            }
+            if "end_opts" in kwargs:
+                if key in kwargs["end_opts"].keys():
+                    end_opts[key] = kwargs["end_opts"][key]
+
+            start = start_opts[key]
+            end = end_opts[key]
+            new_val = end + (start - end) * (
+                (kwargs["itermax"] - kwargs["iternow"]) ** n
+                / kwargs["itermax"] ** n
+            )
+        except KeyError:
+            self.rep.logger.exception("Keyword 'itermax' or 'iternow' missing")
+            raise
+        else:
+            return new_val

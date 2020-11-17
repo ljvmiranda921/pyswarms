@@ -1,18 +1,38 @@
 import pytest
 import inspect
 import numpy as np
+from collections import OrderedDict
 
 from pyswarms.backend.handlers import (
     BoundaryHandler,
     VelocityHandler,
+    OptionsHandler,
     HandlerMixin,
 )
 import pyswarms.backend.handlers as h
 
-bh_strategies = [name for name, _ in inspect.getmembers(h.BoundaryHandler(""),
-    predicate=inspect.ismethod) if not name.startswith(("__", "_"))]
-vh_strategies = [name for name, _ in inspect.getmembers(h.VelocityHandler(""),
-    predicate=inspect.ismethod) if not name.startswith(("__", "_"))]
+bh_strategies = [
+    name
+    for name, _ in inspect.getmembers(
+        h.BoundaryHandler(""), predicate=inspect.ismethod
+    )
+    if not name.startswith(("__", "_"))
+]
+vh_strategies = [
+    name
+    for name, _ in inspect.getmembers(
+        h.VelocityHandler(""), predicate=inspect.ismethod
+    )
+    if not name.startswith(("__", "_"))
+]
+oh_strategies = [
+    name
+    for name, _ in inspect.getmembers(
+        h.OptionsHandler(""), predicate=inspect.ismethod
+    )
+    if not name.startswith(("__", "_"))
+]
+
 
 def test_out_of_bounds(bounds, positions_inbound, positions_out_of_bound):
     hm = HandlerMixin()
@@ -34,9 +54,8 @@ def test_out_of_bounds(bounds, positions_inbound, positions_out_of_bound):
         np.ravel(idx_out_of_bounds[1]).all() == np.ravel(expected_idx[1]).all()
     )
 
-@pytest.mark.parametrize(
-    "strategy", bh_strategies
-)
+
+@pytest.mark.parametrize("strategy", bh_strategies)
 def test_bound_handling(
     bounds, positions_inbound, positions_out_of_bound, strategy
 ):
@@ -51,6 +70,7 @@ def test_bound_handling(
     greater_than_bound = outbound_handled <= bounds[1]
     assert lower_than_bound.all()
     assert greater_than_bound.all()
+
 
 def test_nearest_strategy(bounds, positions_inbound, positions_out_of_bound):
     bh = BoundaryHandler(strategy="nearest")
@@ -86,16 +106,17 @@ def test_periodic_strategy(bounds, positions_inbound, positions_out_of_bound):
     bh = BoundaryHandler(strategy="periodic")
     # TODO Add strategy specific tests
 
+
 def assert_clamp(
-clamp,
-velocities_inbound,
-velocities_out_of_bound,
-positions_inbound,
-positions_out_of_bound,
-vh,
-bounds=None,
+    clamp,
+    velocities_inbound,
+    velocities_out_of_bound,
+    positions_inbound,
+    positions_out_of_bound,
+    vh,
+    bounds=None,
 ):
-# Test if it doesn't handle inclamp velocities
+    # Test if it doesn't handle inclamp velocities
     inbound_handled = vh(
         velocities_inbound, clamp, position=positions_inbound, bounds=bounds
     )
@@ -112,8 +133,6 @@ bounds=None,
     greater_than_clamp = outbound_handled > clamp[1]
     assert not lower_than_clamp.all()
     assert not greater_than_clamp.all()
-
-
 
 
 def test_unmodified_strategy(
@@ -179,3 +198,43 @@ def test_zero_strategy(
     vh = VelocityHandler(strategy="zero")
     # TODO Add strategy specific tests
     pass
+
+
+def assert_option_strategy(strategy, init_opts, exp_opts, **kwargs):
+    """Test for any strategy for options handler
+    strategy : strategy to use
+    init_opts : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1',
+            'c2', 'w', 'k', 'p'}`
+    exp_opts: dict with expected values after strategy with given parameters
+    kwargs: arguments to use for given strategy
+    """
+    assert len(init_opts) == len(
+        exp_opts
+    ), "Size of initial options and expected options must be same"
+    oh = OptionsHandler(strategy)
+    return_opts = oh(init_opts, **kwargs)
+    assert np.allclose(
+        list(return_opts.values()), list(exp_opts.values()), atol=0.001, rtol=0
+    ), "Expected options don't match with the given strategy"
+
+
+def test_option_strategy():
+    init_opts = OrderedDict([("c1", 0.5), ("c2", 0.3), ("w", 0.9)])
+    end_opts = OrderedDict([("c2", 0.1), ("w", 0.2)])  # use default for c1
+    strategy = OrderedDict(
+        [("w", "exp_decay"), ("c1", "lin_decay"), ("c2", "nonlin_mod")]
+    )
+    exp_opts = OrderedDict([("c1", 0.4), ("c2", 0.1), ("w", 0.567)])
+    try:
+        assert_option_strategy(
+            strategy,
+            init_opts,
+            exp_opts,
+            iternow=100,
+            itermax=100,
+            end_opts=end_opts,
+        )
+        print("Test passed.")
+    except:
+        print("Test failed")
+        raise
