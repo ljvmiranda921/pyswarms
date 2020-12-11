@@ -222,7 +222,7 @@ def test_option_strategy():
     init_opts = OrderedDict([("c1", 0.5), ("c2", 0.3), ("w", 0.9)])
     end_opts = OrderedDict([("c2", 0.1), ("w", 0.2)])  # use default for c1
     strategy = OrderedDict(
-        [("w", "exp_decay"), ("c1", "lin_decay"), ("c2", "nonlin_mod")]
+        [("w", "exp_decay"), ("c1", "lin_variation"), ("c2", "nonlin_mod")]
     )
     exp_opts = OrderedDict([("c1", 0.4), ("c2", 0.1), ("w", 0.567)])
     try:

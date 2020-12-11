@@ -555,14 +555,14 @@ class OptionsHandler(HandlerMixin):
         * exp_decay:
             Decreases the parameter exponentially between limits.
 
-        * lin_decay:
-            Decreases the parameter linearly between limits.
+        * lin_variation:
+            Decreases/increases the parameter linearly between limits.
 
         * random:
             takes a uniform random value between (0.5,1)
 
         * nonlin_mod:
-            Decreases the parameter between limits according to a nonlinear modulation index .
+            Decreases/increases the parameter between limits according to a nonlinear modulation index .
 
         The OptionsHandler can be called as a function to use the strategy
         that is passed at initialization to account for time-varying coefficients. An example
@@ -574,11 +574,11 @@ class OptionsHandler(HandlerMixin):
             from pyswarms.backend.handlers import OptionsHandler
 
 
-            oh = OptionsHandler(strategy=(None, None, "exp_decay"))
+            oh = OptionsHandler(strategy={ "w":'exp_decay', "c1":'nonlin_mod',"c2":'lin_variation'})
 
-            for i in range(iters)
+            for i in range(iters):
                 # some initial stuff
-                new_options = oh(default_options, iternow=i, itermax=iters, end_opts={"w":0.4})
+                new_options = oh(default_options, iternow=i, itermax=iters, end_opts={'c1':0.5, 'c2':2.5, 'w':0.4})
                 # more updates using new_options
 
         By passing the handler, the :func:`compute_position()` function now has
@@ -600,8 +600,8 @@ class OptionsHandler(HandlerMixin):
             if not self.strategy:
                 return start_opts
             return_opts = copy(start_opts)
-            for key in start_opts.keys():
-                if key in self.strategy.keys():
+            for key in start_opts:
+                if key in self.strategy:
                     return_opts[key] = self.strategies[self.strategy[key]](
                         start_opts, key, **kwargs
                     )
@@ -639,7 +639,7 @@ class OptionsHandler(HandlerMixin):
                 "c2": 1 * start_opts["c2"],
             }
             if "end_opts" in kwargs:
-                if key in kwargs["end_opts"].keys():
+                if key in kwargs["end_opts"]:
                     end_opts[key] = kwargs["end_opts"][key]
             start = start_opts[key]
             end = end_opts[key]
@@ -652,9 +652,9 @@ class OptionsHandler(HandlerMixin):
         else:
             return new_val
 
-    def lin_decay(self, start_opts, key, **kwargs):
+    def lin_variation(self, start_opts, key, **kwargs):
         """
-        Linearly decreasing between start and end
+        Linearly decreasing/increasing between start and end
 
         Ref: Shi Y, Eberhart R.: Empirical study of particle swarm optimization Proc
         of Congress on Computational Intelligence,Washington DC ,USA
@@ -668,14 +668,14 @@ class OptionsHandler(HandlerMixin):
                 "c2": 1 * start_opts["c2"],
             }
             if "end_opts" in kwargs:
-                if key in kwargs["end_opts"].keys():
+                if key in kwargs["end_opts"]:
                     end_opts[key] = kwargs["end_opts"][key]
             start = start_opts[key]
             end = end_opts[key]
             new_val = (
                 end
                 + (start - end)
-                * (kwargs["iternow"] - kwargs["itermax"])
+                * (kwargs["itermax"] - kwargs["iternow"])
                 / kwargs["itermax"]
             )
         except KeyError:
@@ -684,17 +684,21 @@ class OptionsHandler(HandlerMixin):
         else:
             return new_val
 
-    def random(self, *args, **kwargs):
-        """Random value between 0.5 and 1
+    def random(self, start_opts, key, **kwargs):
+        """Random value between start option and end option
 
         Reference: ] R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
         swarms, in: Congress on Evolutionary Computation, Korea, 2001
         """
-
-        return 0.5 + np.random.rand() / 2
+        start = start_opts[key]
+        if key in kwargs["end_opts"]:
+            end = kwargs["end_opts"][key]
+        else:
+            end = start + 1 
+        return  start + (end-start)*np.random.rand()
 
     def nonlin_mod(self, start_opts, key, **kwargs):
-        """Non linear decreasing with modulation index
+        """Non linear decreasing/increasing with modulation index
 
         Reference:  A. Chatterjee, P. Siarry, Nonlinear inertia weight variation for dynamic adaption
         in particle swarm optimization, Computer and Operations Research 33 (2006)
@@ -713,7 +717,7 @@ class OptionsHandler(HandlerMixin):
                 "c2": 1 * start_opts["c2"],
             }
             if "end_opts" in kwargs:
-                if key in kwargs["end_opts"].keys():
+                if key in kwargs["end_opts"]:
                     end_opts[key] = kwargs["end_opts"][key]
 
             start = start_opts[key]
