@@ -1,18 +1,20 @@
 """
 Handlers
 
-This module provides Handler classes for the position as well as the velocity
-of particles. This is necessary when boundary conditions are imposed on the PSO
-algorithm. Particles that do not stay inside these boundary conditions have to
+This module provides Handler classes for the position, velocity and time varying acceleration coefficients
+of particles. Particles that do not stay inside these boundary conditions have to
 be handled by either adjusting their position after they left the bounded
 search space or adjusting their velocity when it would position them outside
 the search space. In particular, this approach is important if the optimium of
 a function is near the boundaries.
-For the following documentation let :math:`x_{i, t, d}` be the :math:`d` th
+For the following documentation let :math:`x_{i, t, d} \ ` be the :math:`d` th
 coordinate of the particle :math:`i` 's position vector at the time :math:`t`,
 :math:`lb` the vector of the lower boundaries and :math:`ub` the vector of the
 upper boundaries.
-The algorithms in this module are adapted from [SH2010]
+The :class:`OptionsHandler` class provide methods which allow faster and better convergence by varying 
+the options :math:`w, c_{1}, c_{2}` with various strategies.
+
+The algorithms in the :class:`BoundaryHandler` and :class:`VelocityHandler` classes are adapted from [SH2010]
 
 [SH2010] Sabine Helwig, "Particle Swarms for Constrained Optimization",
 PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
@@ -554,12 +556,12 @@ class OptionsHandler(HandlerMixin):
 
         * exp_decay:
             Decreases the parameter exponentially between limits.
-
+    
         * lin_variation:
             Decreases/increases the parameter linearly between limits.
 
         * random:
-            takes a uniform random value between (0.5,1)
+            takes a uniform random value between limits
 
         * nonlin_mod:
             Decreases/increases the parameter between limits according to a nonlinear modulation index .
@@ -577,13 +579,19 @@ class OptionsHandler(HandlerMixin):
             oh = OptionsHandler(strategy={ "w":"exp_decay", "c1":"nonlin_mod","c2":"lin_variation"})
 
             for i in range(iters):
-                # some initial stuff
+                # initial operations for global and local best positions
                 new_options = oh(default_options, iternow=i, itermax=iters, end_opts={"c1":0.5, "c2":2.5, "w":0.4})
                 # more updates using new_options
 
-        By passing the handler, the :func:`compute_position()` function now has
-        the ability to reset the particles by calling the :code:`BoundaryHandler`
-        inside.
+        .. note::
+            As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending 
+            options and other arguments for each strategy in all of the handlers on this page.
+
+        A more comprehensive tutorial is also present `here`_ for interested users.
+        
+        .. _here: https://pyswarms.readthedocs.io/en/latest/examples/tutorials/options_handler.html
+        
+        
 
         Attributes
         ----------
@@ -615,11 +623,18 @@ class OptionsHandler(HandlerMixin):
             return return_opts
 
     def exp_decay(self, start_opts, opt, **kwargs):
-        """Exponentially decreasing between start and end
+        """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
+        The velocity is adjusted such that the following equation holds:
+        
+        Defaults: :math:`d_{1}=2, d_{2}=7, w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
 
+        .. math::
+                w = (w^{start}-w^{end}-d_{1})exp(\\frac{1}{1+ \\frac{d_{2}.iter}{iter^{max}}})
+                
         Ref: Li, H.-R., & Gao, Y.-L. (2009). Particle Swarm Optimization Algorithm with Exponent
         Decreasing Inertia Weight and Stochastic Mutation. 2009 Second International Conference
         on Information and Computing Science. doi:10.1109/icic.2009.24
+
         """
 
         try:
@@ -654,11 +669,16 @@ class OptionsHandler(HandlerMixin):
 
     def lin_variation(self, start_opts, opt, **kwargs):
         """
-        Linearly decreasing/increasing between start and end
+        Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
+        
+        Defaults: :math:`w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
+        
+        .. math::
+                w = w^{end}+(w^{start}-w^{end}) \\frac{iter^{max}-iter}{iter^{max}}
 
-        Ref: Shi Y, Eberhart R.: Empirical study of particle swarm optimization Proc
-        of Congress on Computational Intelligence,Washington DC ,USA
-        1999, pp.1945 - 1950.
+        Ref: Xin, Jianbin, Guimin Chen, and Yubao Hai. "A particle swarm optimizer with 
+        multi-stage linearly-decreasing inertia weight." 2009 International joint conference 
+        on computational sciences and optimization. Vol. 1. IEEE, 2009.
         """
 
         try:
@@ -685,11 +705,15 @@ class OptionsHandler(HandlerMixin):
             return new_val
 
     def random(self, start_opts, opt, **kwargs):
-        """Random value between start option and end option
+        """Random value between :math:`w^{start}` and :math:`w^{end}`
 
-        Reference: ] R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
+        .. math::
+                w = start + (end-start)*rand(0,1)
+        
+        Ref: R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
         swarms, in: Congress on Evolutionary Computation, Korea, 2001
         """
+        
         start = start_opts[opt]
         if opt in kwargs["end_opts"]:
             end = kwargs["end_opts"][opt]
@@ -698,9 +722,16 @@ class OptionsHandler(HandlerMixin):
         return start + (end - start) * np.random.rand()
 
     def nonlin_mod(self, start_opts, opt, **kwargs):
-        """Non linear decreasing/increasing with modulation index
+        """Non linear decreasing/increasing with modulation index(n).
+        The linear strategy can be made to converge faster without compromising
+        on exploration with the use of this index which makes the equation non-linear.
 
-        Reference:  A. Chatterjee, P. Siarry, Nonlinear inertia weight variation for dynamic adaption
+        Defaults: :math:`n=1.2`
+
+        .. math::
+                w = w^{end}+(w^{start}-w^{end}) \\frac{(iter^{max}-iter)^{n}}{(iter^{max})^{n}}
+
+        Ref:  A. Chatterjee, P. Siarry, Nonlinear inertia weight variation for dynamic adaption
         in particle swarm optimization, Computer and Operations Research 33 (2006)
         859–871, March 2006
         """
