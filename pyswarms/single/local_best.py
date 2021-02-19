@@ -93,7 +93,7 @@ class LocalBestPSO(SwarmOptimizer):
         vh_strategy="unmodified",
         center=1.00,
         ftol=-np.inf,
-        ftol_iter=1,
+        ftol_iter=50,
         init_pos=None,
         static=False,
     ):
@@ -122,12 +122,15 @@ class LocalBestPSO(SwarmOptimizer):
         center : list, optional
             an array of size :code:`dimensions`
         ftol : float
-            relative error in objective_func(best_pos) acceptable for
-            convergence. Default is :code:`-np.inf`
+            relative error in objective_func(best_pos) acceptable for convergence.
+            To deactivate it in order to process all iterations, use any negative value.
+            Deactivating ftol also disables ftol_iter.
+            Default is :code: `-np.inf` to disable ftol
         ftol_iter : int
-            number of iterations over which the relative error in
-            objective_func(best_pos) is acceptable for convergence.
-            Default is :code:`1`
+            number of consecutive iterations over which the relative change in
+            objective_func(best_pos) is stalled or less than ftol. It works
+            when ftol is greater than zero (e.g. 1e-6)
+            Default is :code:`50`
         options : dict with keys :code:`{'c1', 'c2', 'w', 'k', 'p'}`
             a dictionary containing the parameters for the specific
             optimization technique
@@ -181,7 +184,7 @@ class LocalBestPSO(SwarmOptimizer):
         self.name = __name__
 
     def optimize(
-        self, objective_func, iters, n_processes=None, verbose=True, **kwargs
+        self, objective_func, iters=1000, n_processes=None, verbose=True, **kwargs
     ):
         """Optimize the swarm for a number of iterations
 
@@ -193,7 +196,7 @@ class LocalBestPSO(SwarmOptimizer):
         objective_func : callable
             objective function to be evaluated
         iters : int
-            number of iterations
+            number of iterations. Default is :code:`1000`
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
         verbose : bool
@@ -257,10 +260,8 @@ class LocalBestPSO(SwarmOptimizer):
                 np.abs(self.swarm.best_cost - best_cost_yet_found)
                 < relative_measure
             )
-            if i < self.ftol_iter:
-                ftol_history.append(delta)
-            else:
-                ftol_history.append(delta)
+            ftol_history.append(delta)
+            if i > self.ftol_iter:
                 if all(ftol_history):
                     break
             # Perform options update
