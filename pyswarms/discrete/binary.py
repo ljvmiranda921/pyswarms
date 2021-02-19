@@ -77,7 +77,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         velocity_clamp=None,
         vh_strategy="unmodified",
         ftol=-np.inf,
-        ftol_iter=1,
+        ftol_iter=50,
     ):
         """Initialize the swarm
 
@@ -114,12 +114,15 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             a strategy for the handling of the velocity of out-of-bounds particles.
             Only the "unmodified" and the "adjust" strategies are allowed.
         ftol : float
-            relative error in objective_func(best_pos) acceptable for
-            convergence
+            relative error in objective_func(best_pos) acceptable for convergence.
+            To deactivate it in order to process all iterations, use any negative value.
+            Deactivating ftol also disables ftol_iter.
+            Default is :code: `-np.inf` to disable ftol
         ftol_iter : int
-            number of iterations over which the relative error in
-            objective_func(best_pos) is acceptable for convergence.
-            Default is :code:`1`
+            number of consecutive iterations over which the relative change in
+            objective_func(best_pos) is stalled or less than ftol. It works
+            when ftol is greater than zero (e.g. 1e-6)
+            Default is :code:`50`
         """
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
@@ -144,7 +147,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         self.name = __name__
 
     def optimize(
-        self, objective_func, iters, n_processes=None, verbose=True, **kwargs
+        self, objective_func, iters=1000, n_processes=None, verbose=True, **kwargs
     ):
         """Optimize the swarm for a number of iterations
 
@@ -156,7 +159,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         objective_func : function
             objective function to be evaluated
         iters : int
-            number of iterations
+            number of iterations. Default is :code:`1000`
         n_processes : int, optional
             number of processes to use for parallel particle evaluation
             Defaut is None with no parallelization.
@@ -221,10 +224,8 @@ class BinaryPSO(DiscreteSwarmOptimizer):
                 np.abs(self.swarm.best_cost - best_cost_yet_found)
                 < relative_measure
             )
-            if i < self.ftol_iter:
-                ftol_history.append(delta)
-            else:
-                ftol_history.append(delta)
+            ftol_history.append(delta)
+            if i > self.ftol_iter:
                 if all(ftol_history):
                     break
             # Perform position velocity update
