@@ -49,7 +49,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         velocity_clamp=None,
         init_pos=None,
         ftol=-np.inf,
-        ftol_iter=1,
+        ftol_iter=50,
     ):
         """Initialize the swarm.
 
@@ -81,13 +81,16 @@ class DiscreteSwarmOptimizer(abc.ABC):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        ftol : float, optional
-            relative error in objective_func(best_pos) acceptable for
-            convergence. Default is :code:`-np.inf`.
+        ftol : float
+            relative error in objective_func(best_pos) acceptable for convergence.
+            To deactivate it in order to process all iterations, use any negative value.
+            Deactivating ftol also disables ftol_iter.
+            Default is :code: `-np.inf` to disable ftol
         ftol_iter : int
-            number of iterations over which the relative error in
-            objective_func(best_pos) is acceptable for convergence.
-            Default is :code:`1`
+            number of consecutive iterations over which the relative change in
+            objective_func(best_pos) is stalled or less than ftol. It works
+            when ftol is greater than zero (e.g. 1e-6)
+            Default is :code:`50`
         options: dict
             a dictionary containing the parameters for a specific
             optimization technique
@@ -146,7 +149,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         self.velocity_history.append(hist.velocity)
 
     @abc.abstractmethod
-    def optimize(self, objective_func, iters, n_processes=None, **kwargs):
+    def optimize(self, objective_func, iters=1000, n_processes=None, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -158,7 +161,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         objective_func : callable
             objective function to be evaluated
         iters : int
-            number of iterations
+            number of iterations. Default is :code:`1000`
         n_processes : int
             number of processes to use for parallel particle evaluation
             Default is None with no parallelization
