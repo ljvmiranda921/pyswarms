@@ -55,6 +55,12 @@ $ cd pyswarms
 $ python setup.py install
 ```
 
+To install PySwarms on Fedora, use:
+
+```sh
+$ dnf install python3-pyswarms
+```
+
 ## Running in a Vagrant Box
 
 To run PySwarms in a Vagrant Box, install Vagrant by going to 
