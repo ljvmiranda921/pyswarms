@@ -374,6 +374,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "firefly-cpp",
+      "name": "firefly-cpp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1633361?v=4",
+      "profile": "http://www.iztok-jr-fister.eu/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
