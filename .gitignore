@@ -74,3 +74,6 @@ target/
 # Spyder project settings
 .spyderproject
 .spyproject
+
+# Test results should not be tracked
+junit/
