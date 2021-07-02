@@ -1,5 +1,5 @@
 alabaster==0.7.12
-attrs==18.1.0
+attrs==21.2.0
 babel==2.6.0
 backcall==0.1.0
 bleach==3.1.0
@@ -53,13 +53,13 @@ py==1.9.0
 pycodestyle==2.3.1
 pyflakes==1.6.0
 pygments==2.3.1
-pyparsing==2.3.1
+pyparsing==2.4.7
 pyrsistent==0.15.2
 pytest-cov==2.12.1
 pytest==6.2.4
-python-dateutil==2.7.5
+python-dateutil==2.8.1
 pytz==2018.9
-pyyaml==3.13
+pyyaml==5.4.1
 pyzmq==22.1.0
 requests==2.21.0
 scikit-learn==0.24.2
