@@ -4,7 +4,7 @@ from functools import wraps
 
 
 def cost(cost_func):
-    """A decorator for the cost function
+    """A decorator for the cost function.
 
     This decorator allows the creation of much simpler cost functions. Instead
     of writing a cost function that returns a shape of :code:`(n_particles, 0)`

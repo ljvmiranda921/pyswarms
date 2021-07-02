@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-A Star Network Topology
+A Star Network Topology.
 
 This class implements a star topology. In this topology,
 all particles are connected to one another. This social
@@ -29,7 +29,8 @@ class Star(Topology):
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, **kwargs):
-        """Update the global best using a star topology
+        """
+        Update the global best using a star topology.
 
         This method takes the current pbest_pos and pbest_cost, then returns
         the minimum cost and position from the matrix.
@@ -44,7 +45,9 @@ class Star(Topology):
             my_topology = Star()
 
             # Update best_cost and position
-            swarm.best_pos, swarm.best_cost = my_topology.compute_gbest(my_swarm)
+            swarm.best_pos, swarm.best_cost = my_topology.compute_gbest(
+                my_swarm
+            )
 
         Parameters
         ----------
@@ -86,7 +89,7 @@ class Star(Topology):
         vh=VelocityHandler(strategy="unmodified"),
         bounds=None,
     ):
-        """Compute the velocity matrix
+        """Compute the velocity matrix.
 
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
@@ -107,8 +110,9 @@ class Star(Topology):
 
             for i in range(iters):
                 # Inside the for-loop
-                my_swarm.velocity = my_topology.update_velocity(my_swarm, clamp, my_vh,
-                bounds)
+                my_swarm.velocity = my_topology.update_velocity(
+                    my_swarm, clamp, my_vh, bounds
+                )
 
         Parameters
         ----------
@@ -135,7 +139,8 @@ class Star(Topology):
     def compute_position(
         self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
     ):
-        """Update the position matrix
+        """
+        Update the position matrix.
 
         This method updates the position matrix given the current position and
         the velocity. If bounded, it waives updating the position.

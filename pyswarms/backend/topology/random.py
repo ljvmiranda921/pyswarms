@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-A Random Network Topology
+A Random Network Topology.
 
-This class implements a random topology. All particles are connected in a random fashion.
+This class implements a random topology. All particles are connected in a
+random fashion.
 """
 
 # Import standard library
@@ -22,7 +23,7 @@ from .base import Topology
 
 class Random(Topology):
     def __init__(self, static=False):
-        """Initializes the class
+        """Initialize the class.
 
         Parameters
         ----------
@@ -34,7 +35,7 @@ class Random(Topology):
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, k, **kwargs):
-        """Update the global best using a random neighborhood approach
+        """Update the global best using a random neighborhood approach.
 
         This uses random class from :code:`numpy` to give every particle k
         randomly distributed, non-equal neighbors. The resulting topology
@@ -43,7 +44,8 @@ class Random(Topology):
 
         [TSWJ2013] Qingjian Ni and Jianming Deng, “A New Logistic Dynamic
         Particle Swarm Optimization Algorithm Based on Random Topology,”
-        The Scientific World Journal, vol. 2013, Article ID 409167, 8 pages, 2013.
+        The Scientific World Journal, vol. 2013, Article ID 409167, 8 pages,
+        2013.
         https://doi.org/10.1155/2013/409167.
 
         Parameters
@@ -103,7 +105,7 @@ class Random(Topology):
         vh=VelocityHandler(strategy="unmodified"),
         bounds=None,
     ):
-        """Compute the velocity matrix
+        """Compute the velocity matrix.
 
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
@@ -124,8 +126,9 @@ class Random(Topology):
 
             for i in range(iters):
                 # Inside the for-loop
-                my_swarm.velocity = my_topology.update_velocity(my_swarm, clamp, my_vh,
-                bounds)
+                my_swarm.velocity = my_topology.update_velocity(
+                    my_swarm, clamp, my_vh, bounds
+                )
 
         Parameters
         ----------
@@ -152,7 +155,7 @@ class Random(Topology):
     def compute_position(
         self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
     ):
-        """Update the position matrix
+        """Update the position matrix.
 
         This method updates the position matrix given the current position and
         the velocity. If bounded, it waives updating the position.
@@ -176,7 +179,7 @@ class Random(Topology):
         return ops.compute_position(swarm, bounds, bh)
 
     def __compute_neighbors(self, swarm, k):
-        """Helper method to compute the adjacency matrix of the topology
+        """Help to compute the adjacency matrix of the topology.
 
         This method computes the adjacency matrix of the topology using
         the randomized algorithm proposed in [TSWJ2013]. The resulting
@@ -191,8 +194,9 @@ class Random(Topology):
             * neighbor_matrix : The matrix of randomly generated neighbors.
                                 This matrix is a matrix of shape
                                 :code:`(swarm.n_particles, k)`:
-                                with randomly generated elements. It is used
-                                to create connections in the :code:`adj_matrix`.
+                                with randomly generated elements.
+                                It is used to create connections in the
+                                :code:`adj_matrix`.
             * dist_matrix : The distance matrix computed with Dijkstra's
                             algorithm. It is used to determine where the
                             graph needs edges to change it to a connected
@@ -211,7 +215,6 @@ class Random(Topology):
         numpy.ndarray
             Adjacency matrix of the topology
         """
-
         adj_matrix = np.identity(swarm.n_particles, dtype=int)
 
         neighbor_matrix = np.array(

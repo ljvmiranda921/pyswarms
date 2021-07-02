@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-A Ring Network Topology
+A Ring Network Topology.
 
 This class implements a ring topology. In this topology,
 the particles are connected with their k nearest neighbors.
@@ -24,7 +24,7 @@ from .base import Topology
 
 class Ring(Topology):
     def __init__(self, static=False):
-        """Initializes the class
+        """Initialize the class.
 
         Parameters
         ----------
@@ -36,7 +36,7 @@ class Ring(Topology):
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, p, k, **kwargs):
-        """Update the global best using a ring-like neighborhood approach
+        """Update the global best using a ring-like neighborhood approach.
 
         This uses the cKDTree method from :code:`scipy` to obtain the nearest
         neighbors.
@@ -97,7 +97,7 @@ class Ring(Topology):
         vh=VelocityHandler(strategy="unmodified"),
         bounds=None,
     ):
-        """Compute the velocity matrix
+        """Compute the velocity matrix.
 
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
@@ -118,8 +118,9 @@ class Ring(Topology):
 
             for i in range(iters):
                 # Inside the for-loop
-                my_swarm.velocity = my_topology.update_velocity(my_swarm, clamp, my_vh,
-                bounds)
+                my_swarm.velocity = my_topology.update_velocity(
+                    my_swarm, clamp, my_vh, bounds
+                )
 
         Parameters
         ----------
@@ -146,7 +147,7 @@ class Ring(Topology):
     def compute_position(
         self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
     ):
-        """Update the position matrix
+        """Update the position matrix.
 
         This method updates the position matrix given the current position and
         the velocity. If bounded, it waives updating the position.

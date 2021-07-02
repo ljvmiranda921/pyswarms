@@ -87,7 +87,7 @@ class GlobalBestPSO(SwarmOptimizer):
         ftol_iter=1,
         init_pos=None,
     ):
-        """Initialize the swarm
+        """Initialize the swarm.
 
         Attributes
         ----------
@@ -117,7 +117,8 @@ class GlobalBestPSO(SwarmOptimizer):
             the second entry is the maximum velocity. It sets the limits for
             velocity clamping.
         vh_strategy : str
-            a strategy for the handling of the velocity of out-of-bounds particles.
+            a strategy for the handling of the velocity of out-of-bounds
+            particles.
         center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
@@ -159,7 +160,7 @@ class GlobalBestPSO(SwarmOptimizer):
     def optimize(
         self, objective_func, iters, n_processes=None, verbose=True, **kwargs
     ):
-        """Optimize the swarm for a number of iterations
+        """Optimize the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
         function :code:`f` for a number of iterations :code:`iter.`
@@ -171,9 +172,11 @@ class GlobalBestPSO(SwarmOptimizer):
         iters : int
             number of iterations
         n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
+            number of processes to use for parallel particle evaluation
+            (default: None = no parallelization)
         verbose : bool
-            enable or disable the logs and progress bar (default: True = enable logs)
+            enable or disable the logs and progress bar
+            (default: True = enable logs)
         kwargs : dict
             arguments for the objective function
 
@@ -182,7 +185,6 @@ class GlobalBestPSO(SwarmOptimizer):
         tuple
             the global best cost and the global best position.
         """
-
         # Apply verbosity
         if verbose:
             log_level = logging.INFO
@@ -206,11 +208,17 @@ class GlobalBestPSO(SwarmOptimizer):
         for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
             # Compute cost for current position and personal best
             # fmt: off
-            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=pool, **kwargs)
-            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
+            self.swarm.current_cost = compute_objective_function(
+                self.swarm, objective_func, pool=pool, **kwargs
+            )
+            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
+                self.swarm
+            )
             # Set best_cost_yet_found for ftol
             best_cost_yet_found = self.swarm.best_cost
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
+                self.swarm
+            )
             # fmt: on
             if verbose:
                 self.rep.hook(best_cost=self.swarm.best_cost)

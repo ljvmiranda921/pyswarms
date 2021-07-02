@@ -11,7 +11,7 @@ from tqdm import trange
 
 
 class Reporter(object):
-    """A Reporter object that abstracts various logging capabilities
+    """A Reporter object that abstracts various logging capabilities.
 
     To set-up a Reporter, simply perform the following tasks:
 
@@ -62,7 +62,7 @@ class Reporter(object):
     def __init__(
         self, log_path=None, config_path=None, logger=None, printer=None
     ):
-        """Initialize the reporter
+        """Initialize the reporter.
 
         Attributes
         ----------
@@ -118,7 +118,7 @@ class Reporter(object):
         self._setup_logger(config_path)
 
     def log(self, msg, lvl=logging.INFO, *args, **kwargs):
-        """Log a message within a set level
+        """Log a message within a set level.
 
         This method abstracts the logging.Logger.log() method. We use this
         method during major state changes, errors, or critical events during
@@ -139,7 +139,7 @@ class Reporter(object):
         self.logger.log(lvl, msg, *args, **kwargs)
 
     def print(self, msg, verbosity, threshold=0):
-        """Print a message into console
+        """Print a message into console.
 
         This method can be called during non-system calls or minor state
         changes. In practice, we call this method when reporting the cost
@@ -162,7 +162,7 @@ class Reporter(object):
             pass
 
     def _setup_logger(self, path=None):
-        """Set-up the logger with default values
+        """Set up the logger with default values.
 
         This method is called right after initializing the Reporter module.
         If no path is supplied, then it loads a default configuration.
@@ -184,11 +184,11 @@ class Reporter(object):
             self._load_defaults()
 
     def _load_defaults(self):
-        """Load default logging configuration"""
+        """Load default logging configuration."""
         logging.config.dictConfig(self._default_config)
 
     def pbar(self, iters, desc=None):
-        """Create a tqdm iterable
+        """Create a tqdm iterable.
 
         You can use this method to create progress bars. It uses a set
         of abstracted methods from tqdm:
@@ -218,7 +218,7 @@ class Reporter(object):
         return self.t
 
     def hook(self, *args, **kwargs):
-        """Set a hook on the progress bar
+        """Set a hook on the progress bar.
 
         Method for creating a postfix in tqdm. In practice we use this
         to report the best cost found during an iteration:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Base class for hyperparameter optimization search functions"""
+"""Base class for hyperparameter optimization search functions."""
 
 # Import from __future__
 from __future__ import absolute_import, print_function, with_statement
@@ -10,7 +10,7 @@ import operator as op
 
 class SearchBase(object):
     def assertions(self):
-        """Assertion method to check :code:`optimizer` input
+        """Check :code:`optimizer` input.
 
         Raises
         ------
@@ -34,7 +34,7 @@ class SearchBase(object):
         bounds=None,
         velocity_clamp=(0, 1),
     ):
-        """Initialize the Search
+        """Initialize the Search.
 
         Attributes
         ----------
@@ -75,7 +75,6 @@ class SearchBase(object):
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
         """
-
         # Assign attributes
         self.optimizer = optimizer
         self.n_particles = n_particles
@@ -89,11 +88,10 @@ class SearchBase(object):
         self.assertions()
 
     def generate_score(self, options):
-        """Generate score for optimizer's performance on objective function
+        """Generate score for optimizer's performance on objective function.
 
         Parameters
         ----------
-
         options: dict
             a dict with the following keys: {'c1', 'c2', 'w', 'k', 'p'}
         """
@@ -111,18 +109,17 @@ class SearchBase(object):
         return f.optimize(self.objective_func, self.iters)[0]
 
     def search(self, maximum=False):
-        """Compare optimizer's objective function performance scores
-        for all combinations of provided parameters
+        """Compare optimizer's objective function performance scores.
+
+        Apply for all combinations of provided parameters.
 
         Parameters
         ----------
-
         maximum: bool
             a bool defaulting to False, returning the minimum value for the
             objective function. If set to True, will return the maximum value
             for the objective function.
         """
-
         # Generate the grid of all hyperparameter value combinations
         grid = self.generate_grid()
 

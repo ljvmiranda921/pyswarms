@@ -1,7 +1,9 @@
 """
-The :mod:`pyswarms.single` module implements various techniques in
-continuous single-objective optimization. These require only one
-objective function that can be optimized in a continuous space.
+The :mod:`pyswarms.single` module brings various techniques in continuous
+single-objective optimization.
+
+These require only one objective function that can be optimized in a
+continuous space.
 
 .. note::
     PSO algorithms scale with the search space. This means that, by

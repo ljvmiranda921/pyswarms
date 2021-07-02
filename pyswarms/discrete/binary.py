@@ -22,7 +22,8 @@ determined by a kD-tree given a distance metric, similar to local-best
 PSO. The neighbours are computed for every iteration. However, this whole
 behavior can be modified into a global-best PSO by changing the nearest
 neighbours equal to the number of particles in the swarm. In this case,
-all particles see each other, and thus a global best particle can be established.
+all particles see each other, and thus a global best particle can be
+established.
 
 In addition, one notable change for binary PSO is that the position
 update rule is now decided upon by the following case expression:
@@ -79,7 +80,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         ftol=-np.inf,
         ftol_iter=1,
     ):
-        """Initialize the swarm
+        """Initialize the swarm.
 
         Attributes
         ----------
@@ -111,8 +112,9 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
         vh_strategy : String
-            a strategy for the handling of the velocity of out-of-bounds particles.
-            Only the "unmodified" and the "adjust" strategies are allowed.
+            a strategy for the handling of the velocity of out-of-bounds
+            particles. Only the "unmodified" and the "adjust" strategies are
+            allowed.
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
@@ -146,7 +148,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
     def optimize(
         self, objective_func, iters, n_processes=None, verbose=True, **kwargs
     ):
-        """Optimize the swarm for a number of iterations
+        """Optimize the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
         function :code:`f` for a number of iterations :code:`iter.`
@@ -161,7 +163,8 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             number of processes to use for parallel particle evaluation
             Defaut is None with no parallelization.
         verbose : bool
-            enable or disable the logs and progress bar (default: True = enable logs)
+            enable or disable the logs and progress bar
+            (default: True = enable logs)
         kwargs : dict
             arguments for objective function
 
@@ -208,6 +211,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
                 self.rep.hook(best_cost=self.swarm.best_cost)
             # Save to history
             hist = self.ToHistory(
+                cost=self.swarm.current_cost,
                 best_cost=self.swarm.best_cost,
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),
                 mean_neighbor_cost=np.mean(self.swarm.best_cost),
@@ -250,7 +254,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         return (final_best_cost, final_best_pos)
 
     def _compute_position(self, swarm):
-        """Update the position matrix of the swarm
+        """Update the position matrix of the swarm.
 
         This computes the next position in a binary swarm. It compares the
         sigmoid output of the velocity-matrix and compares it with a randomly
@@ -267,7 +271,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         ) * 1
 
     def _sigmoid(self, x):
-        """Helper method for the sigmoid function
+        """Help the sigmoid function.
 
         Parameters
         ----------

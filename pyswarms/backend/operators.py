@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Swarm Operation Backend
+Swarm Operation Backend.
 
 This module abstracts various operations in the swarm such as updating
 the personal best, finding neighbors, etc. You can use these methods
@@ -23,7 +23,7 @@ rep = Reporter(logger=logging.getLogger(__name__))
 
 
 def compute_pbest(swarm):
-    """Update the personal best score of a swarm instance
+    """Update the personal best score of a swarm instance.
 
     You can use this method to update your personal best positions.
 
@@ -55,7 +55,8 @@ def compute_pbest(swarm):
     Returns
     -------
     numpy.ndarray
-        New personal best positions of shape :code:`(n_particles, n_dimensions)`
+        New personal best positions of shape
+        :code:`(n_particles, n_dimensions)`
     numpy.ndarray
         New personal best costs of shape :code:`(n_particles,)`
     """
@@ -80,7 +81,7 @@ def compute_pbest(swarm):
 
 
 def compute_velocity(swarm, clamp, vh, bounds=None):
-    """Update the velocity matrix
+    """Update the velocity matrix.
 
     This method updates the velocity matrix using the best and current
     positions of the swarm. The velocity matrix is computed using the
@@ -99,7 +100,9 @@ def compute_velocity(swarm, clamp, vh, bounds=None):
 
         for i in range(iters):
             # Inside the for-loop
-            my_swarm.velocity = compute_velocity(my_swarm, clamp, my_vh, bounds)
+            my_swarm.velocity = compute_velocity(
+                my_swarm, clamp, my_vh, bounds
+            )
 
     Parameters
     ----------
@@ -158,7 +161,7 @@ def compute_velocity(swarm, clamp, vh, bounds=None):
 
 
 def compute_position(swarm, bounds, bh):
-    """Update the position matrix
+    """Update the position matrix.
 
     This method updates the position matrix given the current position and the
     velocity. If bounded, the positions are handled by a
@@ -211,7 +214,7 @@ def compute_position(swarm, bounds, bh):
 
 
 def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
-    """Evaluate particles using the objective function
+    """Evaluate particles using the objective function.
 
     This method evaluates each particle in the swarm according to the objective
     function passed.

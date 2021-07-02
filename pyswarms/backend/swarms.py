@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Swarm Class Backend
+Swarm Class Backend.
 
 This module implements a Swarm class that holds various attributes in
 the swarm such as position, velocity, options, etc. You can use this
@@ -16,18 +16,21 @@ from attr.validators import instance_of
 
 @attrs
 class Swarm(object):
-    """A Swarm Class
+    """
+    A Swarm Class.
 
     This class offers a generic swarm that can be used in most use-cases
     such as single-objective optimization, etc. It contains various attributes
     that are commonly-used in most swarm implementations.
 
     To initialize this class, **simply supply values for the position and
-    velocity matrix**. The other attributes are automatically filled. If you want to
-    initialize random values, take a look at:
+    velocity matrix**. The other attributes are automatically filled. If you
+    want to initialize random values, take a look at:
 
-    * :func:`pyswarms.backend.generators.generate_swarm`: for generating positions randomly.
-    * :func:`pyswarms.backend.generators.generate_velocity`: for generating velocities randomly.
+    * :func:`pyswarms.backend.generators.generate_swarm`:
+        for generating positions randomly.
+    * :func:`pyswarms.backend.generators.generate_velocity`:
+        for generating velocities randomly.
 
     If your swarm requires additional parameters (say c1, c2, and w in gbest
     PSO), simply pass them to the :code:`options` dictionary.
@@ -46,7 +49,8 @@ class Swarm(object):
         # Say, particle behavior is governed by parameters `foo` and `bar`
         my_options = {'foo': 0.4, 'bar': 0.6}
         # Initialize the swarm
-        my_swarm = Swarm(position=init_positions, velocity=init_velocities, options=my_options)
+        my_swarm = Swarm(position=init_positions, velocity=init_velocities,
+                         options=my_options)
 
     From there, you can now use all the methods in :mod:`pyswarms.backend`.
     Of course, the process above has been abstracted by the method
@@ -57,9 +61,11 @@ class Swarm(object):
     Attributes
     ----------
     position : numpy.ndarray
-        position-matrix at a given timestep of shape :code:`(n_particles, dimensions)`
+        position-matrix at a given timestep of shape
+        :code:`(n_particles, dimensions)`
     velocity : numpy.ndarray
-        velocity-matrix at a given timestep of shape :code:`(n_particles, dimensions)`
+        velocity-matrix at a given timestep of shape
+        :code:`(n_particles, dimensions)`
     n_particles : int
         number of particles in a swarm.
     dimensions : int
@@ -67,7 +73,8 @@ class Swarm(object):
     options : dict
         various options that govern a swarm's behavior.
     pbest_pos : numpy.ndarray
-        personal best positions of each particle of shape :code:`(n_particles, dimensions)`
+        personal best positions of each particle of shape
+        :code:`(n_particles, dimensions)`
         Default is `None`
     best_pos : numpy.ndarray
         best position found by the swarm of shape :code:`(dimensions, )` for
@@ -78,7 +85,8 @@ class Swarm(object):
     best_cost : float
         best cost found by the swarm, default is :obj:`numpy.inf`
     current_cost : numpy.ndarray
-        the current cost found by the swarm of shape :code:`(n_particles, dimensions)`
+        the current cost found by the swarm of shape
+        :code:`(n_particles, dimensions)`
     """
 
     # Required attributes

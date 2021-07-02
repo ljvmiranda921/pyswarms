@@ -1,7 +1,9 @@
 """
-The :code:`pyswarms.backend.topology` contains various topologies. They dictate
-the behavior of the particles and implement three methods:
-    - compute_best_particle(): gets the position and cost of the best particle   in the swarm
+The :code:`pyswarms.backend.topology` contains various topologies.
+
+They dictate the behavior of the particles and implement three methods:
+    - compute_best_particle(): gets the position and cost of the best particle
+    in the swarm
     - update_velocity(): updates the velocity-matrix depending on the topology.
     - update_position(): updates the position-matrix depending on the topology.
 """

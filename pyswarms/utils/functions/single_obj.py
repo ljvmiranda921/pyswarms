@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""single_obj.py: collection of single-objective functions
+"""single_obj.py: collection of single-objective functions.
 
 All objective functions :code:`obj_func()` must accept a
 :code:`(numpy.ndarray)` with shape :code:`(n_particles, dimensions)`.
@@ -157,7 +157,7 @@ def booth(x):
 
 
 def bukin6(x):
-    """Bukin N. 6 Objective Function
+    """Bukin N. 6 Objective Function.
 
     Only takes two dimensions and has a global minimum  of `0` at
     :code:`f([-10,1])`. Its coordinates are bounded by:
@@ -209,7 +209,8 @@ def crossintray(x):
     """Cross-in-tray objective function.
 
     Only takes two dimensions and has a four equal global minimums
-     of `-2.06261` at :code:`f([1.34941, -1.34941])`, :code:`f([1.34941, 1.34941])`,
+     of `-2.06261` at :code:`f([1.34941, -1.34941])`,
+     :code:`f([1.34941, 1.34941])`,
      :code:`f([-1.34941, 1.34941])`, and :code:`f([-1.34941, -1.34941])`.
     Its coordinates are bounded within :code:`[-10,10]`.
 
@@ -266,7 +267,8 @@ def easom(x):
     `-1` at :code:`f([pi, pi])`.
     Its coordinates are bounded within :code:`[-100,100]`.
 
-    Best visualized in the domain of :code:`[-5, 5]` and a range of :code:`[-1, 0.2]`.
+    Best visualized in the domain of :code:`[-5, 5]` and a range of
+    :code:`[-1, 0.2]`.
 
     Parameters
     ----------
@@ -360,7 +362,8 @@ def goldstein(x):
     Only takes two dimensions and has a global minimum at
     :code:`f([0,-1])`. Its domain is bounded between :code:`[-2, 2]`
 
-    Best visualized in the domain of :code:`[-1.3,1.3]` and range :code:`[-1,8000]`
+    Best visualized in the domain of :code:`[-1.3,1.3]` and range
+    :code:`[-1,8000]`
 
     Parameters
     ----------
@@ -420,7 +423,7 @@ def goldstein(x):
 
 
 def himmelblau(x):
-    """Himmelblau's  objective function
+    """Himmelblau's  objective function.
 
     Only takes two dimensions and has a four equal global minimums
      of zero at :code:`f([3.0,2.0])`, :code:`f([-2.805118,3.131312])`,
@@ -466,11 +469,12 @@ def himmelblau(x):
 
 
 def holdertable(x):
-    """Holder Table objective function
+    """Holder Table objective function.
 
     Only takes two dimensions and has a four equal global minimums
-     of `-19.2085` at :code:`f([8.05502, 9.66459])`, :code:`f([-8.05502, 9.66459])`,
-     :code:`f([8.05502, -9.66459])`, and :code:`f([-8.05502, -9.66459])`.
+     of `-19.2085` at :code:`f([8.05502, 9.66459])`,
+     :code:`f([-8.05502, 9.66459])`, :code:`f([8.05502, -9.66459])`, and
+     :code:`f([-8.05502, -9.66459])`.
     Its coordinates are bounded within :code:`[-10, 10]`.
 
     Best visualized with the full domain and a range of :code:`[-20, 0]`
@@ -516,7 +520,7 @@ def holdertable(x):
 
 
 def levi(x):
-    """Levi objective function
+    """Levi objective function.
 
     Only takes two dimensions and has a global minimum at
     :code:`f([1,1])`. Its coordinates are bounded within
@@ -565,7 +569,7 @@ def levi(x):
 
 
 def matyas(x):
-    """Matyas objective function
+    """Matyas objective function.
 
     Only takes two dimensions and has a global minimum at
     :code:`f([0,0])`. Its coordinates are bounded within
@@ -645,7 +649,6 @@ def rosenbrock(x):
     numpy.ndarray
         computed cost of size :code:`(n_particles, )`
     """
-
     r = np.sum(
         100 * (x.T[1:] - x.T[:-1] ** 2.0) ** 2 + (1 - x.T[:-1]) ** 2.0, axis=0
     )
@@ -654,7 +657,7 @@ def rosenbrock(x):
 
 
 def schaffer2(x):
-    """Schaffer N.2 objective function
+    """Schaffer N.2 objective function.
 
     Only takes two dimensions and has a global minimum at
     :code:`f([0,0])`. Its coordinates are bounded within
@@ -720,7 +723,7 @@ def sphere(x):
 
 
 def threehump(x):
-    """Three-hump camel objective function
+    """Three-hump camel objective function.
 
     Only takes two dimensions and has a global minimum of `0` at
     :code:`f([0, 0])`. Its coordinates are bounded within

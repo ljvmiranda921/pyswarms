@@ -126,7 +126,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         self.reset()
 
     def _populate_history(self, hist):
-        """Populate all history lists
+        """Populate all history lists.
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
         :code:`neighborhood_best` is expected to have a shape of
@@ -147,7 +147,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
 
     @abc.abstractmethod
     def optimize(self, objective_func, iters, n_processes=None, **kwargs):
-        """Optimize the swarm for a number of iterations
+        """Optimize the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
         function :code:`objective_func` for a number of iterations
@@ -173,7 +173,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         raise NotImplementedError("SwarmBase::optimize()")
 
     def reset(self):
-        """Reset the attributes of the optimizer
+        """Reset the attributes of the optimizer.
 
         All variables/atributes that will be re-initialized when this
         method is defined here. Note that this method

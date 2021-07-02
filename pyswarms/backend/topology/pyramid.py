@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-A Pyramid Network Topology
+A Pyramid Network Topology.
 
-This class implements a pyramid topology. In this topology, the particles are connected by N-dimensional simplices.
+This class implements a pyramid topology. In this topology, the particles are
+connected by N-dimensional simplices.
 """
 
 # Import standard library
@@ -21,7 +22,7 @@ from .base import Topology
 
 class Pyramid(Topology):
     def __init__(self, static=False):
-        """Initialize the class
+        """Initialize the class.
 
         Parameters
         ----------
@@ -33,7 +34,7 @@ class Pyramid(Topology):
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, **kwargs):
-        """Update the global best using a pyramid neighborhood approach
+        """Update the global best using a pyramid neighborhood approach.
 
         This topology uses the :code:`Delaunay` class from :code:`scipy`. To
         prevent precision errors in the Delaunay class, custom
@@ -43,8 +44,9 @@ class Pyramid(Topology):
         the simplicies consist of swarm particles. This method is adapted from
         the work of Lane et al.[SIS2008]
 
-        [SIS2008] J. Lane, A. Engelbrecht and J. Gain, "Particle swarm optimization with spatially
-        meaningful neighbours," 2008 IEEE Swarm Intelligence Symposium, St. Louis, MO, 2008,
+        [SIS2008] J. Lane, A. Engelbrecht and J. Gain, "Particle swarm
+        optimization with spatially meaningful neighbours," 2008 IEEE Swarm
+        Intelligence Symposium, St. Louis, MO, 2008,
         pp. 1-8. doi: 10.1109/SIS.2008.4668281
         [qhull] http://www.qhull.org/html/qh-optq.htm
 
@@ -61,7 +63,8 @@ class Pyramid(Topology):
             Best cost
         """
         try:
-            # If there are less than (swarm.dimensions + 1) particles they are all connected
+            # If there are less than (swarm.dimensions + 1) particles
+            # they are all connected
             if swarm.n_particles < swarm.dimensions + 1:
                 self.neighbor_idx = np.tile(
                     np.arange(swarm.n_particles), (swarm.n_particles, 1)
@@ -69,7 +72,8 @@ class Pyramid(Topology):
                 best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
                 best_cost = np.min(swarm.pbest_cost)
             else:
-                # Check if the topology is static or dynamic and assign neighbors
+                # Check if the topology is static or dynamic and assign
+                # neighbors
                 if (
                     self.static and self.neighbor_idx is None
                 ) or not self.static:
@@ -77,10 +81,11 @@ class Pyramid(Topology):
                         swarm.position, qhull_options="QJ0.001 Qbb Qc Qx"
                     )
                     indices, index_pointer = pyramid.vertex_neighbor_vertices
-                    # Insert all the neighbors for each particle in the idx array
+                    # Insert all the neighbors for each particle in the idx
+                    # array
                     self.neighbor_idx = np.array(
                         [
-                            index_pointer[indices[i] : indices[i + 1]]
+                            index_pointer[indices[i]: indices[i + 1]]
                             for i in range(swarm.n_particles)
                         ]
                     )
@@ -116,7 +121,7 @@ class Pyramid(Topology):
         vh=VelocityHandler(strategy="unmodified"),
         bounds=None,
     ):
-        """Compute the velocity matrix
+        """Compute the velocity matrix.
 
         This method updates the velocity matrix using the best and current
         positions of the swarm. The velocity matrix is computed using the
@@ -137,8 +142,9 @@ class Pyramid(Topology):
 
             for i in range(iters):
                 # Inside the for-loop
-                my_swarm.velocity = my_topology.update_velocity(my_swarm, clamp, my_vh,
-                bounds=bounds)
+                my_swarm.velocity = my_topology.update_velocity(
+                    my_swarm, clamp, my_vh, bounds=bounds
+                )
 
         Parameters
         ----------
@@ -165,7 +171,7 @@ class Pyramid(Topology):
     def compute_position(
         self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
     ):
-        """Update the position matrix
+        """Update the position matrix.
 
         This method updates the position matrix given the current position and
         the velocity. If bounded, it waives updating the position.

@@ -97,7 +97,7 @@ class LocalBestPSO(SwarmOptimizer):
         init_pos=None,
         static=False,
     ):
-        """Initialize the swarm
+        """Initialize the swarm.
 
         Attributes
         ----------
@@ -118,7 +118,8 @@ class LocalBestPSO(SwarmOptimizer):
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
         vh_strategy : str
-            a strategy for the handling of the velocity of out-of-bounds particles.
+            a strategy for the handling of the velocity of out-of-bounds
+            particles.
         center : list, optional
             an array of size :code:`dimensions`
         ftol : float
@@ -183,7 +184,7 @@ class LocalBestPSO(SwarmOptimizer):
     def optimize(
         self, objective_func, iters, n_processes=None, verbose=True, **kwargs
     ):
-        """Optimize the swarm for a number of iterations
+        """Optimize the swarm for a number of iterations.
 
         Performs the optimization to evaluate the objective
         function :code:`f` for a number of iterations :code:`iter.`
@@ -195,9 +196,11 @@ class LocalBestPSO(SwarmOptimizer):
         iters : int
             number of iterations
         n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
+            number of processes to use for parallel particle evaluation
+            (default: None = no parallelization)
         verbose : bool
-            enable or disable the logs and progress bar (default: True = enable logs)
+            enable or disable the logs and progress bar
+            (default: True = enable logs)
         kwargs : dict
             arguments for the objective function
 

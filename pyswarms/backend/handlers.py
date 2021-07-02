@@ -11,7 +11,7 @@ For the following documentation let :math:`x_{i, t, d} \ ` be the :math:`d` th
 coordinate of the particle :math:`i` 's position vector at the time :math:`t`,
 :math:`lb` the vector of the lower boundaries and :math:`ub` the vector of the
 upper boundaries.
-The :class:`OptionsHandler` class provide methods which allow faster and better convergence by varying 
+The :class:`OptionsHandler` class provide methods which allow faster and better convergence by varying
 the options :math:`w, c_{1}, c_{2}` with various strategies.
 
 The algorithms in the :class:`BoundaryHandler` and :class:`VelocityHandler` classes are adapted from [SH2010]
@@ -31,7 +31,7 @@ from ..utils.reporter import Reporter
 
 
 class HandlerMixin(object):
-    """A HandlerMixing class
+    """A HandlerMixing class.
 
     This class offers some basic functionality for the Handlers.
     """
@@ -44,7 +44,7 @@ class HandlerMixin(object):
         return result
 
     def _out_of_bounds(self, position, bounds):
-        """Helper method to find indices of out-of-bound positions
+        """Helper method to find indices of out-of-bound positions.
 
         This method finds the indices of the particles that are out-of-bound.
         """
@@ -54,7 +54,7 @@ class HandlerMixin(object):
         return (lower_than_bound, greater_than_bound)
 
     def _get_all_strategies(self):
-        """Helper method to automatically generate a dict of strategies"""
+        """Helper method to automatically generate a dict of strategies."""
         return {
             k: v
             for k, v in inspect.getmembers(self, predicate=inspect.isroutine)
@@ -64,7 +64,7 @@ class HandlerMixin(object):
 
 class BoundaryHandler(HandlerMixin):
     def __init__(self, strategy):
-        """A BoundaryHandler class
+        """A BoundaryHandler class.
 
         This class offers a way to handle boundary conditions. It contains
         methods to repair particle positions outside of the defined boundaries.
@@ -113,7 +113,7 @@ class BoundaryHandler(HandlerMixin):
         self.memory = None
 
     def __call__(self, position, bounds, **kwargs):
-        """Apply the selected strategy to the position-matrix given the bounds
+        """Apply the selected strategy to the position-matrix given the bounds.
 
         Parameters
         ----------
@@ -144,7 +144,7 @@ class BoundaryHandler(HandlerMixin):
             return new_position
 
     def nearest(self, position, bounds, **kwargs):
-        r"""Set position to nearest bound
+        r"""Set position to nearest bound.
 
         This method resets particles that exceed the bounds to the nearest
         available boundary. For every axis on which the coordiantes of the particle
@@ -169,7 +169,7 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def reflective(self, position, bounds, **kwargs):
-        r"""Reflect the particle at the boundary
+        r"""Reflect the particle at the boundary.
 
         This method reflects the particles that exceed the bounds at the
         respective boundary. This means that the amount that the component
@@ -215,7 +215,7 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def shrink(self, position, bounds, **kwargs):
-        r"""Set the particle to the boundary
+        r"""Set the particle to the boundary.
 
         This method resets particles that exceed the bounds to the intersection
         of its previous velocity and the boundary. This can be imagined as shrinking
@@ -283,7 +283,7 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def random(self, position, bounds, **kwargs):
-        """Set position to random location
+        """Set position to random location.
 
         This method resets particles that exeed the bounds to a random position
         inside the boundary conditions.
@@ -311,7 +311,7 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def intermediate(self, position, bounds, **kwargs):
-        r"""Set the particle to an intermediate position
+        r"""Set the particle to an intermediate position.
 
         This method resets particles that exceed the bounds to an intermediate
         position between the boundary and their earlier position. Namely, it changes
@@ -347,7 +347,7 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
     def periodic(self, position, bounds, **kwargs):
-        r"""Sets the particles a periodic fashion
+        r"""Sets the particles a periodic fashion.
 
         This method resets the particles that exeed the bounds by using the
         modulo function to cut down the position. This creates a virtual,
@@ -556,7 +556,7 @@ class OptionsHandler(HandlerMixin):
 
         * exp_decay:
             Decreases the parameter exponentially between limits.
-    
+
         * lin_variation:
             Decreases/increases the parameter linearly between limits.
 
@@ -584,14 +584,14 @@ class OptionsHandler(HandlerMixin):
                 # more updates using new_options
 
         .. note::
-            As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending 
+            As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending
             options and other arguments for each strategy in all of the handlers on this page.
 
         A more comprehensive tutorial is also present `here`_ for interested users.
-        
+
         .. _here: https://pyswarms.readthedocs.io/en/latest/examples/tutorials/options_handler.html
-        
-        
+
+
 
         Attributes
         ----------
@@ -625,12 +625,12 @@ class OptionsHandler(HandlerMixin):
     def exp_decay(self, start_opts, opt, **kwargs):
         """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
         The velocity is adjusted such that the following equation holds:
-        
+
         Defaults: :math:`d_{1}=2, d_{2}=7, w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
 
         .. math::
                 w = (w^{start}-w^{end}-d_{1})exp(\\frac{1}{1+ \\frac{d_{2}.iter}{iter^{max}}})
-                
+
         Ref: Li, H.-R., & Gao, Y.-L. (2009). Particle Swarm Optimization Algorithm with Exponent
         Decreasing Inertia Weight and Stochastic Mutation. 2009 Second International Conference
         on Information and Computing Science. doi:10.1109/icic.2009.24
@@ -670,14 +670,14 @@ class OptionsHandler(HandlerMixin):
     def lin_variation(self, start_opts, opt, **kwargs):
         """
         Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
-        
+
         Defaults: :math:`w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
-        
+
         .. math::
                 w = w^{end}+(w^{start}-w^{end}) \\frac{iter^{max}-iter}{iter^{max}}
 
-        Ref: Xin, Jianbin, Guimin Chen, and Yubao Hai. "A particle swarm optimizer with 
-        multi-stage linearly-decreasing inertia weight." 2009 International joint conference 
+        Ref: Xin, Jianbin, Guimin Chen, and Yubao Hai. "A particle swarm optimizer with
+        multi-stage linearly-decreasing inertia weight." 2009 International joint conference
         on computational sciences and optimization. Vol. 1. IEEE, 2009.
         """
 
@@ -709,11 +709,11 @@ class OptionsHandler(HandlerMixin):
 
         .. math::
                 w = start + (end-start)*rand(0,1)
-        
+
         Ref: R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
         swarms, in: Congress on Evolutionary Computation, Korea, 2001
         """
-        
+
         start = start_opts[opt]
         if opt in kwargs["end_opts"]:
             end = kwargs["end_opts"][opt]

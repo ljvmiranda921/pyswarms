@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Plot Formatters
+Plot Formatters.
 
 This module implements helpful classes to format your plots or create meshes.
 """
@@ -16,7 +16,7 @@ import multiprocessing as mp
 
 @attrs
 class Designer(object):
-    """Designer class for specifying a plot's formatting and design
+    """Designer class for specifying a plot's formatting and design.
 
     You can use this class for specifying design-related customizations to
     your plot. This can be passed in various functions found in the
@@ -80,7 +80,7 @@ class Designer(object):
 
 @attrs
 class Animator(object):
-    """Animator class for specifying animation behavior
+    """Animator class for specifying animation behavior.
 
     You can use this class to modify options on how the animation will be run
     in the :func:`pyswarms.utils.plotters.plot_contour` and
@@ -116,7 +116,7 @@ class Animator(object):
 
 @attrs
 class Mesher(object):
-    """Mesher class for plotting contours of objective functions
+    """Mesher class for plotting contours of objective functions.
 
     This class enables drawing a surface plot of a given objective function.
     You can customize how this plot is drawn with this class. Pass an instance
@@ -167,7 +167,7 @@ class Mesher(object):
     alpha = attrib(type=float, validator=instance_of(float), default=0.3)
 
     def compute_history_3d(self, pos_history, n_processes=None):
-        """Compute a 3D position matrix
+        """Compute a 3D position matrix.
 
         The first two columns are the 2D position in the x and y axes
         respectively, while the third column is the fitness on that given
@@ -179,7 +179,8 @@ class Mesher(object):
             Two-dimensional position matrix history of shape
             :code:`(iterations, n_particles, 2)`
         n_processes : int
-        number of processes to use for parallel mesh point calculation (default: None = no parallelization)
+        number of processes to use for parallel mesh point calculation
+        (default: None = no parallelization)
 
         Returns
         -------

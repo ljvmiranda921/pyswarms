@@ -24,7 +24,7 @@ rep = Reporter(logger=logging.getLogger(__name__))
 def generate_swarm(
     n_particles, dimensions, bounds=None, center=1.00, init_pos=None
 ):
-    """Generate a swarm
+    """Generate a swarm.
 
     Parameters
     ----------
@@ -86,7 +86,8 @@ def generate_swarm(
         rep.logger.exception(msg.format(dimensions))
         raise
     except TypeError:
-        msg = "generate_swarm() takes an int for n_particles and dimensions and an array for bounds"
+        msg = "generate_swarm() takes an int for n_particles and dimensions "
+        "and an array for bounds"
         rep.logger.exception(msg)
         raise
     else:
@@ -96,7 +97,7 @@ def generate_swarm(
 def generate_discrete_swarm(
     n_particles, dimensions, binary=False, init_pos=None
 ):
-    """Generate a discrete swarm
+    """Generate a discrete swarm.
 
     Parameters
     ----------
@@ -141,7 +142,8 @@ def generate_discrete_swarm(
         rep.logger.exception("Please check the size and value of dimensions")
         raise
     except TypeError:
-        msg = "generate_discrete_swarm() takes an int for n_particles and dimensions"
+        msg = "generate_discrete_swarm() takes an int for n_particles "
+        "and dimensions"
         rep.logger.exception(msg)
         raise
     else:
@@ -149,7 +151,7 @@ def generate_discrete_swarm(
 
 
 def generate_velocity(n_particles, dimensions, clamp=None):
-    """Initialize a velocity vector
+    """Initialize a velocity vector.
 
     Parameters
     ----------
@@ -177,7 +179,8 @@ def generate_velocity(n_particles, dimensions, clamp=None):
         rep.logger.exception(msg.format(len(clamp), dimensions))
         raise
     except TypeError:
-        msg = "generate_velocity() takes an int for n_particles and dimensions and an array for clamp"
+        msg = "generate_velocity() takes an int for n_particles and dimensions"
+        " and an array for clamp"
         rep.logger.exception(msg)
         raise
     else:
@@ -195,7 +198,7 @@ def create_swarm(
     init_pos=None,
     clamp=None,
 ):
-    """Abstract the generate_swarm() and generate_velocity() methods
+    """Abstract the generate_swarm() and generate_velocity() methods.
 
     Parameters
     ----------

@@ -40,8 +40,12 @@ from pyswarms.utils.search.base_search import SearchBase
 
 
 class GridSearch(SearchBase):
-    """Exhaustive search of optimal performance on selected objective function
-    over all combinations of specified hyperparameter values."""
+    """
+    Exhaustive search of optimal performance.
+
+    Operate on selected objective function over all combinations of specified
+    hyperparameter values.
+    """
 
     def __init__(
         self,
@@ -54,8 +58,7 @@ class GridSearch(SearchBase):
         bounds=None,
         velocity_clamp=(0, 1),
     ):
-        """Initialize the Search"""
-
+        """Initialize the Search."""
         # Assign attributes
         super(GridSearch, self).__init__(
             optimizer,
@@ -71,8 +74,7 @@ class GridSearch(SearchBase):
         self.assertions()
 
     def generate_grid(self):
-        """Generate the grid of all hyperparameter value combinations"""
-
+        """Generate the grid of all hyperparameter value combinations."""
         # Extract keys and values from options dictionary
         params = self.options.keys()
         items = [

@@ -43,12 +43,15 @@ from pyswarms.utils.search.base_search import SearchBase
 
 
 class RandomSearch(SearchBase):
-    """Search of optimal performance on selected objective function
-    over combinations of randomly selected hyperparameter values
-    within specified bounds for specified number of selection iterations."""
+    """
+    Search of optimal performance on selected objective function.
+
+    Operate over combinations of randomly selected hyperparameter values
+    within specified bounds for specified number of selection iterations.
+    """
 
     def assertions(self):
-        """Assertion method to check :code:`n_selection_iters` input
+        """Check assertion for :code:`n_selection_iters` input.
 
         Raises
         ------
@@ -75,14 +78,13 @@ class RandomSearch(SearchBase):
         bounds=None,
         velocity_clamp=(0, 1),
     ):
-        """Initialize the Search
+        """Initialize the Search.
 
         Attributes
         ----------
         n_selection_iters: int
             number of iterations of random parameter selection
         """
-
         # Assign n_selection_iters as attribute
         self.n_selection_iters = n_selection_iters
         # Assign attributes
@@ -100,8 +102,7 @@ class RandomSearch(SearchBase):
         self.assertions()
 
     def generate_grid(self):
-        """Generate the grid of hyperparameter value combinations"""
-
+        """Generate the grid of hyperparameter value combinations."""
         options = dict(self.options)
         params = {}
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Plotting tool for Optimizer Analysis
+Plotting tool for Optimizer Analysis.
 
 This module is built on top of :code:`matplotlib` to render quick and easy
 plots for your optimizer. It can plot the best cost for each iteration, and
@@ -84,8 +84,10 @@ rep = Reporter(logger=logging.getLogger(__name__))
 def plot_cost_history(
     cost_history, ax=None, title="Cost History", designer=None, **kwargs
 ):
-    """Create a simple line plot with the cost in the y-axis and
-    the iteration at the x-axis
+    """
+    Plot cost history as simple line.
+
+    The cost in the y-axis and the iteration at the x-axis
 
     Parameters
     ----------
@@ -150,7 +152,7 @@ def plot_contour(
     n_processes=None,
     **kwargs
 ):
-    """Draw a 2D contour map for particle trajectories
+    """Draw a 2D contour map for particle trajectories.
 
     Here, the space is represented as a flat plane. The contours indicate the
     elevation with respect to the objective function. This works best with
@@ -176,7 +178,8 @@ def plot_contour(
     animator : :obj:`pyswarms.utils.formatters.Animator`, optional
         Animator class for custom animation
     n_processes : int
-        number of processes to use for parallel mesh point calculation (default: None = no parallelization)
+        number of processes to use for parallel mesh point calculation
+        (default: None = no parallelization)
     **kwargs : dict
         Keyword arguments that are passed as a keyword argument to
         :obj:`matplotlib.axes.Axes` plotting function
@@ -187,7 +190,6 @@ def plot_contour(
         The drawn animation that can be saved to mp4 or other
         third-party tools
     """
-
     try:
         # If no Designer class supplied, use defaults
         if designer is None:
@@ -256,12 +258,13 @@ def plot_surface(
     n_processes=None,
     **kwargs
 ):
-    """Plot a swarm's trajectory in 3D
+    """Plot a swarm's trajectory in 3D.
 
     This is useful for plotting the swarm's 2-dimensional position with
     respect to the objective function. The value in the z-axis is the fitness
-    of the 2D particle when passed to the objective function. When preparing the
-    position history, make sure that the:
+    of the 2D particle when passed to the objective function.
+
+    When preparing the position history, make sure that the:
 
     * first column is the position in the x-axis,
     * second column is the position in the y-axis; and
@@ -280,7 +283,9 @@ def plot_surface(
 
         # Run optimizer
         options = {'c1':0.5, 'c2':0.3, 'w':0.9}
-        optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2, options)
+        optimizer = ps.single.GlobalBestPSO(
+            n_particles=10, dimensions=2, options
+        )
 
         # Prepare position history
         m = Mesher(func=sphere)
@@ -313,7 +318,8 @@ def plot_surface(
     animator : :obj:`pyswarms.utils.formatters.Animator`, optional
         Animator class for custom animation
     n_processes : int
-        number of processes to use for parallel mesh point calculation (default: None = no parallelization)
+        number of processes to use for parallel mesh point calculation
+        (default: None = no parallelization)
     **kwargs : dict
         Keyword arguments that are passed as a keyword argument to
         :class:`matplotlib.axes.Axes` plotting function
@@ -391,8 +397,10 @@ def plot_surface(
 
 
 def _animate(i, data, plot):
-    """Helper animation function that is called sequentially
-    :class:`matplotlib.animation.FuncAnimation`
+    """
+    Help making an animation.
+
+    It is called sequentially :class:`matplotlib.animation.FuncAnimation`
     """
     current_pos = data[i]
     if np.array(current_pos).shape[1] == 2:
@@ -403,7 +411,7 @@ def _animate(i, data, plot):
 
 
 def _mesh(mesher, n_processes=None):
-    """Helper function to make a mesh"""
+    """Help drawing a mesh."""
     xlim = mesher.limits[0]
     ylim = mesher.limits[1]
     x = np.arange(xlim[0], xlim[1], mesher.delta)

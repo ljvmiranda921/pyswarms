@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-A Von Neumann Network Topology
+A Von Neumann Network Topology.
 
 This class implements a Von Neumann topology.
 """
@@ -21,7 +21,7 @@ class VonNeumann(Ring):
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm, p, r, **kwargs):
-        """Updates the global best using a neighborhood approach
+        """Updates the global best using a neighborhood approach.
 
         The Von Neumann topology inherits from the Ring topology and uses
         the same approach to calculate the global best. The number of
@@ -51,7 +51,7 @@ class VonNeumann(Ring):
 
     @staticmethod
     def delannoy(d, r):
-        """Static helper method to compute Delannoy numbers
+        """Static helper method to compute Delannoy numbers.
 
         This method computes the number of neighbours of a Von Neumann
         topology, i.e. a Delannoy number, dependent on the range and the
