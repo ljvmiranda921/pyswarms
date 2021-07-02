@@ -70,3 +70,7 @@ target/
 
 # Vagrant folder
 .vagrant
+
+# Spyder project settings
+.spyderproject
+.spyproject
