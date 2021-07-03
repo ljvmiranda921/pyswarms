@@ -1,14 +1,14 @@
 -r requirements.in
 # Packaging
-bumpversion==0.5.3
-PyYAML==3.13 # pyup: ignore
-wheel==0.31.1
+bumpversion==0.6.0
+PyYAML==5.4.1 # pyup: ignore
+wheel==0.36.2
 # Tests
 pytest
 pytest-cov
-coverage==4.5.1
-flake8==3.5.0
-mock==2.0.0
+coverage==5.5
+flake8==3.9.2
+mock==4.0.3 # Unnecessary since it ships with unittest in standard library
 tox
 # Docs
 Sphinx

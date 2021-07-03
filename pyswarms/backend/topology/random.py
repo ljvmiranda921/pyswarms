@@ -71,7 +71,8 @@ class Random(Topology):
                     [
                         adj_matrix[i].nonzero()[0]
                         for i in range(swarm.n_particles)
-                    ]
+                    ],
+                    dtype=object
                 )
             idx_min = np.array(
                 [
