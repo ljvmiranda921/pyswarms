@@ -7,7 +7,7 @@ be handled by either adjusting their position after they left the bounded
 search space or adjusting their velocity when it would position them outside
 the search space. In particular, this approach is important if the optimium of
 a function is near the boundaries.
-For the following documentation let :math:`x_{i, t, d} \ ` be the :math:`d` th
+For the following documentation let :math:`x_{i, t, d} \\ ` be the :math:`d` th
 coordinate of the particle :math:`i` 's position vector at the time :math:`t`,
 :math:`lb` the vector of the lower boundaries and :math:`ub` the vector of the
 upper boundaries.
@@ -257,12 +257,12 @@ class BoundaryHandler(HandlerMixin):
             velocity = position - self.memory
             # Create a coefficient matrix
             sigma = np.tile(1.0, position.shape)
-            sigma[lower_than_bound] = (
-                lb[lower_than_bound[1]] - self.memory[lower_than_bound]
-            ) / velocity[lower_than_bound]
-            sigma[greater_than_bound] = (
-                ub[greater_than_bound[1]] - self.memory[greater_than_bound]
-            ) / velocity[greater_than_bound]
+            sigma[lower_than_bound] = (lb[lower_than_bound[1]]
+                                       - self.memory[lower_than_bound]
+                                       ) / velocity[lower_than_bound]
+            sigma[greater_than_bound] = (ub[greater_than_bound[1]]
+                                         - self.memory[greater_than_bound]
+                                         ) / velocity[greater_than_bound]
             min_sigma = np.amin(sigma, axis=1)
             new_pos = position
             new_pos[lower_than_bound[0]] = (

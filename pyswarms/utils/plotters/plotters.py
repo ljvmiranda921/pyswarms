@@ -234,7 +234,7 @@ def plot_contour(
         anim = animation.FuncAnimation(
             fig=fig,
             func=_animate,
-            frames=range(n_iters),
+            frames=n_iters,
             fargs=(pos_history, plot),
             interval=animator.interval,
             repeat=animator.repeat,
@@ -299,10 +299,6 @@ def plot_surface(
     pos_history : numpy.ndarray
         Position history of the swarm with shape
         :code:`(iteration, n_particles, 3)`
-    objective_func : callable
-        The objective function that takes a swarm of shape
-        :code:`(n_particles, 2)` and returns a fitness array
-        of :code:`(n_particles, )`
     canvas : (:obj:`matplotlib.figure.Figure`, :obj:`matplotlib.axes.Axes`),
         The (figure, axis) where all the events will be draw. If :code:`None`
         is supplied, then plot will be drawn to a fresh set of canvas.
@@ -352,7 +348,9 @@ def plot_surface(
             fig, ax = canvas
 
         # Initialize 3D-axis
-        ax = Axes3D(fig)
+        ax = Axes3D(fig, auto_add_to_figure=False)
+        fig.add_axes(ax)
+        # Or use fig.add_subplot(projection='3d')? (untested)
 
         n_iters = len(pos_history)
 
@@ -383,7 +381,7 @@ def plot_surface(
         anim = animation.FuncAnimation(
             fig=fig,
             func=_animate,
-            frames=range(n_iters),
+            frames=n_iters,
             fargs=(pos_history, plot),
             interval=animator.interval,
             repeat=animator.repeat,
