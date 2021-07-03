@@ -10,11 +10,11 @@ coverage==5.5
 cycler==0.10.0
 decorator==5.0.9
 defusedxml==0.7.1
-docutils==0.17.1
+docutils==0.16
 entrypoints==0.3
 flake8==3.9.2
 future==0.16.0
-idna==3.2
+idna==2.10
 imagesize==1.2.0
 iniconfig==1.1.1
 ipykernel==6.0.1
