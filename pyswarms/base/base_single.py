@@ -32,26 +32,61 @@ See Also
 # Import standard library
 import abc
 from collections import namedtuple
+from typing import Dict, List, NamedTuple, Optional, Tuple, Union
 
 # Import modules
 import numpy as np
 
-from ..backend import create_swarm
+from ..backend import Swarm, create_swarm
 
 
 class SwarmOptimizer(abc.ABC):
 
+    # dimension attributes
+    n_particles: int
+    dimensions: int
+
+    #
+    bounds: Union[Tuple[np.ndarray, np.ndarray], None]
+    velocity_clamp: Union[Tuple[float, float], None]
+    swarm_size: Tuple[int, int]
+    options: Dict[str, float]
+    center: Union[np.ndarray, float]
+
+    ftol: float
+    ftol_iter: int
+
+    init_pos: Union[np.ndarray, None]
+
+    swarm: Swarm
+
+    ToHistory = NamedTuple(
+        "ToHistory",
+        [
+            ("best_cost", float),
+            ("mean_pbest_cost", float),
+            ("mean_neighbor_cost", float),
+            ("position", np.ndarray),
+            ("velocity", np.ndarray),
+        ],
+    )
+    cost_history: List[float]
+    mean_pbest_history: List[float]
+    mean_neighbor_history: List[float]
+    pos_history: List[np.ndarray]
+    velocity_history: List[np.ndarray]
+
     def __init__(
         self,
-        n_particles,
-        dimensions,
-        options,
-        bounds=None,
-        velocity_clamp=None,
-        center=1.0,
-        ftol=-np.inf,
-        ftol_iter=1,
-        init_pos=None,
+        n_particles: int,
+        dimensions: int,
+        options: Dict[str, float],
+        bounds: Optional[Tuple[np.ndarray, np.ndarray]] = None,
+        velocity_clamp: Optional[Tuple[float, float]] = None,
+        center: Union[np.ndarray, float] = 1.0,
+        ftol: float = -np.inf,
+        ftol_iter: int = 1,
+        init_pos: Optional[np.ndarray] = None,
     ):
         """Initialize the swarm
 
@@ -123,7 +158,7 @@ class SwarmOptimizer(abc.ABC):
         # Initialize resettable attributes
         self.reset()
 
-    def _populate_history(self, hist):
+    def _populate_history(self, hist: "ToHistory"):
         """Populate all history lists
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
