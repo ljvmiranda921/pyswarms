@@ -32,7 +32,7 @@ See Also
 # Import standard library
 import abc
 from collections import namedtuple
-from typing import Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 # Import modules
 import numpy as np
@@ -140,7 +140,8 @@ class SwarmOptimizer(abc.ABC):
             assert ftol_iter > 0 and isinstance(ftol_iter, int)
         except AssertionError:
             raise AssertionError(
-                "ftol_iter expects an integer value greater than 0")
+                "ftol_iter expects an integer value greater than 0"
+            )
 
         self.ftol_iter = ftol_iter
         self.init_pos = init_pos
@@ -179,7 +180,13 @@ class SwarmOptimizer(abc.ABC):
         self.velocity_history.append(hist.velocity)
 
     @abc.abstractmethod
-    def optimize(self, objective_func, iters, n_processes=None, **kwargs):
+    def optimize(
+        self,
+        objective_func: Callable,
+        iters: int,
+        n_processes: Optional[int] = None,
+        **kwargs
+    ):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
