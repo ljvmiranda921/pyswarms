@@ -14,7 +14,7 @@ In addition, this class must interface with any class found in the
 # Import standard library
 import abc
 import logging
-from typing import Tuple
+from typing import Tuple, Union
 
 import numpy as np
 
@@ -23,7 +23,12 @@ from .. import Swarm
 
 
 class Topology(abc.ABC):
-    def __init__(self, static, **kwargs):
+
+    rep: Reporter
+    static: bool
+    neighbor_idx: Union[np.ndarray, None]
+
+    def __init__(self, static: bool, **kwargs):
         """Initializes the class"""
 
         # Initialize logger
