@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 Base class for Topologies
 
@@ -15,11 +14,16 @@ In addition, this class must interface with any class found in the
 # Import standard library
 import abc
 import logging
+from typing import Tuple
+
+import numpy as np
 
 from ...utils.reporter import Reporter
+from .. import Swarm
 
 
 class Topology(abc.ABC):
+
     def __init__(self, static, **kwargs):
         """Initializes the class"""
 
@@ -38,17 +42,17 @@ class Topology(abc.ABC):
             )
 
     @abc.abstractmethod
-    def compute_gbest(self, swarm):
+    def compute_gbest(self, swarm: Swarm) -> Tuple[np.ndarray, float]:
         """Compute the best particle of the swarm and return the cost and
         position"""
         raise NotImplementedError("Topology::compute_gbest()")
 
     @abc.abstractmethod
-    def compute_position(self, swarm):
+    def compute_position(self, swarm: Swarm) -> np.ndarray:
         """Update the swarm's position-matrix"""
         raise NotImplementedError("Topology::compute_position()")
 
     @abc.abstractmethod
-    def compute_velocity(self, swarm):
+    def compute_velocity(self, swarm: Swarm) -> np.ndarray:
         """Update the swarm's velocity-matrix"""
         raise NotImplementedError("Topology::compute_velocity()")
