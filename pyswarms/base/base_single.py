@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 r"""
 Base class for single-objective Particle Swarm Optimization
 implementations.
@@ -41,6 +40,7 @@ from ..backend import create_swarm
 
 
 class SwarmOptimizer(abc.ABC):
+
     def __init__(
         self,
         n_particles,
@@ -80,8 +80,9 @@ class SwarmOptimizer(abc.ABC):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        center : list, optional
-            an array of size :code:`dimensions`
+        center : numpy.ndarray or float, optional
+            controls the mean or center whenever the swarm is generated randomly.
+            Default is :code:`1`
         ftol : float, optional
             relative error in objective_func(best_pos) acceptable for
             convergence. Default is :code:`-np.inf`.
@@ -104,8 +105,7 @@ class SwarmOptimizer(abc.ABC):
             assert ftol_iter > 0 and isinstance(ftol_iter, int)
         except AssertionError:
             raise AssertionError(
-                "ftol_iter expects an integer value greater than 0"
-            )
+                "ftol_iter expects an integer value greater than 0")
 
         self.ftol_iter = ftol_iter
         self.init_pos = init_pos
