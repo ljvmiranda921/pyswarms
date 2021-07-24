@@ -23,7 +23,6 @@ from .. import Swarm
 
 
 class Topology(abc.ABC):
-
     def __init__(self, static, **kwargs):
         """Initializes the class"""
 

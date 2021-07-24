@@ -21,13 +21,15 @@ from .swarms import Swarm
 rep = Reporter(logger=logging.getLogger(__name__))
 
 
-def generate_swarm(n_particles: int,
-                   dimensions: int,
-                   bounds: Optional[Union[Tuple[np.ndarray, np.ndarray],
-                                          Tuple[List[float],
-                                                List[float]]]] = None,
-                   center: Union[np.ndarray, float] = 1.00,
-                   init_pos: Optional[np.ndarray] = None):
+def generate_swarm(
+    n_particles: int,
+    dimensions: int,
+    bounds: Optional[
+        Union[Tuple[np.ndarray, np.ndarray], Tuple[List[float], List[float]]]
+    ] = None,
+    center: Union[np.ndarray, float] = 1.00,
+    init_pos: Optional[np.ndarray] = None,
+):
     """Generate a swarm
 
     Parameters
@@ -65,23 +67,26 @@ def generate_swarm(n_particles: int,
         if (init_pos is not None) and (bounds is None):
             pos = init_pos
         elif (init_pos is not None) and (bounds is not None):
-            if not (np.all(bounds[0] <= init_pos) and
-                    np.all(init_pos <= bounds[1])):
+            if not (
+                np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])
+            ):
                 raise ValueError("User-defined init_pos is out of bounds.")
             pos = init_pos
         elif (init_pos is None) and (bounds is None):
             pos = center * np.random.uniform(
-                low=0.0, high=1.0, size=(n_particles, dimensions))
+                low=0.0, high=1.0, size=(n_particles, dimensions)
+            )
         else:
             lb, ub = bounds
-            min_bounds = np.repeat(np.array(lb)[np.newaxis, :],
-                                   n_particles,
-                                   axis=0)
-            max_bounds = np.repeat(np.array(ub)[np.newaxis, :],
-                                   n_particles,
-                                   axis=0)
+            min_bounds = np.repeat(
+                np.array(lb)[np.newaxis, :], n_particles, axis=0
+            )
+            max_bounds = np.repeat(
+                np.array(ub)[np.newaxis, :], n_particles, axis=0
+            )
             pos = center * np.random.uniform(
-                low=min_bounds, high=max_bounds, size=(n_particles, dimensions))
+                low=min_bounds, high=max_bounds, size=(n_particles, dimensions)
+            )
     except ValueError:
         msg = "Bounds and/or init_pos should be of size ({},)"
         rep.logger.exception(msg.format(dimensions))
@@ -95,10 +100,11 @@ def generate_swarm(n_particles: int,
 
 
 def generate_discrete_swarm(
-        n_particles: int,
-        dimensions: int,
-        binary: bool = False,
-        init_pos: Optional[np.ndarray] = None) -> np.ndarray:
+    n_particles: int,
+    dimensions: int,
+    binary: bool = False,
+    init_pos: Optional[np.ndarray] = None,
+) -> np.ndarray:
     """Generate a discrete swarm
 
     Parameters
@@ -137,8 +143,9 @@ def generate_discrete_swarm(
         elif (init_pos is None) and binary:
             pos = np.random.randint(2, size=(n_particles, dimensions))
         else:
-            pos = np.random.random_sample(size=(n_particles,
-                                                dimensions)).argsort(axis=1)
+            pos = np.random.random_sample(
+                size=(n_particles, dimensions)
+            ).argsort(axis=1)
     except ValueError:
         rep.logger.exception("Please check the size and value of dimensions")
         raise
@@ -151,9 +158,10 @@ def generate_discrete_swarm(
 
 
 def generate_velocity(
-        n_particles: int,
-        dimensions: int,
-        clamp: Optional[Tuple[float, float]] = None) -> np.ndarray:
+    n_particles: int,
+    dimensions: int,
+    clamp: Optional[Tuple[float, float]] = None,
+) -> np.ndarray:
     """Initialize a velocity vector
 
     Parameters
@@ -175,7 +183,8 @@ def generate_velocity(
     try:
         min_velocity, max_velocity = (0, 1) if clamp is None else clamp
         velocity = (max_velocity - min_velocity) * np.random.random_sample(
-            size=(n_particles, dimensions)) + min_velocity
+            size=(n_particles, dimensions)
+        ) + min_velocity
     except ValueError:
         msg = "Please check clamp shape: {} != {}"
         rep.logger.exception(msg.format(len(clamp), dimensions))
@@ -194,8 +203,9 @@ def create_swarm(
     discrete: bool = False,
     binary: bool = False,
     options: Dict = {},
-    bounds: Optional[Union[Tuple[np.ndarray, np.ndarray],
-                           Tuple[List[float], List[float]]]] = None,
+    bounds: Optional[
+        Union[Tuple[np.ndarray, np.ndarray], Tuple[List[float], List[float]]]
+    ] = None,
     center: Union[np.ndarray, float] = 1.0,
     init_pos: Optional[np.ndarray] = None,
     clamp: Optional[Tuple[float, float]] = None,
@@ -235,10 +245,9 @@ def create_swarm(
         a Swarm class
     """
     if discrete:
-        position = generate_discrete_swarm(n_particles,
-                                           dimensions,
-                                           binary=binary,
-                                           init_pos=init_pos)
+        position = generate_discrete_swarm(
+            n_particles, dimensions, binary=binary, init_pos=init_pos
+        )
     else:
         position = generate_swarm(
             n_particles,

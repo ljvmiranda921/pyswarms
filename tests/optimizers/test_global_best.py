@@ -31,7 +31,7 @@ class TestGlobalBestOptimizer(ABCTestOptimizer):
         return opt
 
     def test_global_correct_pos(self, options):
-        """ Test to check global optimiser returns the correct position corresponding to the best cost """
+        """Test to check global optimiser returns the correct position corresponding to the best cost"""
         opt = GlobalBestPSO(n_particles=10, dimensions=2, options=options)
         cost, pos = opt.optimize(sphere, iters=5)
         # find best pos from history
