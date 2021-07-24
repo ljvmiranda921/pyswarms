@@ -10,6 +10,7 @@ here to dictate how a swarm is initialized for your custom PSO.
 
 # Import standard library
 import logging
+from typing import Dict, List, Optional, Tuple, Union
 
 # Import modules
 import numpy as np
@@ -20,11 +21,13 @@ from .swarms import Swarm
 rep = Reporter(logger=logging.getLogger(__name__))
 
 
-def generate_swarm(n_particles,
-                   dimensions,
-                   bounds=None,
-                   center=1.00,
-                   init_pos=None):
+def generate_swarm(n_particles: int,
+                   dimensions: int,
+                   bounds: Optional[Union[Tuple[np.ndarray, np.ndarray],
+                                          Tuple[List[float],
+                                                List[float]]]] = None,
+                   center: Union[np.ndarray, float] = 1.00,
+                   init_pos: Optional[np.ndarray] = None):
     """Generate a swarm
 
     Parameters
@@ -91,10 +94,11 @@ def generate_swarm(n_particles,
         return pos
 
 
-def generate_discrete_swarm(n_particles,
-                            dimensions,
-                            binary=False,
-                            init_pos=None):
+def generate_discrete_swarm(
+        n_particles: int,
+        dimensions: int,
+        binary: bool = False,
+        init_pos: Optional[np.ndarray] = None) -> np.ndarray:
     """Generate a discrete swarm
 
     Parameters
@@ -146,7 +150,10 @@ def generate_discrete_swarm(n_particles,
         return pos
 
 
-def generate_velocity(n_particles, dimensions, clamp=None):
+def generate_velocity(
+        n_particles: int,
+        dimensions: int,
+        clamp: Optional[Tuple[float, float]] = None) -> np.ndarray:
     """Initialize a velocity vector
 
     Parameters
@@ -182,16 +189,17 @@ def generate_velocity(n_particles, dimensions, clamp=None):
 
 
 def create_swarm(
-    n_particles,
-    dimensions,
-    discrete=False,
-    binary=False,
-    options={},
-    bounds=None,
-    center=1.0,
-    init_pos=None,
-    clamp=None,
-):
+    n_particles: int,
+    dimensions: int,
+    discrete: bool = False,
+    binary: bool = False,
+    options: Dict = {},
+    bounds: Optional[Union[Tuple[np.ndarray, np.ndarray],
+                           Tuple[List[float], List[float]]]] = None,
+    center: Union[np.ndarray, float] = 1.0,
+    init_pos: Optional[np.ndarray] = None,
+    clamp: Optional[Tuple[float, float]] = None,
+) -> Swarm:
     """Abstract the generate_swarm() and generate_velocity() methods
 
     Parameters
