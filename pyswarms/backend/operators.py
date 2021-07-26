@@ -60,16 +60,26 @@ def compute_pbest(swarm):
         New personal best costs of shape :code:`(n_particles,)`
     """
     try:
-        # Infer dimensions from positions
-        dimensions = swarm.dimensions
-        # Create a 1-D and 2-D mask based from comparisons
-        mask_cost = swarm.current_cost < swarm.pbest_cost
-        mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
-        # Apply masks
-        new_pbest_pos = np.where(~mask_pos, swarm.pbest_pos, swarm.position)
-        new_pbest_cost = np.where(
-            ~mask_cost, swarm.pbest_cost, swarm.current_cost
-        )
+        # Check whether swarm is forgetful
+        if hasattr(swarm, 'memory'):
+            memory = swarm.memory
+            swarm.recent.append(swarm.current_cost)
+            swarm.recent_position.append(swarm.position)
+            new_pbest_cost = np.min(swarm.recent,0)
+            min_index = np.argmin(swarm.recent, axis=0)
+            temp = np.array([min_index,np.arange(swarm.n_particles)]).T
+            new_pbest_pos = np.array(swarm.recent_position)[temp[:,0],temp[:,1]]
+        else:
+            # Infer dimensions from positions
+            dimensions = swarm.dimensions
+            # Create a 1-D and 2-D mask based from comparisons
+            mask_cost = swarm.current_cost < swarm.pbest_cost
+            mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
+            # Apply masks
+            new_pbest_pos = np.where(~mask_pos, swarm.pbest_pos, swarm.position)
+            new_pbest_cost = np.where(
+                ~mask_cost, swarm.pbest_cost, swarm.current_cost
+            )
     except AttributeError:
         rep.logger.exception(
             "Please pass a Swarm class. You passed {}".format(type(swarm))
