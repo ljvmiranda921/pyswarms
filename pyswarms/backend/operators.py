@@ -62,13 +62,12 @@ def compute_pbest(swarm):
     try:
         # Check whether swarm is forgetful
         if hasattr(swarm, 'memory'):
-            memory = swarm.memory
             swarm.recent.append(swarm.current_cost)
             swarm.recent_position.append(swarm.position)
-            new_pbest_cost = np.min(swarm.recent,0)
+            new_pbest_cost = np.min(swarm.recent, 0)
             min_index = np.argmin(swarm.recent, axis=0)
-            temp = np.array([min_index,np.arange(swarm.n_particles)]).T
-            new_pbest_pos = np.array(swarm.recent_position)[temp[:,0],temp[:,1]]
+            temp = np.array([min_index, np.arange(swarm.n_particles)]).T
+            new_pbest_pos = np.array(swarm.recent_position)[temp[:, 0], temp[:, 1]]
         else:
             # Infer dimensions from positions
             dimensions = swarm.dimensions

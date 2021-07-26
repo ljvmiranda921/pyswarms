@@ -157,7 +157,7 @@ class GlobalBestPSO(SwarmOptimizer):
         self.name = __name__
 
     def optimize(
-        self, objective_func, iters, memory = None, n_processes=None, verbose=True, **kwargs
+        self, objective_func, iters, memory=None, n_processes=None, verbose=True, **kwargs
     ):
         """Optimize the swarm for a number of iterations
 
@@ -206,8 +206,8 @@ class GlobalBestPSO(SwarmOptimizer):
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         if memory is not None:
             self.swarm.memory = memory
-            self.swarm.recent = deque(np.full((memory,self.swarm_size[0]), np.inf),memory)
-            self.swarm.recent_position = deque(np.full((memory,self.swarm_size[0],self.swarm.dimensions), np.inf),memory)
+            self.swarm.recent = deque(np.full((memory, self.swarm_size[0]), np.inf), memory)
+            self.swarm.recent_position = deque(np.full((memory, self.swarm_size[0], self.swarm.dimensions), np.inf), memory)
         ftol_history = deque(maxlen=self.ftol_iter)
         for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
             # Compute cost for current position and personal best
