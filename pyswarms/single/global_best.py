@@ -216,7 +216,15 @@ class GlobalBestPSO(SwarmOptimizer):
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
             # Set best_cost_yet_found for ftol
             best_cost_yet_found = self.swarm.best_cost
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
+            # Check for forgetfulness as needed
+            if memory is not None:
+                # Currently, topologies don't look at recent and recent_position, so we
+                # do this manually.
+                global_best_in_memory = np.min(self.swarm.pbest_cost)
+                self.swarm.best_cost = global_best_in_memory
+                self.swarm.best_pos = self.swarm.pbest_pos[np.argmin(self.swarm.pbest_cost)]
+            else:
+                self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
             # fmt: on
             if verbose:
                 self.rep.hook(best_cost=self.swarm.best_cost)
@@ -254,9 +262,7 @@ class GlobalBestPSO(SwarmOptimizer):
             )
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
-        final_best_pos = self.swarm.pbest_pos[
-            self.swarm.pbest_cost.argmin()
-        ].copy()
+        final_best_pos = self.swarm.best_pos.copy()
         # Write report in log and return final cost and position
         self.rep.log(
             "Optimization finished | best cost: {}, best pos: {}".format(
