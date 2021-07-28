@@ -134,11 +134,18 @@ def compute_velocity(swarm, clamp, vh, bounds=None):
             * np.random.uniform(0, 1, swarm_size)
             * (swarm.pbest_pos - swarm.position)
         )
-        social = (
-            c2
-            * np.random.uniform(0, 1, swarm_size)
-            * (swarm.best_pos - swarm.position)
-        )
+        if swarm.best_pos.shape != (0,):
+            social = (
+                c2
+                * np.random.uniform(0, 1, swarm_size)
+                * (swarm.best_pos - swarm.position)
+            )
+        else:
+            social = (
+                c2
+                * np.random.uniform(0, 1, swarm_size)
+                * (swarm.pbest_pos - swarm.position)
+            )
         # Compute temp velocity (subject to clamping if possible)
         temp_velocity = (w * swarm.velocity) + cognitive + social
         updated_velocity = vh(
