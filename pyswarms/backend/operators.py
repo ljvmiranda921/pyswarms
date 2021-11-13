@@ -247,6 +247,6 @@ def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
     if not hasattr(f, "shape"):
         raise ValueError("The objective function should return a Numpy array of shape (n_particles,)")
     if f.shape != (swarm.n_particles,):
-        raise ValueError(f"The objective function returned the wrong shape {f.shape}, should be (n_particles,).")
+        raise ValueError("The objective function returned the wrong shape {}, should be (n_particles,).".format(f.shape))
     return f
     
