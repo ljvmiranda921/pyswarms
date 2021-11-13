@@ -236,10 +236,17 @@ def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
         Cost-matrix for the given swarm
     """
     if pool is None:
-        return objective_func(swarm.position, **kwargs)
+        f = objective_func(swarm.position, **kwargs)
     else:
         results = pool.map(
             partial(objective_func, **kwargs),
             np.array_split(swarm.position, pool._processes),
         )
-        return np.concatenate(results)
+        f = np.concatenate(results)
+
+    if not hasattr(f, "shape"):
+        raise ValueError("The objective function should return a Numpy array of shape (n_particles,)")
+    if f.shape != (swarm.n_particles,):
+        raise ValueError(f"The objective function returned the wrong shape {f.shape}, should be (n_particles,).")
+    return f
+    
