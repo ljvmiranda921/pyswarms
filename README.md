@@ -4,6 +4,7 @@
 
 [![PyPI version](https://badge.fury.io/py/pyswarms.svg)](https://badge.fury.io/py/pyswarms)
 [![Build Status](https://dev.azure.com/ljvmiranda/ljvmiranda/_apis/build/status/ljvmiranda921.pyswarms?branchName=master)](https://dev.azure.com/ljvmiranda/ljvmiranda/_build/latest?definitionId=1&branchName=master)
+[![Fedora package](https://img.shields.io/fedora/v/python3-pyswarms?color=blue&label=Fedora%20Linux&logo=fedora)](https://src.fedoraproject.org/rpms/python-pyswarms)
 [![Documentation Status](https://readthedocs.org/projects/pyswarms/badge/?version=latest)](https://pyswarms.readthedocs.io/en/master/?badge=master)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg )](https://raw.githubusercontent.com/ljvmiranda921/pyswarms/master/LICENSE)
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.00433/status.svg)](https://doi.org/10.21105/joss.00433)
