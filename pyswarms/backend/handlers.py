@@ -556,7 +556,7 @@ class OptionsHandler(HandlerMixin):
 
         * exp_decay:
             Decreases the parameter exponentially between limits.
-    
+
         * lin_variation:
             Decreases/increases the parameter linearly between limits.
 
@@ -584,14 +584,14 @@ class OptionsHandler(HandlerMixin):
                 # more updates using new_options
 
         .. note::
-            As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending 
+            As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending
             options and other arguments for each strategy in all of the handlers on this page.
 
         A more comprehensive tutorial is also present `here`_ for interested users.
-        
+
         .. _here: https://pyswarms.readthedocs.io/en/latest/examples/tutorials/options_handler.html
-        
-        
+
+
 
         Attributes
         ----------
@@ -625,12 +625,12 @@ class OptionsHandler(HandlerMixin):
     def exp_decay(self, start_opts, opt, **kwargs):
         """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
         The velocity is adjusted such that the following equation holds:
-        
+
         Defaults: :math:`d_{1}=2, d_{2}=7, w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
 
         .. math::
                 w = (w^{start}-w^{end}-d_{1})exp(\\frac{1}{1+ \\frac{d_{2}.iter}{iter^{max}}})
-                
+
         Ref: Li, H.-R., & Gao, Y.-L. (2009). Particle Swarm Optimization Algorithm with Exponent
         Decreasing Inertia Weight and Stochastic Mutation. 2009 Second International Conference
         on Information and Computing Science. doi:10.1109/icic.2009.24
@@ -670,14 +670,14 @@ class OptionsHandler(HandlerMixin):
     def lin_variation(self, start_opts, opt, **kwargs):
         """
         Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
-        
+
         Defaults: :math:`w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
-        
+
         .. math::
                 w = w^{end}+(w^{start}-w^{end}) \\frac{iter^{max}-iter}{iter^{max}}
 
-        Ref: Xin, Jianbin, Guimin Chen, and Yubao Hai. "A particle swarm optimizer with 
-        multi-stage linearly-decreasing inertia weight." 2009 International joint conference 
+        Ref: Xin, Jianbin, Guimin Chen, and Yubao Hai. "A particle swarm optimizer with
+        multi-stage linearly-decreasing inertia weight." 2009 International joint conference
         on computational sciences and optimization. Vol. 1. IEEE, 2009.
         """
 
@@ -709,11 +709,11 @@ class OptionsHandler(HandlerMixin):
 
         .. math::
                 w = start + (end-start)*rand(0,1)
-        
+
         Ref: R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
         swarms, in: Congress on Evolutionary Computation, Korea, 2001
         """
-        
+
         start = start_opts[opt]
         if opt in kwargs["end_opts"]:
             end = kwargs["end_opts"][opt]

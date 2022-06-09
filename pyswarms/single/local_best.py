@@ -96,6 +96,7 @@ class LocalBestPSO(SwarmOptimizer):
         ftol_iter=1,
         init_pos=None,
         static=False,
+        reporter_callback=None,
     ):
         """Initialize the swarm
 
@@ -150,6 +151,11 @@ class LocalBestPSO(SwarmOptimizer):
         static: bool
             a boolean that decides whether the Ring topology
             used is static or dynamic. Default is `False`
+        reporter_callback : callable, optional
+            callback function to call at end of each iteration. The signature should
+            be:
+            :code:`reporter_callback(swarm, reporter)`
+            :code:`None` will print the best cost as postfix in tqdm.
         """
         if oh_strategy is None:
             oh_strategy = {}
@@ -171,6 +177,10 @@ class LocalBestPSO(SwarmOptimizer):
         )
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
+        if reporter_callback is None:
+            self.reporter_callback = self.rep.hook
+        else:
+            self.reporter_callback = reporter_callback
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology
@@ -241,7 +251,8 @@ class LocalBestPSO(SwarmOptimizer):
                 self.swarm, p=self.p, k=self.k
             )
             if verbose:
-                self.rep.hook(best_cost=np.min(self.swarm.best_cost))
+                # self.rep.hook(best_cost=np.min(self.swarm.best_cost))
+                self.reporter_callback(swarm=self.swarm, reporter=self.rep)
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,

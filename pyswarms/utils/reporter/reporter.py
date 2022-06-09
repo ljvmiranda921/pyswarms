@@ -4,6 +4,7 @@ import logging
 import logging.config
 import os
 import pprint
+import numpy as np
 
 # Import modules
 import yaml
@@ -233,4 +234,6 @@ class Reporter(object):
                     best_cost = compute()
                     rep.hook(best_cost=best_cost)
         """
-        self.t.set_postfix(*args, **kwargs)
+        # Default behaviour only outputs best cost
+        swarm = kwargs.get("swarm")
+        self.t.set_postfix(dict(best_cost=np.min(swarm.best_cost)))

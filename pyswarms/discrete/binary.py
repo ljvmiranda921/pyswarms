@@ -78,6 +78,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         vh_strategy="unmodified",
         ftol=-np.inf,
         ftol_iter=1,
+        reporter_callback=None,
     ):
         """Initialize the swarm
 
@@ -120,9 +121,18 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             number of iterations over which the relative error in
             objective_func(best_pos) is acceptable for convergence.
             Default is :code:`1`
+        reporter_callback : callable, optional
+            callback function to call at end of each iteration. The signature should
+            be:
+            :code:`reporter_callback(swarm, reporter)`
+            :code:`None` will print the best cost as postfix in tqdm.
         """
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
+        if reporter_callback is None:
+            self.reporter_callback = self.rep.hook
+        else:
+            self.reporter_callback = reporter_callback
         # Assign k-neighbors and p-value as attributes
         self.k, self.p = options["k"], options["p"]
         # Initialize parent class
@@ -205,7 +215,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             )
             if verbose:
                 # Print to console
-                self.rep.hook(best_cost=self.swarm.best_cost)
+                self.reporter_callback(swarm=self.swarm, reporter=self.rep)
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
