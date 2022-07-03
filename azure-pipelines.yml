@@ -20,7 +20,7 @@ stages:
   jobs:
   - job: 'Test'
     pool:
-      vmImage: 'Ubuntu-16.04'
+      vmImage: 'Ubuntu-18.04'
     strategy:
         matrix:
           Python36:
@@ -38,7 +38,7 @@ stages:
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements-dev.txt
       displayName: 'Install dependencies'
-    - script: | 
+    - script: |
         pytest tests/ --cov pyswarms --junit-xml=junit/test-results.xml --cov-report=xml --cov-report=html
       displayName: 'Run tests with coverage'
     - task: PublishTestResults@2
@@ -85,5 +85,5 @@ stages:
       displayName: 'Authenticate twine to PyPI'
     - script: |
         python -m pip install twine
-        twine upload -r pypi --config-file $(PYPIRC_PATH) dist/* 
+        twine upload -r pypi --config-file $(PYPIRC_PATH) dist/*
       displayName: 'Upload files to PyPI'
