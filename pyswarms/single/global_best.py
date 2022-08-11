@@ -86,6 +86,8 @@ class GlobalBestPSO(SwarmOptimizer):
         ftol=-np.inf,
         ftol_iter=1,
         init_pos=None,
+        init_vel=None,
+        init_best=None,
     ):
         """Initialize the swarm
 
@@ -130,6 +132,12 @@ class GlobalBestPSO(SwarmOptimizer):
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
+        init_vel : numpy.ndarray, optional
+            option to explicitly set the particles' initial velocities. Set to
+            :code:`None` if you wish to generate the velocities randomly.
+        init_best : numpy.ndarray, optional
+            option to explicitly set a particle to the previously obtained global best. Set to
+            :code:`None` if you wish to generate the particles randomly.
         """
         super(GlobalBestPSO, self).__init__(
             n_particles=n_particles,
@@ -141,6 +149,8 @@ class GlobalBestPSO(SwarmOptimizer):
             ftol=ftol,
             ftol_iter=ftol_iter,
             init_pos=init_pos,
+            init_vel=init_vel,
+            init_best=init_best,
         )
 
         if oh_strategy is None:

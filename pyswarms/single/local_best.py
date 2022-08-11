@@ -95,6 +95,8 @@ class LocalBestPSO(SwarmOptimizer):
         ftol=-np.inf,
         ftol_iter=1,
         init_pos=None,
+        init_vel=None,
+        init_best=None,
         static=False,
     ):
         """Initialize the swarm
@@ -147,6 +149,12 @@ class LocalBestPSO(SwarmOptimizer):
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
+        init_vel : numpy.ndarray, optional
+            option to explicitly set the particles' initial velocities. Set to
+            :code:`None` if you wish to generate the velocities randomly.
+        init_best : numpy.ndarray, optional
+            option to explicitly set a particle to the previously obtained global best. Set to
+            :code:`None` if you wish to generate the particles randomly.
         static: bool
             a boolean that decides whether the Ring topology
             used is static or dynamic. Default is `False`
@@ -168,6 +176,8 @@ class LocalBestPSO(SwarmOptimizer):
             ftol=ftol,
             ftol_iter=ftol_iter,
             init_pos=init_pos,
+            init_vel=init_vel,
+            init_best=init_best,
         )
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))

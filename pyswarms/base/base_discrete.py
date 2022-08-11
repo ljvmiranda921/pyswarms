@@ -48,6 +48,8 @@ class DiscreteSwarmOptimizer(abc.ABC):
         options,
         velocity_clamp=None,
         init_pos=None,
+        init_vel=None,
+        init_best=None,
         ftol=-np.inf,
         ftol_iter=1,
     ):
@@ -81,6 +83,15 @@ class DiscreteSwarmOptimizer(abc.ABC):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
+        init_pos : numpy.ndarray, optional
+            option to explicitly set the particles' initial positions. Set to
+            :code:`None` if you wish to generate the particles randomly.
+        init_vel : numpy.ndarray, optional
+            option to explicitly set the particles' initial velocities. Set to
+            :code:`None` if you wish to generate the velocities randomly.
+        init_best : numpy.ndarray, optional
+            option to explicitly set a particle to the previously obtained global best. Set to
+            :code:`None` if you wish to generate the particles randomly.
         ftol : float, optional
             relative error in objective_func(best_pos) acceptable for
             convergence. Default is :code:`-np.inf`.
@@ -100,6 +111,8 @@ class DiscreteSwarmOptimizer(abc.ABC):
         self.swarm_size = (n_particles, dimensions)
         self.options = options
         self.init_pos = init_pos
+        self.init_vel = init_vel
+        self.init_best = init_best 
         self.ftol = ftol
 
         try:
@@ -208,6 +221,8 @@ class DiscreteSwarmOptimizer(abc.ABC):
             dimensions=self.dimensions,
             discrete=True,
             init_pos=self.init_pos,
+            init_vel=self.init_vel,
+            init_best=self.init_best,
             binary=self.binary,
             clamp=self.velocity_clamp,
             options=self.options,
