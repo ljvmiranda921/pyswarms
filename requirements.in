@@ -5,3 +5,4 @@ attrs
 tqdm
 future
 pyyaml
+multiprocess
