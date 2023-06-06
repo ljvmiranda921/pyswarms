@@ -225,8 +225,8 @@ def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
         a Swarm instance
     objective_func : function
         objective function to be evaluated
-    pool: multiprocessing.Pool
-        multiprocessing.Pool to be used for parallel particle evaluation
+    pool: multiprocess.Pool
+        multiprocess.Pool to be used for parallel particle evaluation
     kwargs : dict
         arguments for the objective function
 

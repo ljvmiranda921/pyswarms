@@ -11,7 +11,7 @@ import numpy as np
 from attr import attrib, attrs
 from attr.validators import instance_of
 from matplotlib import cm, colors
-import multiprocessing as mp
+import multiprocess as mp
 
 
 @attrs
