@@ -10,6 +10,9 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pyswarms/Issues)
 
+> **NOTICE**: I am not actively maintaining this repository anymore. My research interests have changed in the past few years. 
+> I highly recommend checking out [scikit-opt](https://github.com/guofei9987/scikit-opt) for metaheuristic methods including PSO. 
+
 PySwarms is an extensible research toolkit for particle swarm optimization
 (PSO) in Python.
 
