@@ -22,7 +22,7 @@ rep = Reporter(logger=logging.getLogger(__name__))
 
 
 def generate_swarm(
-    n_particles, dimensions, bounds=None, center=1.00, init_pos=None
+    n_particles, dimensions, bounds=None, center=1.00, init_pos=None, init_best=None
 ):
     """Generate a swarm
 
@@ -41,6 +41,10 @@ def generate_swarm(
         Default is :code:`1`
     init_pos : numpy.ndarray, optional
         option to explicitly set the particles' initial positions. Set to
+        :code:`None` if you wish to generate the particles randomly.
+        Default is :code:`None`.
+    init_best : numpy.ndarray, optional
+        option to explicitly set a particle to the previously obtained global best. Set to
         :code:`None` if you wish to generate the particles randomly.
         Default is :code:`None`.
 
@@ -81,6 +85,8 @@ def generate_swarm(
             pos = center * np.random.uniform(
                 low=min_bounds, high=max_bounds, size=(n_particles, dimensions)
             )
+        if init_best is not None: 
+            pos[0] = init_best 
     except ValueError:
         msg = "Bounds and/or init_pos should be of size ({},)"
         rep.logger.exception(msg.format(dimensions))
@@ -193,6 +199,8 @@ def create_swarm(
     bounds=None,
     center=1.0,
     init_pos=None,
+    init_vel=None,
+    init_best=None,
     clamp=None,
 ):
     """Abstract the generate_swarm() and generate_velocity() methods
@@ -218,6 +226,12 @@ def create_swarm(
     init_pos : numpy.ndarray, optional
         option to explicitly set the particles' initial positions. Set to
         :code:`None` if you wish to generate the particles randomly.
+    init_vel : numpy.ndarray, optional
+        option to explicitly set the particles' initial velocities. Set to
+        :code:`None` if you wish to generate the velocities randomly.
+    init_best : numpy.ndarray, optional
+        option to explicitly set a particle to the previously obtained global best. Set to
+        :code:`None` if you wish to generate the particles randomly.
     clamp : tuple of floats, optional
         a tuple of size 2 where the first entry is the minimum velocity
         and the second entry is the maximum velocity. It
@@ -230,7 +244,7 @@ def create_swarm(
     """
     if discrete:
         position = generate_discrete_swarm(
-            n_particles, dimensions, binary=binary, init_pos=init_pos
+            n_particles, dimensions, binary=binary, init_pos=init_pos # TODO add init_best 
         )
     else:
         position = generate_swarm(
@@ -239,7 +253,11 @@ def create_swarm(
             bounds=bounds,
             center=center,
             init_pos=init_pos,
+            init_best=init_best,
         )
 
-    velocity = generate_velocity(n_particles, dimensions, clamp=clamp)
+    if init_vel is None:
+        velocity = generate_velocity(n_particles, dimensions, clamp=clamp)
+    else: 
+        velocity = init_vel 
     return Swarm(position, velocity, options=options)

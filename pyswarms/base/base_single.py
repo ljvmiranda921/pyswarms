@@ -52,6 +52,8 @@ class SwarmOptimizer(abc.ABC):
         ftol=-np.inf,
         ftol_iter=1,
         init_pos=None,
+        init_vel=None,
+        init_best=None,
     ):
         """Initialize the swarm
 
@@ -89,6 +91,15 @@ class SwarmOptimizer(abc.ABC):
             number of iterations over which the relative error in
             objective_func(best_pos) is acceptable for convergence.
             Default is :code:`1`
+        init_pos : numpy.ndarray, optional
+            option to explicitly set the particles' initial positions. Set to
+            :code:`None` if you wish to generate the particles randomly.
+        init_vel : numpy.ndarray, optional
+            option to explicitly set the particles' initial velocities. Set to
+            :code:`None` if you wish to generate the velocities randomly.
+        init_best : numpy.ndarray, optional
+            option to explicitly set a particle to the previously obtained global best. Set to
+            :code:`None` if you wish to generate the particles randomly.
         """
         # Initialize primary swarm attributes
         self.n_particles = n_particles
@@ -109,6 +120,8 @@ class SwarmOptimizer(abc.ABC):
 
         self.ftol_iter = ftol_iter
         self.init_pos = init_pos
+        self.init_vel = init_vel
+        self.init_best = init_best 
         # Initialize named tuple for populating the history list
         self.ToHistory = namedtuple(
             "ToHistory",
@@ -207,6 +220,8 @@ class SwarmOptimizer(abc.ABC):
             bounds=self.bounds,
             center=self.center,
             init_pos=self.init_pos,
+            init_vel=self.init_vel,
+            init_best=self.init_best,
             clamp=self.velocity_clamp,
             options=self.options,
         )
