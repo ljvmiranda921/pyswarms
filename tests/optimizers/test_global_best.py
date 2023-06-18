@@ -31,10 +31,26 @@ class TestGlobalBestOptimizer(ABCTestOptimizer):
         return opt
 
     def test_global_correct_pos(self, options):
-        """ Test to check global optimiser returns the correct position corresponding to the best cost """
+        """Test to check global optimiser returns the correct position corresponding to the best cost"""
         opt = GlobalBestPSO(n_particles=10, dimensions=2, options=options)
         cost, pos = opt.optimize(sphere, iters=5)
         # find best pos from history
         min_cost_idx = np.argmin(opt.cost_history)
         min_pos_idx = np.argmin(sphere(opt.pos_history[min_cost_idx]))
         assert np.array_equal(opt.pos_history[min_cost_idx][min_pos_idx], pos)
+
+    def test_global_correct_pos_with_custom_reporter(self, options, capfd):
+        """Test if custom reporter callback is printing to screen"""
+
+        def custom_reporter_cb(swarm, reporter):
+            print("First position: ", swarm.best_pos[0])
+
+        opt = GlobalBestPSO(
+            n_particles=10,
+            dimensions=2,
+            options=options,
+            reporter_callback=custom_reporter_cb,
+        )
+        cost, pos = opt.optimize(sphere, iters=5)
+        out, err = capfd.readouterr()
+        assert "First position" in out

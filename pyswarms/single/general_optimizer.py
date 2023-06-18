@@ -88,6 +88,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         ftol=-np.inf,
         ftol_iter=1,
         init_pos=None,
+        reporter_callback=None,
     ):
         """Initialize the swarm
 
@@ -166,6 +167,11 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
+        reporter_callback : callable, optional
+            callback function to call at end of each iteration. The signature should
+            be:
+            :code:`reporter_callback(swarm, reporter)`
+            :code:`None` will print the best cost as postfix in tqdm.
         """
         super(GeneralOptimizerPSO, self).__init__(
             n_particles,
@@ -182,6 +188,10 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             oh_strategy = {}
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
+        if reporter_callback is None:
+            self.reporter_callback = self.rep.hook
+        else:
+            self.reporter_callback = reporter_callback
         # Initialize the resettable attributes
         self.reset()
         # Initialize the topology and check for type
@@ -254,7 +264,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             )
             # Print to console
             if verbose:
-                self.rep.hook(best_cost=self.swarm.best_cost)
+                self.reporter_callback(swarm=self.swarm, reporter=self.rep)
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),
