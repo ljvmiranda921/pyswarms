@@ -11,14 +11,14 @@ here to dictate how a swarm is initialized for your custom PSO.
 
 # Import standard library
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Optional, Tuple
 
 # Import modules
 import numpy as np
-import numpy.typing as npt
+
+from ..utils.types import Bounds, DiscretePosition, Position, Velocity
 
 from ..utils.reporter import Reporter
-from .swarms import Swarm
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
@@ -26,10 +26,10 @@ rep = Reporter(logger=logging.getLogger(__name__))
 def generate_swarm(
     n_particles: int, 
     dimensions: int, 
-    bounds: Optional[Tuple[List[int], List[int]]] = None, 
-    center: float|npt.NDArray[np.floating[Any]] = 1.00, 
-    init_pos: Optional[npt.NDArray[np.floating[Any]]] = None,
-) -> npt.NDArray[np.floating[Any]]:
+    bounds: Optional[Bounds] = None, 
+    center: float|Position = 1.00, 
+    init_pos: Optional[Position] = None,
+) -> Position:
     """Generate a swarm
 
     Parameters
@@ -87,7 +87,7 @@ def generate_swarm(
     return pos
 
 
-def generate_discrete_swarm(n_particles: int, dimensions: int, binary: bool = False, init_pos: Optional[npt.NDArray[np.integer[Any]]] = None) -> npt.NDArray[np.integer[Any]]:
+def generate_discrete_swarm(n_particles: int, dimensions: int, binary: bool = False, init_pos: Optional[DiscretePosition] = None) -> DiscretePosition:
     """Generate a discrete swarm
 
     Parameters
@@ -127,7 +127,7 @@ def generate_discrete_swarm(n_particles: int, dimensions: int, binary: bool = Fa
     return pos
 
 
-def generate_velocity(n_particles: int, dimensions: int, clamp: Optional[Tuple[float, float]] = None) -> npt.NDArray[Any]:
+def generate_velocity(n_particles: int, dimensions: int, clamp: Optional[Tuple[float, float]] = None) -> Velocity:
     """Initialize a velocity vector
 
     Parameters
