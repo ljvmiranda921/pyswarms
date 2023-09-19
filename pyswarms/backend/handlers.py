@@ -21,13 +21,19 @@ PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 """
 
 # Import standard library
+from abc import ABC, abstractmethod
 import inspect
 import logging
 import math
 from copy import copy
+from typing import Any, Dict, Optional, Tuple
+from click import Option
 
 # Import modules
 import numpy as np
+import numpy.typing as npt
+
+from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, Velocity
 
 from ..utils.reporter import Reporter
 
@@ -38,14 +44,7 @@ class HandlerMixin(object):
     This class offers some basic functionality for the Handlers.
     """
 
-    def _merge_dicts(self, *dict_args):
-        """Backward-compatible helper method to combine two dicts"""
-        result = {}
-        for dictionary in dict_args:
-            result.update(dictionary)
-        return result
-
-    def _out_of_bounds(self, position, bounds):
+    def _out_of_bounds(self, position: npt.NDArray[Any], bounds: Bounds):
         """Helper method to find indices of out-of-bound positions
 
         This method finds the indices of the particles that are out-of-bound.
@@ -53,6 +52,7 @@ class HandlerMixin(object):
         lb, ub = bounds
         greater_than_bound = np.nonzero(position > ub)
         lower_than_bound = np.nonzero(position < lb)
+
         return (lower_than_bound, greater_than_bound)
 
     def _get_all_strategies(self):
@@ -61,7 +61,9 @@ class HandlerMixin(object):
 
 
 class BoundaryHandler(HandlerMixin):
-    def __init__(self, strategy):
+    memory: Optional[Position] = None
+
+    def __init__(self, strategy: str):
         """A BoundaryHandler class
 
         This class offers a way to handle boundary conditions. It contains
@@ -108,9 +110,8 @@ class BoundaryHandler(HandlerMixin):
         self.strategy = strategy
         self.strategies = self._get_all_strategies()
         self.rep = Reporter(logger=logging.getLogger(__name__))
-        self.memory = None
 
-    def __call__(self, position, bounds, **kwargs):
+    def __call__(self, position: npt.NDArray[Any], bounds: Bounds, **kwargs: Dict[str, Any]):
         """Apply the selected strategy to the position-matrix given the bounds
 
         Parameters
@@ -137,7 +138,7 @@ class BoundaryHandler(HandlerMixin):
         else:
             return new_position
 
-    def nearest(self, position, bounds, **kwargs):
+    def nearest(self, position: Position, bounds: BoundsArray):
         r"""Set position to nearest bound
 
         This method resets particles that exceed the bounds to the nearest
@@ -162,7 +163,7 @@ class BoundaryHandler(HandlerMixin):
         new_pos = np.where(bool_greater, ub, new_pos)
         return new_pos
 
-    def reflective(self, position, bounds, **kwargs):
+    def reflective(self, position: Position, bounds: BoundsArray):
         r"""Reflect the particle at the boundary
 
         This method reflects the particles that exceed the bounds at the
@@ -200,7 +201,7 @@ class BoundaryHandler(HandlerMixin):
 
         return new_pos
 
-    def shrink(self, position, bounds, **kwargs):
+    def shrink(self, position: Position, bounds: BoundsArray):
         r"""Set the particle to the boundary
 
         This method resets particles that exceed the bounds to the intersection
@@ -266,7 +267,7 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         return new_pos
 
-    def random(self, position, bounds, **kwargs):
+    def random(self, position: Position, bounds: BoundsArray):
         """Set position to random location
 
         This method resets particles that exeed the bounds to a random position
@@ -284,7 +285,7 @@ class BoundaryHandler(HandlerMixin):
         )
         return new_pos
 
-    def intermediate(self, position, bounds, **kwargs):
+    def intermediate(self, position: Position, bounds: BoundsArray):
         r"""Set the particle to an intermediate position
 
         This method resets particles that exceed the bounds to an intermediate
@@ -314,7 +315,7 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         return new_pos
 
-    def periodic(self, position, bounds, **kwargs):
+    def periodic(self, position: Position, bounds: BoundsArray):
         r"""Sets the particles a periodic fashion
 
         This method resets the particles that exeed the bounds by using the
@@ -357,8 +358,10 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
 
-class VelocityHandler(HandlerMixin):
-    def __init__(self, strategy):
+class VelocityHandlerBase(HandlerMixin, ABC):
+    memory: Optional[Position] = None
+
+    def __init__(self):
         """A VelocityHandler class
 
         This class offers a way to handle velocities. It contains
@@ -376,12 +379,10 @@ class VelocityHandler(HandlerMixin):
             Sets the velocity of out-of-bounds particles to zero.
 
         """
-        self.strategy = strategy
-        self.strategies = self._get_all_strategies()
         self.rep = Reporter(logger=logging.getLogger(__name__))
-        self.memory = None
 
-    def __call__(self, velocity, clamp, **kwargs):
+    @abstractmethod
+    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]) -> Velocity:
         """Apply the selected strategy to the velocity-matrix given the bounds
 
         Parameters
@@ -399,35 +400,28 @@ class VelocityHandler(HandlerMixin):
         numpy.ndarray
             the adjusted positions of the swarm
         """
-        try:
-            new_position = self.strategies[self.strategy](velocity, clamp, **kwargs)
-        except KeyError:
-            message = "Unrecognized strategy: {}. Choose one among: " + str([strat for strat in self.strategies.keys()])
-            self.rep.logger.exception(message.format(self.strategy))
-            raise
-        else:
-            return new_position
+        ...
 
-    def __apply_clamp(self, velocity, clamp):
+
+    def _apply_clamp(self, velocity: Velocity, clamp: Optional[Clamp]):
         """Helper method to apply a clamp to a velocity vector"""
-        clamped_vel = velocity
+        if clamp is None:
+            raise ValueError("Clamp must not be None")
         min_velocity, max_velocity = clamp
-        lower_than_clamp = clamped_vel <= min_velocity
-        greater_than_clamp = clamped_vel >= max_velocity
-        clamped_vel = np.where(lower_than_clamp, min_velocity, clamped_vel)
-        clamped_vel = np.where(greater_than_clamp, max_velocity, clamped_vel)
-        return clamped_vel
+        return np.clip(velocity, min_velocity, max_velocity)
 
-    def unmodified(self, velocity, clamp=None, **kwargs):
+
+class UnmodifiedVelocityHandler(VelocityHandlerBase):
+    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]) -> Velocity:
         """Leaves the velocity unchanged"""
         if clamp is None:
             new_vel = velocity
         else:
-            if clamp is not None:
-                new_vel = self.__apply_clamp(velocity, clamp)
+            new_vel = self._apply_clamp(velocity, clamp)
         return new_vel
 
-    def adjust(self, velocity, clamp=None, **kwargs):
+class AdjustVelocityHandler(VelocityHandlerBase):
+    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]):
         r"""Adjust the velocity to the new position
 
         The velocity is adjusted such that the following equation holds:
@@ -441,22 +435,25 @@ class VelocityHandler(HandlerMixin):
             operation.
 
         """
-        try:
-            if self.memory is None:
-                new_vel = velocity
-                self.memory = kwargs["position"]
-            else:
-                new_vel = kwargs["position"] - self.memory
-                self.memory = kwargs["position"]
-                if clamp is not None:
-                    new_vel = self.__apply_clamp(new_vel, clamp)
-        except KeyError:
-            self.rep.logger.exception("Keyword 'position' missing")
-            raise
-        else:
-            return new_vel
+        if position is None:
+            raise ValueError("Position must not be None")
 
-    def invert(self, velocity, clamp=None, **kwargs):
+        if self.memory is None:
+            new_vel = velocity
+            self.memory = position
+        else:
+            new_vel = position - self.memory
+            self.memory = position
+            if clamp is not None:
+                new_vel = self._apply_clamp(new_vel, clamp)
+
+        return new_vel
+
+class InvertVelocityHandler(VelocityHandlerBase):
+    def __init__(self, z: float = 0.5):
+        self.z = z
+    
+    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]) -> Velocity:
         r"""Invert the velocity if the particle is out of bounds
 
         The velocity is inverted and shrinked. The shrinking is determined by the
@@ -468,36 +465,37 @@ class VelocityHandler(HandlerMixin):
 
             \mathbf{v_{i,t}} = -z\mathbf{v_{i,t}}
         """
-        try:
-            # Default for the shrinking factor
-            if "z" not in kwargs:
-                z = 0.5
-            else:
-                z = kwargs["z"]
-            lower_than_bound, greater_than_bound = self._out_of_bounds(kwargs["position"], kwargs["bounds"])
-            new_vel = velocity
-            new_vel[lower_than_bound[0]] = (-z) * new_vel[lower_than_bound[0]]
-            new_vel[greater_than_bound[0]] = (-z) * new_vel[greater_than_bound[0]]
-            if clamp is not None:
-                new_vel = self.__apply_clamp(new_vel, clamp)
-        except KeyError:
-            self.rep.logger.exception("Keyword 'position' or 'bounds' missing")
-            raise
-        else:
-            return new_vel
+        if position is None:
+            raise ValueError("Position must not be None")
+        
+        if bounds is None:
+            raise ValueError("Bounds must not be None")
 
-    def zero(self, velocity, clamp=None, **kwargs):
+        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
+        new_vel = velocity
+        new_vel[lower_than_bound[0]] = (-self.z) * new_vel[lower_than_bound[0]]
+        new_vel[greater_than_bound[0]] = (-self.z) * new_vel[greater_than_bound[0]]
+
+        if clamp is not None:
+            new_vel = self._apply_clamp(new_vel, clamp)
+        
+        return new_vel
+
+class ZeroVelocityHandler(VelocityHandlerBase):
+    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]):
         """Set velocity to zero if the particle is out of bounds"""
-        try:
-            lower_than_bound, greater_than_bound = self._out_of_bounds(kwargs["position"], kwargs["bounds"])
-            new_vel = velocity
-            new_vel[lower_than_bound[0]] = np.zeros(velocity.shape[1])
-            new_vel[greater_than_bound[0]] = np.zeros(velocity.shape[1])
-        except KeyError:
-            self.rep.logger.exception("Keyword 'position' or 'bounds' missing")
-            raise
-        else:
-            return new_vel
+        if position is None:
+            raise ValueError("Position must not be None")
+        
+        if bounds is None:
+            raise ValueError("Bounds must not be None")
+        
+        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
+        new_vel = velocity
+        new_vel[lower_than_bound[0]] = np.zeros(velocity.shape[1])
+        new_vel[greater_than_bound[0]] = np.zeros(velocity.shape[1])
+
+        return new_vel
 
 
 class OptionsHandler(HandlerMixin):
