@@ -11,16 +11,22 @@ to specify how the swarm will behave.
 # Import standard library
 import logging
 from functools import partial
+from multiprocessing.pool import Pool
+from typing import Any, Callable, Dict, Optional
 
 # Import modules
 import numpy as np
+from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+
+from pyswarms.backend.swarms import Swarm
+from pyswarms.utils.types import Bounds, Clamp
 
 from ..utils.reporter import Reporter
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
 
-def compute_pbest(swarm):
+def compute_pbest(swarm: Swarm):
     """Update the personal best score of a swarm instance
 
     You can use this method to update your personal best positions.
@@ -73,7 +79,7 @@ def compute_pbest(swarm):
         return (new_pbest_pos, new_pbest_cost)
 
 
-def compute_velocity(swarm, clamp, vh, bounds=None):
+def compute_velocity(swarm: Swarm, clamp: Clamp, vh: VelocityHandler, bounds: Optional[Bounds] = None):
     """Update the velocity matrix
 
     This method updates the velocity matrix using the best and current
@@ -139,7 +145,7 @@ def compute_velocity(swarm, clamp, vh, bounds=None):
         return updated_velocity
 
 
-def compute_position(swarm, bounds, bh):
+def compute_position(swarm: Swarm, bounds: Bounds, bh: BoundaryHandler):
     """Update the position matrix
 
     This method updates the position matrix given the current position and the
@@ -190,7 +196,7 @@ def compute_position(swarm, bounds, bh):
         return position
 
 
-def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
+def compute_objective_function(swarm: Swarm, objective_func: Callable[..., float], pool: Optional[Pool] = None, **kwargs: Dict[str, Any]):
     """Evaluate particles using the objective function
 
     This method evaluates each particle in the swarm according to the objective
