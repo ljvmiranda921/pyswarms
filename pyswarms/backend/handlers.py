@@ -22,13 +22,11 @@ PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 
 # Import standard library
 from abc import ABC, abstractmethod
-from enum import Enum
 import inspect
 import logging
 import math
 from copy import copy
-from typing import Any, Dict, Literal, Optional, Tuple
-from click import Option
+from typing import Any, Dict, Literal, Optional
 
 # Import modules
 import numpy as np
@@ -365,7 +363,7 @@ class BoundaryHandler(HandlerMixin):
 VelocityStrategy = Literal["unmodified", "adjust", "invert", "zero"]
 
 
-class VelocityHandlerBase(HandlerMixin, ABC):
+class VelocityHandler(HandlerMixin, ABC):
     memory: Optional[Position] = None
 
     def __init__(self):
@@ -430,8 +428,7 @@ class VelocityHandlerBase(HandlerMixin, ABC):
         
         raise ValueError(f"Strategy {strategy} does not match any of [\"unmodified\", \"adjust\", \"invert\", \"zero\"]")
 
-
-class UnmodifiedVelocityHandler(VelocityHandlerBase):
+class UnmodifiedVelocityHandler(VelocityHandler):
     def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]) -> Velocity:
         """Leaves the velocity unchanged"""
         if clamp is None:
@@ -440,7 +437,7 @@ class UnmodifiedVelocityHandler(VelocityHandlerBase):
             new_vel = self._apply_clamp(velocity, clamp)
         return new_vel
 
-class AdjustVelocityHandler(VelocityHandlerBase):
+class AdjustVelocityHandler(VelocityHandler):
     def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]):
         r"""Adjust the velocity to the new position
 
@@ -469,7 +466,7 @@ class AdjustVelocityHandler(VelocityHandlerBase):
 
         return new_vel
 
-class InvertVelocityHandler(VelocityHandlerBase):
+class InvertVelocityHandler(VelocityHandler):
     def __init__(self, z: float = 0.5):
         super().__init__()
         self.z = z
@@ -502,7 +499,7 @@ class InvertVelocityHandler(VelocityHandlerBase):
         
         return new_vel
 
-class ZeroVelocityHandler(VelocityHandlerBase):
+class ZeroVelocityHandler(VelocityHandler):
     def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]):
         """Set velocity to zero if the particle is out of bounds"""
         if position is None:
@@ -519,8 +516,11 @@ class ZeroVelocityHandler(VelocityHandlerBase):
         return new_vel
 
 
+OptionsStrategy = Literal["exp_decay", "lin_variation", "random", "nonlin_mod"]
+
+# TODO: Ew omg my eyes it's awful, implement a proper pattern here pls (see velocityhandler)
 class OptionsHandler(HandlerMixin):
-    def __init__(self, strategy):
+    def __init__(self, strategy: Dict[str, OptionsStrategy]):
         """An OptionsHandler class
 
         This class offers a way to handle options. It contains
@@ -576,22 +576,19 @@ class OptionsHandler(HandlerMixin):
         self.strategies = self._get_all_strategies()
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
-    def __call__(self, start_opts, **kwargs):
-        try:
-            if not self.strategy:
-                return start_opts
-            return_opts = copy(start_opts)
-            for opt in start_opts:
-                if opt in self.strategy:
-                    return_opts[opt] = self.strategies[self.strategy[opt]](start_opts, opt, **kwargs)
-        except KeyError:
-            message = "Unrecognized strategy: {}. Choose one among: " + str([strat for strat in self.strategies.keys()])
-            self.rep.logger.exception(message.format(self.strategy))
-            raise
-        else:
-            return return_opts
+    def __call__(self, start_opts: Dict[str, float], **kwargs: Dict[str, Any]):
+        if not self.strategy:
+            return start_opts
+        
+        return_opts = copy(start_opts)
+        
+        for opt in start_opts:
+            if opt in self.strategy:
+                return_opts[opt] = self.strategies[self.strategy[opt]](start_opts, opt, **kwargs)
 
-    def exp_decay(self, start_opts, opt, **kwargs):
+        return return_opts
+
+    def exp_decay(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
         """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
         The velocity is adjusted such that the following equation holds:
 
@@ -639,7 +636,7 @@ class OptionsHandler(HandlerMixin):
         else:
             return new_val
 
-    def lin_variation(self, start_opts, opt, **kwargs):
+    def lin_variation(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
         """
         Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
 
@@ -671,7 +668,7 @@ class OptionsHandler(HandlerMixin):
         else:
             return new_val
 
-    def random(self, start_opts, opt, **kwargs):
+    def random(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
         """Random value between :math:`w^{start}` and :math:`w^{end}`
 
         .. math::
@@ -688,7 +685,7 @@ class OptionsHandler(HandlerMixin):
             end = start + 1
         return start + (end - start) * np.random.rand()
 
-    def nonlin_mod(self, start_opts, opt, **kwargs):
+    def nonlin_mod(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
         """Non linear decreasing/increasing with modulation index(n).
         The linear strategy can be made to converge faster without compromising
         on exploration with the use of this index which makes the equation non-linear.
