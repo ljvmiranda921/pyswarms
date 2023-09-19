@@ -61,10 +61,13 @@ class HandlerMixin(object):
         return {k: v for k, v in inspect.getmembers(self, predicate=inspect.isroutine) if not k.startswith(("__", "_"))}
 
 
+BoundaryStrategy = Literal["nearest", "random", "shrink", "reflective", "intermediate", "periodic"]
+
+
 class BoundaryHandler(HandlerMixin):
     memory: Optional[Position] = None
 
-    def __init__(self, strategy: str):
+    def __init__(self, strategy: BoundaryStrategy):
         """A BoundaryHandler class
 
         This class offers a way to handle boundary conditions. It contains
