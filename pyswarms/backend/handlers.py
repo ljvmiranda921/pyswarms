@@ -22,11 +22,12 @@ PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 
 # Import standard library
 from abc import ABC, abstractmethod
+from enum import Enum
 import inspect
 import logging
 import math
 from copy import copy
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Literal, Optional, Tuple
 from click import Option
 
 # Import modules
@@ -358,6 +359,9 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
 
+VelocityStrategy = Literal["unmodified", "adjust", "invert", "zero"]
+
+
 class VelocityHandlerBase(HandlerMixin, ABC):
     memory: Optional[Position] = None
 
@@ -409,6 +413,19 @@ class VelocityHandlerBase(HandlerMixin, ABC):
             raise ValueError("Clamp must not be None")
         min_velocity, max_velocity = clamp
         return np.clip(velocity, min_velocity, max_velocity)
+    
+    @staticmethod
+    def factory(strategy: VelocityStrategy):
+        if strategy == "unmodified":
+            return UnmodifiedVelocityHandler()
+        elif strategy == "adjust":
+            return AdjustVelocityHandler()
+        elif strategy == "invert":
+            return InvertVelocityHandler()
+        elif strategy == "zero":
+            return ZeroVelocityHandler()
+        
+        raise ValueError(f"Strategy {strategy} does not match any of [\"unmodified\", \"adjust\", \"invert\", \"zero\"]")
 
 
 class UnmodifiedVelocityHandler(VelocityHandlerBase):
@@ -451,6 +468,7 @@ class AdjustVelocityHandler(VelocityHandlerBase):
 
 class InvertVelocityHandler(VelocityHandlerBase):
     def __init__(self, z: float = 0.5):
+        super().__init__()
         self.z = z
     
     def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]) -> Velocity:
