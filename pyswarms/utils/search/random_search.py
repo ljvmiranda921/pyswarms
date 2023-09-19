@@ -58,9 +58,7 @@ class RandomSearch(SearchBase):
 
         # Check type of n_selection_iters parameter
         if not isinstance(self.n_selection_iters, int):
-            raise TypeError(
-                "Parameter `n_selection_iters` must be of " "type int"
-            )
+            raise TypeError("Parameter `n_selection_iters` must be of " "type int")
 
     def __init__(
         self,
@@ -118,9 +116,7 @@ class RandomSearch(SearchBase):
 
         # Generate random values for hyperparameters 'c1', 'c2', 'w', and 'k'
         for idx, bounds in options.items():
-            params[idx] = param_generators[idx](
-                *bounds, size=self.n_selection_iters
-            )
+            params[idx] = param_generators[idx](*bounds, size=self.n_selection_iters)
 
         # Return list of dicts of hyperparameter combinations
         return [

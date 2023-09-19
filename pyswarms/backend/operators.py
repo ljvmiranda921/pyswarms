@@ -10,14 +10,12 @@ to specify how the swarm will behave.
 
 # Import standard library
 import logging
+from functools import partial
 
 # Import modules
 import numpy as np
 
 from ..utils.reporter import Reporter
-from .handlers import BoundaryHandler, VelocityHandler
-from functools import partial
-
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
@@ -67,13 +65,9 @@ def compute_pbest(swarm):
         mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
         # Apply masks
         new_pbest_pos = np.where(~mask_pos, swarm.pbest_pos, swarm.position)
-        new_pbest_cost = np.where(
-            ~mask_cost, swarm.pbest_cost, swarm.current_cost
-        )
+        new_pbest_cost = np.where(~mask_cost, swarm.pbest_cost, swarm.current_cost)
     except AttributeError:
-        rep.logger.exception(
-            "Please pass a Swarm class. You passed {}".format(type(swarm))
-        )
+        rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
         raise
     else:
         return (new_pbest_pos, new_pbest_cost)
@@ -129,26 +123,14 @@ def compute_velocity(swarm, clamp, vh, bounds=None):
         c2 = swarm.options["c2"]
         w = swarm.options["w"]
         # Compute for cognitive and social terms
-        cognitive = (
-            c1
-            * np.random.uniform(0, 1, swarm_size)
-            * (swarm.pbest_pos - swarm.position)
-        )
-        social = (
-            c2
-            * np.random.uniform(0, 1, swarm_size)
-            * (swarm.best_pos - swarm.position)
-        )
+        cognitive = c1 * np.random.uniform(0, 1, swarm_size) * (swarm.pbest_pos - swarm.position)
+        social = c2 * np.random.uniform(0, 1, swarm_size) * (swarm.best_pos - swarm.position)
         # Compute temp velocity (subject to clamping if possible)
         temp_velocity = (w * swarm.velocity) + cognitive + social
-        updated_velocity = vh(
-            temp_velocity, clamp, position=swarm.position, bounds=bounds
-        )
+        updated_velocity = vh(temp_velocity, clamp, position=swarm.position, bounds=bounds)
 
     except AttributeError:
-        rep.logger.exception(
-            "Please pass a Swarm class. You passed {}".format(type(swarm))
-        )
+        rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
         raise
     except KeyError:
         rep.logger.exception("Missing keyword in swarm.options")
@@ -202,9 +184,7 @@ def compute_position(swarm, bounds, bh):
 
         position = temp_position
     except AttributeError:
-        rep.logger.exception(
-            "Please pass a Swarm class. You passed {}".format(type(swarm))
-        )
+        rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
         raise
     else:
         return position

@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard libraries
-import pytest
+# Import standard library
 import random
-
-random.seed(0)
 
 # Import modules
 import numpy as np
 
+# Import standard libraries
+import pytest
+
 # Import from pyswarms
 from pyswarms.backend.topology import Star
-from pyswarms.single import GlobalBestPSO, LocalBestPSO, GeneralOptimizerPSO
+from pyswarms.single import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
+
+random.seed(0)
 
 # Knapsack parameters
 capacity = 50
@@ -40,14 +42,10 @@ def get_particle_obj(X, **kwargs):
     # X is the decision variable. X is vector in the lenght of number of items
     # $ value of items
     value = kwargs["value"]
-    # weight of items
-    weight = kwargs["weight"]
     # Total revenue
     revenue = sum([value[i] * np.round(X[i]) for i in item_range])
     # Total weight of selected items
-    used_capacity = sum(
-        [kwargs["weight"][i] * np.round(X[i]) for i in item_range]
-    )
+    used_capacity = sum([kwargs["weight"][i] * np.round(X[i]) for i in item_range])
     # Total capacity violation with 100 as a penalty cofficient
     capacity_violation = 100 * min(0, capacity - used_capacity)
     # the objective function minimizes the negative revenue, which is the same
@@ -103,7 +101,7 @@ class TestToleranceOptions:
         with pytest.raises(AssertionError):
             optm, params = optimizer
             params["ftol_iter"] = 0
-            opt = optm(**params)
+            optm(**params)
 
     def test_ftol_iter_effect(self, optimizer):
         """Test early stopping with ftol and ftol_iter;

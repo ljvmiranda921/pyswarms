@@ -53,16 +53,15 @@ R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
 
 # Import standard library
 import logging
+import multiprocessing as mp
+from collections import deque
 
 # Import modules
 import numpy as np
-import multiprocessing as mp
 
-from collections import deque
-
-from ..backend.operators import compute_pbest, compute_objective_function
+from ..backend.handlers import VelocityHandler
+from ..backend.operators import compute_objective_function, compute_pbest
 from ..backend.topology import Ring
-from ..backend.handlers import BoundaryHandler, VelocityHandler
 from ..base import DiscreteSwarmOptimizer
 from ..utils.reporter import Reporter
 
@@ -143,9 +142,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         self.vh = VelocityHandler(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(
-        self, objective_func, iters, n_processes=None, verbose=True, **kwargs
-    ):
+    def optimize(self, objective_func, iters, n_processes=None, verbose=True, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -192,17 +189,11 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         ftol_history = deque(maxlen=self.ftol_iter)
         for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
             # Compute cost for current position and personal best
-            self.swarm.current_cost = compute_objective_function(
-                self.swarm, objective_func, pool, **kwargs
-            )
-            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
-                self.swarm
-            )
+            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool, **kwargs)
+            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
             best_cost_yet_found = np.min(self.swarm.best_cost)
             # Update gbest from neighborhood
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                self.swarm, p=self.p, k=self.k
-            )
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, p=self.p, k=self.k)
             if verbose:
                 # Print to console
                 self.rep.hook(best_cost=self.swarm.best_cost)
@@ -217,10 +208,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = (
-                np.abs(self.swarm.best_cost - best_cost_yet_found)
-                < relative_measure
-            )
+            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
             if i < self.ftol_iter:
                 ftol_history.append(delta)
             else:
@@ -228,19 +216,13 @@ class BinaryPSO(DiscreteSwarmOptimizer):
                 if all(ftol_history):
                     break
             # Perform position velocity update
-            self.swarm.velocity = self.top.compute_velocity(
-                self.swarm, self.velocity_clamp, self.vh
-            )
+            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp, self.vh)
             self.swarm.position = self._compute_position(self.swarm)
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
-        final_best_pos = self.swarm.pbest_pos[
-            self.swarm.pbest_cost.argmin()
-        ].copy()
+        final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
         self.rep.log(
-            "Optimization finished | best cost: {}, best pos: {}".format(
-                final_best_cost, final_best_pos
-            ),
+            "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
             lvl=log_level,
         )
         # Close Pool of Processes
@@ -261,10 +243,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         swarm: pyswarms.backend.swarms.Swarm
             a Swarm class
         """
-        return (
-            np.random.random_sample(size=swarm.dimensions)
-            < self._sigmoid(swarm.velocity)
-        ) * 1
+        return (np.random.random_sample(size=swarm.dimensions) < self._sigmoid(swarm.velocity)) * 1
 
     def _sigmoid(self, x):
         """Helper method for the sigmoid function

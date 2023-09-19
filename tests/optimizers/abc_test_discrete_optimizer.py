@@ -28,9 +28,7 @@ class ABCTestDiscreteOptimizer(ABCTestOptimizer):
         assert np.isclose(pos[1], 1.0, rtol=1e-03)
 
     @pytest.mark.skip("No way of testing this yet")
-    def test_obj_unnecessary_kwargs(
-        self, obj_without_args, optimizer, options
-    ):
+    def test_obj_unnecessary_kwargs(self, obj_without_args, optimizer, options):
         """Test if error is raised given unnecessary kwargs"""
         opt = optimizer(100, 2, options=options)
         with pytest.raises(TypeError):

@@ -1,4 +1,4 @@
-"""
+r"""
 Handlers
 
 This module provides Handler classes for the position, velocity and time varying acceleration coefficients
@@ -11,7 +11,7 @@ For the following documentation let :math:`x_{i, t, d} \ ` be the :math:`d` th
 coordinate of the particle :math:`i` 's position vector at the time :math:`t`,
 :math:`lb` the vector of the lower boundaries and :math:`ub` the vector of the
 upper boundaries.
-The :class:`OptionsHandler` class provide methods which allow faster and better convergence by varying 
+The :class:`OptionsHandler` class provide methods which allow faster and better convergence by varying
 the options :math:`w, c_{1}, c_{2}` with various strategies.
 
 The algorithms in the :class:`BoundaryHandler` and :class:`VelocityHandler` classes are adapted from [SH2010]
@@ -20,12 +20,14 @@ The algorithms in the :class:`BoundaryHandler` and :class:`VelocityHandler` clas
 PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 """
 
+# Import standard library
 import inspect
 import logging
-
-import numpy as np
 import math
 from copy import copy
+
+# Import modules
+import numpy as np
 
 from ..utils.reporter import Reporter
 
@@ -55,11 +57,7 @@ class HandlerMixin(object):
 
     def _get_all_strategies(self):
         """Helper method to automatically generate a dict of strategies"""
-        return {
-            k: v
-            for k, v in inspect.getmembers(self, predicate=inspect.isroutine)
-            if not k.startswith(("__", "_"))
-        }
+        return {k: v for k, v in inspect.getmembers(self, predicate=inspect.isroutine) if not k.startswith(("__", "_"))}
 
 
 class BoundaryHandler(HandlerMixin):
@@ -131,13 +129,9 @@ class BoundaryHandler(HandlerMixin):
             the adjusted positions of the swarm
         """
         try:
-            new_position = self.strategies[self.strategy](
-                position, bounds, **kwargs
-            )
+            new_position = self.strategies[self.strategy](position, bounds, **kwargs)
         except KeyError:
-            message = "Unrecognized strategy: {}. Choose one among: " + str(
-                [strat for strat in self.strategies.keys()]
-            )
+            message = "Unrecognized strategy: {}. Choose one among: " + str([strat for strat in self.strategies.keys()])
             self.rep.logger.exception(message.format(self.strategy))
             raise
         else:
@@ -195,22 +189,14 @@ class BoundaryHandler(HandlerMixin):
             \end{gather*}
         """
         lb, ub = bounds
-        lower_than_bound, greater_than_bound = self._out_of_bounds(
-            position, bounds
-        )
+        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
         new_pos = position
         while lower_than_bound[0].size != 0 or greater_than_bound[0].size != 0:
             if lower_than_bound[0].size > 0:
-                new_pos[lower_than_bound] = (
-                    2 * lb[lower_than_bound[1]] - new_pos[lower_than_bound]
-                )
+                new_pos[lower_than_bound] = 2 * lb[lower_than_bound[1]] - new_pos[lower_than_bound]
             if greater_than_bound[0].size > 0:
-                new_pos[greater_than_bound] = (
-                    2 * ub[greater_than_bound[1]] - new_pos[greater_than_bound]
-                )
-            lower_than_bound, greater_than_bound = self._out_of_bounds(
-                new_pos, bounds
-            )
+                new_pos[greater_than_bound] = 2 * ub[greater_than_bound[1]] - new_pos[greater_than_bound]
+            lower_than_bound, greater_than_bound = self._out_of_bounds(new_pos, bounds)
 
         return new_pos
 
@@ -251,18 +237,16 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         else:
             lb, ub = bounds
-            lower_than_bound, greater_than_bound = self._out_of_bounds(
-                position, bounds
-            )
+            lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
             velocity = position - self.memory
             # Create a coefficient matrix
             sigma = np.tile(1.0, position.shape)
-            sigma[lower_than_bound] = (
-                lb[lower_than_bound[1]] - self.memory[lower_than_bound]
-            ) / velocity[lower_than_bound]
-            sigma[greater_than_bound] = (
-                ub[greater_than_bound[1]] - self.memory[greater_than_bound]
-            ) / velocity[greater_than_bound]
+            sigma[lower_than_bound] = (lb[lower_than_bound[1]] - self.memory[lower_than_bound]) / velocity[
+                lower_than_bound
+            ]
+            sigma[greater_than_bound] = (ub[greater_than_bound[1]] - self.memory[greater_than_bound]) / velocity[
+                greater_than_bound
+            ]
             min_sigma = np.amin(sigma, axis=1)
             new_pos = position
             new_pos[lower_than_bound[0]] = (
@@ -289,24 +273,14 @@ class BoundaryHandler(HandlerMixin):
         inside the boundary conditions.
         """
         lb, ub = bounds
-        lower_than_bound, greater_than_bound = self._out_of_bounds(
-            position, bounds
-        )
+        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
         # Set indices that are greater than bounds
         new_pos = position
         new_pos[greater_than_bound[0]] = np.array(
-            [
-                np.array([u - l for u, l in zip(ub, lb)])
-                * np.random.random_sample((position.shape[1],))
-                + lb
-            ]
+            [np.array([u - l for u, l in zip(ub, lb)]) * np.random.random_sample((position.shape[1],)) + lb]
         )
         new_pos[lower_than_bound[0]] = np.array(
-            [
-                np.array([u - l for u, l in zip(ub, lb)])
-                * np.random.random_sample((position.shape[1],))
-                + lb
-            ]
+            [np.array([u - l for u, l in zip(ub, lb)]) * np.random.random_sample((position.shape[1],)) + lb]
         )
         return new_pos
 
@@ -333,16 +307,10 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         else:
             lb, ub = bounds
-            lower_than_bound, greater_than_bound = self._out_of_bounds(
-                position, bounds
-            )
+            lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
             new_pos = position
-            new_pos[lower_than_bound] = 0.5 * (
-                self.memory[lower_than_bound] + lb[lower_than_bound[1]]
-            )
-            new_pos[greater_than_bound] = 0.5 * (
-                self.memory[greater_than_bound] + ub[greater_than_bound[1]]
-            )
+            new_pos[lower_than_bound] = 0.5 * (self.memory[lower_than_bound] + lb[lower_than_bound[1]])
+            new_pos[greater_than_bound] = 0.5 * (self.memory[greater_than_bound] + ub[greater_than_bound[1]])
             self.memory = new_pos
         return new_pos
 
@@ -371,12 +339,8 @@ class BoundaryHandler(HandlerMixin):
 
         """
         lb, ub = bounds
-        lower_than_bound, greater_than_bound = self._out_of_bounds(
-            position, bounds
-        )
-        bound_d = np.tile(
-            np.abs(np.array(ub) - np.array(lb)), (position.shape[0], 1)
-        )
+        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
+        bound_d = np.tile(np.abs(np.array(ub) - np.array(lb)), (position.shape[0], 1))
         ub = np.tile(ub, (position.shape[0], 1))
         lb = np.tile(lb, (position.shape[0], 1))
         new_pos = position
@@ -436,13 +400,9 @@ class VelocityHandler(HandlerMixin):
             the adjusted positions of the swarm
         """
         try:
-            new_position = self.strategies[self.strategy](
-                velocity, clamp, **kwargs
-            )
+            new_position = self.strategies[self.strategy](velocity, clamp, **kwargs)
         except KeyError:
-            message = "Unrecognized strategy: {}. Choose one among: " + str(
-                [strat for strat in self.strategies.keys()]
-            )
+            message = "Unrecognized strategy: {}. Choose one among: " + str([strat for strat in self.strategies.keys()])
             self.rep.logger.exception(message.format(self.strategy))
             raise
         else:
@@ -514,14 +474,10 @@ class VelocityHandler(HandlerMixin):
                 z = 0.5
             else:
                 z = kwargs["z"]
-            lower_than_bound, greater_than_bound = self._out_of_bounds(
-                kwargs["position"], kwargs["bounds"]
-            )
+            lower_than_bound, greater_than_bound = self._out_of_bounds(kwargs["position"], kwargs["bounds"])
             new_vel = velocity
             new_vel[lower_than_bound[0]] = (-z) * new_vel[lower_than_bound[0]]
-            new_vel[greater_than_bound[0]] = (-z) * new_vel[
-                greater_than_bound[0]
-            ]
+            new_vel[greater_than_bound[0]] = (-z) * new_vel[greater_than_bound[0]]
             if clamp is not None:
                 new_vel = self.__apply_clamp(new_vel, clamp)
         except KeyError:
@@ -533,9 +489,7 @@ class VelocityHandler(HandlerMixin):
     def zero(self, velocity, clamp=None, **kwargs):
         """Set velocity to zero if the particle is out of bounds"""
         try:
-            lower_than_bound, greater_than_bound = self._out_of_bounds(
-                kwargs["position"], kwargs["bounds"]
-            )
+            lower_than_bound, greater_than_bound = self._out_of_bounds(kwargs["position"], kwargs["bounds"])
             new_vel = velocity
             new_vel[lower_than_bound[0]] = np.zeros(velocity.shape[1])
             new_vel[greater_than_bound[0]] = np.zeros(velocity.shape[1])
@@ -556,7 +510,7 @@ class OptionsHandler(HandlerMixin):
 
         * exp_decay:
             Decreases the parameter exponentially between limits.
-    
+
         * lin_variation:
             Decreases/increases the parameter linearly between limits.
 
@@ -584,14 +538,14 @@ class OptionsHandler(HandlerMixin):
                 # more updates using new_options
 
         .. note::
-            As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending 
+            As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending
             options and other arguments for each strategy in all of the handlers on this page.
 
         A more comprehensive tutorial is also present `here`_ for interested users.
-        
+
         .. _here: https://pyswarms.readthedocs.io/en/latest/examples/tutorials/options_handler.html
-        
-        
+
+
 
         Attributes
         ----------
@@ -610,13 +564,9 @@ class OptionsHandler(HandlerMixin):
             return_opts = copy(start_opts)
             for opt in start_opts:
                 if opt in self.strategy:
-                    return_opts[opt] = self.strategies[self.strategy[opt]](
-                        start_opts, opt, **kwargs
-                    )
+                    return_opts[opt] = self.strategies[self.strategy[opt]](start_opts, opt, **kwargs)
         except KeyError:
-            message = "Unrecognized strategy: {}. Choose one among: " + str(
-                [strat for strat in self.strategies.keys()]
-            )
+            message = "Unrecognized strategy: {}. Choose one among: " + str([strat for strat in self.strategies.keys()])
             self.rep.logger.exception(message.format(self.strategy))
             raise
         else:
@@ -625,12 +575,17 @@ class OptionsHandler(HandlerMixin):
     def exp_decay(self, start_opts, opt, **kwargs):
         """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
         The velocity is adjusted such that the following equation holds:
-        
-        Defaults: :math:`d_{1}=2, d_{2}=7, w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
+
+        Defaults: :math:`
+            d_{1}=2,
+            d_{2}=7,
+            w^{end} = 0.4,
+            c^{end}_{1} = 0.8 * c^{start}_{1},
+            c^{end}_{2} = c^{start}_{2}`
 
         .. math::
                 w = (w^{start}-w^{end}-d_{1})exp(\\frac{1}{1+ \\frac{d_{2}.iter}{iter^{max}}})
-                
+
         Ref: Li, H.-R., & Gao, Y.-L. (2009). Particle Swarm Optimization Algorithm with Exponent
         Decreasing Inertia Weight and Stochastic Mutation. 2009 Second International Conference
         on Information and Computing Science. doi:10.1109/icic.2009.24
@@ -658,9 +613,7 @@ class OptionsHandler(HandlerMixin):
                     end_opts[opt] = kwargs["end_opts"][opt]
             start = start_opts[opt]
             end = end_opts[opt]
-            new_val = (start - end - d1) * math.exp(
-                1 / (1 + d2 * kwargs["iternow"] / kwargs["itermax"])
-            )
+            new_val = (start - end - d1) * math.exp(1 / (1 + d2 * kwargs["iternow"] / kwargs["itermax"]))
         except KeyError:
             self.rep.logger.exception("Keyword 'itermax' or 'iternow' missing")
             raise
@@ -670,14 +623,14 @@ class OptionsHandler(HandlerMixin):
     def lin_variation(self, start_opts, opt, **kwargs):
         """
         Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
-        
+
         Defaults: :math:`w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
-        
+
         .. math::
                 w = w^{end}+(w^{start}-w^{end}) \\frac{iter^{max}-iter}{iter^{max}}
 
-        Ref: Xin, Jianbin, Guimin Chen, and Yubao Hai. "A particle swarm optimizer with 
-        multi-stage linearly-decreasing inertia weight." 2009 International joint conference 
+        Ref: Xin, Jianbin, Guimin Chen, and Yubao Hai. "A particle swarm optimizer with
+        multi-stage linearly-decreasing inertia weight." 2009 International joint conference
         on computational sciences and optimization. Vol. 1. IEEE, 2009.
         """
 
@@ -692,12 +645,7 @@ class OptionsHandler(HandlerMixin):
                     end_opts[opt] = kwargs["end_opts"][opt]
             start = start_opts[opt]
             end = end_opts[opt]
-            new_val = (
-                end
-                + (start - end)
-                * (kwargs["itermax"] - kwargs["iternow"])
-                / kwargs["itermax"]
-            )
+            new_val = end + (start - end) * (kwargs["itermax"] - kwargs["iternow"]) / kwargs["itermax"]
         except KeyError:
             self.rep.logger.exception("Keyword 'itermax' or 'iternow' missing")
             raise
@@ -709,11 +657,11 @@ class OptionsHandler(HandlerMixin):
 
         .. math::
                 w = start + (end-start)*rand(0,1)
-        
+
         Ref: R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
         swarms, in: Congress on Evolutionary Computation, Korea, 2001
         """
-        
+
         start = start_opts[opt]
         if opt in kwargs["end_opts"]:
             end = kwargs["end_opts"][opt]
@@ -753,10 +701,7 @@ class OptionsHandler(HandlerMixin):
 
             start = start_opts[opt]
             end = end_opts[opt]
-            new_val = end + (start - end) * (
-                (kwargs["itermax"] - kwargs["iternow"]) ** n
-                / kwargs["itermax"] ** n
-            )
+            new_val = end + (start - end) * ((kwargs["itermax"] - kwargs["iternow"]) ** n / kwargs["itermax"] ** n)
         except KeyError:
             self.rep.logger.exception("Keyword 'itermax' or 'iternow' missing")
             raise

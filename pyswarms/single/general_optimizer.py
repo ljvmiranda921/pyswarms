@@ -58,16 +58,15 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 
 # Import standard library
 import logging
+import multiprocessing as mp
+from collections import deque
 
 # Import modules
 import numpy as np
-import multiprocessing as mp
 
-from collections import deque
-
-from ..backend.operators import compute_pbest, compute_objective_function
+from ..backend.handlers import BoundaryHandler, OptionsHandler, VelocityHandler
+from ..backend.operators import compute_objective_function, compute_pbest
 from ..backend.topology import Topology
-from ..backend.handlers import BoundaryHandler, VelocityHandler, OptionsHandler
 from ..base import SwarmOptimizer
 from ..utils.reporter import Reporter
 
@@ -194,9 +193,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         self.oh = OptionsHandler(strategy=oh_strategy)
         self.name = __name__
 
-    def optimize(
-        self, objective_func, iters, n_processes=None, verbose=True, **kwargs
-    ):
+    def optimize(self, objective_func, iters, n_processes=None, verbose=True, **kwargs):
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -249,9 +246,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             best_cost_yet_found = self.swarm.best_cost
             # fmt: on
             # Update swarm
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(
-                self.swarm, **self.options
-            )
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, **self.options)
             # Print to console
             if verbose:
                 self.rep.hook(best_cost=self.swarm.best_cost)
@@ -265,10 +260,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self._populate_history(hist)
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = (
-                np.abs(self.swarm.best_cost - best_cost_yet_found)
-                < relative_measure
-            )
+            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
             if i < self.ftol_iter:
                 ftol_history.append(delta)
             else:
@@ -276,26 +268,16 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 if all(ftol_history):
                     break
             # Perform options update
-            self.swarm.options = self.oh(
-                self.options, iternow=i, itermax=iters
-            )
+            self.swarm.options = self.oh(self.options, iternow=i, itermax=iters)
             # Perform velocity and position updates
-            self.swarm.velocity = self.top.compute_velocity(
-                self.swarm, self.velocity_clamp, self.vh, self.bounds
-            )
-            self.swarm.position = self.top.compute_position(
-                self.swarm, self.bounds, self.bh
-            )
+            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp, self.vh, self.bounds)
+            self.swarm.position = self.top.compute_position(self.swarm, self.bounds, self.bh)
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
-        final_best_pos = self.swarm.pbest_pos[
-            self.swarm.pbest_cost.argmin()
-        ].copy()
+        final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
         # Write report in log and return final cost and position
         self.rep.log(
-            "Optimization finished | best cost: {}, best pos: {}".format(
-                final_best_cost, final_best_pos
-            ),
+            "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
             lvl=log_level,
         )
         # Close Pool of Processes

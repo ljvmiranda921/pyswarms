@@ -32,8 +32,7 @@ class Topology(abc.ABC):
 
         if self.static:
             self.rep.log(
-                "Running on `dynamic` topology,"
-                "set `static=True` for fixed neighbors.",
+                "Running on `dynamic` topology," "set `static=True` for fixed neighbors.",
                 lvl=logging.DEBUG,
             )
 

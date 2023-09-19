@@ -16,9 +16,7 @@ class SearchBase(object):
         """
         # Check type of optimizer object
         if not hasattr(self.optimizer, "optimize"):
-            raise TypeError(
-                "Parameter `optimizer` must have an " "`'optimize'` attribute."
-            )
+            raise TypeError("Parameter `optimizer` must have an " "`'optimize'` attribute.")
 
     def __init__(
         self,

@@ -136,9 +136,7 @@ def test_rastrigin_bound_fail(outbound):
 def test_schaffer2_bound_fail(outbound):
     """Test schaffer2 bound exception"""
     with pytest.raises(ValueError):
-        x = outbound(
-            b["schaffer2"].low, b["schaffer2"].high, tol=200, size=(3, 2)
-        )
+        x = outbound(b["schaffer2"].low, b["schaffer2"].high, tol=200, size=(3, 2))
         fx.schaffer2(x)
 
 

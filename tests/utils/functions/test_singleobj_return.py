@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
-from collections import namedtuple
-
 # Import modules
 import numpy as np
 import pytest
@@ -45,9 +42,7 @@ def test_bukin6_output(common_minima2):
         )
     ],
 )
-@pytest.mark.parametrize(
-    "minima", [np.array([-2.06261, -2.06261, -2.06261, -2.06261])]
-)
+@pytest.mark.parametrize("minima", [np.array([-2.06261, -2.06261, -2.06261, -2.06261])])
 def test_crossintray_output(x, minima):
     """Tests crossintray function output."""
     assert np.isclose(fx.crossintray(x), minima).all()
@@ -55,9 +50,7 @@ def test_crossintray_output(x, minima):
 
 def test_easom_output(common_minima2):
     """Tests easom function output."""
-    assert np.isclose(
-        fx.easom([np.pi, np.pi] * common_minima2), (-1 * np.ones(3))
-    ).all()
+    assert np.isclose(fx.easom([np.pi, np.pi] * common_minima2), (-1 * np.ones(3))).all()
 
 
 def test_eggholder_output(common_minima2):
@@ -70,9 +63,7 @@ def test_eggholder_output(common_minima2):
 
 def test_goldstein_output(common_minima2):
     """Tests goldstein-price function output."""
-    assert np.isclose(
-        fx.goldstein([0, -1] * common_minima2), (3 * np.ones(3))
-    ).all()
+    assert np.isclose(fx.goldstein([0, -1] * common_minima2), (3 * np.ones(3))).all()
 
 
 @pytest.mark.parametrize(
@@ -106,9 +97,7 @@ def test_himmelblau_output(x):
         )
     ],
 )
-@pytest.mark.parametrize(
-    "minima", [np.array([-19.2085, -19.2085, -19.2085, -19.2085])]
-)
+@pytest.mark.parametrize("minima", [np.array([-19.2085, -19.2085, -19.2085, -19.2085])])
 def test_holdertable_output(x, minima):
     """Tests holdertable function output."""
     assert np.isclose(fx.holdertable(x), minima).all()
@@ -131,9 +120,7 @@ def test_rastrigin_output(common_minima):
 
 def test_rosenbrock_output(common_minima2):
     """Tests rosenbrock function output."""
-    assert np.array_equal(
-        fx.rosenbrock(common_minima2).all(), np.zeros(3).all()
-    )
+    assert np.array_equal(fx.rosenbrock(common_minima2).all(), np.zeros(3).all())
 
 
 def test_schaffer2_output(common_minima):

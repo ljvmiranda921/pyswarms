@@ -14,9 +14,9 @@ import logging
 import numpy as np
 from scipy.sparse.csgraph import connected_components, dijkstra
 
+from ...utils.reporter import Reporter
 from .. import operators as ops
 from ..handlers import BoundaryHandler, VelocityHandler
-from ...utils.reporter import Reporter
 from .base import Topology
 
 
@@ -65,33 +65,18 @@ class Random(Topology):
             # Check if the topology is static or dynamic and assign neighbors
             if (self.static and self.neighbor_idx is None) or not self.static:
                 adj_matrix = self.__compute_neighbors(swarm, k)
-                self.neighbor_idx = np.array(
-                    [
-                        adj_matrix[i].nonzero()[0]
-                        for i in range(swarm.n_particles)
-                    ]
-                )
-            idx_min = np.array(
-                [
-                    swarm.pbest_cost[self.neighbor_idx[i]].argmin()
-                    for i in range(len(self.neighbor_idx))
-                ]
+                self.neighbor_idx = np.array([adj_matrix[i].nonzero()[0] for i in range(swarm.n_particles)])
+            idx_min = np.array([swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))])
+            best_neighbor = np.array([self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]).astype(
+                int
             )
-            best_neighbor = np.array(
-                [
-                    self.neighbor_idx[i][idx_min[i]]
-                    for i in range(len(self.neighbor_idx))
-                ]
-            ).astype(int)
 
             # Obtain best cost and position
             best_cost = np.min(swarm.pbest_cost[best_neighbor])
             best_pos = swarm.pbest_pos[best_neighbor]
 
         except AttributeError:
-            self.rep.logger.exception(
-                "Please pass a Swarm class. You passed {}".format(type(swarm))
-            )
+            self.rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
             raise
         else:
             return (best_pos, best_cost)
@@ -149,9 +134,7 @@ class Random(Topology):
         """
         return ops.compute_velocity(swarm, clamp, vh, bounds=bounds)
 
-    def compute_position(
-        self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
-    ):
+    def compute_position(self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")):
         """Update the position matrix
 
         This method updates the position matrix given the current position and
@@ -244,12 +227,7 @@ class Random(Topology):
         )
 
         # Generate connected graph.
-        while (
-            connected_components(
-                adj_matrix, directed=False, return_labels=False
-            )
-            != 1
-        ):
+        while connected_components(adj_matrix, directed=False, return_labels=False) != 1:
             for i, j in itertools.product(range(swarm.n_particles), repeat=2):
                 if dist_matrix[i][j] == np.inf:
                     adj_matrix[i][j] = 1

@@ -7,6 +7,7 @@ import pytest
 
 # Import from pyswarms
 from pyswarms.backend.topology import VonNeumann
+
 from .abc_test_topology import ABCTestTopology
 
 np.random.seed(4135157)
@@ -27,12 +28,8 @@ class TestVonNeumannTopology(ABCTestTopology):
         """Test if update_gbest_neighborhood gives the expected return values"""
         topo = topology()
         pos, cost = topo.compute_gbest(swarm, p=p, r=r)
-        expected_pos = np.array(
-            [9.90438476e-01, 2.50379538e-03, 1.87405987e-05]
-        )
-        expected_pos_2 = np.array(
-            [9.98033031e-01, 4.97392619e-03, 3.07726256e-03]
-        )
+        expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
+        expected_pos_2 = np.array([9.98033031e-01, 4.97392619e-03, 3.07726256e-03])
         expected_cost = 1.0002528364353296
         assert cost == pytest.approx(expected_cost)
         assert (pos[np.argmin(cost)] == pytest.approx(expected_pos)) or (

@@ -16,9 +16,9 @@ import logging
 import numpy as np
 from scipy.spatial import cKDTree
 
+from ...utils.reporter import Reporter
 from .. import operators as ops
 from ..handlers import BoundaryHandler, VelocityHandler
-from ...utils.reporter import Reporter
 from .base import Topology
 
 
@@ -76,16 +76,12 @@ class Ring(Topology):
                 best_neighbor = np.arange(swarm.n_particles)
             else:
                 idx_min = swarm.pbest_cost[self.neighbor_idx].argmin(axis=1)
-                best_neighbor = self.neighbor_idx[
-                    np.arange(len(self.neighbor_idx)), idx_min
-                ]
+                best_neighbor = self.neighbor_idx[np.arange(len(self.neighbor_idx)), idx_min]
             # Obtain best cost and position
             best_cost = np.min(swarm.pbest_cost[best_neighbor])
             best_pos = swarm.pbest_pos[best_neighbor]
         except AttributeError:
-            self.rep.logger.exception(
-                "Please pass a Swarm class. You passed {}".format(type(swarm))
-            )
+            self.rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
             raise
         else:
             return (best_pos, best_cost)
@@ -143,9 +139,7 @@ class Ring(Topology):
         """
         return ops.compute_velocity(swarm, clamp, vh, bounds)
 
-    def compute_position(
-        self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
-    ):
+    def compute_position(self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")):
         """Update the position matrix
 
         This method updates the position matrix given the current position and

@@ -67,11 +67,11 @@ speed of animation.
 
 # Import standard library
 import logging
+import multiprocessing as mp
 
 # Import modules
 import matplotlib.pyplot as plt
 import numpy as np
-import multiprocessing as mp
 from matplotlib import animation, cm
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -81,9 +81,7 @@ from .formatters import Animator, Designer
 rep = Reporter(logger=logging.getLogger(__name__))
 
 
-def plot_cost_history(
-    cost_history, ax=None, title="Cost History", designer=None, **kwargs
-):
+def plot_cost_history(cost_history, ax=None, title="Cost History", designer=None, **kwargs):
     """Create a simple line plot with the cost in the y-axis and
     the iteration at the x-axis
 
@@ -122,9 +120,7 @@ def plot_cost_history(
             _, ax = plt.subplots(1, 1, figsize=designer.figsize)
 
         # Plot with iters in x-axis and the cost in y-axis
-        ax.plot(
-            np.arange(iters), cost_history, "k", lw=2, label=designer.legend
-        )
+        ax.plot(np.arange(iters), cost_history, "k", lw=2, label=designer.legend)
 
         # Customize plot depending on parameters
         ax.set_title(title, fontsize=designer.title_fontsize)
@@ -191,9 +187,7 @@ def plot_contour(
     try:
         # If no Designer class supplied, use defaults
         if designer is None:
-            designer = Designer(
-                limits=[(-1, 1), (-1, 1)], label=["x-axis", "y-axis"]
-            )
+            designer = Designer(limits=[(-1, 1), (-1, 1)], label=["x-axis", "y-axis"])
 
         # If no Animator class supplied, use defaults
         if animator is None:
@@ -362,9 +356,7 @@ def plot_surface(
         # Make a contour map if possible
         if mesher is not None:
             (xx, yy, zz) = _mesh(mesher, n_processes=n_processes)
-            ax.plot_surface(
-                xx, yy, zz, cmap=designer.colormap, alpha=mesher.alpha
-            )
+            ax.plot_surface(xx, yy, zz, cmap=designer.colormap, alpha=mesher.alpha)
 
         # Mark global best if possible
         if mark is not None:
@@ -419,9 +411,7 @@ def _mesh(mesher, n_processes=None):
     if pool is None:
         z = mesher.func(xypairs)
     else:
-        results = pool.map(
-            mesher.func, np.array_split(xypairs, pool._processes)
-        )
+        results = pool.map(mesher.func, np.array_split(xypairs, pool._processes))
         z = np.concatenate(results)
 
     # Close Pool of Processes

@@ -73,8 +73,6 @@ class VonNeumann(Ring):
             return 1
         else:
             del_number = (
-                VonNeumann.delannoy(d - 1, r)
-                + VonNeumann.delannoy(d - 1, r - 1)
-                + VonNeumann.delannoy(d, r - 1)
+                VonNeumann.delannoy(d - 1, r) + VonNeumann.delannoy(d - 1, r - 1) + VonNeumann.delannoy(d, r - 1)
             )
             return del_number

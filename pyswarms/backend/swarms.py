@@ -99,9 +99,7 @@ class Swarm(object):
         default=np.array([]),
         validator=instance_of(np.ndarray),
     )
-    best_cost = attrib(
-        type=float, default=np.inf, validator=instance_of((int, float))
-    )
+    best_cost = attrib(type=float, default=np.inf, validator=instance_of((int, float)))
     current_cost = attrib(
         type=np.ndarray,
         default=np.array([]),
