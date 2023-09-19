@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """Base class for hyperparameter optimization search functions"""
 
-# Import from __future__
-from __future__ import absolute_import, print_function, with_statement
-
 # Import standard library
 import operator as op
 
