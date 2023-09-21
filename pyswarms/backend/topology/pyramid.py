@@ -8,19 +8,23 @@ This class implements a pyramid topology. In this topology, the particles are co
 
 # Import standard library
 import logging
+from typing import Any, Dict, Optional
 
 # Import modules
 import numpy as np
-from scipy.spatial import Delaunay
+from scipy.spatial import Delaunay # type: ignore
 
-from ...utils.reporter import Reporter
-from .. import operators as ops
-from ..handlers import BoundaryHandler, VelocityHandler
-from .base import Topology
+from pyswarms.backend.swarms import Swarm
+from pyswarms.utils.types import Bounds, Clamp, Position
+
+from pyswarms.utils.reporter import Reporter
+from pyswarms.backend import operators as ops
+from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.topology.base import Topology
 
 
 class Pyramid(Topology):
-    def __init__(self, static=False):
+    def __init__(self, static: bool = False):
         """Initialize the class
 
         Parameters
@@ -32,7 +36,7 @@ class Pyramid(Topology):
         super(Pyramid, self).__init__(static)
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
-    def compute_gbest(self, swarm, **kwargs):
+    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
         """Update the global best using a pyramid neighborhood approach
 
         This topology uses the :code:`Delaunay` class from :code:`scipy`. To
@@ -60,44 +64,42 @@ class Pyramid(Topology):
         float
             Best cost
         """
-        try:
-            # If there are less than (swarm.dimensions + 1) particles they are all connected
-            if swarm.n_particles < swarm.dimensions + 1:
-                self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
-                best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
-                best_cost = np.min(swarm.pbest_cost)
-            else:
-                # Check if the topology is static or dynamic and assign neighbors
-                if (self.static and self.neighbor_idx is None) or not self.static:
-                    pyramid = Delaunay(swarm.position, qhull_options="QJ0.001 Qbb Qc Qx")
-                    indices, index_pointer = pyramid.vertex_neighbor_vertices
-                    # Insert all the neighbors for each particle in the idx array
-                    self.neighbor_idx = np.array(
-                        [index_pointer[indices[i] : indices[i + 1]] for i in range(swarm.n_particles)]
-                    )
-
-                idx_min = np.array(
-                    [swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))]
-                )
-                best_neighbor = np.array(
-                    [self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]
-                ).astype(int)
-
-                # Obtain best cost and position
-                best_cost = np.min(swarm.pbest_cost[best_neighbor])
-                best_pos = swarm.pbest_pos[best_neighbor]
-        except AttributeError:
-            self.rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
-            raise
+        best_pos: Position
+        
+        # If there are less than (swarm.dimensions + 1) particles they are all connected
+        if swarm.n_particles < swarm.dimensions + 1:
+            self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
+            best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
+            best_cost = np.min(swarm.pbest_cost)
         else:
-            return (best_pos, best_cost)
+            # Check if the topology is static or dynamic and assign neighbors
+            if self.neighbor_idx is None or not self.static:
+                pyramid = Delaunay(swarm.position, qhull_options="QJ0.001 Qbb Qc Qx")
+                indices, index_pointer = pyramid.vertex_neighbor_vertices
+                # Insert all the neighbors for each particle in the idx array
+                self.neighbor_idx = np.array(
+                    [index_pointer[indices[i] : indices[i + 1]] for i in range(swarm.n_particles)]
+                )
+
+            idx_min = np.array(
+                [swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))]
+            )
+            best_neighbor = np.array(
+                [self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]
+            ).astype(int)
+
+            # Obtain best cost and position
+            best_cost = np.min(swarm.pbest_cost[best_neighbor])
+            best_pos = swarm.pbest_pos[best_neighbor]
+
+        return (best_pos, float(best_cost))
 
     def compute_velocity(
         self,
-        swarm,
-        clamp=None,
-        vh=VelocityHandler(strategy="unmodified"),
-        bounds=None,
+        swarm: Swarm,
+        clamp: Optional[Clamp] = None,
+        vh: Optional[VelocityHandler] = None,
+        bounds:  Optional[Bounds] = None,
     ):
         """Compute the velocity matrix
 
@@ -131,7 +133,7 @@ class Pyramid(Topology):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        vh : pyswarms.backend.handlers.VelocityHandler
+        vh : pyswarms.backend.handlers.VelocityHandler, optional
             a VelocityHandler instance
         bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound while
@@ -143,9 +145,10 @@ class Pyramid(Topology):
         numpy.ndarray
             Updated velocity matrix
         """
+        vh = vh or VelocityHandler.factory("unmodified")
         return ops.compute_velocity(swarm, clamp, vh, bounds=bounds)
 
-    def compute_position(self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")):
+    def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: BoundaryHandler = BoundaryHandler(strategy="periodic")):
         """Update the position matrix
 
         This method updates the position matrix given the current position and

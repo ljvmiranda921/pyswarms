@@ -15,12 +15,20 @@ In addition, this class must interface with any class found in the
 # Import standard library
 import abc
 import logging
+import numpy as np
+import numpy.typing as npt
+from typing import Any, Dict, Optional, Tuple
+
+from pyswarms.backend.swarms import Swarm
+from pyswarms.utils.types import Position, Velocity
 
 from ...utils.reporter import Reporter
 
 
 class Topology(abc.ABC):
-    def __init__(self, static, **kwargs):
+    neighbor_idx: Optional[npt.NDArray[np.integer[Any]]] = None
+
+    def __init__(self, static: bool, **kwargs: Dict[str, Any]):
         """Initializes the class"""
 
         # Initialize logger
@@ -28,26 +36,25 @@ class Topology(abc.ABC):
 
         # Initialize attributes
         self.static = static
-        self.neighbor_idx = None
 
-        if self.static:
+        if not self.static:
             self.rep.log(
                 "Running on `dynamic` topology," "set `static=True` for fixed neighbors.",
                 lvl=logging.DEBUG,
             )
 
     @abc.abstractmethod
-    def compute_gbest(self, swarm):
+    def compute_gbest(self, swarm: Swarm) -> Tuple[Position, float]:
         """Compute the best particle of the swarm and return the cost and
         position"""
         raise NotImplementedError("Topology::compute_gbest()")
 
     @abc.abstractmethod
-    def compute_position(self, swarm):
+    def compute_position(self, swarm: Swarm) -> Position:
         """Update the swarm's position-matrix"""
         raise NotImplementedError("Topology::compute_position()")
 
     @abc.abstractmethod
-    def compute_velocity(self, swarm):
+    def compute_velocity(self, swarm: Swarm) -> Velocity:
         """Update the swarm's velocity-matrix"""
         raise NotImplementedError("Topology::compute_velocity()")

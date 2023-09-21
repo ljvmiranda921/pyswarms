@@ -11,24 +11,29 @@ optimizers.
 
 # Import standard library
 import logging
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 # Import modules
 import numpy as np
 
-from ...utils.reporter import Reporter
-from .. import operators as ops
-from ..handlers import BoundaryHandler, VelocityHandler
+if TYPE_CHECKING:
+    from pyswarms.backend.swarms import Swarm
+    from pyswarms.utils.types import Bounds, Clamp, Position
+
+from pyswarms.utils.reporter import Reporter
+from pyswarms.backend import operators as ops
+from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from .base import Topology
 
 
 class Star(Topology):
-    def __init__(self, static=None, **kwargs):
+    def __init__(self, static: bool = True):
         # static = None is just an artifact to make the API consistent
         # Setting it will not change swarm behavior
         super(Star, self).__init__(static=True)
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
-    def compute_gbest(self, swarm, **kwargs):
+    def compute_gbest(self, swarm: "Swarm", **kwargs: Dict[str, Any]):
         """Update the global best using a star topology
 
         This method takes the current pbest_pos and pbest_cost, then returns
@@ -58,29 +63,26 @@ class Star(Topology):
         float
             Best cost
         """
-        try:
-            if self.neighbor_idx is None:
-                self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
-            if np.min(swarm.pbest_cost) < swarm.best_cost:
-                # Get the particle position with the lowest pbest_cost
-                # and assign it to be the best_pos
-                best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
-                best_cost = np.min(swarm.pbest_cost)
-            else:
-                # Just get the previous best_pos and best_cost
-                best_pos, best_cost = swarm.best_pos, swarm.best_cost
-        except AttributeError:
-            self.rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
-            raise
+        if self.neighbor_idx is None:
+            self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
+        if np.min(swarm.pbest_cost) < swarm.best_cost:
+            # Get the particle position with the lowest pbest_cost
+            # and assign it to be the best_pos
+            best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
+            best_cost = np.min(swarm.pbest_cost)
         else:
-            return (best_pos, best_cost)
+            # Just get the previous best_pos and best_cost
+            best_pos: Position = swarm.best_pos
+            best_cost = swarm.best_cost
+
+        return (best_pos, float(best_cost))
 
     def compute_velocity(
         self,
-        swarm,
-        clamp=None,
-        vh=VelocityHandler(strategy="unmodified"),
-        bounds=None,
+        swarm: Swarm,
+        clamp: Optional[Clamp] = None,
+        vh: Optional[VelocityHandler] = None,
+        bounds: Optional[Bounds] = None,
     ):
         """Compute the velocity matrix
 
@@ -126,9 +128,10 @@ class Star(Topology):
         numpy.ndarray
             Updated velocity matrix
         """
+        vh = vh or VelocityHandler.factory("unmodified")
         return ops.compute_velocity(swarm, clamp, vh, bounds=bounds)
 
-    def compute_position(self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")):
+    def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: Optional[BoundaryHandler] = None):
         """Update the position matrix
 
         This method updates the position matrix given the current position and
@@ -150,4 +153,5 @@ class Star(Topology):
         numpy.ndarray
             New position-matrix
         """
+        bh = bh or BoundaryHandler("periodic")
         return ops.compute_position(swarm, bounds, bh)
