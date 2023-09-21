@@ -34,7 +34,7 @@ import numpy.typing as npt
 
 from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, Velocity
 
-from ..utils.reporter import Reporter
+from pyswarms.utils.reporter import Reporter
 
 
 class HandlerMixin(object):

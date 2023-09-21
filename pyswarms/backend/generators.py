@@ -16,9 +16,9 @@ from typing import Optional, Tuple
 # Import modules
 import numpy as np
 
-from ..utils.types import Bounds, Position, Velocity
+from pyswarms.utils.types import Bounds, Position, Velocity
 
-from ..utils.reporter import Reporter
+from pyswarms.utils.reporter import Reporter
 
 rep = Reporter(logger=logging.getLogger(__name__))
 

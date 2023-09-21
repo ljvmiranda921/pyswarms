@@ -21,8 +21,7 @@ from typing import Any, Dict, Optional, Tuple
 
 from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Position, Velocity
-
-from ...utils.reporter import Reporter
+from pyswarms.utils.reporter import Reporter
 
 
 class Topology(abc.ABC):

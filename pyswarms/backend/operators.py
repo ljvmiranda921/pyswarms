@@ -21,7 +21,7 @@ from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Bounds, Clamp, Position
 
-from ..utils.reporter import Reporter
+from pyswarms.utils.reporter import Reporter
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
@@ -63,23 +63,19 @@ def compute_pbest(swarm: Swarm):
     numpy.ndarray
         New personal best costs of shape :code:`(n_particles,)`
     """
-    try:
-        # Infer dimensions from positions
-        dimensions = swarm.dimensions
-        # Create a 1-D and 2-D mask based from comparisons
-        mask_cost = swarm.current_cost < swarm.pbest_cost
-        mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
-        # Apply masks
-        new_pbest_pos = np.where(~mask_pos, swarm.pbest_pos, swarm.position)
-        new_pbest_cost = np.where(~mask_cost, swarm.pbest_cost, swarm.current_cost)
-    except AttributeError:
-        rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
-        raise
-    else:
-        return (new_pbest_pos, new_pbest_cost)
+    # Infer dimensions from positions
+    dimensions = swarm.dimensions
+    # Create a 1-D and 2-D mask based from comparisons
+    mask_cost = swarm.current_cost < swarm.pbest_cost
+    mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
+    # Apply masks
+    new_pbest_pos = np.where(~mask_pos, swarm.pbest_pos, swarm.position)
+    new_pbest_cost = np.where(~mask_cost, swarm.pbest_cost, swarm.current_cost)
+
+    return (new_pbest_pos, new_pbest_cost)
 
 
-def compute_velocity(swarm: Swarm, clamp: Clamp, vh: VelocityHandler, bounds: Optional[Bounds] = None):
+def compute_velocity(swarm: Swarm, clamp: Optional[Clamp], vh: VelocityHandler, bounds: Optional[Bounds] = None):
     """Update the velocity matrix
 
     This method updates the velocity matrix using the best and current

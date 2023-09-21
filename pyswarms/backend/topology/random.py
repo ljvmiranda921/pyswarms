@@ -23,7 +23,7 @@ from pyswarms.utils.types import Bounds, Clamp, Position
 from pyswarms.utils.reporter import Reporter
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
-from .base import Topology
+from pyswarms.backend.topology.base import Topology
 
 
 class Random(Topology):
