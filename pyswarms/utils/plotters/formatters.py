@@ -8,9 +8,11 @@ This module implements helpful classes to format your plots or create meshes.
 
 # Import standard library
 import multiprocessing as mp
+from typing import Any, Callable, List, Optional, Tuple
 
 # Import modules
 import numpy as np
+import numpy.typing as npt
 from attr import attrib, attrs
 from attr.validators import instance_of
 from matplotlib import cm, colors
@@ -59,19 +61,21 @@ class Designer(object):
     """
 
     # Overall plot design
-    figsize = attrib(type=tuple, validator=instance_of(tuple), default=(10, 8))
-    title_fontsize = attrib(validator=instance_of((str, int, float)), default="large")
-    text_fontsize = attrib(validator=instance_of((str, int, float)), default="medium")
-    legend = attrib(validator=instance_of(str), default="Cost")
-    label = attrib(
-        validator=instance_of((str, list, tuple)),
+    figsize: Tuple[float, float] = attrib(type=tuple, validator=instance_of(tuple), default=(10, 8))
+    title_fontsize: str|int|float = attrib(type=str|int|float, validator=instance_of((str, int, float)), default="large")
+    text_fontsize: str|int|float = attrib(type=str|int|float, validator=instance_of((str, int, float)), default="medium")
+    legend: str = attrib(type=str, validator=instance_of(str), default="Cost")
+    label: str|List[str]|Tuple[str,...] = attrib(
+        type=str|List[str]|Tuple[str,...],
+        validator=instance_of((str, List[str], Tuple[str,...])),
         default=["x-axis", "y-axis", "z-axis"],
     )
-    limits = attrib(
-        validator=instance_of((list, tuple)),
+    limits: List[Tuple[int, ...]]|Tuple[Tuple[int, ...]] = attrib(
+        type=List[Tuple[int, ...]]|Tuple[Tuple[int, ...]],
+        validator=instance_of((List[Tuple[int, ...]], Tuple[Tuple[int, ...]])),
         default=[(-1, 1), (-1, 1), (-1, 1)],
     )
-    colormap = attrib(validator=instance_of(colors.Colormap), default=cm.viridis)
+    colormap: colors.Colormap = attrib(type=colors.Colormap, validator=instance_of(colors.Colormap), default=cm.viridis)
 
 
 @attrs
@@ -105,9 +109,9 @@ class Animator(object):
         Default is `True`
     """
 
-    interval = attrib(type=int, validator=instance_of(int), default=80)
-    repeat_delay = attrib(default=None)
-    repeat = attrib(type=bool, validator=instance_of(bool), default=True)
+    interval: int = attrib(type=int, validator=instance_of(int), default=80)
+    repeat_delay: int|float = attrib(default=None)
+    repeat: bool = attrib(type=bool, validator=instance_of(bool), default=True)
 
 
 @attrs
@@ -152,15 +156,19 @@ class Mesher(object):
         (-1, 1)]`
     """
 
-    func = attrib()
+    func: Callable[..., float] = attrib()
     # For mesh creation
-    delta = attrib(type=float, default=0.001)
-    limits = attrib(validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1)])
-    levels = attrib(type=list, default=np.arange(-2.0, 2.0, 0.070))
+    delta: float = attrib(type=float, default=0.001)
+    limits: List[Tuple[int, ...]]|Tuple[Tuple[int, ...]] = attrib(
+        type=List[Tuple[int, ...]]|Tuple[Tuple[int, ...]],
+        validator=instance_of((List[Tuple[int, ...]], Tuple[Tuple[int, ...]])),
+        default=[(-1, 1), (-1, 1)],
+    )
+    levels: npt.NDArray[Any] = attrib(type=npt.NDArray[Any], default=np.arange(-2.0, 2.0, 0.070))
     # Surface transparency
-    alpha = attrib(type=float, validator=instance_of(float), default=0.3)
+    alpha: float = attrib(type=float, validator=instance_of(float), default=0.3)
 
-    def compute_history_3d(self, pos_history, n_processes=None):
+    def compute_history_3d(self, pos_history: npt.NDArray[Any], n_processes: Optional[int] = None):
         """Compute a 3D position matrix
 
         The first two columns are the 2D position in the x and y axes
@@ -172,7 +180,7 @@ class Mesher(object):
         pos_history : numpy.ndarray
             Two-dimensional position matrix history of shape
             :code:`(iterations, n_particles, 2)`
-        n_processes : int
+        n_processes : int, optional
         number of processes to use for parallel mesh point calculation (default: None = no parallelization)
 
         Returns
