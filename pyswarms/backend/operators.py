@@ -19,7 +19,7 @@ import numpy as np
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp
+from pyswarms.utils.types import Bounds, Clamp, Position
 
 from ..utils.reporter import Reporter
 
@@ -145,7 +145,7 @@ def compute_velocity(swarm: Swarm, clamp: Clamp, vh: VelocityHandler, bounds: Op
         return updated_velocity
 
 
-def compute_position(swarm: Swarm, bounds: Bounds, bh: BoundaryHandler):
+def compute_position(swarm: Swarm, bounds: Optional[Bounds], bh: BoundaryHandler):
     """Update the position matrix
 
     This method updates the position matrix given the current position and the
@@ -181,19 +181,14 @@ def compute_position(swarm: Swarm, bounds: Bounds, bh: BoundaryHandler):
     numpy.ndarray
         New position-matrix
     """
-    try:
-        temp_position = swarm.position.copy()
-        temp_position += swarm.velocity
+    temp_position: Position = swarm.position.copy() + swarm.velocity
 
-        if bounds is not None:
-            temp_position = bh(temp_position, bounds)
+    if bounds is not None:
+        temp_position = bh(temp_position, bounds)
 
-        position = temp_position
-    except AttributeError:
-        rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
-        raise
-    else:
-        return position
+    position = temp_position
+
+    return position
 
 
 def compute_objective_function(swarm: Swarm, objective_func: Callable[..., float], pool: Optional[Pool] = None, **kwargs: Dict[str, Any]):
