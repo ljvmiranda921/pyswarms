@@ -30,26 +30,45 @@ See Also
 
 # Import standard library
 import abc
-from collections import namedtuple
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, TypedDict
 
 # Import modules
 import numpy as np
 
-# Import from package
-from ..backend import create_swarm
+from pyswarms.utils.types import Clamp, Position, Velocity
 
 
-class DiscreteSwarmOptimizer(abc.ABC):
+class Options(TypedDict):
+    c1: float
+    c2: float
+    w: float
+
+
+class ToHistory(NamedTuple):
+    best_cost: float
+    mean_pbest_cost: float
+    mean_neighbor_cost: float
+    position: Position
+    velocity: Velocity
+
+
+class BaseSwarmOptimizer(abc.ABC):
+    # Initialize history lists
+    cost_history: List[float] = []
+    mean_pbest_history: List[float] = []
+    mean_neighbor_history: List[float] = []
+    pos_history: List[Position] = []
+    velocity_history: List[Velocity] = []
+
     def __init__(
         self,
-        n_particles,
-        dimensions,
-        binary,
-        options,
-        velocity_clamp=None,
-        init_pos=None,
-        ftol=-np.inf,
-        ftol_iter=1,
+        n_particles: int,
+        dimensions: int,
+        options: Options,
+        velocity_clamp: Optional[Clamp]= None,
+        init_pos: Optional[Position] = None,
+        ftol: float = -np.inf,
+        ftol_iter: int = 1,
     ):
         """Initialize the swarm.
 
@@ -64,10 +83,6 @@ class DiscreteSwarmOptimizer(abc.ABC):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        binary : boolean
-            a trigger to generate a binary matrix for the swarm's
-            initial positions. When passed with a :code:`False` value,
-            random integers from 0 to :code:`dimensions` are generated.
         options : dict with keys :code:`{'c1', 'c2', 'w'}`
             a dictionary containing the parameters for the specific
             optimization technique
@@ -81,49 +96,31 @@ class DiscreteSwarmOptimizer(abc.ABC):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        ftol : float, optional
+        ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence. Default is :code:`-np.inf`.
         ftol_iter : int
             number of iterations over which the relative error in
             objective_func(best_pos) is acceptable for convergence.
             Default is :code:`1`
-        options: dict
-            a dictionary containing the parameters for a specific
-            optimization technique
         """
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dimensions = dimensions
-        self.binary = binary
         self.velocity_clamp = velocity_clamp
         self.swarm_size = (n_particles, dimensions)
         self.options = options
         self.init_pos = init_pos
         self.ftol = ftol
 
-        try:
-            assert ftol_iter > 0 and isinstance(ftol_iter, int)
-        except AssertionError:
-            raise AssertionError("ftol_iter expects an integer value greater than 0")
+        assert ftol_iter > 0 and isinstance(ftol_iter, int), "ftol_iter expects an integer value greater than 0"
 
         self.ftol_iter = ftol_iter
-        # Initialize named tuple for populating the history list
-        self.ToHistory = namedtuple(
-            "ToHistory",
-            [
-                "best_cost",
-                "mean_pbest_cost",
-                "mean_neighbor_cost",
-                "position",
-                "velocity",
-            ],
-        )
 
         # Initialize resettable attributes
         self.reset()
 
-    def _populate_history(self, hist):
+    def _populate_history(self, hist: ToHistory):
         """Populate all history lists
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
@@ -144,7 +141,7 @@ class DiscreteSwarmOptimizer(abc.ABC):
         self.velocity_history.append(hist.velocity)
 
     @abc.abstractmethod
-    def optimize(self, objective_func, iters, n_processes=None, **kwargs):
+    def optimize(self, objective_func: Callable[..., float], iters: int, n_processes: Optional[int] = None, **kwargs: Dict[str, Any]) -> None:
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -169,6 +166,11 @@ class DiscreteSwarmOptimizer(abc.ABC):
             When this method is not implemented.
         """
         raise NotImplementedError("SwarmBase::optimize()")
+    
+    @abc.abstractmethod
+    def _init_swarm(self) -> None:
+        """Initialise a new swarm object"""
+        raise NotImplementedError("SwarmBase::init_swarm()")
 
     def reset(self):
         """Reset the attributes of the optimizer
@@ -200,13 +202,4 @@ class DiscreteSwarmOptimizer(abc.ABC):
         self.pos_history = []
         self.velocity_history = []
 
-        # Initialize the swarm
-        self.swarm = create_swarm(
-            n_particles=self.n_particles,
-            dimensions=self.dimensions,
-            discrete=True,
-            init_pos=self.init_pos,
-            binary=self.binary,
-            clamp=self.velocity_clamp,
-            options=self.options,
-        )
+        self._init_swarm()
