@@ -16,7 +16,7 @@ from typing import Optional, Tuple
 # Import modules
 import numpy as np
 
-from ..utils.types import Bounds, DiscretePosition, Position, Velocity
+from ..utils.types import Bounds, Position, Velocity
 
 from ..utils.reporter import Reporter
 
@@ -87,7 +87,7 @@ def generate_swarm(
     return pos
 
 
-def generate_discrete_swarm(n_particles: int, dimensions: int, binary: bool = False, init_pos: Optional[DiscretePosition] = None) -> DiscretePosition:
+def generate_discrete_swarm(n_particles: int, dimensions: int, binary: bool = False, init_pos: Optional[Position] = None) -> Position:
     """Generate a discrete swarm
 
     Parameters
@@ -124,6 +124,7 @@ def generate_discrete_swarm(n_particles: int, dimensions: int, binary: bool = Fa
             pos = np.random.randint(2, size=(n_particles, dimensions))
         else:
             pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
+    
     return pos
 
 

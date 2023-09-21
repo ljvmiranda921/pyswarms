@@ -14,6 +14,5 @@ ClampFloat = Tuple[float, float]
 Clamp = ClampArray | ClampList | ClampFloat
 
 # Particle position and velocity types
-Position = npt.NDArray[np.floating[Any]]
+Position = npt.NDArray[np.floating[Any]|np.integer[Any]]
 Velocity = npt.NDArray[np.floating[Any]]
-DiscretePosition = npt.NDArray[np.integer[Any]]

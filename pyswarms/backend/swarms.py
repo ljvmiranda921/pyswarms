@@ -9,9 +9,13 @@ as input to most backend cases.
 """
 
 # Import modules
+from typing import Any, Dict
 import numpy as np
+import numpy.typing as npt
 from attr import attrib, attrs
 from attr.validators import instance_of
+
+from pyswarms.utils.types import Position, Velocity
 
 
 @attrs
@@ -82,25 +86,25 @@ class Swarm(object):
     """
 
     # Required attributes
-    position = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
-    velocity = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
+    position: Position = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
+    velocity: Velocity = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
     # With defaults
-    n_particles = attrib(type=int, validator=instance_of(int))
-    dimensions = attrib(type=int, validator=instance_of(int))
-    options = attrib(type=dict, default={}, validator=instance_of(dict))
-    pbest_pos = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
-    best_pos = attrib(
+    n_particles: int = attrib(type=int, validator=instance_of(int))
+    dimensions: int = attrib(type=int, validator=instance_of(int))
+    pbest_pos: Position = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
+    options: Dict[str, Any] = attrib(type=dict, default={}, validator=instance_of(dict))
+    best_pos: Position = attrib(
         type=np.ndarray,
         default=np.array([]),
         validator=instance_of(np.ndarray),
     )
-    pbest_cost = attrib(
+    pbest_cost: Position = attrib(
         type=np.ndarray,
         default=np.array([]),
         validator=instance_of(np.ndarray),
     )
-    best_cost = attrib(type=float, default=np.inf, validator=instance_of((int, float)))
-    current_cost = attrib(
+    best_cost: int|float = attrib(type=float, default=np.inf, validator=instance_of((int, float)))
+    current_cost: npt.NDArray[np.floating[Any]] = attrib(
         type=np.ndarray,
         default=np.array([]),
         validator=instance_of(np.ndarray),
