@@ -91,33 +91,35 @@ class VonNeumann(Ring):
             )
             return del_number
 
-print(VonNeumann.delannoy(20, 30))
 
-def delannoy(m: int, n: int) -> int:
-    # Ensure m is the larger dimension
-    if m < n:
-        m, n = n, m
+if __name__ == "__main__":
+    print(VonNeumann.delannoy(20, 30))
 
-    # Initialize an array to store the current row's Delannoy numbers
-    current_row = [1] * (n + 1)
+    def delannoy(m: int, n: int) -> int:
+        # Ensure m is the larger dimension
+        if m < n:
+            m, n = n, m
 
-    for _ in range(1, m + 1):
-        # Initialize the first element of the current row
-        current_value = 1
+        # Initialize an array to store the current row's Delannoy numbers
+        current_row = [1] * (n + 1)
 
-        for j in range(1, n + 1):
-            # Calculate the Delannoy number for the current cell
-            current_value = current_row[j] + current_value
+        for _ in range(1, m + 1):
+            # Initialize the first element of the current row
+            current_value = 1
 
-            # Update the current row for the next iteration
-            current_row[j] = current_value
+            for j in range(1, n + 1):
+                # Calculate the Delannoy number for the current cell
+                current_value = current_row[j] + current_value
 
-    # The last element of the current_row contains the Delannoy number for m rows and n columns
-    return current_row[n]
+                # Update the current row for the next iteration
+                current_row[j] = current_value
 
-# Example usage:
-m = 20
-n = 30
-result = delannoy(m, n)
-print(f"Delannoy({m}, {n}) = {result}")
+        # The last element of the current_row contains the Delannoy number for m rows and n columns
+        return current_row[n]
+
+    # Example usage:
+    m = 20
+    n = 30
+    result = delannoy(m, n)
+    print(f"Delannoy({m}, {n}) = {result}")
 
