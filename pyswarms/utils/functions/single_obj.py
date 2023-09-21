@@ -37,10 +37,12 @@ Function list:
 """
 
 # Import modules
+from typing import Any
 import numpy as np
+import numpy.typing as npt
 
 
-def ackley(x):
+def ackley(x: npt.NDArray[Any]):
     """Ackley's objective function.
 
     Has a global minimum of `0` at :code:`f(0,0,...,0)` with a search
@@ -76,7 +78,7 @@ def ackley(x):
     return j
 
 
-def beale(x):
+def beale(x: npt.NDArray[Any]):
     """Beale objective function.
 
     Only takes two dimensions and has a global minimum of `0` at
@@ -113,7 +115,7 @@ def beale(x):
     return j
 
 
-def booth(x):
+def booth(x: npt.NDArray[Any]):
     """Booth's objective function.
 
     Only takes two dimensions and has a global minimum of `0` at
@@ -150,7 +152,7 @@ def booth(x):
     return j
 
 
-def bukin6(x):
+def bukin6(x: npt.NDArray[Any]):
     """Bukin N. 6 Objective Function
 
     Only takes two dimensions and has a global minimum  of `0` at
@@ -191,7 +193,7 @@ def bukin6(x):
     return j
 
 
-def crossintray(x):
+def crossintray(x: npt.NDArray[Any]):
     """Cross-in-tray objective function.
 
     Only takes two dimensions and has a four equal global minimums
@@ -236,7 +238,7 @@ def crossintray(x):
     return j
 
 
-def easom(x):
+def easom(x: npt.NDArray[Any]):
     """Easom objective function.
 
     Only takes two dimensions and has a global minimum of
@@ -277,7 +279,7 @@ def easom(x):
     return j
 
 
-def eggholder(x):
+def eggholder(x: npt.NDArray[Any]):
     """Eggholder objective function.
 
     Only takes two dimensions and has a global minimum of
@@ -318,7 +320,7 @@ def eggholder(x):
     return j
 
 
-def goldstein(x):
+def goldstein(x: npt.NDArray[Any]):
     """Goldstein-Price's objective function.
 
     Only takes two dimensions and has a global minimum at
@@ -359,7 +361,7 @@ def goldstein(x):
     return j
 
 
-def himmelblau(x):
+def himmelblau(x: npt.NDArray[Any]):
     """Himmelblau's  objective function
 
     Only takes two dimensions and has a four equal global minimums
@@ -401,7 +403,7 @@ def himmelblau(x):
     return j
 
 
-def holdertable(x):
+def holdertable(x: npt.NDArray[Any]):
     """Holder Table objective function
 
     Only takes two dimensions and has a four equal global minimums
@@ -443,7 +445,7 @@ def holdertable(x):
     return j
 
 
-def levi(x):
+def levi(x: npt.NDArray[Any]) -> npt.NDArray[Any]:
     """Levi objective function
 
     Only takes two dimensions and has a global minimum at
@@ -474,24 +476,18 @@ def levi(x):
     if not np.logical_and(x >= -10, x <= 10).all():
         raise ValueError("Input for Levi function must be within [-10, 10].")
 
-    mask = np.full(x.shape, False)
-    mask[:, -1] = True
-    masked_x = np.ma.array(x, mask=mask)
-
     w_ = 1 + (x - 1) / 4
-    masked_w_ = np.ma.array(w_, mask=mask)
-    d_ = x.shape[1] - 1
 
     j = (
-        np.sin(np.pi * w_[:, 0]) ** 2.0
-        + ((masked_x - 1) ** 2.0).sum(axis=1) * (1 + 10 * np.sin(np.pi * (masked_w_).sum(axis=1) + 1) ** 2.0)
-        + (w_[:, d_] - 1) ** 2.0 * (1 + np.sin(2 * np.pi * w_[:, d_]) ** 2.0)
+        np.sin(np.pi * w_[:,0]) ** 2.0
+        + ((x[:,0] - 1) ** 2.0) * (1 + 10 * np.sin(np.pi * w_[:,0] + 1) ** 2.0)
+        + (w_[:,1] - 1) ** 2.0 * (1 + np.sin(2 * np.pi * w_[:,1]) ** 2.0)
     )
 
     return j
 
 
-def matyas(x):
+def matyas(x: npt.NDArray[Any]):
     """Matyas objective function
 
     Only takes two dimensions and has a global minimum at
@@ -519,7 +515,7 @@ def matyas(x):
     return j
 
 
-def rastrigin(x):
+def rastrigin(x: npt.NDArray[Any]):
     """Rastrigin objective function.
 
     Has a global minimum at :code:`f(0,0,...,0)` with a search
@@ -550,7 +546,7 @@ def rastrigin(x):
     return j
 
 
-def rosenbrock(x):
+def rosenbrock(x: npt.NDArray[Any]):
     """Rosenbrock objective function.
 
     Also known as the Rosenbrock's valley or Rosenbrock's banana
@@ -574,7 +570,7 @@ def rosenbrock(x):
     return r
 
 
-def schaffer2(x):
+def schaffer2(x: npt.NDArray[Any]):
     """Schaffer N.2 objective function
 
     Only takes two dimensions and has a global minimum at
@@ -612,7 +608,7 @@ def schaffer2(x):
     return j
 
 
-def sphere(x):
+def sphere(x: npt.NDArray[Any]):
     """Sphere objective function.
 
     Has a global minimum at :code:`0` and with a search domain of
@@ -633,7 +629,7 @@ def sphere(x):
     return j
 
 
-def threehump(x):
+def threehump(x: npt.NDArray[Any]):
     """Three-hump camel objective function
 
     Only takes two dimensions and has a global minimum of `0` at
