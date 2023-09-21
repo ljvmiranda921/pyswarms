@@ -30,7 +30,7 @@ See Also
 
 # Import standard library
 import abc
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, TypedDict
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, TypedDict
 
 # Import modules
 import numpy as np
@@ -141,7 +141,7 @@ class BaseSwarmOptimizer(abc.ABC):
         self.velocity_history.append(hist.velocity)
 
     @abc.abstractmethod
-    def optimize(self, objective_func: Callable[..., float], iters: int, n_processes: Optional[int] = None, **kwargs: Dict[str, Any]) -> None:
+    def optimize(self, objective_func: Callable[..., float], iters: int, n_processes: Optional[int] = None, **kwargs: Dict[str, Any]) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
