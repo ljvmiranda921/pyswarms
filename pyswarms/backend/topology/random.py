@@ -8,7 +8,6 @@ This class implements a random topology. All particles are connected in a random
 
 # Import standard library
 import itertools
-import logging
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
 # Import modules
@@ -22,7 +21,6 @@ if TYPE_CHECKING:
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.topology.base import Topology
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Bounds, Clamp, Position
 
 
@@ -40,7 +38,6 @@ class Random(Topology):
             is static or dynamic. Defaulg is `False`
         """
         super(Random, self).__init__(static)
-        self.rep = Reporter(logger=logging.getLogger(__name__))
         self.k = k
 
     def compute_gbest(self, swarm: "Swarm", **kwargs: Dict[str, Any]):

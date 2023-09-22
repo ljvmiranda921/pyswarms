@@ -7,7 +7,6 @@ This class implements a Von Neumann topology.
 """
 
 # Import standard library
-import logging
 from typing import TYPE_CHECKING, Any, Dict, Literal
 
 if TYPE_CHECKING:
@@ -15,7 +14,6 @@ if TYPE_CHECKING:
 
 # Import from pyswarms
 from pyswarms.backend.topology.ring import Ring
-from pyswarms.utils.reporter import Reporter
 
 
 class VonNeumann(Ring):
@@ -40,7 +38,6 @@ class VonNeumann(Ring):
         # Setting it will not change swarm behavior
         k = self.delannoy(dimensions, r)
         super(VonNeumann, self).__init__(p, k)
-        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm: "Swarm", **kwargs: Dict[str, Any]):
         """Updates the global best using a neighborhood approach

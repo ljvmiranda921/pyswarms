@@ -10,17 +10,14 @@ here to dictate how a swarm is initialized for your custom PSO.
 """
 
 # Import standard library
-import logging
 from typing import Optional
+from loguru import logger
 
 # Import modules
 import numpy as np
 
 # Import from pyswarms
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
-
-rep = Reporter(logger=logging.getLogger(__name__))
 
 
 def generate_swarm(
@@ -76,7 +73,7 @@ def generate_swarm(
                 pos = center * np.random.uniform(low=min_bounds, high=max_bounds, size=(n_particles, dimensions))
             except ValueError as e:
                 msg = "Bounds and/or init_pos should be of size ({},)"
-                rep.logger.exception(msg.format(dimensions))
+                logger.error(msg.format(dimensions))
                 raise e
     else:
         if init_pos is not None:
@@ -149,18 +146,10 @@ def generate_velocity(n_particles: int, dimensions: int, clamp: Optional[Clamp] 
     numpy.ndarray
         velocity matrix of shape (n_particles, dimensions)
     """
-    try:
-        min_velocity, max_velocity = (0, 1) if clamp is None else clamp
-        velocity = (max_velocity - min_velocity) * np.random.random_sample(
-            size=(n_particles, dimensions)
-        ) + min_velocity
-    except ValueError:
-        msg = "Please check clamp shape: {} != {}"
-        rep.logger.exception(msg.format(len(clamp), dimensions))
-        raise
-    except TypeError:
-        msg = "generate_velocity() takes an int for n_particles and dimensions and an array for clamp"
-        rep.logger.exception(msg)
-        raise
+    min_velocity, max_velocity = (0, 1) if clamp is None else np.array(clamp)
+
+    velocity = (max_velocity - min_velocity) * np.random.random_sample(
+        size=(n_particles, dimensions)
+    ) + min_velocity
 
     return velocity

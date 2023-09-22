@@ -14,8 +14,8 @@ In addition, this class must interface with any class found in the
 
 # Import standard library
 import abc
-import logging
 from typing import Any, Dict, Optional, Tuple
+from loguru import logger
 
 # Import modules
 import numpy as np
@@ -23,7 +23,6 @@ import numpy.typing as npt
 
 # Import from pyswarms
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Position, Velocity
 
 
@@ -33,17 +32,11 @@ class Topology(abc.ABC):
     def __init__(self, static: bool, **kwargs: Dict[str, Any]):
         """Initializes the class"""
 
-        # Initialize logger
-        self.rep = Reporter(logger=logging.getLogger(__name__))
-
         # Initialize attributes
         self.static = static
 
         if not self.static:
-            self.rep.log(
-                "Running on `dynamic` topology," "set `static=True` for fixed neighbors.",
-                lvl=logging.DEBUG,
-            )
+            logger.debug("Running on `dynamic` topology," "set `static=True` for fixed neighbors.")
 
     @abc.abstractmethod
     def compute_gbest(self, swarm: Swarm) -> Tuple[Position, float]:

@@ -7,7 +7,6 @@ This class implements a pyramid topology. In this topology, the particles are co
 """
 
 # Import standard library
-import logging
 from typing import Any, Dict, Optional
 
 # Import modules
@@ -19,7 +18,6 @@ from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Bounds, Clamp, Position
 
 
@@ -34,7 +32,6 @@ class Pyramid(Topology):
             is static or dynamic
         """
         super(Pyramid, self).__init__(static)
-        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
         """Update the global best using a pyramid neighborhood approach

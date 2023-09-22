@@ -94,7 +94,7 @@ class Swarm(object):
     # With defaults
     n_particles: int = attrib(type=int, validator=instance_of(int))
     dimensions: int = attrib(type=int, validator=instance_of(int))
-    pbest_pos: Position = attrib(type=np.ndarray, default=np.array([]), validator=instance_of(np.ndarray))
+    pbest_pos: Position = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
     options: Dict[str, Any] = attrib(type=dict, default={}, validator=instance_of(dict))
     best_pos: Position = attrib(
         type=np.ndarray,
