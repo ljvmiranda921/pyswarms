@@ -94,7 +94,7 @@ class Swarm:
     # With defaults
     n_particles: int = field(init=False)
     dimensions: int = field(init=False)
-    pbest_pos: Optional[Position] = field(default=None)
+    pbest_pos: Position = field(default_factory=lambda: np.array([], dtype=float))
     options: Dict[str, Any] = field(default_factory=dict)
     best_pos: Position = field(default_factory=lambda: np.array([], dtype=float))
     pbest_cost: Position = field(default_factory=lambda: np.array([], dtype=float))
@@ -105,5 +105,5 @@ class Swarm:
         self.n_particles = self.position.shape[0]
         self.dimensions = self.position.shape[1]
 
-        if self.pbest_pos is None:
+        if not self.pbest_pos.size:
             self.pbest_pos = self.position

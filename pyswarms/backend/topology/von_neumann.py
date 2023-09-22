@@ -15,7 +15,7 @@ from pyswarms.backend.topology.ring import Ring
 
 
 class VonNeumann(Ring):
-    def __init__(self, dimensions: int, r: int, p: Literal[1, 2], k: int, static: bool = True):
+    def __init__(self, dimensions: int, r: int, p: Literal[1, 2], static: bool = True):
         """Initializes the class
 
         Parameters

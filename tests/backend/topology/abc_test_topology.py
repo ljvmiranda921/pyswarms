@@ -3,9 +3,14 @@
 
 # Import standard library
 import abc
+from typing import Any, Dict, Optional, Type
 
 # Import modules
 import pytest
+from pyswarms.backend.swarms import Swarm
+
+from pyswarms.backend.topology.base import Topology
+from pyswarms.utils.types import Bounds, Clamp
 
 
 class ABCTestTopology(abc.ABC):
@@ -17,18 +22,20 @@ class ABCTestTopology(abc.ABC):
     """
 
     @pytest.fixture
-    def topology(self):
+    @abc.abstractmethod
+    def topology(self) -> Type[Topology]:
         """Return an instance of the topology"""
         raise NotImplementedError("NotImplementedError::topology")
 
     @pytest.fixture
-    def options(self):
+    @abc.abstractmethod
+    def options(self) -> Dict[str, Any]:
         """Return a dictionary of options"""
         raise NotImplementedError("NotImplementedError::options")
 
     @pytest.mark.parametrize("static", [True, False])
     @pytest.mark.parametrize("clamp", [None, (0, 1), (-1, 1)])
-    def test_compute_velocity_return_values(self, topology, swarm, clamp, static):
+    def test_compute_velocity_return_values(self, topology: Type[Topology], swarm: Swarm, clamp: Optional[Clamp], static: bool):
         """Test if compute_velocity() gives the expected shape and range"""
         topo = topology(static=static)
         v = topo.compute_velocity(swarm, clamp)
@@ -41,7 +48,7 @@ class ABCTestTopology(abc.ABC):
         "bounds",
         [None, ([-5, -5, -5], [5, 5, 5]), ([-10, -10, -10], [10, 10, 10])],
     )
-    def test_compute_position_return_values(self, topology, swarm, bounds, static):
+    def test_compute_position_return_values(self, topology: Type[Topology], swarm: Swarm, bounds: Optional[Bounds], static: bool):
         """Test if compute_position() gives the expected shape and range"""
         topo = topology(static=static)
         p = topo.compute_position(swarm, bounds)
@@ -50,7 +57,7 @@ class ABCTestTopology(abc.ABC):
             assert (bounds[0] <= p).all() and (bounds[1] >= p).all()
 
     @pytest.mark.parametrize("static", [True, False])
-    def test_neighbor_idx(self, topology, options, swarm, static):
+    def test_neighbor_idx(self, topology: Type[Topology], options: Dict[str, Any], swarm: Swarm, static: bool):
         """Test if the neighbor_idx attribute is assigned"""
         topo = topology(static=static)
         topo.compute_gbest(swarm, **options)
@@ -58,7 +65,7 @@ class ABCTestTopology(abc.ABC):
 
     @pytest.mark.parametrize("static", [True, False])
     @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])
-    def test_input_swarm(self, topology, static, swarm, options):
+    def test_input_swarm(self, topology: Type[Topology], options: Dict[str, Any], swarm: Swarm, static: bool):
         """Test if AttributeError is raised when passed with a non-Swarm instance"""
         with pytest.raises(AttributeError):
             topo = topology(static=static)
