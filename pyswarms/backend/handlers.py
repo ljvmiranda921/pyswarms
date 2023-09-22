@@ -21,10 +21,10 @@ PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 """
 
 # Import standard library
-from abc import ABC, abstractmethod
 import inspect
 import logging
 import math
+from abc import ABC, abstractmethod
 from copy import copy
 from typing import Any, Dict, Literal, Optional
 
@@ -32,9 +32,9 @@ from typing import Any, Dict, Literal, Optional
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, Velocity
-
+# Import from pyswarms
 from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, Velocity
 
 
 class HandlerMixin(object):
@@ -387,7 +387,9 @@ class VelocityHandler(HandlerMixin, ABC):
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
     @abstractmethod
-    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]) -> Velocity:
+    def __call__(
+        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
+    ) -> Velocity:
         """Apply the selected strategy to the velocity-matrix given the bounds
 
         Parameters
@@ -407,14 +409,13 @@ class VelocityHandler(HandlerMixin, ABC):
         """
         ...
 
-
     def _apply_clamp(self, velocity: Velocity, clamp: Optional[Clamp]):
         """Helper method to apply a clamp to a velocity vector"""
         if clamp is None:
             raise ValueError("Clamp must not be None")
         min_velocity, max_velocity = clamp
         return np.clip(velocity, min_velocity, max_velocity)
-    
+
     @staticmethod
     def factory(strategy: VelocityStrategy):
         if strategy == "unmodified":
@@ -425,11 +426,14 @@ class VelocityHandler(HandlerMixin, ABC):
             return InvertVelocityHandler()
         elif strategy == "zero":
             return ZeroVelocityHandler()
-        
-        raise ValueError(f"Strategy {strategy} does not match any of [\"unmodified\", \"adjust\", \"invert\", \"zero\"]")
+
+        raise ValueError(f'Strategy {strategy} does not match any of ["unmodified", "adjust", "invert", "zero"]')
+
 
 class UnmodifiedVelocityHandler(VelocityHandler):
-    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]) -> Velocity:
+    def __call__(
+        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
+    ) -> Velocity:
         """Leaves the velocity unchanged"""
         if clamp is None:
             new_vel = velocity
@@ -437,8 +441,11 @@ class UnmodifiedVelocityHandler(VelocityHandler):
             new_vel = self._apply_clamp(velocity, clamp)
         return new_vel
 
+
 class AdjustVelocityHandler(VelocityHandler):
-    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]):
+    def __call__(
+        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
+    ):
         r"""Adjust the velocity to the new position
 
         The velocity is adjusted such that the following equation holds:
@@ -466,12 +473,15 @@ class AdjustVelocityHandler(VelocityHandler):
 
         return new_vel
 
+
 class InvertVelocityHandler(VelocityHandler):
     def __init__(self, z: float = 0.5):
         super().__init__()
         self.z = z
-    
-    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]) -> Velocity:
+
+    def __call__(
+        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
+    ) -> Velocity:
         r"""Invert the velocity if the particle is out of bounds
 
         The velocity is inverted and shrinked. The shrinking is determined by the
@@ -485,7 +495,7 @@ class InvertVelocityHandler(VelocityHandler):
         """
         if position is None:
             raise ValueError("Position must not be None")
-        
+
         if bounds is None:
             raise ValueError("Bounds must not be None")
 
@@ -496,18 +506,21 @@ class InvertVelocityHandler(VelocityHandler):
 
         if clamp is not None:
             new_vel = self._apply_clamp(new_vel, clamp)
-        
+
         return new_vel
 
+
 class ZeroVelocityHandler(VelocityHandler):
-    def __call__(self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]):
+    def __call__(
+        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
+    ):
         """Set velocity to zero if the particle is out of bounds"""
         if position is None:
             raise ValueError("Position must not be None")
-        
+
         if bounds is None:
             raise ValueError("Bounds must not be None")
-        
+
         lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
         new_vel = velocity
         new_vel[lower_than_bound[0]] = np.zeros(velocity.shape[1])
@@ -517,6 +530,7 @@ class ZeroVelocityHandler(VelocityHandler):
 
 
 OptionsStrategy = Literal["exp_decay", "lin_variation", "random", "nonlin_mod"]
+
 
 # TODO: Ew omg my eyes it's awful, implement a proper pattern here pls (see velocityhandler)
 class OptionsHandler(HandlerMixin):
@@ -579,9 +593,9 @@ class OptionsHandler(HandlerMixin):
     def __call__(self, start_opts: Dict[str, float], **kwargs: Dict[str, Any]):
         if not self.strategy:
             return start_opts
-        
+
         return_opts = copy(start_opts)
-        
+
         for opt in start_opts:
             if opt in self.strategy:
                 return_opts[opt] = self.strategies[self.strategy[opt]](start_opts, opt, **kwargs)

@@ -1,4 +1,7 @@
+# Import standard library
 from typing import Any, List, Tuple
+
+# Import modules
 import numpy as np
 import numpy.typing as npt
 
@@ -14,5 +17,5 @@ ClampFloat = Tuple[float, float]
 Clamp = ClampArray | ClampList | ClampFloat
 
 # Particle position and velocity types
-Position = npt.NDArray[np.floating[Any]|np.integer[Any]]
+Position = npt.NDArray[np.floating[Any] | np.integer[Any]]
 Velocity = npt.NDArray[np.floating[Any]]

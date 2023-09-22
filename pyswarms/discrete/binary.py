@@ -55,21 +55,21 @@ R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
 import logging
 import multiprocessing as mp
 from collections import deque
-from typing import Any, Callable, Deque, Dict, Literal, Optional, Tuple
+from typing import Any, Callable, Deque, Dict, Optional, Tuple
 
 # Import modules
 import numpy as np
 import numpy.typing as npt
-from pyswarms.backend.swarms import Swarm
 
-from pyswarms.single.general_optimizer import GeneralOptions
-from pyswarms.utils.types import Clamp, Position
-
+# Import from pyswarms
 from pyswarms.backend.handlers import VelocityHandler, VelocityStrategy
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Ring
 from pyswarms.base import DiscreteSwarmOptimizer
+from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Clamp, Position
 
 
 class BinaryPSO(DiscreteSwarmOptimizer):
@@ -79,7 +79,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         dimensions: int,
         options: GeneralOptions,
         init_pos: Optional[Position] = None,
-        velocity_clamp: Optional[Clamp]=None,
+        velocity_clamp: Optional[Clamp] = None,
         vh_strategy: VelocityStrategy = "unmodified",
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -149,7 +149,14 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         self.vh = VelocityHandler.factory(strategy=vh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func: Callable[..., float], iters: int, n_processes: Optional[int] = None, verbose: bool = True, **kwargs: Dict[str, Any]) -> Tuple[float, Position]:
+    def optimize(
+        self,
+        objective_func: Callable[..., float],
+        iters: int,
+        n_processes: Optional[int] = None,
+        verbose: bool = True,
+        **kwargs: Dict[str, Any]
+    ) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -200,14 +207,14 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool, **kwargs)
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
             best_cost_yet_found = np.min(self.swarm.best_cost)
-            
+
             # Update gbest from neighborhood
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, p=self.p, k=self.k)
-            
+
             if verbose:
                 # Print to console
                 self.rep.hook(best_cost=self.swarm.best_cost)
-            
+
             # Save to history
             hist = self.history(
                 best_cost=self.swarm.best_cost,
@@ -231,7 +238,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             # Perform position velocity update
             self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp, self.vh)
             self.swarm.position = self._compute_position(self.swarm)
-        
+
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
@@ -239,7 +246,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
             lvl=log_level,
         )
-        
+
         # Close Pool of Processes
         if n_processes is not None:
             pool.close()

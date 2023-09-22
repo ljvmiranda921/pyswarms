@@ -62,16 +62,20 @@ class Designer(object):
 
     # Overall plot design
     figsize: Tuple[float, float] = attrib(type=tuple, validator=instance_of(tuple), default=(10, 8))
-    title_fontsize: str|int|float = attrib(type=str|int|float, validator=instance_of((str, int, float)), default="large")
-    text_fontsize: str|int|float = attrib(type=str|int|float, validator=instance_of((str, int, float)), default="medium")
+    title_fontsize: str | int | float = attrib(
+        type=str | int | float, validator=instance_of((str, int, float)), default="large"
+    )
+    text_fontsize: str | int | float = attrib(
+        type=str | int | float, validator=instance_of((str, int, float)), default="medium"
+    )
     legend: str = attrib(type=str, validator=instance_of(str), default="Cost")
-    label: str|List[str]|Tuple[str,...] = attrib(
-        type=str|List[str]|Tuple[str,...],
-        validator=instance_of((str, List[str], Tuple[str,...])),
+    label: str | List[str] | Tuple[str, ...] = attrib(
+        type=str | List[str] | Tuple[str, ...],
+        validator=instance_of((str, List[str], Tuple[str, ...])),
         default=["x-axis", "y-axis", "z-axis"],
     )
-    limits: List[Tuple[int, ...]]|Tuple[Tuple[int, ...]] = attrib(
-        type=List[Tuple[int, ...]]|Tuple[Tuple[int, ...]],
+    limits: List[Tuple[int, ...]] | Tuple[Tuple[int, ...]] = attrib(
+        type=List[Tuple[int, ...]] | Tuple[Tuple[int, ...]],
         validator=instance_of((List[Tuple[int, ...]], Tuple[Tuple[int, ...]])),
         default=[(-1, 1), (-1, 1), (-1, 1)],
     )
@@ -110,7 +114,7 @@ class Animator(object):
     """
 
     interval: int = attrib(type=int, validator=instance_of(int), default=80)
-    repeat_delay: int|float = attrib(default=None)
+    repeat_delay: int | float = attrib(default=None)
     repeat: bool = attrib(type=bool, validator=instance_of(bool), default=True)
 
 
@@ -159,8 +163,8 @@ class Mesher(object):
     func: Callable[..., float] = attrib()
     # For mesh creation
     delta: float = attrib(type=float, default=0.001)
-    limits: List[Tuple[int, ...]]|Tuple[Tuple[int, ...]] = attrib(
-        type=List[Tuple[int, ...]]|Tuple[Tuple[int, ...]],
+    limits: List[Tuple[int, ...]] | Tuple[Tuple[int, ...]] = attrib(
+        type=List[Tuple[int, ...]] | Tuple[Tuple[int, ...]],
         validator=instance_of((List[Tuple[int, ...]], Tuple[Tuple[int, ...]])),
         default=[(-1, 1), (-1, 1)],
     )

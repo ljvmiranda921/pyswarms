@@ -16,12 +16,12 @@ from typing import Any, Callable, Dict, Optional
 
 # Import modules
 import numpy as np
+
+# Import from pyswarms
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
-
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, Position
-
 from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Bounds, Clamp, Position
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
@@ -187,7 +187,9 @@ def compute_position(swarm: Swarm, bounds: Optional[Bounds], bh: BoundaryHandler
     return position
 
 
-def compute_objective_function(swarm: Swarm, objective_func: Callable[..., float], pool: Optional[Pool] = None, **kwargs: Dict[str, Any]):
+def compute_objective_function(
+    swarm: Swarm, objective_func: Callable[..., float], pool: Optional[Pool] = None, **kwargs: Dict[str, Any]
+):
     """Evaluate particles using the objective function
 
     This method evaluates each particle in the swarm according to the objective

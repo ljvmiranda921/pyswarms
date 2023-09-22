@@ -70,13 +70,13 @@ from typing import Dict, Optional
 
 # Import modules
 import numpy as np
-from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
 
-from pyswarms.utils.types import Bounds, Clamp, Position
-
+# Import from pyswarms
 from pyswarms.backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
 from pyswarms.backend.topology import Ring
+from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
 from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class LocalBestPSO(GeneralOptimizerPSO):

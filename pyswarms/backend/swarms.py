@@ -8,13 +8,16 @@ the swarm such as position, velocity, options, etc. You can use this
 as input to most backend cases.
 """
 
-# Import modules
+# Import standard library
 from typing import Any, Dict
+
+# Import modules
 import numpy as np
 import numpy.typing as npt
 from attr import attrib, attrs
 from attr.validators import instance_of
 
+# Import from pyswarms
 from pyswarms.utils.types import Position, Velocity
 
 
@@ -103,7 +106,7 @@ class Swarm(object):
         default=np.array([]),
         validator=instance_of(np.ndarray),
     )
-    best_cost: int|float = attrib(type=float, default=np.inf, validator=instance_of((int, float)))
+    best_cost: int | float = attrib(type=float, default=np.inf, validator=instance_of((int, float)))
     current_cost: npt.NDArray[np.floating[Any]] = attrib(
         type=np.ndarray,
         default=np.array([]),

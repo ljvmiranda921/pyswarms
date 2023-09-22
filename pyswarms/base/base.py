@@ -35,6 +35,7 @@ from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Typed
 # Import modules
 import numpy as np
 
+# Import from pyswarms
 from pyswarms.utils.types import Clamp, Position, Velocity
 
 
@@ -65,7 +66,7 @@ class BaseSwarmOptimizer(abc.ABC):
         n_particles: int,
         dimensions: int,
         options: Options,
-        velocity_clamp: Optional[Clamp]= None,
+        velocity_clamp: Optional[Clamp] = None,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -141,7 +142,13 @@ class BaseSwarmOptimizer(abc.ABC):
         self.velocity_history.append(hist.velocity)
 
     @abc.abstractmethod
-    def optimize(self, objective_func: Callable[..., float], iters: int, n_processes: Optional[int] = None, **kwargs: Dict[str, Any]) -> Tuple[float, Position]:
+    def optimize(
+        self,
+        objective_func: Callable[..., float],
+        iters: int,
+        n_processes: Optional[int] = None,
+        **kwargs: Dict[str, Any]
+    ) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -166,7 +173,7 @@ class BaseSwarmOptimizer(abc.ABC):
             When this method is not implemented.
         """
         raise NotImplementedError("SwarmBase::optimize()")
-    
+
     @abc.abstractmethod
     def _init_swarm(self) -> None:
         """Initialise a new swarm object"""

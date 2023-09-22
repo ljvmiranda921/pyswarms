@@ -11,23 +11,23 @@ here to dictate how a swarm is initialized for your custom PSO.
 
 # Import standard library
 import logging
-from typing import Optional, Tuple
+from typing import Optional
 
 # Import modules
 import numpy as np
 
-from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
-
+# Import from pyswarms
 from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
 
 def generate_swarm(
-    n_particles: int, 
-    dimensions: int, 
-    bounds: Optional[Bounds] = None, 
-    center: float|Position = 1.00, 
+    n_particles: int,
+    dimensions: int,
+    bounds: Optional[Bounds] = None,
+    center: float | Position = 1.00,
     init_pos: Optional[Position] = None,
 ) -> Position:
     """Generate a swarm
@@ -87,7 +87,9 @@ def generate_swarm(
     return pos
 
 
-def generate_discrete_swarm(n_particles: int, dimensions: int, binary: bool = False, init_pos: Optional[Position] = None) -> Position:
+def generate_discrete_swarm(
+    n_particles: int, dimensions: int, binary: bool = False, init_pos: Optional[Position] = None
+) -> Position:
     """Generate a discrete swarm
 
     Parameters
@@ -124,7 +126,7 @@ def generate_discrete_swarm(n_particles: int, dimensions: int, binary: bool = Fa
             pos = np.random.randint(2, size=(n_particles, dimensions))
         else:
             pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
-    
+
     return pos
 
 

@@ -15,19 +15,19 @@ from typing import Any, Dict, Literal, Optional
 
 # Import modules
 import numpy as np
-from scipy.spatial import cKDTree # type: ignore
+from scipy.spatial import cKDTree  # type: ignore
 
-from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, Position
-
-from pyswarms.utils.reporter import Reporter
+# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
+from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Ring(Topology):
-    def __init__(self, p: Literal[1,2], k: int, static: bool = False):
+    def __init__(self, p: Literal[1, 2], k: int, static: bool = False):
         """Initializes the class
 
         Parameters
@@ -70,7 +70,7 @@ class Ring(Topology):
         if self.neighbor_idx is None or not self.static:
             # Obtain the nearest-neighbors for each particle
             tree = cKDTree(swarm.position)
-            _, self.neighbor_idx = tree.query(swarm.position, p = self.p, k = self.k)
+            _, self.neighbor_idx = tree.query(swarm.position, p=self.p, k=self.k)
 
         # Map the computed costs to the neighbour indices and take the
         # argmin. If k-neighbors is equal to 1, then the swarm acts
@@ -82,7 +82,7 @@ class Ring(Topology):
         else:
             idx_min = swarm.pbest_cost[self.neighbor_idx].argmin(axis=1)
             best_neighbor = self.neighbor_idx[np.arange(len(self.neighbor_idx)), idx_min]
-        
+
         # Obtain best cost and position
         best_cost = np.min(swarm.pbest_cost[best_neighbor])
         best_pos: Position = swarm.pbest_pos[best_neighbor]

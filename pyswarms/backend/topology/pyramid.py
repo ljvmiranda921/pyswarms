@@ -12,15 +12,15 @@ from typing import Any, Dict, Optional
 
 # Import modules
 import numpy as np
-from scipy.spatial import Delaunay # type: ignore
+from scipy.spatial import Delaunay  # type: ignore
 
-from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, Position
-
-from pyswarms.utils.reporter import Reporter
+# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
+from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Pyramid(Topology):
@@ -65,7 +65,7 @@ class Pyramid(Topology):
             Best cost
         """
         best_pos: Position
-        
+
         # If there are less than (swarm.dimensions + 1) particles they are all connected
         if swarm.n_particles < swarm.dimensions + 1:
             self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
@@ -81,12 +81,10 @@ class Pyramid(Topology):
                     [index_pointer[indices[i] : indices[i + 1]] for i in range(swarm.n_particles)]
                 )
 
-            idx_min = np.array(
-                [swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))]
+            idx_min = np.array([swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))])
+            best_neighbor = np.array([self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]).astype(
+                int
             )
-            best_neighbor = np.array(
-                [self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]
-            ).astype(int)
 
             # Obtain best cost and position
             best_cost = np.min(swarm.pbest_cost[best_neighbor])
@@ -99,7 +97,7 @@ class Pyramid(Topology):
         swarm: Swarm,
         clamp: Optional[Clamp] = None,
         vh: Optional[VelocityHandler] = None,
-        bounds:  Optional[Bounds] = None,
+        bounds: Optional[Bounds] = None,
     ):
         """Compute the velocity matrix
 
@@ -148,7 +146,9 @@ class Pyramid(Topology):
         vh = vh or VelocityHandler.factory("unmodified")
         return ops.compute_velocity(swarm, clamp, vh, bounds=bounds)
 
-    def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: BoundaryHandler = BoundaryHandler(strategy="periodic")):
+    def compute_position(
+        self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: BoundaryHandler = BoundaryHandler(strategy="periodic")
+    ):
         """Update the position matrix
 
         This method updates the position matrix given the current position and

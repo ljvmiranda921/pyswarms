@@ -62,8 +62,9 @@ from typing import Dict, Optional
 
 # Import modules
 import numpy as np
-from pyswarms.backend.topology.star import Star
 
+# Import from pyswarms
+from pyswarms.backend.topology.star import Star
 from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
 from pyswarms.utils.reporter.reporter import Reporter
 from pyswarms.utils.types import Bounds, Clamp, Position

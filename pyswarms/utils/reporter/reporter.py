@@ -62,7 +62,13 @@ class Reporter(object):
 
     t: Optional[tqdm[int]] = None
 
-    def __init__(self, log_path: Optional[str] = None, config_path: Optional[str] = None, logger: Optional[logging.Logger] = None, printer: Optional[pprint.PrettyPrinter] = None):
+    def __init__(
+        self,
+        log_path: Optional[str] = None,
+        config_path: Optional[str] = None,
+        logger: Optional[logging.Logger] = None,
+        printer: Optional[pprint.PrettyPrinter] = None,
+    ):
         """Initialize the reporter
 
         Attributes

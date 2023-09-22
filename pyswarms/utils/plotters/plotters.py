@@ -69,23 +69,30 @@ speed of animation.
 import logging
 import multiprocessing as mp
 from typing import Any, Dict, Optional, Tuple
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 
 # Import modules
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 from matplotlib import animation, cm
-from mpl_toolkits.mplot3d import Axes3D # type: ignore
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+from mpl_toolkits.mplot3d import Axes3D  # type: ignore
 
-from pyswarms.utils.reporter import Reporter
+# Import from pyswarms
 from pyswarms.utils.plotters.formatters import Animator, Designer, Mesher
+from pyswarms.utils.reporter import Reporter
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
 
-def plot_cost_history(cost_history: npt.NDArray[Any], ax: Optional[Axes] = None, title: str = "Cost History", designer: Optional[Designer] = None, **kwargs: Dict[str, Any]):
+def plot_cost_history(
+    cost_history: npt.NDArray[Any],
+    ax: Optional[Axes] = None,
+    title: str = "Cost History",
+    designer: Optional[Designer] = None,
+    **kwargs: Dict[str, Any]
+):
     """Create a simple line plot with the cost in the y-axis and
     the iteration at the x-axis
 
@@ -398,7 +405,9 @@ def _animate(i, data, plot):
     return (plot,)
 
 
-def _mesh(mesher: Mesher, n_processes: Optional[int] = None) -> Tuple[npt.NDArray[Any], npt.NDArray[Any], npt.NDArray[Any]]:
+def _mesh(
+    mesher: Mesher, n_processes: Optional[int] = None
+) -> Tuple[npt.NDArray[Any], npt.NDArray[Any], npt.NDArray[Any]]:
     """Helper function to make a mesh"""
     xlim = mesher.limits[0]
     ylim = mesher.limits[1]

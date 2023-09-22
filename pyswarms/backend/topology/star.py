@@ -18,12 +18,13 @@ import numpy as np
 
 if TYPE_CHECKING:
     from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, Position
 
-from pyswarms.utils.reporter import Reporter
+# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.topology.base import Topology
+from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Star(Topology):

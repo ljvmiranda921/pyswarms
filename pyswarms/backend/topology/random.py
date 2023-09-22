@@ -13,17 +13,17 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 
 # Import modules
 import numpy as np
-from scipy.sparse.csgraph import connected_components, dijkstra # type: ignore
+from scipy.sparse.csgraph import connected_components, dijkstra  # type: ignore
 
 if TYPE_CHECKING:
     from pyswarms.backend.swarms import Swarm
 
-from pyswarms.utils.types import Bounds, Clamp, Position
-
-from pyswarms.utils.reporter import Reporter
+# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.topology.base import Topology
+from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Random(Topology):
@@ -72,11 +72,9 @@ class Random(Topology):
         if self.neighbor_idx is None or not self.static:
             adj_matrix = self.__compute_neighbors(swarm)
             self.neighbor_idx = np.array([adj_matrix[i].nonzero()[0] for i in range(swarm.n_particles)])
-        
+
         idx_min = np.array([swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))])
-        best_neighbor = np.array([self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]).astype(
-            int
-        )
+        best_neighbor = np.array([self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]).astype(int)
 
         # Obtain best cost and position
         best_cost = np.min(swarm.pbest_cost[best_neighbor])

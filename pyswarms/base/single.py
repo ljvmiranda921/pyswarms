@@ -35,9 +35,10 @@ from typing import Optional
 
 # Import modules
 import numpy as np
+
+# Import from pyswarms
 from pyswarms.backend.generators import generate_swarm, generate_velocity
 from pyswarms.backend.swarms import Swarm
-
 from pyswarms.base.base import BaseSwarmOptimizer, Options
 from pyswarms.utils.types import Bounds, Clamp, Position
 

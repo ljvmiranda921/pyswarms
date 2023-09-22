@@ -13,12 +13,13 @@ from typing import TYPE_CHECKING, Any, Dict, Literal
 if TYPE_CHECKING:
     from pyswarms.backend.swarms import Swarm
 
-from pyswarms.utils.reporter import Reporter
+# Import from pyswarms
 from pyswarms.backend.topology.ring import Ring
+from pyswarms.utils.reporter import Reporter
 
 
 class VonNeumann(Ring):
-    def __init__(self, dimensions: int, r: int, p: Literal[1,2], k: int, static: bool = True):
+    def __init__(self, dimensions: int, r: int, p: Literal[1, 2], k: int, static: bool = True):
         """Initializes the class
 
         Parameters
@@ -122,4 +123,3 @@ if __name__ == "__main__":
     n = 30
     result = delannoy(m, n)
     print(f"Delannoy({m}, {n}) = {result}")
-

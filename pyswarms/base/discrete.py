@@ -33,11 +33,13 @@ from typing import List, Optional
 
 # Import modules
 import numpy as np
+
+# Import from pyswarms
 from pyswarms.backend.generators import generate_discrete_swarm, generate_velocity
 from pyswarms.backend.swarms import Swarm
 from pyswarms.base.base import BaseSwarmOptimizer, Options
-
 from pyswarms.utils.types import Clamp, Position, Velocity
+
 
 class DiscreteSwarmOptimizer(BaseSwarmOptimizer):
     # Initialize history lists
@@ -53,7 +55,7 @@ class DiscreteSwarmOptimizer(BaseSwarmOptimizer):
         dimensions: int,
         binary: bool,
         options: Options,
-        velocity_clamp: Optional[Clamp]= None,
+        velocity_clamp: Optional[Clamp] = None,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -101,6 +103,8 @@ class DiscreteSwarmOptimizer(BaseSwarmOptimizer):
         super().__init__(n_particles, dimensions, options, velocity_clamp, init_pos, ftol, ftol_iter)
 
     def _init_swarm(self):
-        position = generate_discrete_swarm(self.n_particles, self.dimensions, binary=self.binary, init_pos=self.init_pos)
+        position = generate_discrete_swarm(
+            self.n_particles, self.dimensions, binary=self.binary, init_pos=self.init_pos
+        )
         velocity = generate_velocity(self.n_particles, self.dimensions, clamp=self.velocity_clamp)
         self.swarm = Swarm(position, velocity, self.n_particles, self.dimensions, options=dict(self.options))

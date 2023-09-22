@@ -15,13 +15,16 @@ In addition, this class must interface with any class found in the
 # Import standard library
 import abc
 import logging
-import numpy as np
-import numpy.typing as npt
 from typing import Any, Dict, Optional, Tuple
 
+# Import modules
+import numpy as np
+import numpy.typing as npt
+
+# Import from pyswarms
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Position, Velocity
 from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.types import Position, Velocity
 
 
 class Topology(abc.ABC):

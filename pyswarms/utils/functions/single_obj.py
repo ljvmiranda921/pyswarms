@@ -36,8 +36,10 @@ Function list:
 - Three Hump Camel, threehump
 """
 
-# Import modules
+# Import standard library
 from typing import Any
+
+# Import modules
 import numpy as np
 import numpy.typing as npt
 
@@ -479,9 +481,9 @@ def levi(x: npt.NDArray[Any]) -> npt.NDArray[Any]:
     w_ = 1 + (x - 1) / 4
 
     j = (
-        np.sin(np.pi * w_[:,0]) ** 2.0
-        + ((x[:,0] - 1) ** 2.0) * (1 + 10 * np.sin(np.pi * w_[:,0] + 1) ** 2.0)
-        + (w_[:,1] - 1) ** 2.0 * (1 + np.sin(2 * np.pi * w_[:,1]) ** 2.0)
+        np.sin(np.pi * w_[:, 0]) ** 2.0
+        + ((x[:, 0] - 1) ** 2.0) * (1 + 10 * np.sin(np.pi * w_[:, 0] + 1) ** 2.0)
+        + (w_[:, 1] - 1) ** 2.0 * (1 + np.sin(2 * np.pi * w_[:, 1]) ** 2.0)
     )
 
     return j
