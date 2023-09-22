@@ -68,20 +68,24 @@ speed of animation.
 # Import standard library
 import logging
 import multiprocessing as mp
+from typing import Any, Dict, Optional, Tuple
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
 # Import modules
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 from matplotlib import animation, cm
-from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D # type: ignore
 
-from ..reporter import Reporter
-from .formatters import Animator, Designer
+from pyswarms.utils.reporter import Reporter
+from pyswarms.utils.plotters.formatters import Animator, Designer, Mesher
 
 rep = Reporter(logger=logging.getLogger(__name__))
 
 
-def plot_cost_history(cost_history, ax=None, title="Cost History", designer=None, **kwargs):
+def plot_cost_history(cost_history: npt.NDArray[Any], ax: Optional[Axes] = None, title: str = "Cost History", designer: Optional[Designer] = None, **kwargs: Dict[str, Any]):
     """Create a simple line plot with the cost in the y-axis and
     the iteration at the x-axis
 
@@ -136,15 +140,15 @@ def plot_cost_history(cost_history, ax=None, title="Cost History", designer=None
 
 
 def plot_contour(
-    pos_history,
-    canvas=None,
-    title="Trajectory",
-    mark=None,
-    designer=None,
-    mesher=None,
-    animator=None,
-    n_processes=None,
-    **kwargs
+    pos_history: npt.NDArray[Any],
+    canvas: Optional[Tuple[Figure, Axes]] = None,
+    title: str = "Trajectory",
+    mark: Optional[Tuple[float, float]] = None,
+    designer: Optional[Designer] = None,
+    mesher: Optional[Mesher] = None,
+    animator: Optional[Animator] = None,
+    n_processes: Optional[int] = None,
+    **kwargs: Dict[str, Any]
 ):
     """Draw a 2D contour map for particle trajectories
 
@@ -240,15 +244,15 @@ def plot_contour(
 
 
 def plot_surface(
-    pos_history,
-    canvas=None,
-    title="Trajectory",
-    designer=None,
-    mesher=None,
-    animator=None,
-    mark=None,
-    n_processes=None,
-    **kwargs
+    pos_history: npt.NDArray[Any],
+    canvas: Optional[Tuple[Figure, Axes]] = None,
+    title: str = "Trajectory",
+    designer: Optional[Designer] = None,
+    mesher: Optional[Mesher] = None,
+    animator: Optional[Animator] = None,
+    mark: Optional[Tuple[float, float]] = None,
+    n_processes: Optional[int] = None,
+    **kwargs: Dict[str, Any]
 ):
     """Plot a swarm's trajectory in 3D
 
@@ -394,7 +398,7 @@ def _animate(i, data, plot):
     return (plot,)
 
 
-def _mesh(mesher, n_processes=None):
+def _mesh(mesher: Mesher, n_processes: Optional[int] = None) -> Tuple[npt.NDArray[Any], npt.NDArray[Any], npt.NDArray[Any]]:
     """Helper function to make a mesh"""
     xlim = mesher.limits[0]
     ylim = mesher.limits[1]
@@ -418,5 +422,5 @@ def _mesh(mesher, n_processes=None):
     if n_processes is not None:
         pool.close()
 
-    zz = z.reshape(xx.shape)
+    zz: npt.NDArray[Any] = z.reshape(xx.shape)
     return (xx, yy, zz)

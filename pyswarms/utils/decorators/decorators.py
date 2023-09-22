@@ -1,11 +1,13 @@
 # Import standard library
 from functools import wraps
+from typing import Any, Callable, Dict
 
 # Import modules
 import numpy as np
+import numpy.typing as npt
 
 
-def cost(cost_func):
+def cost(cost_func: Callable[..., float]):
     """A decorator for the cost function
 
     This decorator allows the creation of much simpler cost functions. Instead
@@ -43,7 +45,7 @@ def cost(cost_func):
     """
 
     @wraps(cost_func)
-    def cost_dec(particles, **kwargs):
+    def cost_dec(particles: npt.NDArray[np.floating[Any]], **kwargs: Dict[str, Any]):
         n_particles = particles.shape[0]
         vector = np.array([cost_func(particles[i], **kwargs) for i in range(n_particles)])
         if vector.shape != (n_particles,):
