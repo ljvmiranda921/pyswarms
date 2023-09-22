@@ -62,7 +62,7 @@ import numpy as np
 import numpy.typing as npt
 from pyswarms.backend.swarms import Swarm
 
-from pyswarms.base.base import Options
+from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.utils.types import Clamp, Position
 
 from pyswarms.backend.handlers import VelocityHandler, VelocityStrategy
@@ -72,17 +72,12 @@ from pyswarms.base import DiscreteSwarmOptimizer
 from pyswarms.utils.reporter import Reporter
 
 
-class BinaryOptions(Options):
-    p: Literal[1,2]
-    k: int
-
-
 class BinaryPSO(DiscreteSwarmOptimizer):
     def __init__(
         self,
         n_particles: int,
         dimensions: int,
-        options: BinaryOptions,
+        options: GeneralOptions,
         init_pos: Optional[Position] = None,
         velocity_clamp: Optional[Clamp]=None,
         vh_strategy: VelocityStrategy = "unmodified",

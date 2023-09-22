@@ -60,33 +60,42 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 import logging
 import multiprocessing as mp
 from collections import deque
+from typing import Any, Callable, Deque, Dict, Literal, Optional, Tuple
 
 # Import modules
 import numpy as np
 
-from ..backend.handlers import BoundaryHandler, OptionsHandler, VelocityHandler
+from pyswarms.base.base import Options, ToHistory
+from pyswarms.utils.types import Bounds, Clamp, Position
+
+from ..backend.handlers import BoundaryHandler, BoundaryStrategy, OptionsHandler, OptionsStrategy, VelocityHandler, VelocityStrategy
 from ..backend.operators import compute_objective_function, compute_pbest
 from ..backend.topology import Topology
 from ..base import SwarmOptimizer
 from ..utils.reporter import Reporter
 
 
+class GeneralOptions(Options):
+    p: Literal[1,2]
+    k: int
+
+
 class GeneralOptimizerPSO(SwarmOptimizer):
     def __init__(
         self,
-        n_particles,
-        dimensions,
-        options,
-        topology,
-        bounds=None,
-        oh_strategy=None,
-        bh_strategy="periodic",
-        velocity_clamp=None,
-        vh_strategy="unmodified",
-        center=1.00,
-        ftol=-np.inf,
-        ftol_iter=1,
-        init_pos=None,
+        n_particles: int,
+        dimensions: int,
+        options: GeneralOptions,
+        topology: Topology,
+        bounds: Optional[Bounds] = None,
+        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
+        bh_strategy: BoundaryStrategy = "periodic",
+        velocity_clamp: Optional[Clamp] = None,
+        vh_strategy: VelocityStrategy = "unmodified",
+        center: float = 1.00,
+        ftol: float = -np.inf,
+        ftol_iter: int = 1,
+        init_pos: Optional[Position] = None,
     ):
         """Initialize the swarm
 
@@ -177,23 +186,21 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             ftol_iter=ftol_iter,
             init_pos=init_pos,
         )
+
         if oh_strategy is None:
             oh_strategy = {}
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
         # Initialize the resettable attributes
         self.reset()
-        # Initialize the topology and check for type
-        if not isinstance(topology, Topology):
-            raise TypeError("Parameter `topology` must be a Topology object")
-        else:
-            self.top = topology
+
+        self.top = topology
         self.bh = BoundaryHandler(strategy=bh_strategy)
-        self.vh = VelocityHandler(strategy=vh_strategy)
+        self.vh = VelocityHandler.factory(strategy=vh_strategy)
         self.oh = OptionsHandler(strategy=oh_strategy)
         self.name = __name__
 
-    def optimize(self, objective_func, iters, n_processes=None, verbose=True, **kwargs):
+    def optimize(self, objective_func: Callable[..., float], iters: int, n_processes: Optional[int] = None, verbose: bool = True, **kwargs: Dict[str, Any]) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
@@ -237,20 +244,21 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         pool = None if n_processes is None else mp.Pool(n_processes)
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history = deque(maxlen=self.ftol_iter)
+        ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
+
         for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
             # Compute cost for current position and personal best
-            # fmt: off
             self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=pool, **kwargs)
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
             best_cost_yet_found = self.swarm.best_cost
-            # fmt: on
+            
             # Update swarm
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, **self.options)
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, **dict(self.options))
+            
             # Print to console
             if verbose:
                 self.rep.hook(best_cost=self.swarm.best_cost)
-            hist = self.ToHistory(
+            hist = ToHistory(
                 best_cost=self.swarm.best_cost,
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),
                 mean_neighbor_cost=self.swarm.best_cost,
@@ -258,6 +266,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 velocity=self.swarm.velocity,
             )
             self._populate_history(hist)
+            
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
             delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
@@ -267,20 +276,26 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 ftol_history.append(delta)
                 if all(ftol_history):
                     break
+            
             # Perform options update
             self.swarm.options = self.oh(self.options, iternow=i, itermax=iters)
+            
             # Perform velocity and position updates
             self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp, self.vh, self.bounds)
             self.swarm.position = self.top.compute_position(self.swarm, self.bounds, self.bh)
+        
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost.copy()
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
+        
         # Write report in log and return final cost and position
         self.rep.log(
             "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
             lvl=log_level,
         )
+        
         # Close Pool of Processes
         if n_processes is not None:
             pool.close()
+        
         return (final_best_cost, final_best_pos)

@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 r"""
-A Global-best Particle Swarm Optimization (gbest PSO) algorithm.
+A general Particle Swarm Optimization (general PSO) algorithm.
 
 It takes a set of candidate solutions, and tries to find the best
-solution using a position-velocity update method. Uses a
-star-topology where each particle is attracted to the best
-performing particle.
+solution using a position-velocity update method. Uses a user specified
+topology.
 
 The position update can be defined as:
 
@@ -20,7 +19,7 @@ is defined as:
 
 .. math::
 
-   v_{ij}(t + 1) = w * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)]
+   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)]
                    + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
 
 Here, :math:`c1` and :math:`c2` are the cognitive and social parameters
@@ -35,14 +34,16 @@ An example usage is as follows:
 .. code-block:: python
 
     import pyswarms as ps
+    from pyswarms.backend.topology import Pyramid
     from pyswarms.utils.functions import single_obj as fx
 
-    # Set-up hyperparameters
+    # Set-up hyperparameters and topology
     options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
+    my_topology = Pyramid(static=False)
 
     # Call instance of GlobalBestPSO
-    optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2,
-                                        options=options)
+    optimizer = ps.single.GeneralOptimizerPSO(n_particles=10, dimensions=2,
+                                        options=options, topology=my_topology)
 
     # Perform optimization
     stats = optimizer.optimize(fx.sphere, iters=100)
@@ -57,36 +58,36 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 
 # Import standard library
 import logging
-import multiprocessing as mp
-from collections import deque
+from typing import Dict, Optional
 
 # Import modules
 import numpy as np
+from pyswarms.backend.topology.star import Star
 
-from ..backend.handlers import BoundaryHandler, OptionsHandler, VelocityHandler
-from ..backend.operators import compute_objective_function, compute_pbest
-from ..backend.topology import Star
-from ..base import SwarmOptimizer
-from ..utils.reporter import Reporter
+from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
+from pyswarms.utils.reporter.reporter import Reporter
+from pyswarms.utils.types import Bounds, Clamp, Position
+
+from ..backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
 
 
-class GlobalBestPSO(SwarmOptimizer):
+class GlobalBestPSO(GeneralOptimizerPSO):
     def __init__(
         self,
-        n_particles,
-        dimensions,
-        options,
-        bounds=None,
-        oh_strategy=None,
-        bh_strategy="periodic",
-        velocity_clamp=None,
-        vh_strategy="unmodified",
-        center=1.00,
-        ftol=-np.inf,
-        ftol_iter=1,
-        init_pos=None,
+        n_particles: int,
+        dimensions: int,
+        options: GeneralOptions,
+        bounds: Optional[Bounds] = None,
+        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
+        bh_strategy: BoundaryStrategy = "periodic",
+        velocity_clamp: Optional[Clamp] = None,
+        vh_strategy: VelocityStrategy = "unmodified",
+        center: float = 1.00,
+        ftol: float = -np.inf,
+        ftol_iter: int = 1,
+        init_pos: Optional[Position] = None,
     ):
-        """Initialize the swarm
+        """Finds the global optimum, same as general optimizer with a star topology
 
         Attributes
         ----------
@@ -130,119 +131,21 @@ class GlobalBestPSO(SwarmOptimizer):
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
         """
-        super(GlobalBestPSO, self).__init__(
-            n_particles=n_particles,
-            dimensions=dimensions,
-            options=options,
-            bounds=bounds,
-            velocity_clamp=velocity_clamp,
-            center=center,
-            ftol=ftol,
-            ftol_iter=ftol_iter,
-            init_pos=init_pos,
+        super().__init__(
+            n_particles,
+            dimensions,
+            options,
+            Star(),
+            bounds,
+            oh_strategy,
+            bh_strategy,
+            velocity_clamp,
+            vh_strategy,
+            center,
+            ftol,
+            ftol_iter,
+            init_pos,
         )
-
-        if oh_strategy is None:
-            oh_strategy = {}
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
-        # Initialize the resettable attributes
-        self.reset()
-        # Initialize the topology
-        self.top = Star()
-        self.bh = BoundaryHandler(strategy=bh_strategy)
-        self.vh = VelocityHandler(strategy=vh_strategy)
-        self.oh = OptionsHandler(strategy=oh_strategy)
         self.name = __name__
-
-    def optimize(self, objective_func, iters, n_processes=None, verbose=True, **kwargs):
-        """Optimize the swarm for a number of iterations
-
-        Performs the optimization to evaluate the objective
-        function :code:`f` for a number of iterations :code:`iter.`
-
-        Parameters
-        ----------
-        objective_func : callable
-            objective function to be evaluated
-        iters : int
-            number of iterations
-        n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
-        verbose : bool
-            enable or disable the logs and progress bar (default: True = enable logs)
-        kwargs : dict
-            arguments for the objective function
-
-        Returns
-        -------
-        tuple
-            the global best cost and the global best position.
-        """
-
-        # Apply verbosity
-        if verbose:
-            log_level = logging.INFO
-        else:
-            log_level = logging.NOTSET
-
-        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
-        self.rep.log(
-            "Optimize for {} iters with {}".format(iters, self.options),
-            lvl=log_level,
-        )
-        # Populate memory of the handlers
-        self.bh.memory = self.swarm.position
-        self.vh.memory = self.swarm.position
-
-        # Setup Pool of processes for parallel evaluation
-        pool = None if n_processes is None else mp.Pool(n_processes)
-
-        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history = deque(maxlen=self.ftol_iter)
-        for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
-            # Compute cost for current position and personal best
-            # fmt: off
-            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=pool, **kwargs)
-            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
-            # Set best_cost_yet_found for ftol
-            best_cost_yet_found = self.swarm.best_cost
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
-            # fmt: on
-            if verbose:
-                self.rep.hook(best_cost=self.swarm.best_cost)
-            # Save to history
-            hist = self.ToHistory(
-                best_cost=self.swarm.best_cost,
-                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
-                mean_neighbor_cost=self.swarm.best_cost,
-                position=self.swarm.position,
-                velocity=self.swarm.velocity,
-            )
-            self._populate_history(hist)
-            # Verify stop criteria based on the relative acceptable cost ftol
-            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            if i < self.ftol_iter:
-                ftol_history.append(delta)
-            else:
-                ftol_history.append(delta)
-                if all(ftol_history):
-                    break
-            # Perform options update
-            self.swarm.options = self.oh(self.options, iternow=i, itermax=iters)
-            # Perform velocity and position updates
-            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp, self.vh, self.bounds)
-            self.swarm.position = self.top.compute_position(self.swarm, self.bounds, self.bh)
-        # Obtain the final best_cost and the final best_position
-        final_best_cost = self.swarm.best_cost.copy()
-        final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
-        # Write report in log and return final cost and position
-        self.rep.log(
-            "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
-            lvl=log_level,
-        )
-        # Close Pool of Processes
-        if n_processes is not None:
-            pool.close()
-        return (final_best_cost, final_best_pos)
