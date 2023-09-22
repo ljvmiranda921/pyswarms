@@ -57,7 +57,6 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 """
 
 # Import standard library
-import logging
 from typing import Dict, Optional
 
 # Import modules
@@ -66,7 +65,6 @@ import numpy as np
 # Import from pyswarms
 from pyswarms.backend.topology.star import Star
 from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
-from pyswarms.utils.reporter.reporter import Reporter
 from pyswarms.utils.types import Bounds, Clamp, Position
 
 from ..backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
@@ -147,6 +145,3 @@ class GlobalBestPSO(GeneralOptimizerPSO):
             ftol_iter,
             init_pos,
         )
-        # Initialize logger
-        self.rep = Reporter(logger=logging.getLogger(__name__))
-        self.name = __name__

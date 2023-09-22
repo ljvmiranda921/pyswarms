@@ -65,7 +65,6 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
 """
 
 # Import standard library
-import logging
 from typing import Dict, Optional
 
 # Import modules
@@ -75,7 +74,6 @@ import numpy as np
 from pyswarms.backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
 from pyswarms.backend.topology import Ring
 from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Bounds, Clamp, Position
 
 
@@ -165,6 +163,3 @@ class LocalBestPSO(GeneralOptimizerPSO):
             ftol_iter,
             init_pos,
         )
-        # Initialize logger
-        self.rep = Reporter(logger=logging.getLogger(__name__))
-        self.name = __name__

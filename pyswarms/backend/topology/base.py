@@ -20,10 +20,11 @@ from loguru import logger
 # Import modules
 import numpy as np
 import numpy.typing as npt
+from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 
 # Import from pyswarms
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Position, Velocity
+from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
 
 class Topology(abc.ABC):
@@ -39,17 +40,23 @@ class Topology(abc.ABC):
             logger.debug("Running on `dynamic` topology," "set `static=True` for fixed neighbors.")
 
     @abc.abstractmethod
-    def compute_gbest(self, swarm: Swarm) -> Tuple[Position, float]:
+    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]) -> Tuple[Position, float]:
         """Compute the best particle of the swarm and return the cost and
         position"""
         raise NotImplementedError("Topology::compute_gbest()")
 
     @abc.abstractmethod
-    def compute_position(self, swarm: Swarm) -> Position:
+    def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: BoundaryHandler = BoundaryHandler(strategy="periodic")) -> Position:
         """Update the swarm's position-matrix"""
         raise NotImplementedError("Topology::compute_position()")
 
     @abc.abstractmethod
-    def compute_velocity(self, swarm: Swarm) -> Velocity:
+    def compute_velocity(
+        self,
+        swarm: Swarm,
+        clamp: Optional[Clamp] = None,
+        vh: Optional[VelocityHandler] = None,
+        bounds: Optional[Bounds] = None,
+    ) -> Velocity:
         """Update the swarm's velocity-matrix"""
         raise NotImplementedError("Topology::compute_velocity()")
