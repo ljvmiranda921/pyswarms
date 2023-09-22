@@ -6,13 +6,13 @@ import numpy as np
 import numpy.typing as npt
 
 # Bounds for constrained optimization
-BoundsList = Tuple[List[float], List[float]]
+BoundsList = Tuple[List[int], List[int]] | Tuple[List[float], List[float]]
 BoundsArray = Tuple[npt.NDArray[np.floating[Any]], npt.NDArray[np.floating[Any]]]
 Bounds = BoundsList | BoundsArray
 
 # Velocity clamps
+ClampList = Tuple[List[int], List[int]] | Tuple[List[float], List[float]]
 ClampArray = Tuple[npt.NDArray[np.floating[Any]], npt.NDArray[np.floating[Any]]]
-ClampList = Tuple[List[float], List[float]]
 ClampFloat = Tuple[float, float]
 Clamp = ClampArray | ClampList | ClampFloat
 

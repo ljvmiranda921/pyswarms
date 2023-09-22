@@ -111,16 +111,27 @@ def generate_discrete_swarm(
     ------
     ValueError
         When init_pos during binary=True does not contain two unique values.
-    TypeError
-        When the argument passed to n_particles or dimensions is incorrect.
+        When init_pos has the incorrect number of dimensions
+    AssertionError
+        When init_pos has an incorrect shape
     """
     if init_pos is not None:
         if binary and len(np.unique(init_pos)) > 2:
             raise ValueError("User-defined init_pos is not binary!")
-        pos = init_pos
+        
+        if init_pos.ndim == 1:
+            assert init_pos.shape[0] == dimensions
+            pos = np.repeat([init_pos], n_particles, axis=0)
+        elif init_pos.ndim == 2:
+            assert init_pos.shape[0] == n_particles
+            assert init_pos.shape[1] == dimensions
+            pos = init_pos
+        else:
+            raise ValueError("init_pos must be 1D or 2D")
+        
     else:
         if binary:
-            pos = np.random.randint(2, size=(n_particles, dimensions))
+            pos = np.random.randint(2, size=(n_particles, dimensions)) # type: ignore
         else:
             pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
 
