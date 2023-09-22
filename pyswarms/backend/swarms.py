@@ -10,7 +10,7 @@ as input to most backend cases.
 
 # Import standard library
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 # Import modules
 import numpy as np
@@ -94,7 +94,7 @@ class Swarm:
     # With defaults
     n_particles: int = field(init=False)
     dimensions: int = field(init=False)
-    pbest_pos: Position = field(init=False)
+    pbest_pos: Optional[Position] = field(default=None)
     options: Dict[str, Any] = field(default_factory=dict)
     best_pos: Position = field(default_factory=lambda: np.array([], dtype=float))
     pbest_cost: Position = field(default_factory=lambda: np.array([], dtype=float))
@@ -104,4 +104,6 @@ class Swarm:
     def __post_init__(self):
         self.n_particles = self.position.shape[0]
         self.dimensions = self.position.shape[1]
-        self.pbest_pos = self.position
+
+        if self.pbest_pos is None:
+            self.pbest_pos = self.position
