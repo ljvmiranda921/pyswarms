@@ -163,7 +163,7 @@ class Mesher(object):
     func: Callable[..., float] = attrib()
     # For mesh creation
     delta: float = attrib(type=float, default=0.001)
-    limits: List[Tuple[int, ...]] | Tuple[Tuple[int, ...]] = attrib(
+    limits: List[Tuple[int, ...]] | Tuple[Tuple[int, ...], ...] = attrib(
         type=List[Tuple[int, ...]] | Tuple[Tuple[int, ...]],
         validator=instance_of((List[Tuple[int, ...]], Tuple[Tuple[int, ...]])),
         default=[(-1, 1), (-1, 1)],

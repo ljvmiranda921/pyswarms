@@ -66,9 +66,9 @@ speed of animation.
 """
 
 # Import standard library
-import logging
 import multiprocessing as mp
 from typing import Any, Dict, Optional, Tuple
+from matplotlib.collections import PathCollection
 
 # Import modules
 import matplotlib.pyplot as plt
@@ -80,10 +80,7 @@ from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D  # type: ignore
 
 # Import from pyswarms
-from pyswarms.utils.plotters.formatters import Animator, Designer, Mesher
-from pyswarms.utils.reporter import Reporter
-
-rep = Reporter(logger=logging.getLogger(__name__))
+from pyswarms.utils.plotters.formatters import Animator, Designer, Mesher, 
 
 
 def plot_cost_history(
@@ -117,33 +114,29 @@ def plot_cost_history(
     :obj:`matplotlib.axes._subplots.AxesSubplot`
         The axes on which the plot was drawn.
     """
-    try:
-        # Infer number of iterations based on the length
-        # of the passed array
-        iters = len(cost_history)
+    # Infer number of iterations based on the length
+    # of the passed array
+    iters = len(cost_history)
 
-        # If no Designer class supplied, use defaults
-        if designer is None:
-            designer = Designer(legend="Cost", label=["Iterations", "Cost"])
+    # If no Designer class supplied, use defaults
+    if designer is None:
+        designer = Designer(legend="Cost", label=["Iterations", "Cost"])
 
-        # If no ax supplied, create new instance
-        if ax is None:
-            _, ax = plt.subplots(1, 1, figsize=designer.figsize)
+    # If no ax supplied, create new instance
+    if ax is None:
+        _, ax = plt.subplots(1, 1, figsize=designer.figsize)
 
-        # Plot with iters in x-axis and the cost in y-axis
-        ax.plot(np.arange(iters), cost_history, "k", lw=2, label=designer.legend)
+    # Plot with iters in x-axis and the cost in y-axis
+    ax.plot(np.arange(iters), cost_history, "k", lw=2, label=designer.legend)
 
-        # Customize plot depending on parameters
-        ax.set_title(title, fontsize=designer.title_fontsize)
-        ax.legend(fontsize=designer.text_fontsize)
-        ax.set_xlabel(designer.label[0], fontsize=designer.text_fontsize)
-        ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
-        ax.tick_params(labelsize=designer.text_fontsize)
-    except TypeError:
-        rep.logger.exception("Please check your input type")
-        raise
-    else:
-        return ax
+    # Customize plot depending on parameters
+    ax.set_title(title, fontsize=designer.title_fontsize)
+    ax.legend(fontsize=designer.text_fontsize)
+    ax.set_xlabel(designer.label[0], fontsize=designer.text_fontsize)
+    ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
+    ax.tick_params(labelsize=designer.text_fontsize)
+
+    return ax
 
 
 def plot_contour(
@@ -194,60 +187,55 @@ def plot_contour(
         The drawn animation that can be saved to mp4 or other
         third-party tools
     """
+    # If no Designer class supplied, use defaults
+    if designer is None:
+        designer = Designer(limits=[(-1, 1), (-1, 1)], label=["x-axis", "y-axis"])
 
-    try:
-        # If no Designer class supplied, use defaults
-        if designer is None:
-            designer = Designer(limits=[(-1, 1), (-1, 1)], label=["x-axis", "y-axis"])
+    # If no Animator class supplied, use defaults
+    if animator is None:
+        animator = Animator()
 
-        # If no Animator class supplied, use defaults
-        if animator is None:
-            animator = Animator()
-
-        # If ax is default, then create new plot. Set-up the figure, the
-        # axis, and the plot element that we want to animate
-        if canvas is None:
-            fig, ax = plt.subplots(1, 1, figsize=designer.figsize)
-        else:
-            fig, ax = canvas
-
-        # Get number of iterations
-        n_iters = len(pos_history)
-
-        # Customize plot
-        ax.set_title(title, fontsize=designer.title_fontsize)
-        ax.set_xlabel(designer.label[0], fontsize=designer.text_fontsize)
-        ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
-        ax.set_xlim(designer.limits[0])
-        ax.set_ylim(designer.limits[1])
-
-        # Make a contour map if possible
-        if mesher is not None:
-            (xx, yy, zz) = _mesh(mesher, n_processes=n_processes)
-            ax.contour(xx, yy, zz, levels=mesher.levels)
-
-        # Mark global best if possible
-        if mark is not None:
-            ax.scatter(mark[0], mark[1], color="red", marker="x")
-
-        # Put scatter skeleton
-        plot = ax.scatter(x=[], y=[], c="black", alpha=0.6, **kwargs)
-
-        # Do animation
-        anim = animation.FuncAnimation(
-            fig=fig,
-            func=_animate,
-            frames=range(n_iters),
-            fargs=(pos_history, plot),
-            interval=animator.interval,
-            repeat=animator.repeat,
-            repeat_delay=animator.repeat_delay,
-        )
-    except TypeError:
-        rep.logger.exception("Please check your input type")
-        raise
+    # If ax is default, then create new plot. Set-up the figure, the
+    # axis, and the plot element that we want to animate
+    if canvas is None:
+        fig, ax = plt.subplots(1, 1, figsize=designer.figsize)
     else:
-        return anim
+        fig, ax = canvas
+
+    # Get number of iterations
+    n_iters = len(pos_history)
+
+    # Customize plot
+    ax.set_title(title, fontsize=designer.title_fontsize)
+    ax.set_xlabel(designer.label[0], fontsize=designer.text_fontsize)
+    ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
+    ax.set_xlim(designer.limits[0])
+    ax.set_ylim(designer.limits[1])
+
+    # Make a contour map if possible
+    if mesher is not None:
+        (xx, yy, zz) = _mesh(mesher, n_processes=n_processes)
+        ax.contour(xx, yy, zz, levels=mesher.levels)
+
+    # Mark global best if possible
+    if mark is not None:
+        ax.scatter(mark[0], mark[1], color="red", marker="x")
+
+    # Put scatter skeleton
+    plot = ax.scatter(x=[], y=[], c="black", alpha=0.6, **kwargs)
+
+    # Do animation
+    anim = animation.FuncAnimation(
+        fig=fig,
+        func=_animate,
+        frames=range(n_iters),
+        fargs=(pos_history, plot),
+        interval=animator.interval,
+        repeat=animator.repeat,
+        repeat_delay=animator.repeat_delay,
+    )
+
+    return anim
 
 
 def plot_surface(
@@ -329,71 +317,67 @@ def plot_surface(
         The drawn animation that can be saved to mp4 or other
         third-party tools
     """
-    try:
-        # If no Designer class supplied, use defaults
-        if designer is None:
-            designer = Designer(
-                limits=[(-1, 1), (-1, 1), (-1, 1)],
-                label=["x-axis", "y-axis", "z-axis"],
-                colormap=cm.viridis,
-            )
-
-        # If no Animator class supplied, use defaults
-        if animator is None:
-            animator = Animator()
-
-        # Get number of iterations
-        # If ax is default, then create new plot. Set-up the figure, the
-        # axis, and the plot element that we want to animate
-        if canvas is None:
-            fig, ax = plt.subplots(1, 1, figsize=designer.figsize)
-        else:
-            fig, ax = canvas
-
-        # Initialize 3D-axis
-        ax = Axes3D(fig)
-
-        n_iters = len(pos_history)
-
-        # Customize plot
-        ax.set_title(title, fontsize=designer.title_fontsize)
-        ax.set_xlabel(designer.label[0], fontsize=designer.text_fontsize)
-        ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
-        ax.set_zlabel(designer.label[2], fontsize=designer.text_fontsize)
-        ax.set_xlim(designer.limits[0])
-        ax.set_ylim(designer.limits[1])
-        ax.set_zlim(designer.limits[2])
-
-        # Make a contour map if possible
-        if mesher is not None:
-            (xx, yy, zz) = _mesh(mesher, n_processes=n_processes)
-            ax.plot_surface(xx, yy, zz, cmap=designer.colormap, alpha=mesher.alpha)
-
-        # Mark global best if possible
-        if mark is not None:
-            ax.scatter(mark[0], mark[1], mark[2], color="red", marker="x")
-
-        # Put scatter skeleton
-        plot = ax.scatter(xs=[], ys=[], zs=[], c="black", alpha=0.6, **kwargs)
-
-        # Do animation
-        anim = animation.FuncAnimation(
-            fig=fig,
-            func=_animate,
-            frames=range(n_iters),
-            fargs=(pos_history, plot),
-            interval=animator.interval,
-            repeat=animator.repeat,
-            repeat_delay=animator.repeat_delay,
+    # If no Designer class supplied, use defaults
+    if designer is None:
+        designer = Designer(
+            limits=[(-1, 1), (-1, 1), (-1, 1)],
+            label=["x-axis", "y-axis", "z-axis"],
+            colormap=cm.viridis,
         )
-    except TypeError:
-        rep.logger.exception("Please check your input type")
-        raise
+
+    # If no Animator class supplied, use defaults
+    if animator is None:
+        animator = Animator()
+
+    # Get number of iterations
+    # If ax is default, then create new plot. Set-up the figure, the
+    # axis, and the plot element that we want to animate
+    if canvas is None:
+        fig, ax = plt.subplots(1, 1, figsize=designer.figsize)
     else:
-        return anim
+        fig, ax = canvas
+
+    # Initialize 3D-axis
+    ax = Axes3D(fig)
+
+    n_iters = len(pos_history)
+
+    # Customize plot
+    ax.set_title(title, fontsize=designer.title_fontsize)
+    ax.set_xlabel(designer.label[0], fontsize=designer.text_fontsize)
+    ax.set_ylabel(designer.label[1], fontsize=designer.text_fontsize)
+    ax.set_zlabel(designer.label[2], fontsize=designer.text_fontsize)
+    ax.set_xlim(designer.limits[0])
+    ax.set_ylim(designer.limits[1])
+    ax.set_zlim(designer.limits[2])
+
+    # Make a contour map if possible
+    if mesher is not None:
+        (xx, yy, zz) = _mesh(mesher, n_processes=n_processes)
+        ax.plot_surface(xx, yy, zz, cmap=designer.colormap, alpha=mesher.alpha)
+
+    # Mark global best if possible
+    if mark is not None:
+        ax.scatter(mark[0], mark[1], mark[2], color="red", marker="x")
+
+    # Put scatter skeleton
+    plot = ax.scatter(xs=[], ys=[], zs=[], c="black", alpha=0.6, **kwargs)
+
+    # Do animation
+    anim = animation.FuncAnimation(
+        fig=fig,
+        func=_animate,
+        frames=range(n_iters),
+        fargs=(pos_history, plot),
+        interval=animator.interval,
+        repeat=animator.repeat,
+        repeat_delay=animator.repeat_delay,
+    )
+
+    return anim
 
 
-def _animate(i, data, plot):
+def _animate(i: int, data: npt.NDArray[Any], plot: PathCollection):
     """Helper animation function that is called sequentially
     :class:`matplotlib.animation.FuncAnimation`
     """
@@ -428,7 +412,7 @@ def _mesh(
         z = np.concatenate(results)
 
     # Close Pool of Processes
-    if n_processes is not None:
+    if pool is not None:
         pool.close()
 
     zz: npt.NDArray[Any] = z.reshape(xx.shape)

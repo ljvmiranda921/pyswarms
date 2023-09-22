@@ -10,7 +10,6 @@ optimizers.
 """
 
 # Import standard library
-import logging
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
 # Import modules
@@ -23,7 +22,6 @@ if TYPE_CHECKING:
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.topology.base import Topology
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Bounds, Clamp, Position
 
 
@@ -32,7 +30,6 @@ class Star(Topology):
         # static = None is just an artifact to make the API consistent
         # Setting it will not change swarm behavior
         super(Star, self).__init__(static=True)
-        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def compute_gbest(self, swarm: "Swarm", **kwargs: Dict[str, Any]):
         """Update the global best using a star topology

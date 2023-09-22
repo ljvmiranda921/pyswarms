@@ -57,19 +57,20 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 """
 
 # Import standard library
-import logging
 import multiprocessing as mp
 from collections import deque
 from typing import Any, Callable, Deque, Dict, Literal, Optional, Tuple
+from loguru import logger
 
 # Import modules
 import numpy as np
+from tqdm import trange
 
 # Import from pyswarms
 from pyswarms.base.base import Options, ToHistory
 from pyswarms.utils.types import Bounds, Clamp, Position
 
-from ..backend.handlers import (
+from pyswarms.backend.handlers import (
     BoundaryHandler,
     BoundaryStrategy,
     OptionsHandler,
@@ -77,10 +78,9 @@ from ..backend.handlers import (
     VelocityHandler,
     VelocityStrategy,
 )
-from ..backend.operators import compute_objective_function, compute_pbest
-from ..backend.topology import Topology
-from ..base import SwarmOptimizer
-from ..utils.reporter import Reporter
+from pyswarms.backend.operators import compute_objective_function, compute_pbest
+from pyswarms.backend.topology import Topology
+from pyswarms.base import SwarmOptimizer
 
 
 class GeneralOptions(Options):
@@ -197,8 +197,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
         if oh_strategy is None:
             oh_strategy = {}
-        # Initialize logger
-        self.rep = Reporter(logger=logging.getLogger(__name__))
+ 
         # Initialize the resettable attributes
         self.reset()
 
@@ -239,17 +238,9 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         tuple
             the global best cost and the global best position.
         """
-        # Apply verbosity
-        if verbose:
-            log_level = logging.INFO
-        else:
-            log_level = logging.NOTSET
-
-        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
-        self.rep.log(
-            "Optimize for {} iters with {}".format(iters, self.options),
-            lvl=log_level,
-        )
+        log_level = "DEBUG" if verbose else "TRACE"
+        logger.debug("Obj. func. args: {}".format(kwargs))
+        logger.log(log_level, "Optimize for {} iters with {}".format(iters, self.options))
 
         # Populate memory of the handlers
         self.bh.memory = self.swarm.position
@@ -261,7 +252,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
 
-        for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
+        pbar = trange(iters, desc=self.name) if verbose else range(iters)
+        for i in pbar:
             # Compute cost for current position and personal best
             self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=pool, **kwargs)
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
@@ -272,7 +264,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
             # Print to console
             if verbose:
-                self.rep.hook(best_cost=self.swarm.best_cost)
+                pbar.postfix(best_cost=self.swarm.best_cost)
+
             hist = ToHistory(
                 best_cost=self.swarm.best_cost,
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),

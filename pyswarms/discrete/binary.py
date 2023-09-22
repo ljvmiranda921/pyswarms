@@ -52,14 +52,15 @@ R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
 """
 
 # Import standard library
-import logging
 import multiprocessing as mp
 from collections import deque
 from typing import Any, Callable, Deque, Dict, Optional, Tuple
+from loguru import logger
 
 # Import modules
 import numpy as np
 import numpy.typing as npt
+from tqdm import trange
 
 # Import from pyswarms
 from pyswarms.backend.handlers import VelocityHandler, VelocityStrategy
@@ -67,8 +68,8 @@ from pyswarms.backend.operators import compute_objective_function, compute_pbest
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Ring
 from pyswarms.base import DiscreteSwarmOptimizer
+from pyswarms.base.base import ToHistory
 from pyswarms.single.general_optimizer import GeneralOptions
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Clamp, Position
 
 
@@ -126,8 +127,6 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             objective_func(best_pos) is acceptable for convergence.
             Default is :code:`1`
         """
-        # Initialize logger
-        self.rep = Reporter(logger=logging.getLogger(__name__))
         # Assign k-neighbors and p-value as attributes
         self.p = options["p"]
         self.k = options["k"]
@@ -182,17 +181,10 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             the local best cost and the local best position among the
             swarm.
         """
-        # Apply verbosity
-        if verbose:
-            log_level = logging.INFO
-        else:
-            log_level = logging.NOTSET
+        log_level = "DEBUG" if verbose else "TRACE"
+        logger.debug("Obj. func. args: {}".format(kwargs))
+        logger.log(log_level, "Optimize for {} iters with {}".format(iters, self.options))
 
-        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
-        self.rep.log(
-            "Optimize for {} iters with {}".format(iters, self.options),
-            lvl=log_level,
-        )
         # Populate memory of the handlers
         self.vh.memory = self.swarm.position
 
@@ -202,7 +194,8 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
 
-        for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
+        pbar = trange(iters, desc=self.name) if verbose else range(iters)
+        for i in pbar:
             # Compute cost for current position and personal best
             self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool, **kwargs)
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
@@ -213,10 +206,10 @@ class BinaryPSO(DiscreteSwarmOptimizer):
 
             if verbose:
                 # Print to console
-                self.rep.hook(best_cost=self.swarm.best_cost)
+                pbar.postfix(best_cost=self.swarm.best_cost)
 
             # Save to history
-            hist = self.history(
+            hist = ToHistory(
                 best_cost=self.swarm.best_cost,
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),
                 mean_neighbor_cost=np.mean(self.swarm.best_cost),

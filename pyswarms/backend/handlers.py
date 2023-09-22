@@ -22,7 +22,6 @@ PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 
 # Import standard library
 import inspect
-import logging
 import math
 from abc import ABC, abstractmethod
 from copy import copy
@@ -33,7 +32,6 @@ import numpy as np
 import numpy.typing as npt
 
 # Import from pyswarms
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, Velocity
 
 
@@ -366,26 +364,6 @@ VelocityStrategy = Literal["unmodified", "adjust", "invert", "zero"]
 class VelocityHandler(HandlerMixin, ABC):
     memory: Optional[Position] = None
 
-    def __init__(self):
-        """A VelocityHandler class
-
-        This class offers a way to handle velocities. It contains
-        methods to repair the velocities of particles that exceeded the
-        defined boundaries. Following strategies are available for the handling:
-
-        * Unmodified:
-            Returns the unmodified velocites.
-        * Adjust
-            Returns the velocity that is adjusted to be the distance between the current
-            and the previous position.
-        * Invert
-            Inverts and shrinks the velocity by the factor :code:`-z`.
-        * Zero
-            Sets the velocity of out-of-bounds particles to zero.
-
-        """
-        self.rep = Reporter(logger=logging.getLogger(__name__))
-
     @abstractmethod
     def __call__(
         self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
@@ -418,6 +396,22 @@ class VelocityHandler(HandlerMixin, ABC):
 
     @staticmethod
     def factory(strategy: VelocityStrategy):
+        """A VelocityHandler class
+
+        This class offers a way to handle velocities. It contains
+        methods to repair the velocities of particles that exceeded the
+        defined boundaries. Following strategies are available for the handling:
+
+        * Unmodified:
+            Returns the unmodified velocites.
+        * Adjust
+            Returns the velocity that is adjusted to be the distance between the current
+            and the previous position.
+        * Invert
+            Inverts and shrinks the velocity by the factor :code:`-z`.
+        * Zero
+            Sets the velocity of out-of-bounds particles to zero.
+        """
         if strategy == "unmodified":
             return UnmodifiedVelocityHandler()
         elif strategy == "adjust":
@@ -588,7 +582,6 @@ class OptionsHandler(HandlerMixin):
         """
         self.strategy = strategy
         self.strategies = self._get_all_strategies()
-        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def __call__(self, start_opts: Dict[str, float], **kwargs: Dict[str, Any]):
         if not self.strategy:
@@ -621,34 +614,30 @@ class OptionsHandler(HandlerMixin):
         on Information and Computing Science. doi:10.1109/icic.2009.24
 
         """
-
-        try:
-            # default values from reference paper
-            if "d1" not in kwargs:
-                d1 = 0.2
-            else:
-                d1 = kwargs["d1"]
-            if "d2" not in kwargs:
-                d2 = 7
-            else:
-                d2 = kwargs["d2"]
-
-            end_opts = {
-                "w": 0.4,
-                "c1": 0.8 * start_opts["c1"],
-                "c2": 1 * start_opts["c2"],
-            }
-            if "end_opts" in kwargs:
-                if opt in kwargs["end_opts"]:
-                    end_opts[opt] = kwargs["end_opts"][opt]
-            start = start_opts[opt]
-            end = end_opts[opt]
-            new_val = (start - end - d1) * math.exp(1 / (1 + d2 * kwargs["iternow"] / kwargs["itermax"]))
-        except KeyError:
-            self.rep.logger.exception("Keyword 'itermax' or 'iternow' missing")
-            raise
+        # default values from reference paper
+        if "d1" not in kwargs:
+            d1 = 0.2
         else:
-            return new_val
+            d1 = kwargs["d1"]
+        if "d2" not in kwargs:
+            d2 = 7
+        else:
+            d2 = kwargs["d2"]
+
+        end_opts = {
+            "w": 0.4,
+            "c1": 0.8 * start_opts["c1"],
+            "c2": 1 * start_opts["c2"],
+        }
+        if "end_opts" in kwargs:
+            if opt in kwargs["end_opts"]:
+                end_opts[opt] = kwargs["end_opts"][opt]
+
+        start = start_opts[opt]
+        end = end_opts[opt]
+        new_val = (start - end - d1) * math.exp(1 / (1 + d2 * kwargs["iternow"] / kwargs["itermax"]))
+
+        return new_val
 
     def lin_variation(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
         """
@@ -663,24 +652,19 @@ class OptionsHandler(HandlerMixin):
         multi-stage linearly-decreasing inertia weight." 2009 International joint conference
         on computational sciences and optimization. Vol. 1. IEEE, 2009.
         """
+        end_opts = {
+            "w": 0.4,
+            "c1": 0.8 * start_opts["c1"],
+            "c2": 1 * start_opts["c2"],
+        }
+        if "end_opts" in kwargs:
+            if opt in kwargs["end_opts"]:
+                end_opts[opt] = kwargs["end_opts"][opt]
+        start = start_opts[opt]
+        end = end_opts[opt]
+        new_val = end + (start - end) * (kwargs["itermax"] - kwargs["iternow"]) / kwargs["itermax"]
 
-        try:
-            end_opts = {
-                "w": 0.4,
-                "c1": 0.8 * start_opts["c1"],
-                "c2": 1 * start_opts["c2"],
-            }
-            if "end_opts" in kwargs:
-                if opt in kwargs["end_opts"]:
-                    end_opts[opt] = kwargs["end_opts"][opt]
-            start = start_opts[opt]
-            end = end_opts[opt]
-            new_val = end + (start - end) * (kwargs["itermax"] - kwargs["iternow"]) / kwargs["itermax"]
-        except KeyError:
-            self.rep.logger.exception("Keyword 'itermax' or 'iternow' missing")
-            raise
-        else:
-            return new_val
+        return new_val
 
     def random(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
         """Random value between :math:`w^{start}` and :math:`w^{end}`
@@ -697,6 +681,7 @@ class OptionsHandler(HandlerMixin):
             end = kwargs["end_opts"][opt]
         else:
             end = start + 1
+
         return start + (end - start) * np.random.rand()
 
     def nonlin_mod(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
@@ -713,27 +698,22 @@ class OptionsHandler(HandlerMixin):
         in particle swarm optimization, Computer and Operations Research 33 (2006)
         859–871, March 2006
         """
-
-        try:
-            if "n" not in kwargs:
-                n = 1.2
-            else:
-                n = kwargs["n"]
-
-            end_opts = {
-                "w": 0.4,
-                "c1": 0.8 * start_opts["c1"],
-                "c2": 1 * start_opts["c2"],
-            }
-            if "end_opts" in kwargs:
-                if opt in kwargs["end_opts"]:
-                    end_opts[opt] = kwargs["end_opts"][opt]
-
-            start = start_opts[opt]
-            end = end_opts[opt]
-            new_val = end + (start - end) * ((kwargs["itermax"] - kwargs["iternow"]) ** n / kwargs["itermax"] ** n)
-        except KeyError:
-            self.rep.logger.exception("Keyword 'itermax' or 'iternow' missing")
-            raise
+        if "n" not in kwargs:
+            n = 1.2
         else:
-            return new_val
+            n = kwargs["n"]
+
+        end_opts = {
+            "w": 0.4,
+            "c1": 0.8 * start_opts["c1"],
+            "c2": 1 * start_opts["c2"],
+        }
+        if "end_opts" in kwargs:
+            if opt in kwargs["end_opts"]:
+                end_opts[opt] = kwargs["end_opts"][opt]
+
+        start = start_opts[opt]
+        end = end_opts[opt]
+        new_val = end + (start - end) * ((kwargs["itermax"] - kwargs["iternow"]) ** n / kwargs["itermax"] ** n)
+
+        return new_val

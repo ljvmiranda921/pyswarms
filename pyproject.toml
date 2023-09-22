@@ -30,6 +30,7 @@ numpy = "^1.26.0"
 matplotlib = "^3.8.0"
 attrs = "^23.1.0"
 tqdm = "^4.66.1"
+loguru = "^0.7.2"
 
 [tool.poetry.group.dev.dependencies]
 bumpversion = "^0.6.0"

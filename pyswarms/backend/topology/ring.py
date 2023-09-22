@@ -10,7 +10,6 @@ optimizers.
 """
 
 # Import standard library
-import logging
 from typing import Any, Dict, Literal, Optional
 
 # Import modules
@@ -22,7 +21,6 @@ from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Bounds, Clamp, Position
 
 
@@ -44,7 +42,6 @@ class Ring(Topology):
             is static or dynamic
         """
         super(Ring, self).__init__(static)
-        self.rep = Reporter(logger=logging.getLogger(__name__))
         self.p = p
         self.k = k
 

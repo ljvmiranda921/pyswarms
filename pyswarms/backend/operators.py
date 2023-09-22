@@ -9,7 +9,6 @@ to specify how the swarm will behave.
 """
 
 # Import standard library
-import logging
 from functools import partial
 from multiprocessing.pool import Pool
 from typing import Any, Callable, Dict, Optional
@@ -20,10 +19,7 @@ import numpy as np
 # Import from pyswarms
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.reporter import Reporter
 from pyswarms.utils.types import Bounds, Clamp, Position
-
-rep = Reporter(logger=logging.getLogger(__name__))
 
 
 def compute_pbest(swarm: Swarm):
@@ -118,27 +114,19 @@ def compute_velocity(swarm: Swarm, clamp: Optional[Clamp], vh: VelocityHandler, 
     numpy.ndarray
         Updated velocity matrix
     """
-    try:
-        # Prepare parameters
-        swarm_size = swarm.position.shape
-        c1 = swarm.options["c1"]
-        c2 = swarm.options["c2"]
-        w = swarm.options["w"]
-        # Compute for cognitive and social terms
-        cognitive = c1 * np.random.uniform(0, 1, swarm_size) * (swarm.pbest_pos - swarm.position)
-        social = c2 * np.random.uniform(0, 1, swarm_size) * (swarm.best_pos - swarm.position)
-        # Compute temp velocity (subject to clamping if possible)
-        temp_velocity = (w * swarm.velocity) + cognitive + social
-        updated_velocity = vh(temp_velocity, clamp, position=swarm.position, bounds=bounds)
+    # Prepare parameters
+    swarm_size = swarm.position.shape
+    c1 = swarm.options["c1"]
+    c2 = swarm.options["c2"]
+    w = swarm.options["w"]
+    # Compute for cognitive and social terms
+    cognitive = c1 * np.random.uniform(0, 1, swarm_size) * (swarm.pbest_pos - swarm.position)
+    social = c2 * np.random.uniform(0, 1, swarm_size) * (swarm.best_pos - swarm.position)
+    # Compute temp velocity (subject to clamping if possible)
+    temp_velocity = (w * swarm.velocity) + cognitive + social
+    updated_velocity = vh(temp_velocity, clamp, position=swarm.position, bounds=bounds)
 
-    except AttributeError:
-        rep.logger.exception("Please pass a Swarm class. You passed {}".format(type(swarm)))
-        raise
-    except KeyError:
-        rep.logger.exception("Missing keyword in swarm.options")
-        raise
-    else:
-        return updated_velocity
+    return updated_velocity
 
 
 def compute_position(swarm: Swarm, bounds: Optional[Bounds], bh: BoundaryHandler):
