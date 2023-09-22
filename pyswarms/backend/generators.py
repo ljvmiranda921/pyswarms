@@ -20,6 +20,23 @@ import numpy as np
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
 
+def _check_init_pos(init_pos: Position, n_particles: int, dimensions: int, binary: bool = False):
+    if binary and len(np.unique(init_pos)) > 2:
+        raise ValueError("User-defined init_pos is not binary!")
+    
+    if init_pos.ndim == 1:
+        assert init_pos.shape[0] == dimensions
+        pos = np.repeat([init_pos], n_particles, axis=0)
+    elif init_pos.ndim == 2:
+        assert init_pos.shape[0] == n_particles
+        assert init_pos.shape[1] == dimensions
+        pos = init_pos
+    else:
+        raise ValueError("init_pos must be 1D or 2D")
+
+    return pos
+
+
 def generate_swarm(
     n_particles: int,
     dimensions: int,
@@ -64,7 +81,7 @@ def generate_swarm(
         if init_pos is not None:
             if not (np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])):
                 raise ValueError("User-defined init_pos is out of bounds.")
-            pos = init_pos
+            pos = _check_init_pos(init_pos, n_particles, dimensions)
         else:
             try:
                 lb, ub = bounds
@@ -77,7 +94,7 @@ def generate_swarm(
                 raise e
     else:
         if init_pos is not None:
-            pos = init_pos
+            pos = _check_init_pos(init_pos, n_particles, dimensions)
         else:
             pos = center * np.random.uniform(low=0.0, high=1.0, size=(n_particles, dimensions))
 
@@ -116,19 +133,7 @@ def generate_discrete_swarm(
         When init_pos has an incorrect shape
     """
     if init_pos is not None:
-        if binary and len(np.unique(init_pos)) > 2:
-            raise ValueError("User-defined init_pos is not binary!")
-        
-        if init_pos.ndim == 1:
-            assert init_pos.shape[0] == dimensions
-            pos = np.repeat([init_pos], n_particles, axis=0)
-        elif init_pos.ndim == 2:
-            assert init_pos.shape[0] == n_particles
-            assert init_pos.shape[1] == dimensions
-            pos = init_pos
-        else:
-            raise ValueError("init_pos must be 1D or 2D")
-        
+        pos = _check_init_pos(init_pos, n_particles, dimensions, binary)
     else:
         if binary:
             pos = np.random.randint(2, size=(n_particles, dimensions)) # type: ignore
