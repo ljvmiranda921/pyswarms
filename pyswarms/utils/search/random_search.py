@@ -32,13 +32,18 @@ the minimum score, yet maximum score can also be evaluated.
 
 # Import from __future__
 from __future__ import absolute_import, print_function, with_statement
+from typing import Callable, Optional, Type
 
 # Import modules
 import numpy as np
+from pyswarms.single.general_optimizer import GeneralOptions
+from pyswarms.single.global_best import GlobalBestPSO
+from pyswarms.single.local_best import LocalBestPSO
 
 # Import from pyswarms
 # Import from package
 from pyswarms.utils.search.base_search import SearchBase
+from pyswarms.utils.types import Bounds, Clamp
 
 
 class RandomSearch(SearchBase):
@@ -62,15 +67,15 @@ class RandomSearch(SearchBase):
 
     def __init__(
         self,
-        optimizer,
-        n_particles,
-        dimensions,
-        options,
-        objective_func,
-        iters,
-        n_selection_iters,
-        bounds=None,
-        velocity_clamp=(0, 1),
+        optimizer: Type[GlobalBestPSO|LocalBestPSO],
+        n_particles: int,
+        dimensions: int,
+        options: GeneralOptions,
+        objective_func: Callable[..., float],
+        iters: int,
+        n_selection_iters: int,
+        bounds: Optional[Bounds] = None,
+        velocity_clamp: Clamp = (0, 1),
     ):
         """Initialize the Search
 
@@ -79,9 +84,8 @@ class RandomSearch(SearchBase):
         n_selection_iters: int
             number of iterations of random parameter selection
         """
-
-        # Assign n_selection_iters as attribute
         self.n_selection_iters = n_selection_iters
+        
         # Assign attributes
         super(RandomSearch, self).__init__(
             optimizer,
@@ -103,7 +107,7 @@ class RandomSearch(SearchBase):
         params = {}
 
         # Remove 'p' to hold as a constant in the paramater combinations
-        p = options.pop("p")
+        p = self.options["p"]
         params["p"] = [p for _ in range(self.n_selection_iters)]
 
         # Assign generators based on parameter type
@@ -120,12 +124,12 @@ class RandomSearch(SearchBase):
 
         # Return list of dicts of hyperparameter combinations
         return [
-            {
+            GeneralOptions({
                 "c1": params["c1"][i],
                 "c2": params["c2"][i],
                 "w": params["w"][i],
                 "k": params["k"][i],
                 "p": params["p"][i],
-            }
+            })
             for i in range(self.n_selection_iters)
         ]

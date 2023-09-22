@@ -33,10 +33,15 @@ from __future__ import absolute_import, print_function, with_statement
 
 # Import standard library
 import itertools
+from typing import Callable, Optional, Type
+from pyswarms.single.general_optimizer import GeneralOptions
+from pyswarms.single.global_best import GlobalBestPSO
+from pyswarms.single.local_best import LocalBestPSO
 
 # Import from pyswarms
 # Import from package
 from pyswarms.utils.search.base_search import SearchBase
+from pyswarms.utils.types import Bounds, Clamp
 
 
 class GridSearch(SearchBase):
@@ -45,14 +50,14 @@ class GridSearch(SearchBase):
 
     def __init__(
         self,
-        optimizer,
-        n_particles,
-        dimensions,
-        options,
-        objective_func,
-        iters,
-        bounds=None,
-        velocity_clamp=(0, 1),
+        optimizer: Type[GlobalBestPSO|LocalBestPSO],
+        n_particles: int,
+        dimensions: int,
+        options: GeneralOptions,
+        objective_func: Callable[..., float],
+        iters: int,
+        bounds: Optional[Bounds] = None,
+        velocity_clamp: Clamp = (0, 1),
     ):
         """Initialize the Search"""
 
