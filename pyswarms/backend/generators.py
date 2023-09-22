@@ -16,7 +16,7 @@ from typing import Optional, Tuple
 # Import modules
 import numpy as np
 
-from pyswarms.utils.types import Bounds, Position, Velocity
+from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
 from pyswarms.utils.reporter import Reporter
 
@@ -128,7 +128,7 @@ def generate_discrete_swarm(n_particles: int, dimensions: int, binary: bool = Fa
     return pos
 
 
-def generate_velocity(n_particles: int, dimensions: int, clamp: Optional[Tuple[float, float]] = None) -> Velocity:
+def generate_velocity(n_particles: int, dimensions: int, clamp: Optional[Clamp] = None) -> Velocity:
     """Initialize a velocity vector
 
     Parameters

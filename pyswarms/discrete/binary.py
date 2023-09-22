@@ -198,7 +198,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
                 # Print to console
                 self.rep.hook(best_cost=self.swarm.best_cost)
             # Save to history
-            hist = self.ToHistory(
+            hist = self.history(
                 best_cost=self.swarm.best_cost,
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),
                 mean_neighbor_cost=np.mean(self.swarm.best_cost),
