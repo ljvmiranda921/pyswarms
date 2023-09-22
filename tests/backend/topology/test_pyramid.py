@@ -9,7 +9,6 @@ from pyswarms.backend.swarms import Swarm
 
 # Import from pyswarms
 from pyswarms.backend.topology import Pyramid
-from pyswarms.backend.topology.base import Topology
 
 from .abc_test_topology import ABCTestTopology
 
@@ -26,7 +25,7 @@ class TestPyramidTopology(ABCTestTopology):
         return {}
 
     @pytest.mark.parametrize("static", [True, False])
-    def test_compute_gbest_return_values(self, topology: Type[Topology], options: Dict[str, Any], swarm: Swarm, static: bool):
+    def test_compute_gbest_return_values(self, topology: Type[Pyramid], options: Dict[str, Any], swarm: Swarm, static: bool):
         """Test if compute_gbest() gives the expected return values"""
         topo = topology(static=static)
         expected_cost = 1.0002528364353296

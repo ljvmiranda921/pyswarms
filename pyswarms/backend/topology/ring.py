@@ -14,6 +14,7 @@ from typing import Any, Dict, Literal, Optional
 
 # Import modules
 import numpy as np
+import numpy.typing as npt
 from scipy.spatial import cKDTree  # type: ignore
 
 # Import from pyswarms
@@ -25,6 +26,8 @@ from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Ring(Topology):
+    neighbor_idx: Optional[npt.NDArray[np.integer[Any]]] = None
+
     def __init__(self, p: Literal[1, 2], k: int, static: bool = False):
         """Initializes the class
 

@@ -12,6 +12,7 @@ from typing import Any, Dict, Optional
 
 # Import modules
 import numpy as np
+import numpy.typing as npt
 from scipy.sparse.csgraph import connected_components, dijkstra  # type: ignore
 
 
@@ -24,6 +25,8 @@ from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Random(Topology):
+    neighbor_idx: Optional[npt.NDArray[np.integer[Any]]] = None
+
     def __init__(self, k: int, static: bool = False):
         """Initializes the class
 

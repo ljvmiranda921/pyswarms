@@ -14,6 +14,7 @@ from typing import Any, Dict, Optional
 
 # Import modules
 import numpy as np
+import numpy.typing as npt
 
 # Import from pyswarms
 from pyswarms.backend import operators as ops
@@ -24,6 +25,8 @@ from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Star(Topology):
+    neighbor_idx: Optional[npt.NDArray[np.integer[Any]]] = None
+
     def __init__(self, static: bool = True):
         # static = None is just an artifact to make the API consistent
         # Setting it will not change swarm behavior

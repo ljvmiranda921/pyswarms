@@ -18,8 +18,6 @@ from typing import Any, Dict, Optional, Tuple
 from loguru import logger
 
 # Import modules
-import numpy as np
-import numpy.typing as npt
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 
 # Import from pyswarms
@@ -28,8 +26,6 @@ from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
 
 class Topology(abc.ABC):
-    neighbor_idx: Optional[npt.NDArray[np.integer[Any]]] = None
-
     def __init__(self, static: bool, **kwargs: Dict[str, Any]):
         """Initializes the class"""
 
