@@ -4,10 +4,11 @@ import logging
 import logging.config
 import os
 import pprint
+from typing import Any, Dict, List, Optional
 
 # Import modules
 import yaml
-from tqdm import trange
+from tqdm import tqdm, trange
 
 
 class Reporter(object):
@@ -59,7 +60,9 @@ class Reporter(object):
 
     """
 
-    def __init__(self, log_path=None, config_path=None, logger=None, printer=None):
+    t: Optional[tqdm[int]] = None
+
+    def __init__(self, log_path: Optional[str] = None, config_path: Optional[str] = None, logger: Optional[logging.Logger] = None, printer: Optional[pprint.PrettyPrinter] = None):
         """Initialize the reporter
 
         Attributes
@@ -111,7 +114,7 @@ class Reporter(object):
         }
         self._setup_logger(config_path)
 
-    def log(self, msg, lvl=logging.INFO, *args, **kwargs):
+    def log(self, msg: str, lvl: int = logging.INFO, *args: List[Any], **kwargs: Dict[str, Any]):
         """Log a message within a set level
 
         This method abstracts the logging.Logger.log() method. We use this
@@ -132,7 +135,7 @@ class Reporter(object):
         """
         self.logger.log(lvl, msg, *args, **kwargs)
 
-    def print(self, msg, verbosity, threshold=0):
+    def print(self, msg: str, verbosity: int, threshold: int = 0):
         """Print a message into console
 
         This method can be called during non-system calls or minor state
@@ -155,7 +158,7 @@ class Reporter(object):
         else:
             pass
 
-    def _setup_logger(self, path=None):
+    def _setup_logger(self, path: Optional[str] = None):
         """Set-up the logger with default values
 
         This method is called right after initializing the Reporter module.
@@ -181,7 +184,7 @@ class Reporter(object):
         """Load default logging configuration"""
         logging.config.dictConfig(self._default_config)
 
-    def pbar(self, iters, desc=None):
+    def pbar(self, iters: int, desc: Optional[str] = None):
         """Create a tqdm iterable
 
         You can use this method to create progress bars. It uses a set
@@ -211,7 +214,7 @@ class Reporter(object):
         self.t = trange(iters, desc=desc, bar_format=self._bar_fmt)
         return self.t
 
-    def hook(self, *args, **kwargs):
+    def hook(self, *args: List[Any], **kwargs: Dict[str, Any]):
         """Set a hook on the progress bar
 
         Method for creating a postfix in tqdm. In practice we use this
@@ -227,4 +230,7 @@ class Reporter(object):
                     best_cost = compute()
                     rep.hook(best_cost=best_cost)
         """
+        if self.t is None:
+            return
+
         self.t.set_postfix(*args, **kwargs)
