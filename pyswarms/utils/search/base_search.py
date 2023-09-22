@@ -2,10 +2,17 @@
 """Base class for hyperparameter optimization search functions"""
 
 # Import standard library
+from abc import ABC, abstractmethod
 import operator as op
+from typing import Callable, List, Optional, Type
+
+from pyswarms.single.general_optimizer import GeneralOptions
+from pyswarms.single.global_best import GlobalBestPSO
+from pyswarms.single.local_best import LocalBestPSO
+from pyswarms.utils.types import Bounds, Clamp
 
 
-class SearchBase(object):
+class SearchBase(ABC):
     def assertions(self):
         """Assertion method to check :code:`optimizer` input
 
@@ -20,14 +27,14 @@ class SearchBase(object):
 
     def __init__(
         self,
-        optimizer,
-        n_particles,
-        dimensions,
-        options,
-        objective_func,
-        iters,
-        bounds=None,
-        velocity_clamp=(0, 1),
+        optimizer: Type[GlobalBestPSO|LocalBestPSO],
+        n_particles: int,
+        dimensions: int,
+        options: GeneralOptions,
+        objective_func: Callable[..., float],
+        iters: int,
+        bounds: Optional[Bounds] = None,
+        velocity_clamp: Clamp = (0, 1),
     ):
         """Initialize the Search
 
@@ -83,7 +90,7 @@ class SearchBase(object):
         # Invoke assertions
         self.assertions()
 
-    def generate_score(self, options):
+    def generate_score(self, options: GeneralOptions):
         """Generate score for optimizer's performance on objective function
 
         Parameters
@@ -105,7 +112,7 @@ class SearchBase(object):
         # Return score
         return f.optimize(self.objective_func, self.iters)[0]
 
-    def search(self, maximum=False):
+    def search(self, maximum: bool = False):
         """Compare optimizer's objective function performance scores
         for all combinations of provided parameters
 
@@ -134,3 +141,7 @@ class SearchBase(object):
         # Return optimum hyperparameter value property from grid using index
         self.best_options = op.itemgetter(idx)(grid)
         return self.best_score, self.best_options
+
+    @abstractmethod
+    def generate_grid(self) -> List[GeneralOptions]:
+        ...
