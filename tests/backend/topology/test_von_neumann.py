@@ -22,7 +22,7 @@ class TestVonNeumannTopology(ABCTestTopology):
 
     @pytest.fixture
     def options(self) -> Dict[str, Any]:
-        return {"p": 1, "r": 1}
+        return {"p": 1, "r": 1, "dimensions": 3}
 
     @pytest.mark.parametrize("r", [0, 1])
     @pytest.mark.parametrize("p", [1, 2])

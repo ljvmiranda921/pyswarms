@@ -9,7 +9,6 @@ from pyswarms.backend.swarms import Swarm
 
 # Import from pyswarms
 from pyswarms.backend.topology import Random
-from pyswarms.backend.topology.base import Topology
 
 from .abc_test_topology import ABCTestTopology
 
@@ -33,9 +32,9 @@ class TestRandomTopology(ABCTestTopology):
         return {"k": request.param}
 
     @pytest.mark.parametrize("static", [True, False])
-    def test_compute_gbest_return_values(self, swarm: Swarm, options: Dict[str, Any], topology: Type[Topology], static: bool):
+    def test_compute_gbest_return_values(self, swarm: Swarm, options: Dict[str, Any], topology: Type[Random], static: bool):
         """Test if update_gbest_neighborhood gives the expected return values"""
-        topo = topology(static=static)
+        topo = topology(static=static, **options)
         expected_cost = 1.0002528364353296
         expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
         expected_pos_2 = np.array([9.98033031e-01, 4.97392619e-03, 3.07726256e-03])
@@ -50,7 +49,7 @@ class TestRandomTopology(ABCTestTopology):
     def test_compute_neighbors_return_values(self, swarm: Swarm, topology: Type[Random], k: int, static: bool):
         """Test if __compute_neighbors() gives the expected shape and symmetry"""
         topo = topology(static=static, k=k)
-        adj_matrix = topo.__compute_neighbors(swarm)
+        adj_matrix = topo._compute_neighbors(swarm)
         assert adj_matrix.shape == (swarm.n_particles, swarm.n_particles)
         assert np.allclose(adj_matrix, adj_matrix.T, atol=1e-8)  # Symmetry test
 
@@ -60,7 +59,7 @@ class TestRandomTopology(ABCTestTopology):
         """Test if __compute_neighbors() gives the expected matrix"""
         np.random.seed(1)
         topo = topology(static=static, k=k)
-        adj_matrix = topo.__compute_neighbors(swarm)
+        adj_matrix = topo._compute_neighbors(swarm)
         comparison_matrix = np.array([
             [1, 1, 1, 0, 1, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
