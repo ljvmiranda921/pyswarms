@@ -7,12 +7,10 @@ This class implements a Von Neumann topology.
 """
 
 # Import standard library
-from typing import TYPE_CHECKING, Any, Dict, Literal
-
-if TYPE_CHECKING:
-    from pyswarms.backend.swarms import Swarm
+from typing import Any, Dict, Literal
 
 # Import from pyswarms
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.ring import Ring
 
 
@@ -39,7 +37,7 @@ class VonNeumann(Ring):
         k = self.delannoy(dimensions, r)
         super(VonNeumann, self).__init__(p, k)
 
-    def compute_gbest(self, swarm: "Swarm", **kwargs: Dict[str, Any]):
+    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
         """Updates the global best using a neighborhood approach
 
         The Von Neumann topology inherits from the Ring topology and uses

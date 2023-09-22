@@ -80,7 +80,7 @@ from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D  # type: ignore
 
 # Import from pyswarms
-from pyswarms.utils.plotters.formatters import Animator, Designer, Mesher, 
+from pyswarms.utils.plotters.formatters import Animator, Designer, Mesher 
 
 
 def plot_cost_history(

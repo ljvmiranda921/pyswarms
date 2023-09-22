@@ -7,18 +7,17 @@ This module implements helpful classes to format your plots or create meshes.
 """
 
 # Import standard library
+from dataclasses import dataclass, field
 import multiprocessing as mp
 from typing import Any, Callable, List, Optional, Tuple
 
 # Import modules
 import numpy as np
 import numpy.typing as npt
-from attr import attrib, attrs
-from attr.validators import instance_of
 from matplotlib import cm, colors
 
 
-@attrs
+@dataclass
 class Designer(object):
     """Designer class for specifying a plot's formatting and design
 
@@ -59,30 +58,17 @@ class Designer(object):
     colormap : matplotlib.cm.Colormap
         Colormap for contour plots. Default is `cm.viridis`
     """
-
     # Overall plot design
-    figsize: Tuple[float, float] = attrib(type=tuple, validator=instance_of(tuple), default=(10, 8))
-    title_fontsize: str | int | float = attrib(
-        type=str | int | float, validator=instance_of((str, int, float)), default="large"
-    )
-    text_fontsize: str | int | float = attrib(
-        type=str | int | float, validator=instance_of((str, int, float)), default="medium"
-    )
-    legend: str = attrib(type=str, validator=instance_of(str), default="Cost")
-    label: str | List[str] | Tuple[str, ...] = attrib(
-        type=str | List[str] | Tuple[str, ...],
-        validator=instance_of((str, List[str], Tuple[str, ...])),
-        default=["x-axis", "y-axis", "z-axis"],
-    )
-    limits: List[Tuple[int, ...]] | Tuple[Tuple[int, ...]] = attrib(
-        type=List[Tuple[int, ...]] | Tuple[Tuple[int, ...]],
-        validator=instance_of((List[Tuple[int, ...]], Tuple[Tuple[int, ...]])),
-        default=[(-1, 1), (-1, 1), (-1, 1)],
-    )
-    colormap: colors.Colormap = attrib(type=colors.Colormap, validator=instance_of(colors.Colormap), default=cm.viridis)
+    figsize: Tuple[float, float] = field(default_factory=lambda: (10, 8))
+    title_fontsize: str | int | float = field(default="large")
+    text_fontsize: str | int | float = field(default="medium")
+    legend: str = field(default="Cost")
+    label: str | List[str] | Tuple[str, ...] = field(default_factory=lambda: ["x-axis", "y-axis", "z-axis"])
+    limits: List[Tuple[int, ...]] | Tuple[Tuple[int, ...]] = field(default_factory=lambda: [(-1, 1), (-1, 1), (-1, 1)])
+    colormap: colors.Colormap = field(default=cm.viridis) # type: ignore
 
 
-@attrs
+@dataclass
 class Animator(object):
     """Animator class for specifying animation behavior
 
@@ -112,13 +98,12 @@ class Animator(object):
         Pass `False` if you don't want to repeat the animation.
         Default is `True`
     """
+    interval: int = 80
+    repeat_delay: Optional[int|float] = None
+    repeat: bool = True
 
-    interval: int = attrib(type=int, validator=instance_of(int), default=80)
-    repeat_delay: int | float = attrib(default=None)
-    repeat: bool = attrib(type=bool, validator=instance_of(bool), default=True)
 
-
-@attrs
+@dataclass
 class Mesher(object):
     """Mesher class for plotting contours of objective functions
 
@@ -159,18 +144,13 @@ class Mesher(object):
         elements representing the number of axes. Default is :code:`[(-1, 1),
         (-1, 1)]`
     """
-
-    func: Callable[..., float] = attrib()
+    func: Callable[..., float]
     # For mesh creation
-    delta: float = attrib(type=float, default=0.001)
-    limits: List[Tuple[int, ...]] | Tuple[Tuple[int, ...], ...] = attrib(
-        type=List[Tuple[int, ...]] | Tuple[Tuple[int, ...]],
-        validator=instance_of((List[Tuple[int, ...]], Tuple[Tuple[int, ...]])),
-        default=[(-1, 1), (-1, 1)],
-    )
-    levels: npt.NDArray[Any] = attrib(type=npt.NDArray[Any], default=np.arange(-2.0, 2.0, 0.070))
+    delta: float = 0.001
+    limits: List[Tuple[int, ...]] | Tuple[Tuple[int, ...], ...] = field(default_factory=lambda: [(-1, 1), (-1, 1)])
+    levels: npt.NDArray[Any] = field(default_factory=lambda: np.arange(-2.0, 2.0, 0.070))
     # Surface transparency
-    alpha: float = attrib(type=float, validator=instance_of(float), default=0.3)
+    alpha: float = 0.3
 
     def compute_history_3d(self, pos_history: npt.NDArray[Any], n_processes: Optional[int] = None):
         """Compute a 3D position matrix
@@ -192,26 +172,25 @@ class Mesher(object):
         numpy.ndarray
             3D position matrix of shape :code:`(iterations, n_particles, 3)`
         """
-
         # Setup Pool of processes for parallel evaluation
         pool = None if n_processes is None else mp.Pool(n_processes)
 
         if pool is None:
             fitness = np.array(list(map(self.func, pos_history)))
         else:
-            iter_r = []
+            iter_r: List[npt.NDArray[Any]] = []
             # Iterate over iterations
             for i in range(len(pos_history)):
                 # Parallelize particles
                 r_map_split = pool.map(
                     self.func,
-                    np.array_split(np.array(pos_history[i]), pool._processes),
+                    np.array_split(np.array(pos_history[i]), pool._processes), # type: ignore
                 )
                 iter_r.append(np.array(np.concatenate(r_map_split)))
             fitness = np.array(iter_r)
 
         # Close Pool of Processes
-        if n_processes is not None:
+        if pool is not None:
             pool.close()
 
         return np.dstack((pos_history, fitness))

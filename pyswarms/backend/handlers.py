@@ -109,7 +109,6 @@ class BoundaryHandler(HandlerMixin):
         """
         self.strategy = strategy
         self.strategies = self._get_all_strategies()
-        self.rep = Reporter(logger=logging.getLogger(__name__))
 
     def __call__(self, position: npt.NDArray[Any], bounds: Bounds, **kwargs: Dict[str, Any]):
         """Apply the selected strategy to the position-matrix given the bounds
@@ -129,14 +128,7 @@ class BoundaryHandler(HandlerMixin):
         numpy.ndarray
             the adjusted positions of the swarm
         """
-        try:
-            new_position = self.strategies[self.strategy](position, bounds, **kwargs)
-        except KeyError:
-            message = "Unrecognized strategy: {}. Choose one among: " + str([strat for strat in self.strategies.keys()])
-            self.rep.logger.exception(message.format(self.strategy))
-            raise
-        else:
-            return new_position
+        return self.strategies[self.strategy](position, bounds, **kwargs)
 
     def nearest(self, position: Position, bounds: BoundsArray):
         r"""Set position to nearest bound

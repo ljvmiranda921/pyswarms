@@ -9,20 +9,19 @@ as input to most backend cases.
 """
 
 # Import standard library
+from dataclasses import dataclass, field
 from typing import Any, Dict
 
 # Import modules
 import numpy as np
 import numpy.typing as npt
-from attr import attrib, attrs
-from attr.validators import instance_of
 
 # Import from pyswarms
 from pyswarms.utils.types import Position, Velocity
 
 
-@attrs
-class Swarm(object):
+@dataclass
+class Swarm:
     """A Swarm Class
 
     This class offers a generic swarm that can be used in most use-cases
@@ -89,38 +88,20 @@ class Swarm(object):
     """
 
     # Required attributes
-    position: Position = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
-    velocity: Velocity = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
+    position: Position
+    velocity: Velocity
+
     # With defaults
-    n_particles: int = attrib(type=int, validator=instance_of(int))
-    dimensions: int = attrib(type=int, validator=instance_of(int))
-    pbest_pos: Position = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
-    options: Dict[str, Any] = attrib(type=dict, default={}, validator=instance_of(dict))
-    best_pos: Position = attrib(
-        type=np.ndarray,
-        default=np.array([]),
-        validator=instance_of(np.ndarray),
-    )
-    pbest_cost: Position = attrib(
-        type=np.ndarray,
-        default=np.array([]),
-        validator=instance_of(np.ndarray),
-    )
-    best_cost: int | float = attrib(type=float, default=np.inf, validator=instance_of((int, float)))
-    current_cost: npt.NDArray[np.floating[Any]] = attrib(
-        type=np.ndarray,
-        default=np.array([]),
-        validator=instance_of(np.ndarray),
-    )
+    n_particles: int = field(init=False)
+    dimensions: int = field(init=False)
+    pbest_pos: Position = field(init=False)
+    options: Dict[str, Any] = field(default_factory=dict)
+    best_pos: Position = field(default_factory=lambda: np.array([], dtype=float))
+    pbest_cost: Position = field(default_factory=lambda: np.array([], dtype=float))
+    best_cost: int | float = np.inf
+    current_cost: npt.NDArray[np.floating[Any]] = field(default_factory=lambda: np.array([], dtype=float))
 
-    @n_particles.default
-    def n_particles_default(self):
-        return self.position.shape[0]
-
-    @dimensions.default
-    def dimensions_default(self):
-        return self.position.shape[1]
-
-    @pbest_pos.default
-    def pbest_pos_default(self):
-        return self.position
+    def __post_init__(self):
+        self.n_particles = self.position.shape[0]
+        self.dimensions = self.position.shape[1]
+        self.pbest_pos = self.position

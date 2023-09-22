@@ -10,17 +10,15 @@ optimizers.
 """
 
 # Import standard library
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import Any, Dict, Optional
 
 # Import modules
 import numpy as np
 
-if TYPE_CHECKING:
-    from pyswarms.backend.swarms import Swarm
-
 # Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
 from pyswarms.utils.types import Bounds, Clamp, Position
 
@@ -31,7 +29,7 @@ class Star(Topology):
         # Setting it will not change swarm behavior
         super(Star, self).__init__(static=True)
 
-    def compute_gbest(self, swarm: "Swarm", **kwargs: Dict[str, Any]):
+    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
         """Update the global best using a star topology
 
         This method takes the current pbest_pos and pbest_cost, then returns
