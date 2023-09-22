@@ -67,7 +67,7 @@ def ackley(x):
 
     d = x.shape[1]
     j = (
-        -20.0 * np.exp(-0.2 * np.sqrt((1 / d) * (x ** 2).sum(axis=1)))
+        -20.0 * np.exp(-0.2 * np.sqrt((1 / d) * (x**2).sum(axis=1)))
         - np.exp((1 / float(d)) * np.cos(2 * np.pi * x).sum(axis=1))
         + 20.0
         + np.exp(1)
@@ -104,17 +104,11 @@ def beale(x):
     if not x.shape[1] == 2:
         raise IndexError("Beale function only takes two-dimensional input.")
     if not np.logical_and(x >= -4.5, x <= 4.5).all():
-        raise ValueError(
-            "Input for Beale function must be within " "[-4.5, 4.5]."
-        )
+        raise ValueError("Input for Beale function must be within " "[-4.5, 4.5].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = (
-        (1.5 - x_ + x_ * y_) ** 2.0
-        + (2.25 - x_ + x_ * y_ ** 2.0) ** 2.0
-        + (2.625 - x_ + x_ * y_ ** 3.0) ** 2.0
-    )
+    j = (1.5 - x_ + x_ * y_) ** 2.0 + (2.25 - x_ + x_ * y_**2.0) ** 2.0 + (2.625 - x_ + x_ * y_**3.0) ** 2.0
 
     return j
 
@@ -184,23 +178,15 @@ def bukin6(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError(
-            "Bukin N. 6 function only takes two-dimensional " "input."
-        )
+        raise IndexError("Bukin N. 6 function only takes two-dimensional " "input.")
     if not np.logical_and(x[:, 0] >= -15, x[:, 0] <= -5).all():
-        raise ValueError(
-            "x-coord for Bukin N. 6 function must be within " "[-15, -5]."
-        )
+        raise ValueError("x-coord for Bukin N. 6 function must be within " "[-15, -5].")
     if not np.logical_and(x[:, 1] >= -3, x[:, 1] <= 3).all():
-        raise ValueError(
-            "y-coord for Bukin N. 6 function must be within " "[-3, 3]."
-        )
+        raise ValueError("y-coord for Bukin N. 6 function must be within " "[-3, 3].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = 100 * np.sqrt(np.absolute(y_ - 0.01 * x_ ** 2.0)) + 0.01 * np.absolute(
-        x_ + 10
-    )
+    j = 100 * np.sqrt(np.absolute(y_ - 0.01 * x_**2.0)) + 0.01 * np.absolute(x_ + 10)
 
     return j
 
@@ -235,24 +221,15 @@ def crossintray(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError(
-            "Cross-in-tray function only takes two-dimensional input."
-        )
+        raise IndexError("Cross-in-tray function only takes two-dimensional input.")
     if not np.logical_and(x >= -10, x <= 10).all():
-        raise ValueError(
-            "Input for cross-in-tray function must be within [-10, 10]."
-        )
+        raise ValueError("Input for cross-in-tray function must be within [-10, 10].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
 
     j = -0.0001 * np.power(
-        np.abs(
-            np.sin(x_)
-            * np.sin(y_)
-            * np.exp(np.abs(100 - (np.sqrt(x_ ** 2 + y_ ** 2) / np.pi)))
-        )
-        + 1,
+        np.abs(np.sin(x_) * np.sin(y_) * np.exp(np.abs(100 - (np.sqrt(x_**2 + y_**2) / np.pi)))) + 1,
         0.1,
     )
 
@@ -290,19 +267,12 @@ def easom(x):
     if not x.shape[1] == 2:
         raise IndexError("Easom function only takes two-dimensional input.")
     if not np.logical_and(x >= -100, x <= 100).all():
-        raise ValueError(
-            "Input for Easom function must be within [-100, 100]."
-        )
+        raise ValueError("Input for Easom function must be within [-100, 100].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
 
-    j = (
-        -1
-        * np.cos(x_)
-        * np.cos(y_)
-        * np.exp(-1 * ((x_ - np.pi) ** 2 + (y_ - np.pi) ** 2))
-    )
+    j = -1 * np.cos(x_) * np.cos(y_) * np.exp(-1 * ((x_ - np.pi) ** 2 + (y_ - np.pi) ** 2))
 
     return j
 
@@ -336,20 +306,14 @@ def eggholder(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError(
-            "Eggholder function only takes two-dimensional input."
-        )
+        raise IndexError("Eggholder function only takes two-dimensional input.")
     if not np.logical_and(x >= -512, x <= 512).all():
-        raise ValueError(
-            "Input for Eggholder function must be within [-512, 512]."
-        )
+        raise ValueError("Input for Eggholder function must be within [-512, 512].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
 
-    j = -(y_ + 47) * np.sin(np.sqrt(np.abs((x_ / 2) + y_ + 47))) - x_ * np.sin(
-        np.sqrt(np.abs(x_ - (y_ + 47)))
-    )
+    j = -(y_ + 47) * np.sin(np.sqrt(np.abs((x_ / 2) + y_ + 47))) - x_ * np.sin(np.sqrt(np.abs(x_ - (y_ + 47))))
 
     return j
 
@@ -382,38 +346,14 @@ def goldstein(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError(
-            "Goldstein function only takes two-dimensional " "input."
-        )
+        raise IndexError("Goldstein function only takes two-dimensional " "input.")
     if not np.logical_and(x >= -2, x <= 2).all():
-        raise ValueError(
-            "Input for Goldstein-Price function must be within " "[-2, 2]."
-        )
+        raise ValueError("Input for Goldstein-Price function must be within " "[-2, 2].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = (
-        1
-        + (x_ + y_ + 1) ** 2.0
-        * (
-            19
-            - 14 * x_
-            + 3 * x_ ** 2.0
-            - 14 * y_
-            + 6 * x_ * y_
-            + 3 * y_ ** 2.0
-        )
-    ) * (
-        30
-        + (2 * x_ - 3 * y_) ** 2.0
-        * (
-            18
-            - 32 * x_
-            + 12 * x_ ** 2.0
-            + 48 * y_
-            - 36 * x_ * y_
-            + 27 * y_ ** 2.0
-        )
+    j = (1 + (x_ + y_ + 1) ** 2.0 * (19 - 14 * x_ + 3 * x_**2.0 - 14 * y_ + 6 * x_ * y_ + 3 * y_**2.0)) * (
+        30 + (2 * x_ - 3 * y_) ** 2.0 * (18 - 32 * x_ + 12 * x_**2.0 + 48 * y_ - 36 * x_ * y_ + 27 * y_**2.0)
     )
 
     return j
@@ -449,18 +389,14 @@ def himmelblau(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError(
-            "Himmelblau function only takes two-dimensional input."
-        )
+        raise IndexError("Himmelblau function only takes two-dimensional input.")
     if not np.logical_and(x >= -5, x <= 5).all():
-        raise ValueError(
-            "Input for Himmelblau function must be within [-5,5]."
-        )
+        raise ValueError("Input for Himmelblau function must be within [-5,5].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
 
-    j = (x_ ** 2 + y_ - 11) ** 2 + (x_ + y_ ** 2 - 7) ** 2
+    j = (x_**2 + y_ - 11) ** 2 + (x_ + y_**2 - 7) ** 2
 
     return j
 
@@ -495,22 +431,14 @@ def holdertable(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError(
-            "Holder Table function only takes two-dimensional input."
-        )
+        raise IndexError("Holder Table function only takes two-dimensional input.")
     if not np.logical_and(x >= -10, x <= 10).all():
-        raise ValueError(
-            "Input for Holder Table function must be within [-10,10]."
-        )
+        raise ValueError("Input for Holder Table function must be within [-10,10].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
 
-    j = -np.abs(
-        np.sin(x_)
-        * np.cos(y_)
-        * np.exp(np.abs(1 - np.sqrt(x_ ** 2 + y_ ** 2) / np.pi))
-    )
+    j = -np.abs(np.sin(x_) * np.cos(y_) * np.exp(np.abs(1 - np.sqrt(x_**2 + y_**2) / np.pi)))
 
     return j
 
@@ -556,8 +484,7 @@ def levi(x):
 
     j = (
         np.sin(np.pi * w_[:, 0]) ** 2.0
-        + ((masked_x - 1) ** 2.0).sum(axis=1)
-        * (1 + 10 * np.sin(np.pi * (masked_w_).sum(axis=1) + 1) ** 2.0)
+        + ((masked_x - 1) ** 2.0).sum(axis=1) * (1 + 10 * np.sin(np.pi * (masked_w_).sum(axis=1) + 1) ** 2.0)
         + (w_[:, d_] - 1) ** 2.0 * (1 + np.sin(2 * np.pi * w_[:, d_]) ** 2.0)
     )
 
@@ -583,13 +510,11 @@ def matyas(x):
     if not x.shape[1] == 2:
         raise IndexError("Matyas function only takes two-dimensional input.")
     if not np.logical_and(x >= -10, x <= 10).all():
-        raise ValueError(
-            "Input for Matyas function must be within " "[-10, 10]."
-        )
+        raise ValueError("Input for Matyas function must be within " "[-10, 10].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = 0.26 * (x_ ** 2.0 + y_ ** 2.0) - 0.48 * x_ * y_
+    j = 0.26 * (x_**2.0 + y_**2.0) - 0.48 * x_ * y_
 
     return j
 
@@ -617,12 +542,10 @@ def rastrigin(x):
         domain
     """
     if not np.logical_and(x >= -5.12, x <= 5.12).all():
-        raise ValueError(
-            "Input for Rastrigin function must be within " "[-5.12, 5.12]."
-        )
+        raise ValueError("Input for Rastrigin function must be within " "[-5.12, 5.12].")
 
     d = x.shape[1]
-    j = 10.0 * d + (x ** 2.0 - 10.0 * np.cos(2.0 * np.pi * x)).sum(axis=1)
+    j = 10.0 * d + (x**2.0 - 10.0 * np.cos(2.0 * np.pi * x)).sum(axis=1)
 
     return j
 
@@ -646,9 +569,7 @@ def rosenbrock(x):
         computed cost of size :code:`(n_particles, )`
     """
 
-    r = np.sum(
-        100 * (x.T[1:] - x.T[:-1] ** 2.0) ** 2 + (1 - x.T[:-1]) ** 2.0, axis=0
-    )
+    r = np.sum(100 * (x.T[1:] - x.T[:-1] ** 2.0) ** 2 + (1 - x.T[:-1]) ** 2.0, axis=0)
 
     return r
 
@@ -680,20 +601,13 @@ def schaffer2(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError(
-            "Schaffer N. 2 function only takes two-dimensional " "input."
-        )
+        raise IndexError("Schaffer N. 2 function only takes two-dimensional " "input.")
     if not np.logical_and(x >= -100, x <= 100).all():
-        raise ValueError(
-            "Input for Schaffer function must be within " "[-100, 100]."
-        )
+        raise ValueError("Input for Schaffer function must be within " "[-100, 100].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
-    j = 0.5 + (
-        (np.sin(x_ ** 2.0 - y_ ** 2.0) ** 2.0 - 0.5)
-        / ((1 + 0.001 * (x_ ** 2.0 + y_ ** 2.0)) ** 2.0)
-    )
+    j = 0.5 + ((np.sin(x_**2.0 - y_**2.0) ** 2.0 - 0.5) / ((1 + 0.001 * (x_**2.0 + y_**2.0)) ** 2.0))
 
     return j
 
@@ -714,7 +628,7 @@ def sphere(x):
     numpy.ndarray
         computed cost of size :code:`(n_particles, )`
     """
-    j = (x ** 2.0).sum(axis=1)
+    j = (x**2.0).sum(axis=1)
 
     return j
 
@@ -748,17 +662,13 @@ def threehump(x):
         domain
     """
     if not x.shape[1] == 2:
-        raise IndexError(
-            "Three-hump camel function only takes two-dimensional input."
-        )
+        raise IndexError("Three-hump camel function only takes two-dimensional input.")
     if not np.logical_and(x >= -5, x <= 5).all():
-        raise ValueError(
-            "Input for Three-hump camel function must be within [-5, 5]."
-        )
+        raise ValueError("Input for Three-hump camel function must be within [-5, 5].")
 
     x_ = x[:, 0]
     y_ = x[:, 1]
 
-    j = 2 * x_ ** 2 - 1.05 * (x_ ** 4) + (x_ ** 6) / 6 + x_ * y_ + y_ ** 2
+    j = 2 * x_**2 - 1.05 * (x_**4) + (x_**6) / 6 + x_ * y_ + y_**2
 
     return j

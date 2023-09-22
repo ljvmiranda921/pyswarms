@@ -72,11 +72,10 @@ class TestGeneralOptimizer(ABCTestOptimizer):
 
     def test_parallel_evaluation(self, obj_without_args, optimizer):
         """Test if parallelization breaks the optimization process"""
+        # Import standard library
         import multiprocessing
 
-        optimizer.optimize(
-            obj_without_args, 2000, n_processes=multiprocessing.cpu_count()
-        )
+        optimizer.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())
         assert np.array(optimizer.cost_history).shape == (2000,)
 
     @pytest.mark.skip(reason="Some topologies converge too slowly")
@@ -106,14 +105,12 @@ class TestGeneralOptimizer(ABCTestOptimizer):
             cost, pos = optimizer.optimize(obj_with_args, 1000, c=1, d=100)
 
     def test_general_correct_pos(self, options, optimizer):
-        """ Test to check general optimiser returns the correct position corresponding to the best cost """
+        """Test to check general optimiser returns the correct position corresponding to the best cost"""
         cost, pos = optimizer.optimize(sphere, iters=5)
         # find best pos from history
         min_cost_idx = np.argmin(optimizer.cost_history)
         min_pos_idx = np.argmin(sphere(optimizer.pos_history[min_cost_idx]))
-        assert np.array_equal(
-            optimizer.pos_history[min_cost_idx][min_pos_idx], pos
-        )
+        assert np.array_equal(optimizer.pos_history[min_cost_idx][min_pos_idx], pos)
 
     def test_ftol_iter_effect(self, optimizer):
         """Test if setting the ftol breaks the optimization process after the set number of iterations"""

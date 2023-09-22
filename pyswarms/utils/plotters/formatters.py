@@ -6,12 +6,14 @@ Plot Formatters
 This module implements helpful classes to format your plots or create meshes.
 """
 
+# Import standard library
+import multiprocessing as mp
+
 # Import modules
 import numpy as np
 from attr import attrib, attrs
 from attr.validators import instance_of
 from matplotlib import cm, colors
-import multiprocessing as mp
 
 
 @attrs
@@ -58,12 +60,8 @@ class Designer(object):
 
     # Overall plot design
     figsize = attrib(type=tuple, validator=instance_of(tuple), default=(10, 8))
-    title_fontsize = attrib(
-        validator=instance_of((str, int, float)), default="large"
-    )
-    text_fontsize = attrib(
-        validator=instance_of((str, int, float)), default="medium"
-    )
+    title_fontsize = attrib(validator=instance_of((str, int, float)), default="large")
+    text_fontsize = attrib(validator=instance_of((str, int, float)), default="medium")
     legend = attrib(validator=instance_of(str), default="Cost")
     label = attrib(
         validator=instance_of((str, list, tuple)),
@@ -73,9 +71,7 @@ class Designer(object):
         validator=instance_of((list, tuple)),
         default=[(-1, 1), (-1, 1), (-1, 1)],
     )
-    colormap = attrib(
-        validator=instance_of(colors.Colormap), default=cm.viridis
-    )
+    colormap = attrib(validator=instance_of(colors.Colormap), default=cm.viridis)
 
 
 @attrs
@@ -159,9 +155,7 @@ class Mesher(object):
     func = attrib()
     # For mesh creation
     delta = attrib(type=float, default=0.001)
-    limits = attrib(
-        validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1)]
-    )
+    limits = attrib(validator=instance_of((list, tuple)), default=[(-1, 1), (-1, 1)])
     levels = attrib(type=list, default=np.arange(-2.0, 2.0, 0.070))
     # Surface transparency
     alpha = attrib(type=float, validator=instance_of(float), default=0.3)
@@ -196,7 +190,6 @@ class Mesher(object):
             iter_r = []
             # Iterate over iterations
             for i in range(len(pos_history)):
-
                 # Parallelize particles
                 r_map_split = pool.map(
                     self.func,

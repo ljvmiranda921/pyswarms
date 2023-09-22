@@ -3,11 +3,7 @@
 
 """Tests for `pyswarms` package."""
 
-# Import standard library
-from collections import namedtuple
-
 # Import modules
-import numpy as np
 import pytest
 
 # Import from pyswarms

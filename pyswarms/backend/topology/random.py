@@ -9,31 +9,41 @@ This class implements a random topology. All particles are connected in a random
 # Import standard library
 import itertools
 import logging
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 # Import modules
 import numpy as np
-from scipy.sparse.csgraph import connected_components, dijkstra
+from scipy.sparse.csgraph import connected_components, dijkstra # type: ignore
 
-from .. import operators as ops
-from ..handlers import BoundaryHandler, VelocityHandler
-from ...utils.reporter import Reporter
-from .base import Topology
+if TYPE_CHECKING:
+    from pyswarms.backend.swarms import Swarm
+
+from pyswarms.utils.types import Bounds, Clamp, Position
+
+from pyswarms.utils.reporter import Reporter
+from pyswarms.backend import operators as ops
+from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.topology.base import Topology
 
 
 class Random(Topology):
-    def __init__(self, static=False):
+    def __init__(self, k: int, static: bool = False):
         """Initializes the class
 
         Parameters
         ----------
+        k : int
+            number of neighbors to be considered. Must be a
+            positive integer less than :code:`n_particles-1`
         static : bool
             a boolean that decides whether the topology
             is static or dynamic. Defaulg is `False`
         """
         super(Random, self).__init__(static)
         self.rep = Reporter(logger=logging.getLogger(__name__))
+        self.k = k
 
-    def compute_gbest(self, swarm, k, **kwargs):
+    def compute_gbest(self, swarm: "Swarm", **kwargs: Dict[str, Any]):
         """Update the global best using a random neighborhood approach
 
         This uses random class from :code:`numpy` to give every particle k
@@ -50,9 +60,6 @@ class Random(Topology):
         ----------
         swarm : pyswarms.backend.swarms.Swarm
             a Swarm instance
-        k : int
-            number of neighbors to be considered. Must be a
-            positive integer less than :code:`n_particles-1`
 
         Returns
         -------
@@ -61,47 +68,28 @@ class Random(Topology):
         float
             Best cost
         """
-        try:
-            # Check if the topology is static or dynamic and assign neighbors
-            if (self.static and self.neighbor_idx is None) or not self.static:
-                adj_matrix = self.__compute_neighbors(swarm, k)
-                self.neighbor_idx = np.array(
-                    [
-                        adj_matrix[i].nonzero()[0]
-                        for i in range(swarm.n_particles)
-                    ]
-                )
-            idx_min = np.array(
-                [
-                    swarm.pbest_cost[self.neighbor_idx[i]].argmin()
-                    for i in range(len(self.neighbor_idx))
-                ]
-            )
-            best_neighbor = np.array(
-                [
-                    self.neighbor_idx[i][idx_min[i]]
-                    for i in range(len(self.neighbor_idx))
-                ]
-            ).astype(int)
+        # Check if the topology is static or dynamic and assign neighbors
+        if self.neighbor_idx is None or not self.static:
+            adj_matrix = self.__compute_neighbors(swarm)
+            self.neighbor_idx = np.array([adj_matrix[i].nonzero()[0] for i in range(swarm.n_particles)])
+        
+        idx_min = np.array([swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))])
+        best_neighbor = np.array([self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]).astype(
+            int
+        )
 
-            # Obtain best cost and position
-            best_cost = np.min(swarm.pbest_cost[best_neighbor])
-            best_pos = swarm.pbest_pos[best_neighbor]
+        # Obtain best cost and position
+        best_cost = np.min(swarm.pbest_cost[best_neighbor])
+        best_pos: Position = swarm.pbest_pos[best_neighbor]
 
-        except AttributeError:
-            self.rep.logger.exception(
-                "Please pass a Swarm class. You passed {}".format(type(swarm))
-            )
-            raise
-        else:
-            return (best_pos, best_cost)
+        return (best_pos, float(best_cost))
 
     def compute_velocity(
         self,
-        swarm,
-        clamp=None,
-        vh=VelocityHandler(strategy="unmodified"),
-        bounds=None,
+        swarm: Swarm,
+        clamp: Optional[Clamp] = None,
+        vh: Optional[VelocityHandler] = None,
+        bounds: Optional[Bounds] = None,
     ):
         """Compute the velocity matrix
 
@@ -135,9 +123,9 @@ class Random(Topology):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping. Default is `None`
-        vh : pyswarms.backend.handlers.VelocityHandler
+        vh : pyswarms.backend.handlers.VelocityHandler, optional
             a VelocityHandler instance
-        bounds : tuple of numpy.ndarray or list
+        bounds : tuple of numpy.ndarray or list, optional
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
@@ -147,11 +135,10 @@ class Random(Topology):
         numpy.ndarray
             Updated velocity matrix
         """
+        vh = vh or VelocityHandler.factory("unmodified")
         return ops.compute_velocity(swarm, clamp, vh, bounds=bounds)
 
-    def compute_position(
-        self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
-    ):
+    def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: Optional[BoundaryHandler] = None):
         """Update the position matrix
 
         This method updates the position matrix given the current position and
@@ -161,11 +148,11 @@ class Random(Topology):
         ----------
         swarm : pyswarms.backend.swarms.Swarm
             a Swarm instance
-        bounds : tuple of numpy.ndarray or list
+        bounds : tuple of numpy.ndarray or list, optional
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
-        bh : pyswarms.backend.handlers.BoundaryHandler
+        bh : pyswarms.backend.handlers.BoundaryHandler, optional
             a BoundaryHandler instance
 
         Returns
@@ -173,9 +160,10 @@ class Random(Topology):
         numpy.ndarray
             New position-matrix
         """
+        bh = bh or BoundaryHandler(strategy="periodic")
         return ops.compute_position(swarm, bounds, bh)
 
-    def __compute_neighbors(self, swarm, k):
+    def __compute_neighbors(self, swarm: Swarm):
         """Helper method to compute the adjacency matrix of the topology
 
         This method computes the adjacency matrix of the topology using
@@ -202,9 +190,6 @@ class Random(Topology):
         ----------
         swarm : pyswarms.backend.swarms.Swarm
             a Swarm instance
-        k : int
-            number of neighbors to be considered. Must be a
-            positive integer less than :code:`n_particles-1`
 
         Returns
         -------
@@ -219,7 +204,7 @@ class Random(Topology):
                 np.random.choice(
                     # Exclude i from the array
                     np.setdiff1d(np.arange(swarm.n_particles), np.array([i])),
-                    k,
+                    self.k,
                     replace=False,
                 )
                 for i in range(swarm.n_particles)
@@ -244,12 +229,7 @@ class Random(Topology):
         )
 
         # Generate connected graph.
-        while (
-            connected_components(
-                adj_matrix, directed=False, return_labels=False
-            )
-            != 1
-        ):
+        while connected_components(adj_matrix, directed=False, return_labels=False) != 1:
             for i, j in itertools.product(range(swarm.n_particles), repeat=2):
                 if dist_matrix[i][j] == np.inf:
                     adj_matrix[i][j] = 1

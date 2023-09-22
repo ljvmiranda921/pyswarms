@@ -14,9 +14,7 @@ def test_cost_decorator(objective_func, particles):
 
     def cost_func_without_decorator(x):
         n_particles_in_func = x.shape[0]
-        cost = np.array(
-            [objective_func(x[i]) for i in range(n_particles_in_func)]
-        )
+        cost = np.array([objective_func(x[i]) for i in range(n_particles_in_func)])
         return cost
 
     @cost

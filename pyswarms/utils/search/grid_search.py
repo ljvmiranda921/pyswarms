@@ -75,10 +75,7 @@ class GridSearch(SearchBase):
 
         # Extract keys and values from options dictionary
         params = self.options.keys()
-        items = [
-            x if type(x) == list else [x]
-            for x in list(zip(*self.options.items()))[1]
-        ]
+        items = [x if isinstance(x, list) else [x] for x in list(zip(*self.options.items()))[1]]
 
         # Create list of cartesian products of hyperparameter values
         # from options

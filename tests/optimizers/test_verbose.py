@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Import standard library
 # Import standard libraries
 import re
-import pytest
-import random
-
-random.seed(0)
 
 # Import modules
-import numpy as np
+import pytest
 
 # Import from pyswarms
 from pyswarms.backend.topology import Star
+from pyswarms.single import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
 from pyswarms.utils.functions import single_obj as fx
-from pyswarms.single import GlobalBestPSO, LocalBestPSO, GeneralOptimizerPSO
 
 # Instantiate optimizers
 optimizers = [GlobalBestPSO, LocalBestPSO, GeneralOptimizerPSO]

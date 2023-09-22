@@ -3,6 +3,7 @@
 
 # Import from standard library
 import os
+import warnings
 
 # Import modules
 import pytest
@@ -25,9 +26,7 @@ from pyswarms.utils.plotters import (
 from pyswarms.utils.plotters.plotters import _animate, _mesh
 
 
-@pytest.mark.parametrize(
-    "history", ["cost_history", "mean_neighbor_history", "mean_pbest_history"]
-)
+@pytest.mark.parametrize("history", ["cost_history", "mean_neighbor_history", "mean_pbest_history"])
 def test_plot_cost_history_return_type(trained_optimizer, history):
     """Tests if plot_cost_history() returns a SubplotBase instance"""
     opt_params = vars(trained_optimizer)
@@ -44,12 +43,14 @@ def test_plot_cost_history_error(bad_values):
 
 def test_plot_contour_return_type(pos_history):
     """Tests if the animation function returns the expected type"""
-    assert isinstance(plot_contour(pos_history), FuncAnimation)
+    with warnings.catch_warnings():
+        assert isinstance(plot_contour(pos_history), FuncAnimation)
 
 
 def test_plot_surface_return_type(pos_history):
     """Tests if the animation function returns the expected type"""
-    assert isinstance(plot_surface(pos_history), FuncAnimation)
+    with warnings.catch_warnings():
+        assert isinstance(plot_surface(pos_history), FuncAnimation)
 
 
 def test_mesh_hidden_function_shape(mesher):
@@ -64,15 +65,7 @@ def test_parallel_mesh(mesher):
 
     xx, yy, zz = _mesh(mesher)
     xx_p, yy_p, zz_p = _mesh(mesher, n_processes=multiprocessing.cpu_count())
-    assert (
-        xx.shape
-        == yy.shape
-        == zz.shape
-        == xx_p.shape
-        == yy_p.shape
-        == zz_p.shape
-        == (20, 20)
-    )
+    assert xx.shape == yy.shape == zz.shape == xx_p.shape == yy_p.shape == zz_p.shape == (20, 20)
 
 
 def test_animate_hidden_function_type(pos_history):

@@ -85,12 +85,11 @@ class ABCTestOptimizer(abc.ABC):
 
     def test_parallel_evaluation(self, obj_without_args, optimizer, options):
         """Test if parallelization breaks the optimization process"""
+        # Import standard library
         import multiprocessing
 
         opt = optimizer(100, 2, options=options)
-        opt.optimize(
-            obj_without_args, 2000, n_processes=multiprocessing.cpu_count()
-        )
+        opt.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())
         assert np.array(opt.cost_history).shape == (2000,)
 
     def test_obj_with_kwargs(self, obj_with_args, optimizer, options):
@@ -104,9 +103,7 @@ class ABCTestOptimizer(abc.ABC):
         assert np.isclose(pos[0], 1.0, rtol=1e-03)
         assert np.isclose(pos[1], 1.0, rtol=1e-03)
 
-    def test_obj_unnecessary_kwargs(
-        self, obj_without_args, optimizer, options
-    ):
+    def test_obj_unnecessary_kwargs(self, obj_without_args, optimizer, options):
         """Test if error is raised given unnecessary kwargs"""
         x_max = 10 * np.ones(2)
         x_min = -1 * x_max

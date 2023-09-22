@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
-from collections import namedtuple
-
-# Import modules
-import numpy as np
-import pytest
-
 # Import from pyswarms
 from pyswarms.utils.functions import single_obj as fx
 

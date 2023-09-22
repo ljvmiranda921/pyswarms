@@ -59,9 +59,7 @@ class Reporter(object):
 
     """
 
-    def __init__(
-        self, log_path=None, config_path=None, logger=None, printer=None
-    ):
+    def __init__(self, log_path=None, config_path=None, logger=None, printer=None):
         """Initialize the reporter
 
         Attributes
@@ -86,11 +84,7 @@ class Reporter(object):
         self._default_config = {
             "version": 1,
             "disable_existing_loggers": False,
-            "formatters": {
-                "standard": {
-                    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-                }
-            },
+            "formatters": {"standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}},
             "handlers": {
                 "default": {
                     "level": "INFO",

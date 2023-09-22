@@ -35,7 +35,6 @@ from __future__ import absolute_import, print_function, with_statement
 
 # Import modules
 import numpy as np
-from past.builtins import xrange
 
 # Import from pyswarms
 # Import from package
@@ -59,9 +58,7 @@ class RandomSearch(SearchBase):
 
         # Check type of n_selection_iters parameter
         if not isinstance(self.n_selection_iters, int):
-            raise TypeError(
-                "Parameter `n_selection_iters` must be of " "type int"
-            )
+            raise TypeError("Parameter `n_selection_iters` must be of " "type int")
 
     def __init__(
         self,
@@ -107,7 +104,7 @@ class RandomSearch(SearchBase):
 
         # Remove 'p' to hold as a constant in the paramater combinations
         p = options.pop("p")
-        params["p"] = [p for _ in xrange(self.n_selection_iters)]
+        params["p"] = [p for _ in range(self.n_selection_iters)]
 
         # Assign generators based on parameter type
         param_generators = {
@@ -119,9 +116,7 @@ class RandomSearch(SearchBase):
 
         # Generate random values for hyperparameters 'c1', 'c2', 'w', and 'k'
         for idx, bounds in options.items():
-            params[idx] = param_generators[idx](
-                *bounds, size=self.n_selection_iters
-            )
+            params[idx] = param_generators[idx](*bounds, size=self.n_selection_iters)
 
         # Return list of dicts of hyperparameter combinations
         return [
@@ -132,5 +127,5 @@ class RandomSearch(SearchBase):
                 "k": params["k"][i],
                 "p": params["p"][i],
             }
-            for i in xrange(self.n_selection_iters)
+            for i in range(self.n_selection_iters)
         ]

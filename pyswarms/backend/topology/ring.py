@@ -11,31 +11,44 @@ optimizers.
 
 # Import standard library
 import logging
+from typing import Any, Dict, Literal, Optional
 
 # Import modules
 import numpy as np
-from scipy.spatial import cKDTree
+from scipy.spatial import cKDTree # type: ignore
 
-from .. import operators as ops
-from ..handlers import BoundaryHandler, VelocityHandler
-from ...utils.reporter import Reporter
-from .base import Topology
+from pyswarms.backend.swarms import Swarm
+from pyswarms.utils.types import Bounds, Clamp, Position
+
+from pyswarms.utils.reporter import Reporter
+from pyswarms.backend import operators as ops
+from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.topology.base import Topology
 
 
 class Ring(Topology):
-    def __init__(self, static=False):
+    def __init__(self, p: Literal[1,2], k: int, static: bool = False):
         """Initializes the class
 
         Parameters
         ----------
+        p: int {1,2}
+            the Minkowski p-norm to use. 1 is the
+            sum-of-absolute values (or L1 distance) while 2 is
+            the Euclidean (or L2) distance.
+        k : int
+            number of neighbors to be considered. Must be a
+            positive integer less than :code:`n_particles`
         static : bool (Default is :code:`False`)
             a boolean that decides whether the topology
             is static or dynamic
         """
         super(Ring, self).__init__(static)
         self.rep = Reporter(logger=logging.getLogger(__name__))
+        self.p = p
+        self.k = k
 
-    def compute_gbest(self, swarm, p, k, **kwargs):
+    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
         """Update the global best using a ring-like neighborhood approach
 
         This uses the cKDTree method from :code:`scipy` to obtain the nearest
@@ -45,13 +58,6 @@ class Ring(Topology):
         ----------
         swarm : pyswarms.backend.swarms.Swarm
             a Swarm instance
-        p: int {1,2}
-            the Minkowski p-norm to use. 1 is the
-            sum-of-absolute values (or L1 distance) while 2 is
-            the Euclidean (or L2) distance.
-        k : int
-            number of neighbors to be considered. Must be a
-            positive integer less than :code:`n_particles`
 
         Returns
         -------
@@ -60,42 +66,35 @@ class Ring(Topology):
         float
             Best cost
         """
-        try:
-            # Check if the topology is static or not and assign neighbors
-            if (self.static and self.neighbor_idx is None) or not self.static:
-                # Obtain the nearest-neighbors for each particle
-                tree = cKDTree(swarm.position)
-                _, self.neighbor_idx = tree.query(swarm.position, p=p, k=k)
+        # Check if the topology is static or not and assign neighbors
+        if self.neighbor_idx is None or not self.static:
+            # Obtain the nearest-neighbors for each particle
+            tree = cKDTree(swarm.position)
+            _, self.neighbor_idx = tree.query(swarm.position, p = self.p, k = self.k)
 
-            # Map the computed costs to the neighbour indices and take the
-            # argmin. If k-neighbors is equal to 1, then the swarm acts
-            # independently of each other.
-            if k == 1:
-                # The minimum index is itself, no mapping needed.
-                self.neighbor_idx = self.neighbor_idx[:, np.newaxis]
-                best_neighbor = np.arange(swarm.n_particles)
-            else:
-                idx_min = swarm.pbest_cost[self.neighbor_idx].argmin(axis=1)
-                best_neighbor = self.neighbor_idx[
-                    np.arange(len(self.neighbor_idx)), idx_min
-                ]
-            # Obtain best cost and position
-            best_cost = np.min(swarm.pbest_cost[best_neighbor])
-            best_pos = swarm.pbest_pos[best_neighbor]
-        except AttributeError:
-            self.rep.logger.exception(
-                "Please pass a Swarm class. You passed {}".format(type(swarm))
-            )
-            raise
+        # Map the computed costs to the neighbour indices and take the
+        # argmin. If k-neighbors is equal to 1, then the swarm acts
+        # independently of each other.
+        if self.k == 1:
+            # The minimum index is itself, no mapping needed.
+            self.neighbor_idx = self.neighbor_idx[:, np.newaxis]
+            best_neighbor = np.arange(swarm.n_particles)
         else:
-            return (best_pos, best_cost)
+            idx_min = swarm.pbest_cost[self.neighbor_idx].argmin(axis=1)
+            best_neighbor = self.neighbor_idx[np.arange(len(self.neighbor_idx)), idx_min]
+        
+        # Obtain best cost and position
+        best_cost = np.min(swarm.pbest_cost[best_neighbor])
+        best_pos: Position = swarm.pbest_pos[best_neighbor]
+
+        return (best_pos, float(best_cost))
 
     def compute_velocity(
         self,
-        swarm,
-        clamp=None,
-        vh=VelocityHandler(strategy="unmodified"),
-        bounds=None,
+        swarm: Swarm,
+        clamp: Optional[Clamp] = None,
+        vh: Optional[VelocityHandler] = None,
+        bounds: Optional[Bounds] = None,
     ):
         """Compute the velocity matrix
 
@@ -129,7 +128,7 @@ class Ring(Topology):
             a tuple of size 2 where the first entry is the minimum velocity
             and the second entry is the maximum velocity. It
             sets the limits for velocity clamping.
-        vh : pyswarms.backend.handlers.VelocityHandler
+        vh : pyswarms.backend.handlers.VelocityHandler, optional
             a VelocityHandler instance
         bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
             a tuple of size 2 where the first entry is the minimum bound while
@@ -141,11 +140,10 @@ class Ring(Topology):
         numpy.ndarray
             Updated velocity matrix
         """
+        vh = vh or VelocityHandler.factory("unmodified")
         return ops.compute_velocity(swarm, clamp, vh, bounds)
 
-    def compute_position(
-        self, swarm, bounds=None, bh=BoundaryHandler(strategy="periodic")
-    ):
+    def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: Optional[BoundaryHandler] = None):
         """Update the position matrix
 
         This method updates the position matrix given the current position and
@@ -167,4 +165,5 @@ class Ring(Topology):
         numpy.ndarray
             New position-matrix
         """
+        bh = bh or BoundaryHandler("periodic")
         return ops.compute_position(swarm, bounds, bh)

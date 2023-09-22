@@ -1,6 +1,8 @@
+# Import standard library
+from functools import wraps
+
 # Import modules
 import numpy as np
-from functools import wraps
 
 
 def cost(cost_func):
@@ -43,9 +45,7 @@ def cost(cost_func):
     @wraps(cost_func)
     def cost_dec(particles, **kwargs):
         n_particles = particles.shape[0]
-        vector = np.array(
-            [cost_func(particles[i], **kwargs) for i in range(n_particles)]
-        )
+        vector = np.array([cost_func(particles[i], **kwargs) for i in range(n_particles)])
         if vector.shape != (n_particles,):
             msg = "Cost function must return int or float. You passed: {}"
             cost_return_type = type(cost_func(particles[0], **kwargs))
