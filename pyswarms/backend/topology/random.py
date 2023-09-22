@@ -8,18 +8,17 @@ This class implements a random topology. All particles are connected in a random
 
 # Import standard library
 import itertools
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import Any, Dict, Optional
 
 # Import modules
 import numpy as np
 from scipy.sparse.csgraph import connected_components, dijkstra  # type: ignore
 
-if TYPE_CHECKING:
-    from pyswarms.backend.swarms import Swarm
 
 # Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
 from pyswarms.utils.types import Bounds, Clamp, Position
 
@@ -40,7 +39,7 @@ class Random(Topology):
         super(Random, self).__init__(static)
         self.k = k
 
-    def compute_gbest(self, swarm: "Swarm", **kwargs: Dict[str, Any]):
+    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
         """Update the global best using a random neighborhood approach
 
         This uses random class from :code:`numpy` to give every particle k
