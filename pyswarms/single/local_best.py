@@ -66,35 +66,35 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
 
 # Import standard library
 import logging
-import multiprocessing as mp
-from collections import deque
+from typing import Dict, Optional
 
 # Import modules
 import numpy as np
+from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
 
-from ..backend.handlers import BoundaryHandler, OptionsHandler, VelocityHandler
-from ..backend.operators import compute_objective_function, compute_pbest
-from ..backend.topology import Ring
-from ..base import SwarmOptimizer
-from ..utils.reporter import Reporter
+from pyswarms.utils.types import Bounds, Clamp, Position
+
+from pyswarms.backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
+from pyswarms.backend.topology import Ring
+from pyswarms.utils.reporter import Reporter
 
 
-class LocalBestPSO(SwarmOptimizer):
+class LocalBestPSO(GeneralOptimizerPSO):
     def __init__(
         self,
-        n_particles,
-        dimensions,
-        options,
-        bounds=None,
-        oh_strategy=None,
-        bh_strategy="periodic",
-        velocity_clamp=None,
-        vh_strategy="unmodified",
-        center=1.00,
-        ftol=-np.inf,
-        ftol_iter=1,
-        init_pos=None,
-        static=False,
+        n_particles: int,
+        dimensions: int,
+        options: GeneralOptions,
+        bounds: Optional[Bounds] = None,
+        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
+        bh_strategy: BoundaryStrategy = "periodic",
+        velocity_clamp: Optional[Clamp] = None,
+        vh_strategy: VelocityStrategy = "unmodified",
+        center: float = 1.00,
+        ftol: float = -np.inf,
+        ftol_iter: int = 1,
+        init_pos: Optional[Position] = None,
+        static: bool = False,
     ):
         """Initialize the swarm
 
@@ -150,121 +150,21 @@ class LocalBestPSO(SwarmOptimizer):
             a boolean that decides whether the Ring topology
             used is static or dynamic. Default is `False`
         """
-        if oh_strategy is None:
-            oh_strategy = {}
-        # Initialize logger
-        self.logger = logging.getLogger(__name__)
-        # Assign k-neighbors and p-value as attributes
-        self.k, self.p = options["k"], options["p"]
-        # Initialize parent class
-        super(LocalBestPSO, self).__init__(
-            n_particles=n_particles,
-            dimensions=dimensions,
-            options=options,
-            bounds=bounds,
-            velocity_clamp=velocity_clamp,
-            center=center,
-            ftol=ftol,
-            ftol_iter=ftol_iter,
-            init_pos=init_pos,
+        super().__init__(
+            n_particles,
+            dimensions,
+            options,
+            Ring(options["p"], options["k"], static=static),
+            bounds,
+            oh_strategy,
+            bh_strategy,
+            velocity_clamp,
+            vh_strategy,
+            center,
+            ftol,
+            ftol_iter,
+            init_pos,
         )
         # Initialize logger
         self.rep = Reporter(logger=logging.getLogger(__name__))
-        # Initialize the resettable attributes
-        self.reset()
-        # Initialize the topology
-        self.top = Ring(static=static)
-        self.bh = BoundaryHandler(strategy=bh_strategy)
-        self.vh = VelocityHandler(strategy=vh_strategy)
-        self.oh = OptionsHandler(strategy=oh_strategy)
         self.name = __name__
-
-    def optimize(self, objective_func, iters, n_processes=None, verbose=True, **kwargs):
-        """Optimize the swarm for a number of iterations
-
-        Performs the optimization to evaluate the objective
-        function :code:`f` for a number of iterations :code:`iter.`
-
-        Parameters
-        ----------
-        objective_func : callable
-            objective function to be evaluated
-        iters : int
-            number of iterations
-        n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
-        verbose : bool
-            enable or disable the logs and progress bar (default: True = enable logs)
-        kwargs : dict
-            arguments for the objective function
-
-        Returns
-        -------
-        tuple
-            the local best cost and the local best position among the
-            swarm.
-        """
-        # Apply verbosity
-        if verbose:
-            log_level = logging.INFO
-        else:
-            log_level = logging.NOTSET
-
-        self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
-        self.rep.log(
-            "Optimize for {} iters with {}".format(iters, self.options),
-            lvl=log_level,
-        )
-        # Populate memory of the handlers
-        self.bh.memory = self.swarm.position
-        self.vh.memory = self.swarm.position
-
-        # Setup Pool of processes for parallel evaluation
-        pool = None if n_processes is None else mp.Pool(n_processes)
-
-        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history = deque(maxlen=self.ftol_iter)
-        for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
-            # Compute cost for current position and personal best
-            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=pool, **kwargs)
-            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
-            best_cost_yet_found = np.min(self.swarm.best_cost)
-            # Update gbest from neighborhood
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, p=self.p, k=self.k)
-            if verbose:
-                self.rep.hook(best_cost=np.min(self.swarm.best_cost))
-            # Save to history
-            hist = self.ToHistory(
-                best_cost=self.swarm.best_cost,
-                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
-                mean_neighbor_cost=np.mean(self.swarm.best_cost),
-                position=self.swarm.position,
-                velocity=self.swarm.velocity,
-            )
-            self._populate_history(hist)
-            # Verify stop criteria based on the relative acceptable cost ftol
-            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            if i < self.ftol_iter:
-                ftol_history.append(delta)
-            else:
-                ftol_history.append(delta)
-                if all(ftol_history):
-                    break
-            # Perform options update
-            self.swarm.options = self.oh(self.options, iternow=i, itermax=iters)
-            # Perform position velocity update
-            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp, self.vh, self.bounds)
-            self.swarm.position = self.top.compute_position(self.swarm, self.bounds, self.bh)
-        # Obtain the final best_cost and the final best_position
-        final_best_cost = self.swarm.best_cost.copy()
-        final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
-        # Write report in log and return final cost and position
-        self.rep.log(
-            "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
-            lvl=log_level,
-        )
-        # Close Pool of Processes
-        if n_processes is not None:
-            pool.close()
-        return (final_best_cost, final_best_pos)
