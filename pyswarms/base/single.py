@@ -106,4 +106,4 @@ class SwarmOptimizer(BaseSwarmOptimizer):
             init_pos=self.init_pos,
         )
         velocity = generate_velocity(self.n_particles, self.dimensions, clamp=self.velocity_clamp)
-        self.swarm = Swarm(position, velocity, self.n_particles, self.dimensions, options=dict(self.options))
+        self.swarm = Swarm(position, velocity, options=dict(self.options))

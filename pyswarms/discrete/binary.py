@@ -150,7 +150,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
 
     def optimize(
         self,
-        objective_func: Callable[..., float],
+        objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         n_processes: Optional[int] = None,
         verbose: bool = True,

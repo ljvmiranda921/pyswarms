@@ -10,7 +10,7 @@ as input to most backend cases.
 
 # Import standard library
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 # Import modules
 import numpy as np
