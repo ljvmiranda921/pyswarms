@@ -548,7 +548,7 @@ def rastrigin(x: npt.NDArray[Any]):
     return j
 
 
-def rosenbrock(x: npt.NDArray[Any]):
+def rosenbrock(x: npt.NDArray[Any]) -> npt.NDArray[Any]:
     """Rosenbrock objective function.
 
     Also known as the Rosenbrock's valley or Rosenbrock's banana

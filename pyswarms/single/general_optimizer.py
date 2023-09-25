@@ -64,6 +64,7 @@ from loguru import logger
 
 # Import modules
 import numpy as np
+import numpy.typing as npt
 from tqdm import trange
 
 # Import from pyswarms
@@ -209,11 +210,11 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
     def optimize(
         self,
-        objective_func: Callable[..., float],
+        objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         n_processes: Optional[int] = None,
         verbose: bool = True,
-        **kwargs: Dict[str, Any]
+        **kwargs: Any
     ) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 
