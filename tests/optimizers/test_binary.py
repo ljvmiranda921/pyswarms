@@ -1,40 +1,38 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
 from pyswarms.discrete import BinaryPSO
+from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.utils.functions.single_obj import sphere
+from tests.optimizers.abc_test_optimizer import ABCTestOptimizer
 
-from .abc_test_discrete_optimizer import ABCTestDiscreteOptimizer
 
-
-class TestDiscreteOptimizer(ABCTestDiscreteOptimizer):
+class TestDiscreteOptimizer(ABCTestOptimizer):
     @pytest.fixture
     def optimizer(self):
         return BinaryPSO
 
     @pytest.fixture
-    def optimizer_history(self, options):
+    def optimizer_history(self, options: GeneralOptions):
         opt = BinaryPSO(10, 2, options=options)
         opt.optimize(sphere, 1000)
         return opt
 
     @pytest.fixture
-    def optimizer_reset(self, options):
+    def optimizer_reset(self, options: GeneralOptions):
         opt = BinaryPSO(10, 2, options=options)
         opt.optimize(sphere, 10)
         opt.reset()
         return opt
 
-    def test_binary_correct_pos(self, options):
+    def test_binary_correct_pos(self, options: GeneralOptions):
         """Test to check binary optimiser returns the correct position
         corresponding to the best cost"""
         opt = BinaryPSO(10, 2, options=options)
-        cost, pos = opt.optimize(sphere, 10)
+        _, pos = opt.optimize(sphere, 10)
         # find best pos from history
         min_cost_idx = np.argmin(opt.cost_history)
         min_pos_idx = np.argmin(sphere(opt.pos_history[min_cost_idx]))

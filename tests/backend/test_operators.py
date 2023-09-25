@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
+from typing import Dict, Optional
+
 import numpy as np
 import pytest
 
-# Import from pyswarms
 import pyswarms.backend as P
-from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.handlers import BoundaryHandler, BoundaryStrategy, VelocityHandler, VelocityStrategy
+from pyswarms.backend.swarms import Swarm
+from pyswarms.utils.types import Bounds, Clamp
 
 
 class TestComputePbest(object):
     """Test suite for compute_pbest()"""
 
-    def test_return_values(self, swarm):
+    def test_return_values(self, swarm: Swarm):
         """Test if method gives the expected return values"""
         expected_cost = np.array([1, 2, 2])
         expected_pos = np.array([[1, 2, 3], [4, 5, 6], [1, 1, 1]])
@@ -22,7 +24,7 @@ class TestComputePbest(object):
         assert (cost == expected_cost).all()
 
     @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])
-    def test_input_swarm(self, swarm):
+    def test_input_swarm(self, swarm: Swarm):
         """Test if method raises AttributeError with wrong swarm"""
         with pytest.raises(AttributeError):
             P.compute_pbest(swarm)
@@ -32,9 +34,9 @@ class TestComputeVelocity(object):
     """Test suite for compute_velocity()"""
 
     @pytest.mark.parametrize("clamp", [None, (0, 1), (-1, 1)])
-    def test_return_values(self, swarm, clamp):
+    def test_return_values(self, swarm: Swarm, clamp: Optional[Clamp]):
         """Test if method gives the expected shape and range"""
-        vh = VelocityHandler(strategy="unmodified")
+        vh = VelocityHandler.factory(strategy="unmodified")
         v = P.compute_velocity(swarm, clamp, vh)
         assert v.shape == swarm.position.shape
         if clamp is not None:
@@ -42,17 +44,17 @@ class TestComputeVelocity(object):
 
     @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])
     @pytest.mark.parametrize("vh_strat", ["unmodified", "zero", "invert", "adjust"])
-    def test_input_swarm(self, swarm, vh_strat):
+    def test_input_swarm(self, swarm: Swarm, vh_strat: VelocityStrategy):
         """Test if method raises AttributeError with wrong swarm"""
-        vh = VelocityHandler(strategy=vh_strat)
+        vh = VelocityHandler.factory(strategy=vh_strat)
         with pytest.raises(AttributeError):
             P.compute_velocity(swarm, clamp=(0, 1), vh=vh)
 
     @pytest.mark.parametrize("options", [{"c1": 0.5, "c2": 0.3}])
     @pytest.mark.parametrize("vh_strat", ["unmodified", "zero", "invert", "adjust"])
-    def test_missing_kwargs(self, swarm, options, vh_strat):
+    def test_missing_kwargs(self, swarm: Swarm, options: Dict[str, float], vh_strat: VelocityStrategy):
         """Test if method raises KeyError with missing kwargs"""
-        vh = VelocityHandler(strategy=vh_strat)
+        vh = VelocityHandler.factory(strategy=vh_strat)
         with pytest.raises(KeyError):
             swarm.options = options
             clamp = (0, 1)
@@ -67,7 +69,7 @@ class TestComputePosition(object):
         [None, ([-5, -5, -5], [5, 5, 5]), ([-10, -10, -10], [10, 10, 10])],
     )
     @pytest.mark.parametrize("bh_strat", ["nearest", "random"])
-    def test_return_values(self, swarm, bounds, bh_strat):
+    def test_return_values(self, swarm: Swarm, bounds: Optional[Bounds], bh_strat: BoundaryStrategy):
         """Test if method gives the expected shape and range"""
         bh = BoundaryHandler(strategy=bh_strat)
         p = P.compute_position(swarm, bounds, bh)
@@ -77,7 +79,7 @@ class TestComputePosition(object):
 
     @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])
     @pytest.mark.parametrize("bh_strat", ["nearest", "random", "shrink", "intermediate"])
-    def test_input_swarm(self, swarm, bh_strat):
+    def test_input_swarm(self, swarm: Swarm, bh_strat: BoundaryStrategy):
         """Test if method raises AttributeError with wrong swarm"""
         bh = BoundaryHandler(strategy=bh_strat)
         with pytest.raises(AttributeError):

@@ -6,12 +6,10 @@ Plot Formatters
 This module implements helpful classes to format your plots or create meshes.
 """
 
-# Import standard library
-from dataclasses import dataclass, field
 import multiprocessing as mp
+from dataclasses import dataclass, field
 from typing import Any, Callable, List, Optional, Tuple
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 from matplotlib import cm, colors
@@ -58,6 +56,7 @@ class Designer(object):
     colormap : matplotlib.cm.Colormap
         Colormap for contour plots. Default is `cm.viridis`
     """
+
     # Overall plot design
     figsize: Tuple[float, float] = field(default_factory=lambda: (10, 8))
     title_fontsize: str | int | float = field(default="large")
@@ -65,7 +64,7 @@ class Designer(object):
     legend: str = field(default="Cost")
     label: str | List[str] | Tuple[str, ...] = field(default_factory=lambda: ["x-axis", "y-axis", "z-axis"])
     limits: List[Tuple[int, ...]] | Tuple[Tuple[int, ...]] = field(default_factory=lambda: [(-1, 1), (-1, 1), (-1, 1)])
-    colormap: colors.Colormap = field(default=cm.viridis) # type: ignore
+    colormap: colors.Colormap = field(default=cm.viridis)  # type: ignore
 
 
 @dataclass
@@ -98,8 +97,9 @@ class Animator(object):
         Pass `False` if you don't want to repeat the animation.
         Default is `True`
     """
+
     interval: int = 80
-    repeat_delay: Optional[int|float] = None
+    repeat_delay: Optional[int | float] = None
     repeat: bool = True
 
 
@@ -144,6 +144,7 @@ class Mesher(object):
         elements representing the number of axes. Default is :code:`[(-1, 1),
         (-1, 1)]`
     """
+
     func: Callable[..., float]
     # For mesh creation
     delta: float = 0.001
@@ -184,7 +185,7 @@ class Mesher(object):
                 # Parallelize particles
                 r_map_split = pool.map(
                     self.func,
-                    np.array_split(np.array(pos_history[i]), pool._processes), # type: ignore
+                    np.array_split(np.array(pos_history[i]), pool._processes),  # type: ignore
                 )
                 iter_r.append(np.array(np.concatenate(r_map_split)))
             fitness = np.array(iter_r)

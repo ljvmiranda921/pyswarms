@@ -36,10 +36,8 @@ Function list:
 - Three Hump Camel, threehump
 """
 
-# Import standard library
 from typing import Any
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 
@@ -548,7 +546,7 @@ def rastrigin(x: npt.NDArray[Any]):
     return j
 
 
-def rosenbrock(x: npt.NDArray[Any]):
+def rosenbrock(x: npt.NDArray[Any]) -> npt.NDArray[Any]:
     """Rosenbrock objective function.
 
     Also known as the Rosenbrock's valley or Rosenbrock's banana

@@ -8,15 +8,12 @@ the swarm such as position, velocity, options, etc. You can use this
 as input to most backend cases.
 """
 
-# Import standard library
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 
-# Import from pyswarms
 from pyswarms.utils.types import Position, Velocity
 
 
@@ -94,7 +91,7 @@ class Swarm:
     # With defaults
     n_particles: int = field(init=False)
     dimensions: int = field(init=False)
-    pbest_pos: Position = field(init=False)
+    pbest_pos: Position = field(default_factory=lambda: np.array([], dtype=float))
     options: Dict[str, Any] = field(default_factory=dict)
     best_pos: Position = field(default_factory=lambda: np.array([], dtype=float))
     pbest_cost: Position = field(default_factory=lambda: np.array([], dtype=float))
@@ -104,4 +101,6 @@ class Swarm:
     def __post_init__(self):
         self.n_particles = self.position.shape[0]
         self.dimensions = self.position.shape[1]
-        self.pbest_pos = self.position
+
+        if not self.pbest_pos.size:
+            self.pbest_pos = self.position

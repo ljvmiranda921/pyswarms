@@ -6,14 +6,12 @@ A Pyramid Network Topology
 This class implements a pyramid topology. In this topology, the particles are connected by N-dimensional simplices.
 """
 
-# Import standard library
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
-# Import modules
 import numpy as np
+import numpy.typing as npt
 from scipy.spatial import Delaunay  # type: ignore
 
-# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
@@ -22,6 +20,8 @@ from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Pyramid(Topology):
+    neighbor_idx: Optional[List[npt.NDArray[np.integer[Any]]]] = None
+
     def __init__(self, static: bool = False):
         """Initialize the class
 
@@ -65,7 +65,7 @@ class Pyramid(Topology):
 
         # If there are less than (swarm.dimensions + 1) particles they are all connected
         if swarm.n_particles < swarm.dimensions + 1:
-            self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1))
+            self.neighbor_idx = np.tile(np.arange(swarm.n_particles), (swarm.n_particles, 1)).tolist()
             best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
             best_cost = np.min(swarm.pbest_cost)
         else:
@@ -74,9 +74,7 @@ class Pyramid(Topology):
                 pyramid = Delaunay(swarm.position, qhull_options="QJ0.001 Qbb Qc Qx")
                 indices, index_pointer = pyramid.vertex_neighbor_vertices
                 # Insert all the neighbors for each particle in the idx array
-                self.neighbor_idx = np.array(
-                    [index_pointer[indices[i] : indices[i + 1]] for i in range(swarm.n_particles)]
-                )
+                self.neighbor_idx = [index_pointer[indices[i] : indices[i + 1]] for i in range(swarm.n_particles)]
 
             idx_min = np.array([swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))])
             best_neighbor = np.array([self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]).astype(

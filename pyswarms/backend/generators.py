@@ -9,15 +9,29 @@ here to dictate how a swarm is initialized for your custom PSO.
 
 """
 
-# Import standard library
 from typing import Optional
+
+import numpy as np
 from loguru import logger
 
-# Import modules
-import numpy as np
-
-# Import from pyswarms
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
+
+
+def _check_init_pos(init_pos: Position, n_particles: int, dimensions: int, binary: bool = False):
+    if binary and len(np.unique(init_pos)) > 2:
+        raise ValueError("User-defined init_pos is not binary!")
+
+    if init_pos.ndim == 1:
+        assert init_pos.shape[0] == dimensions
+        pos = np.repeat([init_pos], n_particles, axis=0)
+    elif init_pos.ndim == 2:
+        assert init_pos.shape[0] == n_particles
+        assert init_pos.shape[1] == dimensions
+        pos = init_pos
+    else:
+        raise ValueError("init_pos must be 1D or 2D")
+
+    return pos
 
 
 def generate_swarm(
@@ -64,7 +78,7 @@ def generate_swarm(
         if init_pos is not None:
             if not (np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])):
                 raise ValueError("User-defined init_pos is out of bounds.")
-            pos = init_pos
+            pos = _check_init_pos(init_pos, n_particles, dimensions)
         else:
             try:
                 lb, ub = bounds
@@ -77,7 +91,7 @@ def generate_swarm(
                 raise e
     else:
         if init_pos is not None:
-            pos = init_pos
+            pos = _check_init_pos(init_pos, n_particles, dimensions)
         else:
             pos = center * np.random.uniform(low=0.0, high=1.0, size=(n_particles, dimensions))
 
@@ -111,16 +125,15 @@ def generate_discrete_swarm(
     ------
     ValueError
         When init_pos during binary=True does not contain two unique values.
-    TypeError
-        When the argument passed to n_particles or dimensions is incorrect.
+        When init_pos has the incorrect number of dimensions
+    AssertionError
+        When init_pos has an incorrect shape
     """
     if init_pos is not None:
-        if binary and len(np.unique(init_pos)) > 2:
-            raise ValueError("User-defined init_pos is not binary!")
-        pos = init_pos
+        pos = _check_init_pos(init_pos, n_particles, dimensions, binary)
     else:
         if binary:
-            pos = np.random.randint(2, size=(n_particles, dimensions))
+            pos = np.random.randint(2, size=(n_particles, dimensions))  # type: ignore
         else:
             pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
 
@@ -148,8 +161,6 @@ def generate_velocity(n_particles: int, dimensions: int, clamp: Optional[Clamp] 
     """
     min_velocity, max_velocity = (0, 1) if clamp is None else np.array(clamp)
 
-    velocity = (max_velocity - min_velocity) * np.random.random_sample(
-        size=(n_particles, dimensions)
-    ) + min_velocity
+    velocity = (max_velocity - min_velocity) * np.random.random_sample(size=(n_particles, dimensions)) + min_velocity
 
     return velocity

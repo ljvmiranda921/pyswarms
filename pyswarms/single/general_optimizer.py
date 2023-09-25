@@ -56,19 +56,14 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
-# Import standard library
 import multiprocessing as mp
 from collections import deque
 from typing import Any, Callable, Deque, Dict, Literal, Optional, Tuple
-from loguru import logger
 
-# Import modules
 import numpy as np
+import numpy.typing as npt
+from loguru import logger
 from tqdm import trange
-
-# Import from pyswarms
-from pyswarms.base.base import Options, ToHistory
-from pyswarms.utils.types import Bounds, Clamp, Position
 
 from pyswarms.backend.handlers import (
     BoundaryHandler,
@@ -81,6 +76,8 @@ from pyswarms.backend.handlers import (
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
 from pyswarms.backend.topology import Topology
 from pyswarms.base import SwarmOptimizer
+from pyswarms.base.base import Options, ToHistory
+from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class GeneralOptions(Options):
@@ -197,7 +194,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
         if oh_strategy is None:
             oh_strategy = {}
- 
+
         # Initialize the resettable attributes
         self.reset()
 
@@ -209,11 +206,11 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
     def optimize(
         self,
-        objective_func: Callable[..., float],
+        objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         n_processes: Optional[int] = None,
         verbose: bool = True,
-        **kwargs: Dict[str, Any]
+        **kwargs: Any
     ) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 
@@ -263,12 +260,12 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, **dict(self.options))
 
             # Print to console
-            if verbose:
-                pbar.postfix(best_cost=self.swarm.best_cost)
+            # if verbose:
+            #     pbar.postfix(best_cost=self.swarm.best_cost)
 
             hist = ToHistory(
                 best_cost=self.swarm.best_cost,
-                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
+                mean_pbest_cost=float(np.mean(self.swarm.pbest_cost)),
                 mean_neighbor_cost=self.swarm.best_cost,
                 position=self.swarm.position,
                 velocity=self.swarm.velocity,
@@ -293,17 +290,17 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self.swarm.position = self.top.compute_position(self.swarm, self.bounds, self.bh)
 
         # Obtain the final best_cost and the final best_position
-        final_best_cost = self.swarm.best_cost.copy()
+        final_best_cost = self.swarm.best_cost
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
 
         # Write report in log and return final cost and position
-        self.rep.log(
+        logger.log(
+            log_level,
             "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
-            lvl=log_level,
         )
 
         # Close Pool of Processes
         if n_processes is not None:
-            pool.close()
+            pool.close()  # type: ignore
 
         return (final_best_cost, final_best_pos)

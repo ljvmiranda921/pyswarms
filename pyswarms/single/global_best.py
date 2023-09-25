@@ -56,13 +56,10 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
-# Import standard library
 from typing import Dict, Optional
 
-# Import modules
 import numpy as np
 
-# Import from pyswarms
 from pyswarms.backend.topology.star import Star
 from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
 from pyswarms.utils.types import Bounds, Clamp, Position

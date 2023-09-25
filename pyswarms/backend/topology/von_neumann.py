@@ -6,16 +6,14 @@ A Von Neumann Network Topology
 This class implements a Von Neumann topology.
 """
 
-# Import standard library
 from typing import Any, Dict, Literal
 
-# Import from pyswarms
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.ring import Ring
 
 
 class VonNeumann(Ring):
-    def __init__(self, dimensions: int, r: int, p: Literal[1, 2], k: int, static: bool = True):
+    def __init__(self, dimensions: int, r: int, p: Literal[1, 2], static: bool = True):
         """Initializes the class
 
         Parameters

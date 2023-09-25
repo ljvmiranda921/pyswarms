@@ -6,16 +6,13 @@ A Random Network Topology
 This class implements a random topology. All particles are connected in a random fashion.
 """
 
-# Import standard library
 import itertools
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
-# Import modules
 import numpy as np
+import numpy.typing as npt
 from scipy.sparse.csgraph import connected_components, dijkstra  # type: ignore
 
-
-# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
@@ -24,6 +21,8 @@ from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Random(Topology):
+    neighbor_idx: Optional[List[npt.NDArray[np.integer[Any]]]] = None
+
     def __init__(self, k: int, static: bool = False):
         """Initializes the class
 
@@ -66,8 +65,8 @@ class Random(Topology):
         """
         # Check if the topology is static or dynamic and assign neighbors
         if self.neighbor_idx is None or not self.static:
-            adj_matrix = self.__compute_neighbors(swarm)
-            self.neighbor_idx = np.array([adj_matrix[i].nonzero()[0] for i in range(swarm.n_particles)])
+            adj_matrix = self._compute_neighbors(swarm)
+            self.neighbor_idx = [adj_matrix[i].nonzero()[0] for i in range(swarm.n_particles)]
 
         idx_min = np.array([swarm.pbest_cost[self.neighbor_idx[i]].argmin() for i in range(len(self.neighbor_idx))])
         best_neighbor = np.array([self.neighbor_idx[i][idx_min[i]] for i in range(len(self.neighbor_idx))]).astype(int)
@@ -157,7 +156,7 @@ class Random(Topology):
         bh = bh or BoundaryHandler(strategy="periodic")
         return ops.compute_position(swarm, bounds, bh)
 
-    def __compute_neighbors(self, swarm: Swarm):
+    def _compute_neighbors(self, swarm: Swarm):
         """Helper method to compute the adjacency matrix of the topology
 
         This method computes the adjacency matrix of the topology using

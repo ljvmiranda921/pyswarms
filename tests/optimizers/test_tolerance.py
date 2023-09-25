@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
 import random
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type
 
-# Import modules
 import numpy as np
+import numpy.typing as npt
 
-# Import standard libraries
 import pytest
 
-# Import from pyswarms
 from pyswarms.backend.topology import Star
+from pyswarms.base.single import SwarmOptimizer
 from pyswarms.single import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
 
 random.seed(0)
@@ -22,8 +21,8 @@ number_of_items = 10
 item_range = range(number_of_items)
 
 # PARAMETERS
-value = [random.randint(1, number_of_items) for i in item_range]
-weight = [random.randint(1, number_of_items) for i in item_range]
+value = [random.randint(1, number_of_items) for _ in item_range]
+weight = [random.randint(1, number_of_items) for _ in item_range]
 
 # PSO parameters
 n_particles = 10
@@ -36,16 +35,18 @@ constraints = (np.array(LB), np.array(UB))
 kwargs = {"value": value, "weight": weight, "capacity": capacity}
 
 
-def get_particle_obj(X, **kwargs):
+def get_particle_obj(X: npt.NDArray[Any], **kwargs: Any):
     """Calculates the objective function value which is
     total revenue minus penalty of capacity violations"""
     # X is the decision variable. X is vector in the lenght of number of items
     # $ value of items
     value = kwargs["value"]
     # Total revenue
-    revenue = sum([value[i] * np.round(X[i]) for i in item_range])
+    x: List[int] = [value[i] * np.round(X[i]) for i in item_range]
+    revenue = sum(x)
     # Total weight of selected items
-    used_capacity = sum([kwargs["weight"][i] * np.round(X[i]) for i in item_range])
+    x = [kwargs["weight"][i] * np.round(X[i]) for i in item_range]
+    used_capacity = sum(x)
     # Total capacity violation with 100 as a penalty cofficient
     capacity_violation = 100 * min(0, capacity - used_capacity)
     # the objective function minimizes the negative revenue, which is the same
@@ -53,7 +54,7 @@ def get_particle_obj(X, **kwargs):
     return -1 * (revenue + capacity_violation)
 
 
-def objective_function(X, **kwargs):
+def objective_function(X: npt.NDArray[Any], **kwargs: Any):
     """Objective function with arguments"""
     n_particles_ = X.shape[0]
     dist = [get_particle_obj(X[i], **kwargs) for i in range(n_particles_)]
@@ -73,41 +74,50 @@ parameters = dict(
 )
 
 
+if TYPE_CHECKING:
+
+    class FixtureRequest:
+        param: Type[SwarmOptimizer]
+
+else:
+    FixtureRequest = Any
+
+
 class TestToleranceOptions:
     @pytest.fixture(params=optimizers)
-    def optimizer(self, request):
+    def optimizer(self, request: FixtureRequest):
         global parameters
         if request.param.__name__ == "GeneralOptimizerPSO":
             return request.param, {**parameters, **{"topology": Star()}}
         return request.param, parameters
 
-    def test_no_ftol(self, optimizer):
+    def test_no_ftol(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
         """Test complete run"""
         optm, params = optimizer
         opt = optm(**params)
-        opt.optimize(objective_function, iters=iterations, **kwargs)
+        opt.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
         assert len(opt.cost_history) == iterations
 
-    def test_ftol_effect(self, optimizer):
+    def test_ftol_effect(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
         """Test early stopping with ftol"""
         optm, params = optimizer
         params["ftol"] = 0.01
         opt = optm(**params)
-        opt.optimize(objective_function, iters=iterations, **kwargs)
+        opt.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
         assert len(opt.cost_history) <= iterations
 
-    def test_ftol_iter_assertion(self, optimizer):
+    def test_ftol_iter_assertion(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
         """Assert ftol_iter type and value"""
         with pytest.raises(AssertionError):
             optm, params = optimizer
             params["ftol_iter"] = 0
             optm(**params)
 
-    def test_ftol_iter_effect(self, optimizer):
+    def test_ftol_iter_effect(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
         """Test early stopping with ftol and ftol_iter;
         must run for a minimum of ftol_iter iterations"""
         optm, params = optimizer
         params["ftol_iter"] = 50
         opt = optm(**params)
-        opt.optimize(objective_function, iters=iterations, **kwargs)
+        opt.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
         assert len(opt.cost_history) >= opt.ftol_iter

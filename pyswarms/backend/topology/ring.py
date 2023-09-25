@@ -9,14 +9,12 @@ This social behavior is often found in LocalBest PSO
 optimizers.
 """
 
-# Import standard library
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal, Optional
 
-# Import modules
 import numpy as np
+import numpy.typing as npt
 from scipy.spatial import cKDTree  # type: ignore
 
-# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
@@ -25,6 +23,8 @@ from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class Ring(Topology):
+    neighbor_idx: Optional[npt.NDArray[np.integer[Any]]] = None
+
     def __init__(self, p: Literal[1, 2], k: int, static: bool = False):
         """Initializes the class
 
@@ -45,7 +45,7 @@ class Ring(Topology):
         self.p = p
         self.k = k
 
-    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
+    def compute_gbest(self, swarm: Swarm, **kwargs: Any):
         """Update the global best using a ring-like neighborhood approach
 
         This uses the cKDTree method from :code:`scipy` to obtain the nearest

@@ -1,33 +1,25 @@
-# Import standard library
-import inspect
-from collections import OrderedDict
+from typing import Any, Dict, Optional, get_args
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
-import pyswarms.backend.handlers as h
-from pyswarms.backend.handlers import BoundaryHandler, HandlerMixin, OptionsHandler, VelocityHandler
+from pyswarms.backend.handlers import (
+    BoundaryHandler,
+    BoundaryStrategy,
+    HandlerMixin,
+    OptionsHandler,
+    OptionsStrategy,
+    VelocityHandler,
+    VelocityStrategy,
+)
+from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
-bh_strategies = [
-    name
-    for name, _ in inspect.getmembers(h.BoundaryHandler(""), predicate=inspect.ismethod)
-    if not name.startswith(("__", "_"))
-]
-vh_strategies = [
-    name
-    for name, _ in inspect.getmembers(h.VelocityHandler(""), predicate=inspect.ismethod)
-    if not name.startswith(("__", "_"))
-]
-oh_strategies = [
-    name
-    for name, _ in inspect.getmembers(h.OptionsHandler(""), predicate=inspect.ismethod)
-    if not name.startswith(("__", "_"))
-]
+bh_strategies = list(get_args(BoundaryStrategy))
+vh_strategies = list(get_args(VelocityStrategy))
+oh_strategies = list(get_args(OptionsStrategy))
 
 
-def test_out_of_bounds(bounds, positions_inbound, positions_out_of_bound):
+def test_out_of_bounds(bounds: Bounds, positions_inbound: Position, positions_out_of_bound: Position):
     hm = HandlerMixin()
     out_of_bounds = hm._out_of_bounds
     idx_inbound = out_of_bounds(positions_inbound, bounds)
@@ -45,7 +37,9 @@ def test_out_of_bounds(bounds, positions_inbound, positions_out_of_bound):
 
 
 @pytest.mark.parametrize("strategy", bh_strategies)
-def test_bound_handling(bounds, positions_inbound, positions_out_of_bound, strategy):
+def test_bound_handling(
+    bounds: Bounds, positions_inbound: Position, positions_out_of_bound: Position, strategy: BoundaryStrategy
+):
     bh = BoundaryHandler(strategy=strategy)
     # Test if it doesn't handle inbound positions
     inbound_handled = bh(positions_inbound, bounds)
@@ -91,13 +85,13 @@ def test_bound_handling(bounds, positions_inbound, positions_out_of_bound, strat
 
 
 def assert_clamp(
-    clamp,
-    velocities_inbound,
-    velocities_out_of_bound,
-    positions_inbound,
-    positions_out_of_bound,
-    vh,
-    bounds=None,
+    clamp: Clamp,
+    velocities_inbound: Velocity,
+    velocities_out_of_bound: Velocity,
+    positions_inbound: Position,
+    positions_out_of_bound: Position,
+    vh: VelocityHandler,
+    bounds: Optional[Bounds] = None,
 ):
     # Test if it doesn't handle inclamp velocities
     inbound_handled = vh(velocities_inbound, clamp, position=positions_inbound, bounds=bounds)
@@ -116,22 +110,22 @@ def assert_clamp(
     assert not greater_than_clamp.all()
 
 
-def test_unmodified_strategy(clamp, velocities_inbound, velocities_out_of_bound):
-    vh = VelocityHandler(strategy="unmodified")
-    inbound_handled = vh(velocities_inbound, clamp)
-    outbound_handled = vh(velocities_out_of_bound, clamp)
+def test_unmodified_strategy(clamp: Clamp, velocities_inbound: Velocity, velocities_out_of_bound: Velocity):
+    vh = VelocityHandler.factory(strategy="unmodified")
+    inbound_handled = vh(velocities_inbound, clamp, None, None)
+    outbound_handled = vh(velocities_out_of_bound, clamp, None, None)
     assert inbound_handled.all() == velocities_inbound.all()
     assert outbound_handled.all() == velocities_out_of_bound.all()
 
 
 def test_adjust_strategy(
-    clamp,
-    velocities_inbound,
-    velocities_out_of_bound,
-    positions_inbound,
-    positions_out_of_bound,
+    clamp: Clamp,
+    velocities_inbound: Velocity,
+    velocities_out_of_bound: Velocity,
+    positions_inbound: Position,
+    positions_out_of_bound: Position,
 ):
-    vh = VelocityHandler(strategy="adjust")
+    vh = VelocityHandler.factory(strategy="adjust")
     assert_clamp(
         clamp,
         velocities_inbound,
@@ -145,14 +139,14 @@ def test_adjust_strategy(
 
 
 def test_invert_strategy(
-    clamp,
-    velocities_inbound,
-    velocities_out_of_bound,
-    positions_inbound,
-    positions_out_of_bound,
-    bounds,
+    clamp: Clamp,
+    velocities_inbound: Velocity,
+    velocities_out_of_bound: Velocity,
+    positions_inbound: Position,
+    positions_out_of_bound: Position,
+    bounds: Bounds,
 ):
-    vh = VelocityHandler(strategy="invert")
+    vh = VelocityHandler.factory(strategy="invert")
     assert_clamp(
         clamp,
         velocities_inbound,
@@ -179,11 +173,12 @@ def test_invert_strategy(
 #     pass
 
 
-def assert_option_strategy(strategy, init_opts, exp_opts, **kwargs):
+def assert_option_strategy(
+    strategy: Dict[str, OptionsStrategy], init_opts: Dict[str, float], exp_opts: Dict[str, float], **kwargs: Any
+):
     """Test for any strategy for options handler
     strategy : strategy to use
-    init_opts : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1',
-            'c2', 'w', 'k', 'p'}`
+    init_opts : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1', 'c2', 'w', 'k', 'p'}`
     exp_opts: dict with expected values after strategy with given parameters
     kwargs: arguments to use for given strategy
     """
@@ -196,20 +191,16 @@ def assert_option_strategy(strategy, init_opts, exp_opts, **kwargs):
 
 
 def test_option_strategy():
-    init_opts = OrderedDict([("c1", 0.5), ("c2", 0.3), ("w", 0.9)])
-    end_opts = OrderedDict([("c2", 0.1), ("w", 0.2)])  # use default for c1
-    strategy = OrderedDict([("w", "exp_decay"), ("c1", "lin_variation"), ("c2", "nonlin_mod")])
-    exp_opts = OrderedDict([("c1", 0.4), ("c2", 0.1), ("w", 0.567)])
-    try:
-        assert_option_strategy(
-            strategy,
-            init_opts,
-            exp_opts,
-            iternow=100,
-            itermax=100,
-            end_opts=end_opts,
-        )
-        print("Test passed.")
-    except Exception:
-        print("Test failed")
-        raise
+    init_opts = {"c1": 0.5, "c2": 0.3, "w": 0.9}
+    end_opts = {"c2": 0.1, "w": 0.2}  # use default for c1
+    strategy: Dict[str, OptionsStrategy] = {"w": "exp_decay", "c1": "lin_variation", "c2": "nonlin_mod"}
+    exp_opts = {"c1": 0.4, "c2": 0.1, "w": 0.567}
+
+    assert_option_strategy(
+        strategy,
+        init_opts,
+        exp_opts,
+        iternow=100,
+        itermax=100,
+        end_opts=end_opts,
+    )

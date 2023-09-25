@@ -20,18 +20,15 @@ The algorithms in the :class:`BoundaryHandler` and :class:`VelocityHandler` clas
 PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 """
 
-# Import standard library
 import inspect
 import math
 from abc import ABC, abstractmethod
 from copy import copy
 from typing import Any, Dict, Literal, Optional
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 
-# Import from pyswarms
 from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, Velocity
 
 
@@ -110,7 +107,7 @@ class BoundaryHandler(HandlerMixin):
         self.strategy = strategy
         self.strategies = self._get_all_strategies()
 
-    def __call__(self, position: npt.NDArray[Any], bounds: Bounds, **kwargs: Dict[str, Any]):
+    def __call__(self, position: npt.NDArray[Any], bounds: Bounds, **kwargs: Any):
         """Apply the selected strategy to the position-matrix given the bounds
 
         Parameters
@@ -575,7 +572,7 @@ class OptionsHandler(HandlerMixin):
         self.strategy = strategy
         self.strategies = self._get_all_strategies()
 
-    def __call__(self, start_opts: Dict[str, float], **kwargs: Dict[str, Any]):
+    def __call__(self, start_opts: Dict[str, float], **kwargs: Any):
         if not self.strategy:
             return start_opts
 
@@ -587,7 +584,7 @@ class OptionsHandler(HandlerMixin):
 
         return return_opts
 
-    def exp_decay(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
+    def exp_decay(self, start_opts: Dict[str, float], opt: str, **kwargs: Any) -> float:
         """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
         The velocity is adjusted such that the following equation holds:
 
@@ -631,7 +628,7 @@ class OptionsHandler(HandlerMixin):
 
         return new_val
 
-    def lin_variation(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
+    def lin_variation(self, start_opts: Dict[str, float], opt: str, **kwargs: Any) -> float:
         """
         Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
 
@@ -658,7 +655,7 @@ class OptionsHandler(HandlerMixin):
 
         return new_val
 
-    def random(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
+    def random(self, start_opts: Dict[str, float], opt: str, **kwargs: Any) -> float:
         """Random value between :math:`w^{start}` and :math:`w^{end}`
 
         .. math::
@@ -676,7 +673,7 @@ class OptionsHandler(HandlerMixin):
 
         return start + (end - start) * np.random.rand()
 
-    def nonlin_mod(self, start_opts: Dict[str, float], opt: str, **kwargs: Dict[str, Any]) -> float:
+    def nonlin_mod(self, start_opts: Dict[str, float], opt: str, **kwargs: Any) -> float:
         """Non linear decreasing/increasing with modulation index(n).
         The linear strategy can be made to converge faster without compromising
         on exploration with the use of this index which makes the equation non-linear.

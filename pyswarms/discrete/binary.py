@@ -51,18 +51,15 @@ R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
     Conference on Systems, Man, and Cybernetics, 1997.
 """
 
-# Import standard library
 import multiprocessing as mp
 from collections import deque
 from typing import Any, Callable, Deque, Dict, Optional, Tuple
-from loguru import logger
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
+from loguru import logger
 from tqdm import trange
 
-# Import from pyswarms
 from pyswarms.backend.handlers import VelocityHandler, VelocityStrategy
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
 from pyswarms.backend.swarms import Swarm
@@ -84,6 +81,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         vh_strategy: VelocityStrategy = "unmodified",
         ftol: float = -np.inf,
         ftol_iter: int = 1,
+        **kwargs: Any
     ):
         """Initialize the swarm
 
@@ -150,7 +148,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
 
     def optimize(
         self,
-        objective_func: Callable[..., float],
+        objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         n_processes: Optional[int] = None,
         verbose: bool = True,
@@ -204,15 +202,15 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             # Update gbest from neighborhood
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, p=self.p, k=self.k)
 
-            if verbose:
-                # Print to console
-                pbar.postfix(best_cost=self.swarm.best_cost)
+            # if verbose:
+            #     # Print to console
+            #     pbar.postfix(best_cost=self.swarm.best_cost)
 
             # Save to history
             hist = ToHistory(
                 best_cost=self.swarm.best_cost,
-                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
-                mean_neighbor_cost=np.mean(self.swarm.best_cost),
+                mean_pbest_cost=float(np.mean(self.swarm.pbest_cost)),
+                mean_neighbor_cost=float(np.mean(self.swarm.best_cost)),
                 position=self.swarm.position,
                 velocity=self.swarm.velocity,
             )
@@ -233,11 +231,11 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             self.swarm.position = self._compute_position(self.swarm)
 
         # Obtain the final best_cost and the final best_position
-        final_best_cost = self.swarm.best_cost.copy()
+        final_best_cost = self.swarm.best_cost
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
-        self.rep.log(
+        logger.log(
+            log_level,
             "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
-            lvl=log_level,
         )
 
         # Close Pool of Processes

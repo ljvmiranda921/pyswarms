@@ -8,15 +8,13 @@ the personal best, finding neighbors, etc. You can use these methods
 to specify how the swarm will behave.
 """
 
-# Import standard library
 from functools import partial
 from multiprocessing.pool import Pool
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
-# Import modules
 import numpy as np
+import numpy.typing as npt
 
-# Import from pyswarms
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Bounds, Clamp, Position
@@ -176,7 +174,7 @@ def compute_position(swarm: Swarm, bounds: Optional[Bounds], bh: BoundaryHandler
 
 
 def compute_objective_function(
-    swarm: Swarm, objective_func: Callable[..., float], pool: Optional[Pool] = None, **kwargs: Dict[str, Any]
+    swarm: Swarm, objective_func: Callable[..., npt.NDArray[Any]], pool: Optional[Pool] = None, **kwargs: Any
 ):
     """Evaluate particles using the objective function
 
@@ -207,6 +205,6 @@ def compute_objective_function(
     else:
         results = pool.map(
             partial(objective_func, **kwargs),
-            np.array_split(swarm.position, pool._processes),
+            np.array_split(swarm.position, pool._processes),  # type: ignore
         )
         return np.concatenate(results)

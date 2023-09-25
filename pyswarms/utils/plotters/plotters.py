@@ -65,22 +65,19 @@ specific dimensions to be used, the limits of the axes, and the interval/
 speed of animation.
 """
 
-# Import standard library
 import multiprocessing as mp
 from typing import Any, Dict, Optional, Tuple
-from matplotlib.collections import PathCollection
 
-# Import modules
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 from matplotlib import animation, cm
 from matplotlib.axes import Axes
+from matplotlib.collections import PathCollection
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D  # type: ignore
 
-# Import from pyswarms
-from pyswarms.utils.plotters.formatters import Animator, Designer, Mesher 
+from pyswarms.utils.plotters.formatters import Animator, Designer, Mesher
 
 
 def plot_cost_history(

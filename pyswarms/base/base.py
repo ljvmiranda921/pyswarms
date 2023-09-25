@@ -28,14 +28,13 @@ See Also
 
 """
 
-# Import standard library
 import abc
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, TypedDict
+from typing import Any, Callable, List, NamedTuple, Optional, Tuple, TypedDict
 
-# Import modules
 import numpy as np
+import numpy.typing as npt
 
-# Import from pyswarms
+from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Clamp, Position, Velocity
 
 
@@ -61,6 +60,8 @@ class BaseSwarmOptimizer(abc.ABC):
     pos_history: List[Position] = []
     velocity_history: List[Velocity] = []
 
+    swarm: Swarm
+
     def __init__(
         self,
         n_particles: int,
@@ -70,6 +71,7 @@ class BaseSwarmOptimizer(abc.ABC):
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
+        **kwargs: Any
     ):
         """Initialize the swarm.
 
@@ -144,10 +146,10 @@ class BaseSwarmOptimizer(abc.ABC):
     @abc.abstractmethod
     def optimize(
         self,
-        objective_func: Callable[..., float],
+        objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         n_processes: Optional[int] = None,
-        **kwargs: Dict[str, Any]
+        **kwargs: Any
     ) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 

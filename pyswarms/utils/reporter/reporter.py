@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-# Import standard library
 import os
 from typing import Any, Dict, List, Optional
-from loguru import logger
 
-# Import modules
+from loguru import logger
 from tqdm import tqdm, trange
 
 
@@ -52,8 +50,7 @@ class Reporter(object):
         self._setup_logger()
 
     def setup_logger(self):
-        """Set-up the logger with default values
-        """
+        """Set-up the logger with default values"""
         logger.add(self.log_path, rotation=10485760)
 
     def pbar(self, iters: int, desc: Optional[str] = None):

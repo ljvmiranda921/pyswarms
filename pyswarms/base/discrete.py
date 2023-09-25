@@ -28,13 +28,10 @@ See Also
 
 """
 
-# Import standard library
 from typing import List, Optional
 
-# Import modules
 import numpy as np
 
-# Import from pyswarms
 from pyswarms.backend.generators import generate_discrete_swarm, generate_velocity
 from pyswarms.backend.swarms import Swarm
 from pyswarms.base.base import BaseSwarmOptimizer, Options
@@ -53,8 +50,8 @@ class DiscreteSwarmOptimizer(BaseSwarmOptimizer):
         self,
         n_particles: int,
         dimensions: int,
-        binary: bool,
         options: Options,
+        binary: bool = True,
         velocity_clamp: Optional[Clamp] = None,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
@@ -107,4 +104,4 @@ class DiscreteSwarmOptimizer(BaseSwarmOptimizer):
             self.n_particles, self.dimensions, binary=self.binary, init_pos=self.init_pos
         )
         velocity = generate_velocity(self.n_particles, self.dimensions, clamp=self.velocity_clamp)
-        self.swarm = Swarm(position, velocity, self.n_particles, self.dimensions, options=dict(self.options))
+        self.swarm = Swarm(position, velocity, options=dict(self.options))

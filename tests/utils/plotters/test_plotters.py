@@ -1,23 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import from standard library
 import os
+from typing import Any
 import warnings
 
-# Import modules
+import numpy.typing as npt
 import pytest
-import matplotlib as mpl
+import matplotlib
+import matplotlib.pyplot as plt
+
+from pyswarms.single.global_best import GlobalBestPSO
+from pyswarms.utils.plotters.formatters import Mesher
 
 # Set $DISPLAY environmental variable
 if os.environ.get("DISPLAY", "") == "":
     print("No display found. Using non-interactive Agg backend.")
-    mpl.use("Agg")
+    matplotlib.use("Agg")
 
 from matplotlib.animation import FuncAnimation
 from matplotlib.axes import SubplotBase
 
-# Import from pyswarms
 from pyswarms.utils.plotters import (
     plot_contour,
     plot_cost_history,
@@ -27,7 +30,7 @@ from pyswarms.utils.plotters.plotters import _animate, _mesh
 
 
 @pytest.mark.parametrize("history", ["cost_history", "mean_neighbor_history", "mean_pbest_history"])
-def test_plot_cost_history_return_type(trained_optimizer, history):
+def test_plot_cost_history_return_type(trained_optimizer: GlobalBestPSO, history: str):
     """Tests if plot_cost_history() returns a SubplotBase instance"""
     opt_params = vars(trained_optimizer)
     plot = plot_cost_history(opt_params[history])
@@ -35,31 +38,31 @@ def test_plot_cost_history_return_type(trained_optimizer, history):
 
 
 @pytest.mark.parametrize("bad_values", [2, 43.14])
-def test_plot_cost_history_error(bad_values):
+def test_plot_cost_history_error(bad_values: float):
     """Tests if plot_cost_history() raises an error given bad values"""
     with pytest.raises(TypeError):
-        plot_cost_history(bad_values)
+        plot_cost_history(bad_values)  # type: ignore
 
 
-def test_plot_contour_return_type(pos_history):
+def test_plot_contour_return_type(pos_history: npt.NDArray[Any]):
     """Tests if the animation function returns the expected type"""
     with warnings.catch_warnings():
         assert isinstance(plot_contour(pos_history), FuncAnimation)
 
 
-def test_plot_surface_return_type(pos_history):
+def test_plot_surface_return_type(pos_history: npt.NDArray[Any]):
     """Tests if the animation function returns the expected type"""
     with warnings.catch_warnings():
         assert isinstance(plot_surface(pos_history), FuncAnimation)
 
 
-def test_mesh_hidden_function_shape(mesher):
+def test_mesh_hidden_function_shape(mesher: Mesher):
     """Tests if the hidden _mesh() function returns the expected shape"""
     xx, yy, zz = _mesh(mesher)
     assert xx.shape == yy.shape == zz.shape == (20, 20)
 
 
-def test_parallel_mesh(mesher):
+def test_parallel_mesh(mesher: Mesher):
     """Test if parallelization breaks the optimization process"""
     import multiprocessing
 
@@ -68,9 +71,8 @@ def test_parallel_mesh(mesher):
     assert xx.shape == yy.shape == zz.shape == xx_p.shape == yy_p.shape == zz_p.shape == (20, 20)
 
 
-def test_animate_hidden_function_type(pos_history):
+def test_animate_hidden_function_type(pos_history: npt.NDArray[Any]):
     """Tests if the hidden _animate() function returns the expected type"""
-    fig, ax = mpl.pyplot.subplots(1, 1)
-    ax = mpl.pyplot.scatter(x=[], y=[])
+    ax = plt.scatter(x=[], y=[])  # type: ignore
     return_plot = _animate(i=1, data=pos_history, plot=ax)
     assert isinstance(return_plot, tuple)
