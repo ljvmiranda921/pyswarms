@@ -64,13 +64,10 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
     Symposium on Micromachine and Human Science, 1995, pp. 39–43.
 """
 
-# Import standard library
 from typing import Dict, Optional
 
-# Import modules
 import numpy as np
 
-# Import from pyswarms
 from pyswarms.backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
 from pyswarms.backend.topology import Ring
 from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions

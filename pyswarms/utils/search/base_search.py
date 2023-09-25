@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Base class for hyperparameter optimization search functions"""
 
-# Import standard library
 import operator as op
 from abc import ABC, abstractmethod
-from typing import Callable, List, Optional, Type
+from typing import Any, Callable, List, Optional, Type
 
-# Import from pyswarms
+import numpy.typing as npt
+
 from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.single.global_best import GlobalBestPSO
 from pyswarms.single.local_best import LocalBestPSO
@@ -32,7 +32,7 @@ class SearchBase(ABC):
         n_particles: int,
         dimensions: int,
         options: GeneralOptions,
-        objective_func: Callable[..., float],
+        objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         bounds: Optional[Bounds] = None,
         velocity_clamp: Clamp = (0, 1),

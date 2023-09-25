@@ -1,8 +1,6 @@
-# Import standard library
 from functools import wraps
 from typing import Any, Callable, Dict
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 

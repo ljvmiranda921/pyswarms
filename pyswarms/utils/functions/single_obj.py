@@ -36,10 +36,8 @@ Function list:
 - Three Hump Camel, threehump
 """
 
-# Import standard library
 from typing import Any
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 

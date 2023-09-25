@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
 from typing import Dict, Optional
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
 import pyswarms.backend as P
 from pyswarms.backend.handlers import BoundaryHandler, BoundaryStrategy, VelocityHandler, VelocityStrategy
 from pyswarms.backend.swarms import Swarm

@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
 from typing import TYPE_CHECKING, Any, Dict, Literal, Tuple, Type
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Ring
 

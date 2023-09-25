@@ -28,15 +28,12 @@ See Also
 
 """
 
-# Import standard library
 import abc
 from typing import Any, Callable, List, NamedTuple, Optional, Tuple, TypedDict
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 
-# Import from pyswarms
 from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Clamp, Position, Velocity
 

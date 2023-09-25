@@ -6,10 +6,8 @@ A Von Neumann Network Topology
 This class implements a Von Neumann topology.
 """
 
-# Import standard library
 from typing import Any, Dict, Literal
 
-# Import from pyswarms
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.ring import Ring
 

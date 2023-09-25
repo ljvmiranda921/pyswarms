@@ -8,15 +8,12 @@ the swarm such as position, velocity, options, etc. You can use this
 as input to most backend cases.
 """
 
-# Import standard library
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 
-# Import from pyswarms
 from pyswarms.utils.types import Position, Velocity
 
 

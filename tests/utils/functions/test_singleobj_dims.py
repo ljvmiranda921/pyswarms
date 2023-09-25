@@ -3,11 +3,9 @@
 
 """Tests for `pyswarms` package."""
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
 from pyswarms.utils.functions import single_obj as fx
 
 outdim = np.zeros(shape=(3, 3))

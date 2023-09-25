@@ -28,19 +28,15 @@ yield the minimum score, yet maximum score can also be evaluated.
 1
 """
 
-# Import from __future__
 from __future__ import absolute_import, print_function, with_statement
 
-# Import standard library
 import itertools
 from typing import Callable, Optional, Type
 
-# Import from pyswarms
 from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.single.global_best import GlobalBestPSO
 from pyswarms.single.local_best import LocalBestPSO
 
-# Import from package
 from pyswarms.utils.search.base_search import SearchBase
 from pyswarms.utils.types import Bounds, Clamp
 

@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
 import abc
 from typing import Any, Callable, Tuple, Type
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 import pytest
 
-# Import from pyswarms
 from pyswarms.base.base import BaseSwarmOptimizer, Options
 from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.utils.functions.single_obj import rosenbrock, sphere
@@ -97,8 +94,7 @@ class ABCTestOptimizer(abc.ABC):
         options: Options,
     ):
         """Test if parallelization breaks the optimization process"""
-        # Import standard library
-        import multiprocessing
+                import multiprocessing
 
         opt = optimizer(100, 2, options=options)
         opt.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())

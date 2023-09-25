@@ -1,12 +1,9 @@
-# Import standard library
 from typing import Any, Callable
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 import pytest
 
-# Import from pyswarms
 from pyswarms.utils.decorators import cost
 
 

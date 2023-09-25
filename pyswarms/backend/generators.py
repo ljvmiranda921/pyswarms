@@ -9,14 +9,11 @@ here to dictate how a swarm is initialized for your custom PSO.
 
 """
 
-# Import standard library
 from typing import Optional
 
-# Import modules
 import numpy as np
 from loguru import logger
 
-# Import from pyswarms
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
 

@@ -6,12 +6,10 @@ Plot Formatters
 This module implements helpful classes to format your plots or create meshes.
 """
 
-# Import standard library
 import multiprocessing as mp
 from dataclasses import dataclass, field
 from typing import Any, Callable, List, Optional, Tuple
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 from matplotlib import cm, colors

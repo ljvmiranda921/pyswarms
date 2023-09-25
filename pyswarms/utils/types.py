@@ -1,7 +1,5 @@
-# Import standard library
 from typing import Any, List, Tuple
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 

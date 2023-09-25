@@ -12,14 +12,11 @@ In addition, this class must interface with any class found in the
 :mod:`pyswarms.backend.swarms.Swarm` module.
 """
 
-# Import standard library
 import abc
 from typing import Any, Optional, Tuple
 
-# Import modules
 from loguru import logger
 
-# Import from pyswarms
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity

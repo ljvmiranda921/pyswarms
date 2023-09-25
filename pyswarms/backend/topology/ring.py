@@ -9,15 +9,12 @@ This social behavior is often found in LocalBest PSO
 optimizers.
 """
 
-# Import standard library
 from typing import Any, Literal, Optional
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 from scipy.spatial import cKDTree  # type: ignore
 
-# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm

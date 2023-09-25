@@ -6,16 +6,13 @@ A Random Network Topology
 This class implements a random topology. All particles are connected in a random fashion.
 """
 
-# Import standard library
 import itertools
 from typing import Any, Dict, List, Optional
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 from scipy.sparse.csgraph import connected_components, dijkstra  # type: ignore
 
-# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm

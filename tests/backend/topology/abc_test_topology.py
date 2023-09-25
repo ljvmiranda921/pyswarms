@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
 import abc
 from typing import Any, Dict, Optional, Type
 
-# Import modules
 import pytest
 
-# Import from pyswarms
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
 from pyswarms.utils.types import Bounds, Clamp

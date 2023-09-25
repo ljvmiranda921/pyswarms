@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
 import numpy as np
 
-# Import from pyswarms
 from pyswarms.utils.functions import single_obj as fx
 
 targetdim = (3,)

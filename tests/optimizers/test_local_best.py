@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
 from pyswarms.single import LocalBestPSO
 from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.utils.functions.single_obj import sphere

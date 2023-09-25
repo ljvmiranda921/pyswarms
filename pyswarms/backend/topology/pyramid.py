@@ -6,15 +6,12 @@ A Pyramid Network Topology
 This class implements a pyramid topology. In this topology, the particles are connected by N-dimensional simplices.
 """
 
-# Import standard library
 from typing import Any, Dict, List, Optional
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 from scipy.spatial import Delaunay  # type: ignore
 
-# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm

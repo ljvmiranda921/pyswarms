@@ -3,15 +3,12 @@
 
 """Tests for `pyswarms` package."""
 
-# Import standard library
 from typing import Any, NamedTuple, Tuple
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 import pytest
 
-# Import from pyswarms
 from pyswarms.utils.functions import single_obj as fx
 
 

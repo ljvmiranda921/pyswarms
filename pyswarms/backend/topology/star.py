@@ -9,14 +9,11 @@ behavior is often found in GlobalBest PSO
 optimizers.
 """
 
-# Import standard library
 from typing import Any, Dict, Optional
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 
-# Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm

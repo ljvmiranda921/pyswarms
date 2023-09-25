@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
 import inspect
 from typing import TYPE_CHECKING, Any, Callable
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 import pytest
 
-# Import from pyswarms
 from pyswarms.backend.topology import Pyramid, Random, Ring, Star, VonNeumann
 from pyswarms.backend.topology.base import Topology
 from pyswarms.single import GeneralOptimizerPSO
@@ -87,8 +84,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         self, obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
     ):
         """Test if parallelization breaks the optimization process"""
-        # Import standard library
-        import multiprocessing
+                import multiprocessing
 
         optimizer.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())
         assert np.array(optimizer.cost_history).shape == (2000,)

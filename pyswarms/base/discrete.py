@@ -28,13 +28,10 @@ See Also
 
 """
 
-# Import standard library
 from typing import List, Optional
 
-# Import modules
 import numpy as np
 
-# Import from pyswarms
 from pyswarms.backend.generators import generate_discrete_swarm, generate_velocity
 from pyswarms.backend.swarms import Swarm
 from pyswarms.base.base import BaseSwarmOptimizer, Options

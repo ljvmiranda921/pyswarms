@@ -1,11 +1,8 @@
-# Import standard library
 from typing import Any, Dict, Optional, get_args
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
 from pyswarms.backend.handlers import (
     BoundaryHandler,
     BoundaryStrategy,

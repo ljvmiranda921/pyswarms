@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-# Import standard library
 import os
 from typing import Any, Dict, List, Optional
 
-# Import modules
 from loguru import logger
 from tqdm import tqdm, trange
 

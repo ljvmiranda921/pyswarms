@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import from standard library
 import os
 from typing import Any
 import warnings
 
-# Import modules
 import numpy.typing as npt
 import pytest
 import matplotlib
@@ -23,7 +21,6 @@ if os.environ.get("DISPLAY", "") == "":
 from matplotlib.animation import FuncAnimation
 from matplotlib.axes import SubplotBase
 
-# Import from pyswarms
 from pyswarms.utils.plotters import (
     plot_contour,
     plot_cost_history,

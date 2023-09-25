@@ -6,10 +6,8 @@
 isort:skip_file
 """
 
-# Import standard library
 import os
 
-# Import modules
 import matplotlib as mpl
 import numpy as np
 import pytest
@@ -19,7 +17,6 @@ from pyswarms.single.general_optimizer import GeneralOptions
 if os.environ.get("DISPLAY", "") == "":
     mpl.use("Agg")
 
-# Import from pyswarms
 from pyswarms.single import GlobalBestPSO
 from pyswarms.utils.functions.single_obj import sphere
 from pyswarms.utils.plotters.formatters import Mesher

@@ -20,18 +20,15 @@ The algorithms in the :class:`BoundaryHandler` and :class:`VelocityHandler` clas
 PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 """
 
-# Import standard library
 import inspect
 import math
 from abc import ABC, abstractmethod
 from copy import copy
 from typing import Any, Dict, Literal, Optional
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 
-# Import from pyswarms
 from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, Velocity
 
 

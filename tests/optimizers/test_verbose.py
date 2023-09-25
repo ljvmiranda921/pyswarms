@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
-# Import standard libraries
 import re
 from typing import TYPE_CHECKING, Any, Dict, Tuple, Type
 
-# Import modules
 import pytest
 
-# Import from pyswarms
 from pyswarms.backend.topology import Star
 from pyswarms.base.single import SwarmOptimizer
 from pyswarms.single import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO

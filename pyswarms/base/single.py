@@ -30,13 +30,10 @@ See Also
 :mod:`pyswarms.single.general_optimizer`: a more general PSO implementation with a custom topology
 """
 
-# Import standard library
 from typing import Optional
 
-# Import modules
 import numpy as np
 
-# Import from pyswarms
 from pyswarms.backend.generators import generate_swarm, generate_velocity
 from pyswarms.backend.swarms import Swarm
 from pyswarms.base.base import BaseSwarmOptimizer, Options

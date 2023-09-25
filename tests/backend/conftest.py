@@ -3,12 +3,9 @@
 
 """Fixtures for tests"""
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
-# Import from package
 from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 

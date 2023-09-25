@@ -56,18 +56,15 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
-# Import standard library
 import multiprocessing as mp
 from collections import deque
 from typing import Any, Callable, Deque, Dict, Literal, Optional, Tuple
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 from loguru import logger
 from tqdm import trange
 
-# Import from pyswarms
 from pyswarms.backend.handlers import (
     BoundaryHandler,
     BoundaryStrategy,

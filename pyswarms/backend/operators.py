@@ -8,16 +8,13 @@ the personal best, finding neighbors, etc. You can use these methods
 to specify how the swarm will behave.
 """
 
-# Import standard library
 from functools import partial
 from multiprocessing.pool import Pool
 from typing import Any, Callable, Optional
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 
-# Import from pyswarms
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Bounds, Clamp, Position

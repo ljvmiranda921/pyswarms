@@ -3,11 +3,9 @@
 
 """Fixtures for tests"""
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
 from pyswarms.backend.swarms import Swarm
 
 

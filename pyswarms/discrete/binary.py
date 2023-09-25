@@ -51,18 +51,15 @@ R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
     Conference on Systems, Man, and Cybernetics, 1997.
 """
 
-# Import standard library
 import multiprocessing as mp
 from collections import deque
 from typing import Any, Callable, Deque, Dict, Optional, Tuple
 
-# Import modules
 import numpy as np
 import numpy.typing as npt
 from loguru import logger
 from tqdm import trange
 
-# Import from pyswarms
 from pyswarms.backend.handlers import VelocityHandler, VelocityStrategy
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
 from pyswarms.backend.swarms import Swarm

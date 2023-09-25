@@ -1,4 +1,3 @@
-# Import modules
 import numpy as np
 import pytest
 

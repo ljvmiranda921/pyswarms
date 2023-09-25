@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import standard library
 from typing import Optional
 
-# Import modules
 import numpy as np
 import pytest
 
-# Import from pyswarms
 from pyswarms.backend.generators import generate_discrete_swarm, generate_swarm, generate_velocity
 from pyswarms.utils.types import Bounds, Clamp, Position
 
