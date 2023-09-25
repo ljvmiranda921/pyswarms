@@ -44,6 +44,7 @@ from pyswarms.utils.search.base_search import SearchBase
 from pyswarms.utils.types import Bounds, Clamp
 
 
+
 class GridSearch(SearchBase):
     """Exhaustive search of optimal performance on selected objective function
     over all combinations of specified hyperparameter values."""

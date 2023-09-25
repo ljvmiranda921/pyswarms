@@ -14,6 +14,8 @@ import matplotlib as mpl
 import numpy as np
 import pytest
 
+from pyswarms.single.general_optimizer import GeneralOptions
+
 if os.environ.get("DISPLAY", "") == "":
     mpl.use("Agg")
 
@@ -26,7 +28,7 @@ from pyswarms.utils.plotters.formatters import Mesher
 @pytest.fixture
 def trained_optimizer():
     """Returns a trained optimizer instance with 100 iterations"""
-    options = {"c1": 0.5, "c2": 0.3, "w": 0.9}
+    options = GeneralOptions({"c1": 0.5, "c2": 0.3, "w": 0.9, "p": 2, "k": 2})
     optimizer = GlobalBestPSO(n_particles=10, dimensions=2, options=options)
     optimizer.optimize(sphere, iters=100)
     return optimizer
