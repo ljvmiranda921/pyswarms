@@ -84,6 +84,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         vh_strategy: VelocityStrategy = "unmodified",
         ftol: float = -np.inf,
         ftol_iter: int = 1,
+        **kwargs: Any
     ):
         """Initialize the swarm
 
@@ -204,15 +205,15 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             # Update gbest from neighborhood
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, p=self.p, k=self.k)
 
-            if verbose:
-                # Print to console
-                pbar.postfix(best_cost=self.swarm.best_cost)
+            # if verbose:
+            #     # Print to console
+            #     pbar.postfix(best_cost=self.swarm.best_cost)
 
             # Save to history
             hist = ToHistory(
                 best_cost=self.swarm.best_cost,
-                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
-                mean_neighbor_cost=np.mean(self.swarm.best_cost),
+                mean_pbest_cost=float(np.mean(self.swarm.pbest_cost)),
+                mean_neighbor_cost=float(np.mean(self.swarm.best_cost)),
                 position=self.swarm.position,
                 velocity=self.swarm.velocity,
             )
@@ -233,11 +234,11 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             self.swarm.position = self._compute_position(self.swarm)
 
         # Obtain the final best_cost and the final best_position
-        final_best_cost = self.swarm.best_cost.copy()
+        final_best_cost = self.swarm.best_cost
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
-        self.rep.log(
+        logger.log(
+            log_level,
             "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
-            lvl=log_level,
         )
 
         # Close Pool of Processes

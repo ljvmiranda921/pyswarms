@@ -264,12 +264,12 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, **dict(self.options))
 
             # Print to console
-            if verbose:
-                pbar.postfix(best_cost=self.swarm.best_cost)
+            # if verbose:
+            #     pbar.postfix(best_cost=self.swarm.best_cost)
 
             hist = ToHistory(
                 best_cost=self.swarm.best_cost,
-                mean_pbest_cost=np.mean(self.swarm.pbest_cost),
+                mean_pbest_cost=float(np.mean(self.swarm.pbest_cost)),
                 mean_neighbor_cost=self.swarm.best_cost,
                 position=self.swarm.position,
                 velocity=self.swarm.velocity,
@@ -294,17 +294,17 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self.swarm.position = self.top.compute_position(self.swarm, self.bounds, self.bh)
 
         # Obtain the final best_cost and the final best_position
-        final_best_cost = self.swarm.best_cost.copy()
+        final_best_cost = self.swarm.best_cost
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
 
         # Write report in log and return final cost and position
-        self.rep.log(
+        logger.log(
+            log_level,
             "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
-            lvl=log_level,
         )
 
         # Close Pool of Processes
         if n_processes is not None:
-            pool.close()
+            pool.close() # type: ignore
 
         return (final_best_cost, final_best_pos)

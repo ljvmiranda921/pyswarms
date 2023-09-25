@@ -10,7 +10,7 @@ optimizers.
 """
 
 # Import standard library
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal, Optional
 
 # Import modules
 import numpy as np
@@ -48,7 +48,7 @@ class Ring(Topology):
         self.p = p
         self.k = k
 
-    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
+    def compute_gbest(self, swarm: Swarm, **kwargs: Any):
         """Update the global best using a ring-like neighborhood approach
 
         This uses the cKDTree method from :code:`scipy` to obtain the nearest

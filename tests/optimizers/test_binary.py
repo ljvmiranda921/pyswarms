@@ -9,11 +9,10 @@ import pytest
 from pyswarms.discrete import BinaryPSO
 from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.utils.functions.single_obj import sphere
+from tests.optimizers.abc_test_optimizer import ABCTestOptimizer
 
-from .abc_test_discrete_optimizer import ABCTestDiscreteOptimizer
 
-
-class TestDiscreteOptimizer(ABCTestDiscreteOptimizer):
+class TestDiscreteOptimizer(ABCTestOptimizer):
     @pytest.fixture
     def optimizer(self):
         return BinaryPSO

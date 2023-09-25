@@ -14,7 +14,7 @@ In addition, this class must interface with any class found in the
 
 # Import standard library
 import abc
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional, Tuple
 from loguru import logger
 
 # Import modules
@@ -26,7 +26,7 @@ from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
 
 class Topology(abc.ABC):
-    def __init__(self, static: bool, **kwargs: Dict[str, Any]):
+    def __init__(self, static: bool = False, **kwargs: Any):
         """Initializes the class"""
 
         # Initialize attributes
@@ -36,7 +36,7 @@ class Topology(abc.ABC):
             logger.debug("Running on `dynamic` topology," "set `static=True` for fixed neighbors.")
 
     @abc.abstractmethod
-    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]) -> Tuple[Position, float]:
+    def compute_gbest(self, swarm: Swarm, **kwargs: Any) -> Tuple[Position, float]:
         """Compute the best particle of the swarm and return the cost and
         position"""
         raise NotImplementedError("Topology::compute_gbest()")

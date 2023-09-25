@@ -11,7 +11,7 @@ import numpy.typing as npt
 import pytest
 
 # Import from pyswarms
-import pyswarms.backend.topology as t
+from pyswarms.backend.topology import Random, Ring, VonNeumann, Pyramid, Star
 from pyswarms.backend.topology.base import Topology
 from pyswarms.single import GeneralOptimizerPSO
 from pyswarms.single.general_optimizer import GeneralOptions
@@ -27,7 +27,13 @@ def istopology(x: object):
 
 # Get all classes in the topology module, then
 # Instatiate topologies, no need to suppy static param
-topologies = [topo() for _, topo in inspect.getmembers(t, istopology)]
+topologies = [
+    Pyramid(),
+    Random(2),
+    Ring(2, 2),
+    Star(),
+    VonNeumann(2, 1, 2)
+]
 
 
 if TYPE_CHECKING:
