@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
+# Import standard library
 from typing import List
+
+# Import modules
 import pytest
 
+# Import from pyswarms
 from pyswarms.utils.search.random_search import RandomSearch
 
 

@@ -11,10 +11,10 @@ here to dictate how a swarm is initialized for your custom PSO.
 
 # Import standard library
 from typing import Optional
-from loguru import logger
 
 # Import modules
 import numpy as np
+from loguru import logger
 
 # Import from pyswarms
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
@@ -23,7 +23,7 @@ from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 def _check_init_pos(init_pos: Position, n_particles: int, dimensions: int, binary: bool = False):
     if binary and len(np.unique(init_pos)) > 2:
         raise ValueError("User-defined init_pos is not binary!")
-    
+
     if init_pos.ndim == 1:
         assert init_pos.shape[0] == dimensions
         pos = np.repeat([init_pos], n_particles, axis=0)
@@ -136,7 +136,7 @@ def generate_discrete_swarm(
         pos = _check_init_pos(init_pos, n_particles, dimensions, binary)
     else:
         if binary:
-            pos = np.random.randint(2, size=(n_particles, dimensions)) # type: ignore
+            pos = np.random.randint(2, size=(n_particles, dimensions))  # type: ignore
         else:
             pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
 
@@ -164,8 +164,6 @@ def generate_velocity(n_particles: int, dimensions: int, clamp: Optional[Clamp] 
     """
     min_velocity, max_velocity = (0, 1) if clamp is None else np.array(clamp)
 
-    velocity = (max_velocity - min_velocity) * np.random.random_sample(
-        size=(n_particles, dimensions)
-    ) + min_velocity
+    velocity = (max_velocity - min_velocity) * np.random.random_sample(size=(n_particles, dimensions)) + min_velocity
 
     return velocity

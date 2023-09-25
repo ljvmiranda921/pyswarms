@@ -1,9 +1,12 @@
-# Import modules
+# Import standard library
 from typing import Any, Callable
+
+# Import modules
 import numpy as np
 import numpy.typing as npt
 import pytest
 
+# Import from pyswarms
 from pyswarms.utils.decorators import cost
 
 
@@ -36,7 +39,7 @@ def test_decorator_invalid_cost_func(particles: npt.NDArray[Any]):
         """Returns a numpy.ndarray instead of int or float"""
         return np.array([1, 3])
 
-    @cost # type: ignore
+    @cost  # type: ignore
     def cost_func_with_wrong_output_shape_decorated(x: npt.NDArray[Any]):
         cost = objective_func(x)
         return cost

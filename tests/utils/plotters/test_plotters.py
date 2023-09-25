@@ -44,7 +44,7 @@ def test_plot_cost_history_return_type(trained_optimizer: GlobalBestPSO, history
 def test_plot_cost_history_error(bad_values: float):
     """Tests if plot_cost_history() raises an error given bad values"""
     with pytest.raises(TypeError):
-        plot_cost_history(bad_values) # type: ignore
+        plot_cost_history(bad_values)  # type: ignore
 
 
 def test_plot_contour_return_type(pos_history: npt.NDArray[Any]):
@@ -76,6 +76,6 @@ def test_parallel_mesh(mesher: Mesher):
 
 def test_animate_hidden_function_type(pos_history: npt.NDArray[Any]):
     """Tests if the hidden _animate() function returns the expected type"""
-    ax = plt.scatter(x=[], y=[]) # type: ignore
+    ax = plt.scatter(x=[], y=[])  # type: ignore
     return_plot = _animate(i=1, data=pos_history, plot=ax)
     assert isinstance(return_plot, tuple)

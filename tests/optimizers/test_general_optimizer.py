@@ -11,7 +11,7 @@ import numpy.typing as npt
 import pytest
 
 # Import from pyswarms
-from pyswarms.backend.topology import Random, Ring, VonNeumann, Pyramid, Star
+from pyswarms.backend.topology import Pyramid, Random, Ring, Star, VonNeumann
 from pyswarms.backend.topology.base import Topology
 from pyswarms.single import GeneralOptimizerPSO
 from pyswarms.single.general_optimizer import GeneralOptions
@@ -27,18 +27,14 @@ def istopology(x: object):
 
 # Get all classes in the topology module, then
 # Instatiate topologies, no need to suppy static param
-topologies = [
-    Pyramid(),
-    Random(2),
-    Ring(2, 2),
-    Star(),
-    VonNeumann(2, 1, 2)
-]
+topologies = [Pyramid(), Random(2), Ring(2, 2), Star(), VonNeumann(2, 1, 2)]
 
 
 if TYPE_CHECKING:
+
     class FixtureRequest:
         param: Topology
+
 else:
     FixtureRequest = Any
 
@@ -87,7 +83,9 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         optimizer.optimize(sphere, 2000)
         assert np.array(optimizer.cost_history).shape != (2000,)
 
-    def test_parallel_evaluation(self, obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO):
+    def test_parallel_evaluation(
+        self, obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+    ):
         """Test if parallelization breaks the optimization process"""
         # Import standard library
         import multiprocessing
@@ -96,26 +94,34 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         assert np.array(optimizer.cost_history).shape == (2000,)
 
     @pytest.mark.skip(reason="Some topologies converge too slowly")
-    def test_obj_with_kwargs(self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO):
+    def test_obj_with_kwargs(
+        self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+    ):
         """Test if kwargs are passed properly in objfunc"""
         cost, pos = optimizer.optimize(obj_with_args, 1000, a=1, b=100)
         assert np.isclose(cost, 0, rtol=1e-03)
         assert np.isclose(pos[0], 1.0, rtol=1e-03)
         assert np.isclose(pos[1], 1.0, rtol=1e-03)
 
-    def test_obj_unnecessary_kwargs(self, obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO):
+    def test_obj_unnecessary_kwargs(
+        self, obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+    ):
         """Test if error is raised given unnecessary kwargs"""
         with pytest.raises(TypeError):
             # kwargs `a` should not be supplied
             optimizer.optimize(obj_without_args, 1000, a=1)
 
-    def test_obj_missing_kwargs(self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO):
+    def test_obj_missing_kwargs(
+        self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+    ):
         """Test if error is raised with incomplete kwargs"""
         with pytest.raises(TypeError):
             # kwargs `b` is missing here
             optimizer.optimize(obj_with_args, 1000, a=1)
 
-    def test_obj_incorrect_kwargs(self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO):
+    def test_obj_incorrect_kwargs(
+        self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+    ):
         """Test if error is raised with wrong kwargs"""
         with pytest.raises(TypeError):
             # Wrong kwargs

@@ -13,9 +13,12 @@ import pytest
 
 # Import from pyswarms
 from pyswarms.utils.functions import single_obj as fx
+
+
 class Bounds(NamedTuple):
-    low: float|int
-    high: float|int
+    low: float | int
+    high: float | int
+
 
 b = {
     # Define all bounds here
@@ -38,12 +41,12 @@ b = {
 }
 
 
-def outbound(low: float, high: float, size: int|Tuple[int, ...], tol: int = 1000, nums: int = 100):
-        """Generates a matrix that is out of bounds"""
-        low_end = -np.random.uniform(tol, low, (nums,))
-        high_end = np.random.uniform(tol, high, (nums,))
-        choices = np.hstack([low_end, high_end])
-        return np.random.choice(choices, size=size, replace=True)
+def outbound(low: float, high: float, size: int | Tuple[int, ...], tol: int = 1000, nums: int = 100):
+    """Generates a matrix that is out of bounds"""
+    low_end = -np.random.uniform(tol, low, (nums,))
+    high_end = np.random.uniform(tol, high, (nums,))
+    choices = np.hstack([low_end, high_end])
+    return np.random.choice(choices, size=size, replace=True)
 
 
 def test_ackley_bound_fail():

@@ -15,12 +15,12 @@ In addition, this class must interface with any class found in the
 # Import standard library
 import abc
 from typing import Any, Optional, Tuple
-from loguru import logger
 
 # Import modules
-from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from loguru import logger
 
 # Import from pyswarms
+from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
@@ -42,7 +42,9 @@ class Topology(abc.ABC):
         raise NotImplementedError("Topology::compute_gbest()")
 
     @abc.abstractmethod
-    def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: BoundaryHandler = BoundaryHandler(strategy="periodic")) -> Position:
+    def compute_position(
+        self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: BoundaryHandler = BoundaryHandler(strategy="periodic")
+    ) -> Position:
         """Update the swarm's position-matrix"""
         raise NotImplementedError("Topology::compute_position()")
 

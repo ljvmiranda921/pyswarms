@@ -7,7 +7,6 @@ import numpy as np
 # Import from pyswarms
 from pyswarms.utils.functions import single_obj as fx
 
-
 common_minima = np.zeros(shape=(3, 2))
 common_minima2 = np.ones(shape=(3, 2))
 
@@ -34,12 +33,14 @@ def test_bukin6_output():
 
 def test_crossintray_output():
     """Tests crossintray function output."""
-    x = np.array([
-        [1.34941, -1.34941],
-        [1.34941, 1.34941],
-        [-1.34941, 1.34941],
-        [-1.34941, -1.34941],
-    ])
+    x = np.array(
+        [
+            [1.34941, -1.34941],
+            [1.34941, 1.34941],
+            [-1.34941, 1.34941],
+            [-1.34941, -1.34941],
+        ]
+    )
     minima = np.array([-2.06261, -2.06261, -2.06261, -2.06261])
     assert np.isclose(fx.crossintray(x), minima).all()
 
@@ -62,28 +63,29 @@ def test_goldstein_output():
     assert np.isclose(fx.goldstein([0, -1] * common_minima2), (3 * np.ones(3))).all()
 
 
-
 def test_himmelblau_output():
     """Tests himmelblau function output."""
-    x = np.array([
-        [3.0, 2.0],
-        [-2.805118, 3.131312],
-        [-3.779310, -3.283186],
-        [3.584428, -1.848126],
-    ])
+    x = np.array(
+        [
+            [3.0, 2.0],
+            [-2.805118, 3.131312],
+            [-3.779310, -3.283186],
+            [3.584428, -1.848126],
+        ]
+    )
     assert np.isclose(fx.himmelblau(x), np.zeros(4)).all()
 
 
 def test_holdertable_output():
     """Tests holdertable function output."""
     x = np.array(
-            [
-                [8.05502, 9.66459],
-                [-8.05502, 9.66459],
-                [8.05502, -9.66459],
-                [-8.05502, -9.66459],
-            ]
-        )
+        [
+            [8.05502, 9.66459],
+            [-8.05502, 9.66459],
+            [8.05502, -9.66459],
+            [-8.05502, -9.66459],
+        ]
+    )
     minima = np.array([-19.2085, -19.2085, -19.2085, -19.2085])
     assert np.isclose(fx.holdertable(x), minima).all()
 

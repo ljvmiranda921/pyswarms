@@ -15,7 +15,6 @@ import numpy as np
 import numpy.typing as npt
 from scipy.sparse.csgraph import connected_components, dijkstra  # type: ignore
 
-
 # Import from pyswarms
 from pyswarms.backend import operators as ops
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler

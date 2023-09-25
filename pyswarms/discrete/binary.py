@@ -55,11 +55,11 @@ R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
 import multiprocessing as mp
 from collections import deque
 from typing import Any, Callable, Deque, Dict, Optional, Tuple
-from loguru import logger
 
 # Import modules
 import numpy as np
 import numpy.typing as npt
+from loguru import logger
 from tqdm import trange
 
 # Import from pyswarms

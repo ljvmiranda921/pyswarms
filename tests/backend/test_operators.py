@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
+# Import standard library
 from typing import Dict, Optional
+
+# Import modules
 import numpy as np
 import pytest
 

@@ -26,8 +26,10 @@ parameters = dict(
 
 
 if TYPE_CHECKING:
+
     class FixtureRequest:
         param: Type[SwarmOptimizer]
+
 else:
     FixtureRequest = Any
 

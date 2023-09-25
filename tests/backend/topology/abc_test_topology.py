@@ -7,8 +7,9 @@ from typing import Any, Dict, Optional, Type
 
 # Import modules
 import pytest
-from pyswarms.backend.swarms import Swarm
 
+# Import from pyswarms
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
 from pyswarms.utils.types import Bounds, Clamp
 
@@ -35,7 +36,9 @@ class ABCTestTopology(abc.ABC):
 
     @pytest.mark.parametrize("static", [True, False])
     @pytest.mark.parametrize("clamp", [None, (0, 1), (-1, 1)])
-    def test_compute_velocity_return_values(self, topology: Type[Topology], options: Dict[str, Any], swarm: Swarm, clamp: Optional[Clamp], static: bool):
+    def test_compute_velocity_return_values(
+        self, topology: Type[Topology], options: Dict[str, Any], swarm: Swarm, clamp: Optional[Clamp], static: bool
+    ):
         """Test if compute_velocity() gives the expected shape and range"""
         topo = topology(static=static, **options)
         v = topo.compute_velocity(swarm, clamp)
@@ -48,7 +51,9 @@ class ABCTestTopology(abc.ABC):
         "bounds",
         [None, ([-5, -5, -5], [5, 5, 5]), ([-10, -10, -10], [10, 10, 10])],
     )
-    def test_compute_position_return_values(self, topology: Type[Topology], options: Dict[str, Any], swarm: Swarm, bounds: Optional[Bounds], static: bool):
+    def test_compute_position_return_values(
+        self, topology: Type[Topology], options: Dict[str, Any], swarm: Swarm, bounds: Optional[Bounds], static: bool
+    ):
         """Test if compute_position() gives the expected shape and range"""
         topo = topology(static=static, **options)
         p = topo.compute_position(swarm, bounds)
@@ -61,7 +66,7 @@ class ABCTestTopology(abc.ABC):
         """Test if the neighbor_idx attribute is assigned"""
         topo = topology(static=static, **options)
         topo.compute_gbest(swarm, **options)
-        assert topo.neighbor_idx is not None # type: ignore
+        assert topo.neighbor_idx is not None  # type: ignore
 
     @pytest.mark.parametrize("static", [True, False])
     @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])

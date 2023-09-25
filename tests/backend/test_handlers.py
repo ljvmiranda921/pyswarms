@@ -6,7 +6,15 @@ import numpy as np
 import pytest
 
 # Import from pyswarms
-from pyswarms.backend.handlers import BoundaryHandler, BoundaryStrategy, HandlerMixin, OptionsHandler, OptionsStrategy, VelocityHandler, VelocityStrategy
+from pyswarms.backend.handlers import (
+    BoundaryHandler,
+    BoundaryStrategy,
+    HandlerMixin,
+    OptionsHandler,
+    OptionsStrategy,
+    VelocityHandler,
+    VelocityStrategy,
+)
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
 bh_strategies = list(get_args(BoundaryStrategy))
@@ -32,7 +40,9 @@ def test_out_of_bounds(bounds: Bounds, positions_inbound: Position, positions_ou
 
 
 @pytest.mark.parametrize("strategy", bh_strategies)
-def test_bound_handling(bounds: Bounds, positions_inbound: Position, positions_out_of_bound: Position, strategy: BoundaryStrategy):
+def test_bound_handling(
+    bounds: Bounds, positions_inbound: Position, positions_out_of_bound: Position, strategy: BoundaryStrategy
+):
     bh = BoundaryHandler(strategy=strategy)
     # Test if it doesn't handle inbound positions
     inbound_handled = bh(positions_inbound, bounds)
@@ -166,7 +176,9 @@ def test_invert_strategy(
 #     pass
 
 
-def assert_option_strategy(strategy: Dict[str, OptionsStrategy], init_opts: Dict[str, float], exp_opts: Dict[str, float], **kwargs: Any):
+def assert_option_strategy(
+    strategy: Dict[str, OptionsStrategy], init_opts: Dict[str, float], exp_opts: Dict[str, float], **kwargs: Any
+):
     """Test for any strategy for options handler
     strategy : strategy to use
     init_opts : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1', 'c2', 'w', 'k', 'p'}`

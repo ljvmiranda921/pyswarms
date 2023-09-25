@@ -32,15 +32,18 @@ the minimum score, yet maximum score can also be evaluated.
 
 # Import from __future__
 from __future__ import absolute_import, print_function, with_statement
+
+# Import standard library
 from typing import Callable, Optional, Type
 
 # Import modules
 import numpy as np
+
+# Import from pyswarms
 from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.single.global_best import GlobalBestPSO
 from pyswarms.single.local_best import LocalBestPSO
 
-# Import from pyswarms
 # Import from package
 from pyswarms.utils.search.base_search import SearchBase
 from pyswarms.utils.types import Bounds, Clamp
@@ -67,7 +70,7 @@ class RandomSearch(SearchBase):
 
     def __init__(
         self,
-        optimizer: Type[GlobalBestPSO|LocalBestPSO],
+        optimizer: Type[GlobalBestPSO | LocalBestPSO],
         n_particles: int,
         dimensions: int,
         options: GeneralOptions,
@@ -85,7 +88,7 @@ class RandomSearch(SearchBase):
             number of iterations of random parameter selection
         """
         self.n_selection_iters = n_selection_iters
-        
+
         # Assign attributes
         super(RandomSearch, self).__init__(
             optimizer,
@@ -124,12 +127,14 @@ class RandomSearch(SearchBase):
 
         # Return list of dicts of hyperparameter combinations
         return [
-            GeneralOptions({
-                "c1": params["c1"][i],
-                "c2": params["c2"][i],
-                "w": params["w"][i],
-                "k": params["k"][i],
-                "p": params["p"][i],
-            })
+            GeneralOptions(
+                {
+                    "c1": params["c1"][i],
+                    "c2": params["c2"][i],
+                    "w": params["w"][i],
+                    "k": params["k"][i],
+                    "p": params["p"][i],
+                }
+            )
             for i in range(self.n_selection_iters)
         ]

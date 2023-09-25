@@ -60,17 +60,14 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 import multiprocessing as mp
 from collections import deque
 from typing import Any, Callable, Deque, Dict, Literal, Optional, Tuple
-from loguru import logger
 
 # Import modules
 import numpy as np
 import numpy.typing as npt
+from loguru import logger
 from tqdm import trange
 
 # Import from pyswarms
-from pyswarms.base.base import Options, ToHistory
-from pyswarms.utils.types import Bounds, Clamp, Position
-
 from pyswarms.backend.handlers import (
     BoundaryHandler,
     BoundaryStrategy,
@@ -82,6 +79,8 @@ from pyswarms.backend.handlers import (
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
 from pyswarms.backend.topology import Topology
 from pyswarms.base import SwarmOptimizer
+from pyswarms.base.base import Options, ToHistory
+from pyswarms.utils.types import Bounds, Clamp, Position
 
 
 class GeneralOptions(Options):
@@ -198,7 +197,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
         if oh_strategy is None:
             oh_strategy = {}
- 
+
         # Initialize the resettable attributes
         self.reset()
 
@@ -305,6 +304,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
 
         # Close Pool of Processes
         if n_processes is not None:
-            pool.close() # type: ignore
+            pool.close()  # type: ignore
 
         return (final_best_cost, final_best_pos)

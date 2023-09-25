@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
+# Import standard library
 from typing import Any, Dict, Literal, Type
+
+# Import modules
 import numpy as np
 import pytest
-from pyswarms.backend.swarms import Swarm
 
 # Import from pyswarms
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import VonNeumann
 
 from .abc_test_topology import ABCTestTopology
@@ -26,16 +28,16 @@ class TestVonNeumannTopology(ABCTestTopology):
 
     @pytest.mark.parametrize("r", [0, 1])
     @pytest.mark.parametrize("p", [1, 2])
-    def test_update_gbest_neighborhood(self, swarm: Swarm, topology: Type[VonNeumann], p: Literal[1,2], r: int):
+    def test_update_gbest_neighborhood(self, swarm: Swarm, topology: Type[VonNeumann], p: Literal[1, 2], r: int):
         """Test if update_gbest_neighborhood gives the expected return values"""
         topo = topology(swarm.dimensions, p=p, r=r)
         pos, cost = topo.compute_gbest(swarm)
         expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
         expected_pos_2 = np.array([9.98033031e-01, 4.97392619e-03, 3.07726256e-03])
         expected_cost = 1.0002528364353296
-        assert cost == pytest.approx(expected_cost) # type: ignore
-        assert (pos[np.argmin(cost)] == pytest.approx(expected_pos)) or ( # type: ignore
-            pos[np.argmin(cost)] == pytest.approx(expected_pos_2) # type: ignore
+        assert cost == pytest.approx(expected_cost)  # type: ignore
+        assert (pos[np.argmin(cost)] == pytest.approx(expected_pos)) or (  # type: ignore
+            pos[np.argmin(cost)] == pytest.approx(expected_pos_2)  # type: ignore
         )
 
     @pytest.mark.parametrize("m", [i for i in range(3)])

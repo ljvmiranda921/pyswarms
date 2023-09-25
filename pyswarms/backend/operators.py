@@ -208,6 +208,6 @@ def compute_objective_function(
     else:
         results = pool.map(
             partial(objective_func, **kwargs),
-            np.array_split(swarm.position, pool._processes), # type: ignore
+            np.array_split(swarm.position, pool._processes),  # type: ignore
         )
         return np.concatenate(results)

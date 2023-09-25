@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
+# Import standard library
 from typing import TYPE_CHECKING, Any, Dict, Type
+
+# Import modules
 import numpy as np
 import pytest
-from pyswarms.backend.swarms import Swarm
 
 # Import from pyswarms
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Random
 
 from .abc_test_topology import ABCTestTopology
@@ -16,8 +18,10 @@ np.random.seed(4135157)
 
 
 if TYPE_CHECKING:
+
     class FixtureRequest:
         param: int
+
 else:
     FixtureRequest = Any
 
@@ -28,20 +32,22 @@ class TestRandomTopology(ABCTestTopology):
         return Random
 
     @pytest.fixture(params=[1, 2, 3])
-    def options(self, request: FixtureRequest) -> Dict[str, Any]: # type: ignore
+    def options(self, request: FixtureRequest) -> Dict[str, Any]:  # type: ignore
         return {"k": request.param}
 
     @pytest.mark.parametrize("static", [True, False])
-    def test_compute_gbest_return_values(self, swarm: Swarm, options: Dict[str, Any], topology: Type[Random], static: bool):
+    def test_compute_gbest_return_values(
+        self, swarm: Swarm, options: Dict[str, Any], topology: Type[Random], static: bool
+    ):
         """Test if update_gbest_neighborhood gives the expected return values"""
         topo = topology(static=static, **options)
         expected_cost = 1.0002528364353296
         expected_pos = np.array([9.90438476e-01, 2.50379538e-03, 1.87405987e-05])
         expected_pos_2 = np.array([9.98033031e-01, 4.97392619e-03, 3.07726256e-03])
         pos, cost = topo.compute_gbest(swarm, **options)
-        assert cost == pytest.approx(expected_cost) # type: ignore
-        assert (pos[np.argmin(cost)] == pytest.approx(expected_pos)) or ( # type: ignore
-            pos[np.argmin(cost)] == pytest.approx(expected_pos_2) # type: ignore
+        assert cost == pytest.approx(expected_cost)  # type: ignore
+        assert (pos[np.argmin(cost)] == pytest.approx(expected_pos)) or (  # type: ignore
+            pos[np.argmin(cost)] == pytest.approx(expected_pos_2)  # type: ignore
         )
 
     @pytest.mark.parametrize("static", [True, False])
@@ -60,16 +66,18 @@ class TestRandomTopology(ABCTestTopology):
         np.random.seed(1)
         topo = topology(static=static, k=k)
         adj_matrix = topo._compute_neighbors(swarm)
-        comparison_matrix = np.array([
-            [1, 1, 1, 0, 1, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [0, 1, 1, 1, 1, 0, 0, 0, 1, 0],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [0, 1, 1, 0, 1, 1, 0, 1, 0, 1],
-            [0, 1, 1, 0, 1, 0, 1, 0, 1, 1],
-            [0, 1, 1, 0, 1, 1, 0, 1, 1, 0],
-            [0, 1, 1, 1, 1, 0, 1, 1, 1, 0],
-            [1, 1, 1, 0, 1, 1, 1, 0, 0, 1]
-        ])
+        comparison_matrix = np.array(
+            [
+                [1, 1, 1, 0, 1, 0, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 1, 1, 1, 1, 0, 0, 0, 1, 0],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 1, 1, 0, 1, 1, 0, 1, 0, 1],
+                [0, 1, 1, 0, 1, 0, 1, 0, 1, 1],
+                [0, 1, 1, 0, 1, 1, 0, 1, 1, 0],
+                [0, 1, 1, 1, 1, 0, 1, 1, 1, 0],
+                [1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
+            ]
+        )
         assert np.allclose(adj_matrix, comparison_matrix, atol=1e-8)

@@ -4,6 +4,7 @@
 # Import modules
 import pytest
 
+# Import from pyswarms
 from pyswarms.utils.search.grid_search import GridSearch
 
 

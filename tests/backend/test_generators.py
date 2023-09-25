@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Import modules
+# Import standard library
 from typing import Optional
+
+# Import modules
 import numpy as np
 import pytest
 
@@ -16,7 +18,7 @@ class TestGenerateSwarm(object):
 
     @pytest.mark.parametrize("bounds", [None, ([2, 2, 2], [5, 5, 5]), ([-1, -1, 0], [2, 2, 5])])
     @pytest.mark.parametrize("center", [1, [3, 3, 3], [0.2, 0.2, 0.1]])
-    def test_return_values(self, bounds: Optional[Bounds], center: float|Position):
+    def test_return_values(self, bounds: Optional[Bounds], center: float | Position):
         """Test if method returns expected values"""
         pos = generate_swarm(n_particles=2, dimensions=3, bounds=bounds, center=center)
         if bounds is None:

@@ -2,10 +2,11 @@
 """Base class for hyperparameter optimization search functions"""
 
 # Import standard library
-from abc import ABC, abstractmethod
 import operator as op
+from abc import ABC, abstractmethod
 from typing import Callable, List, Optional, Type
 
+# Import from pyswarms
 from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.single.global_best import GlobalBestPSO
 from pyswarms.single.local_best import LocalBestPSO
@@ -27,7 +28,7 @@ class SearchBase(ABC):
 
     def __init__(
         self,
-        optimizer: Type[GlobalBestPSO|LocalBestPSO],
+        optimizer: Type[GlobalBestPSO | LocalBestPSO],
         n_particles: int,
         dimensions: int,
         options: GeneralOptions,
