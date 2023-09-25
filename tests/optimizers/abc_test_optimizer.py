@@ -94,7 +94,7 @@ class ABCTestOptimizer(abc.ABC):
         options: Options,
     ):
         """Test if parallelization breaks the optimization process"""
-                import multiprocessing
+        import multiprocessing
 
         opt = optimizer(100, 2, options=options)
         opt.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())
