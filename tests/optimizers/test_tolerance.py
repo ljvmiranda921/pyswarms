@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type
 
 import numpy as np
 import numpy.typing as npt
-
 import pytest
 
 from pyswarms.backend.topology import Star

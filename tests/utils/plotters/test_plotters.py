@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
-from typing import Any
 import warnings
+from typing import Any
 
-import numpy.typing as npt
-import pytest
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy.typing as npt
+import pytest
 
 from pyswarms.single.global_best import GlobalBestPSO
 from pyswarms.utils.plotters.formatters import Mesher
@@ -21,11 +21,7 @@ if os.environ.get("DISPLAY", "") == "":
 from matplotlib.animation import FuncAnimation
 from matplotlib.axes import SubplotBase
 
-from pyswarms.utils.plotters import (
-    plot_contour,
-    plot_cost_history,
-    plot_surface,
-)
+from pyswarms.utils.plotters import plot_contour, plot_cost_history, plot_surface
 from pyswarms.utils.plotters.plotters import _animate, _mesh
 
 
