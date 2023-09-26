@@ -7,7 +7,7 @@ from typing import Any, List
 import numpy as np
 import numpy.typing as npt
 import pytest
-from pyswarms.backend.handlers import InvertVelocityHandler, VelocityHandler
+from pyswarms.backend.handlers import InvertVelocityHandler
 
 from pyswarms.backend.topology import Star
 from pyswarms.backend.velocity import VelocityUpdater
