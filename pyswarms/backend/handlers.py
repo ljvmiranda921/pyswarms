@@ -455,7 +455,7 @@ class AdjustVelocityHandler(VelocityHandler):
 
 
 class InvertVelocityHandler(VelocityHandler):
-    def __init__(self, clamp: Optional[Clamp], bounds: Optional[Bounds], z: float = 0.5):
+    def __init__(self, clamp: Optional[Clamp] = None, bounds: Optional[Bounds] = None, z: float = 0.5):
         super().__init__(clamp, bounds)
         self.z = z
 
