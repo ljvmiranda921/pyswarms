@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, get_args
+from typing import Any, Dict, get_args
 
 import numpy as np
 import pytest
@@ -92,19 +92,13 @@ def assert_clamp(
     positions_inbound: Position,
     positions_out_of_bound: Position,
     vh: VelocityHandler,
-    bounds: Optional[Bounds] = None,
 ):
     # Test if it doesn't handle inclamp velocities
-    inbound_handled = vh(velocities_inbound, clamp, position=positions_inbound, bounds=bounds)
+    inbound_handled = vh(velocities_inbound, positions_inbound)
     assert inbound_handled.all() == velocities_inbound.all()
 
     # Test if all particles are handled to a velocity inside the clamp
-    outbound_handled = vh(
-        velocities_out_of_bound,
-        clamp,
-        position=positions_out_of_bound,
-        bounds=bounds,
-    )
+    outbound_handled = vh(velocities_out_of_bound, positions_out_of_bound)
     lower_than_clamp = outbound_handled < clamp[0]
     greater_than_clamp = outbound_handled > clamp[1]
     assert not lower_than_clamp.all()
@@ -112,9 +106,9 @@ def assert_clamp(
 
 
 def test_unmodified_strategy(clamp: Clamp, velocities_inbound: Velocity, velocities_out_of_bound: Velocity):
-    vh = VelocityHandler.factory(strategy="unmodified")
-    inbound_handled = vh(velocities_inbound, clamp, None, None)
-    outbound_handled = vh(velocities_out_of_bound, clamp, None, None)
+    vh = VelocityHandler.factory("unmodified", clamp)
+    inbound_handled = vh(velocities_inbound, None)
+    outbound_handled = vh(velocities_out_of_bound, None)
     assert inbound_handled.all() == velocities_inbound.all()
     assert outbound_handled.all() == velocities_out_of_bound.all()
 
@@ -126,7 +120,7 @@ def test_adjust_strategy(
     positions_inbound: Position,
     positions_out_of_bound: Position,
 ):
-    vh = VelocityHandler.factory(strategy="adjust")
+    vh = VelocityHandler.factory("adjust", clamp)
     assert_clamp(
         clamp,
         velocities_inbound,
@@ -147,7 +141,7 @@ def test_invert_strategy(
     positions_out_of_bound: Position,
     bounds: Bounds,
 ):
-    vh = VelocityHandler.factory(strategy="invert")
+    vh = VelocityHandler.factory("invert", clamp, bounds)
     assert_clamp(
         clamp,
         velocities_inbound,
@@ -155,7 +149,6 @@ def test_invert_strategy(
         positions_inbound,
         positions_out_of_bound,
         vh,
-        bounds=bounds,
     )
     # TODO Add strategy specific tests
     pass

@@ -8,7 +8,7 @@ from loguru import logger
 import numpy as np
 import numpy.typing as npt
 import pytest
-from pyswarms.backend.handlers import InvertVelocityHandler
+from pyswarms.backend.position import PositionUpdater
 
 from pyswarms.backend.topology import Star
 from pyswarms.backend.velocity import VelocityUpdater
@@ -39,12 +39,13 @@ kwargs = {"value": value, "weight": weight, "capacity": capacity}
 
 # Instantiate optimizers
 options = SwarmOptions({"c1": 2, "c2": 2, "w": 0.7})
-velocity_updater = VelocityUpdater(options, (-0.5, 0.5), InvertVelocityHandler(), constraints)
+velocity_updater = VelocityUpdater(options, (-0.5, 0.5), "invert", constraints)
+position_updater = PositionUpdater(constraints, "periodic")
 
 optimizers = [
-    lambda: GlobalBestPSO(n_particles, dimensions, velocity_updater, constraints, "periodic"),
-    lambda: LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater, constraints, "periodic"),
-    lambda: GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater, constraints, "periodic"),
+    lambda: GlobalBestPSO(n_particles, dimensions, velocity_updater, position_updater),
+    lambda: LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater, position_updater),
+    lambda: GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
 ]
 
 

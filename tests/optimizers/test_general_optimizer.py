@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Callable
 import numpy as np
 import numpy.typing as npt
 import pytest
+from pyswarms.backend.position import PositionUpdater
 
 from pyswarms.backend.topology import Pyramid, Random, Ring, Star, VonNeumann
 from pyswarms.backend.topology.base import Topology
@@ -39,40 +40,19 @@ else:
 
 class TestGeneralOptimizer(ABCTestOptimizer):
     @pytest.fixture(params=topologies)
-    def optimizer(self, request: FixtureRequest, velocity_updater: VelocityUpdater): # type: ignore
+    def optimizer(self, request: FixtureRequest, velocity_updater: VelocityUpdater, position_updater: PositionUpdater): # type: ignore
         x_max = 10 * np.ones(2)
         x_min = -1 * x_max
         bounds = (x_min, x_max)
+        position_updater.bounds = bounds
+        velocity_updater.bounds = bounds
         return GeneralOptimizerPSO(
-            n_particles=10,
-            dimensions=2,
-            velocity_updater=velocity_updater,
-            bounds=bounds,
-            topology=request.param,
+            10,
+            2,
+            request.param,
+            velocity_updater,
+            position_updater,
         )
-
-    @pytest.fixture(params=topologies)
-    def optimizer_history(self, request: FixtureRequest, velocity_updater: VelocityUpdater): # type: ignore
-        opt = GeneralOptimizerPSO(
-            n_particles=10,
-            dimensions=2,
-            velocity_updater=velocity_updater,
-            topology=request.param,
-        )
-        opt.optimize(sphere, 1000)
-        return opt
-
-    @pytest.fixture(params=topologies)
-    def optimizer_reset(self, request: FixtureRequest, velocity_updater: VelocityUpdater): # type: ignore
-        opt = GeneralOptimizerPSO(
-            n_particles=10,
-            dimensions=2,
-            velocity_updater=velocity_updater,
-            topology=request.param,
-        )
-        opt.optimize(sphere, 10)
-        opt.reset()
-        return opt
 
     def test_ftol_effect(self, optimizer: BaseSwarmOptimizer):
         """Test if setting the ftol breaks the optimization process"""

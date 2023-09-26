@@ -3,6 +3,7 @@
 
 import numpy as np
 import pytest
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.velocity import VelocityUpdater
 
 from pyswarms.single import GlobalBestPSO
@@ -13,13 +14,14 @@ from .abc_test_optimizer import ABCTestOptimizer
 
 class TestGlobalBestOptimizer(ABCTestOptimizer):
     @pytest.fixture
-    def optimizer(self, velocity_updater: VelocityUpdater):
-        return GlobalBestPSO(10, 2, velocity_updater)
+    def optimizer(self, velocity_updater: VelocityUpdater, position_updater: PositionUpdater):
+        return GlobalBestPSO(10, 2, velocity_updater, position_updater)
 
-    def test_global_correct_pos(self, velocity_updater: VelocityUpdater):
+    def test_global_correct_pos(self, velocity_updater: VelocityUpdater, position_updater: PositionUpdater):
         """Test to check global optimiser returns the correct position corresponding to the best cost"""
-        opt = GlobalBestPSO(n_particles=10, dimensions=2, velocity_updater=velocity_updater)
+        opt = GlobalBestPSO(10, 2, velocity_updater, position_updater)
         _, pos = opt.optimize(sphere, iters=5)
+        
         # find best pos from history
         min_cost_idx = np.argmin(opt.cost_history)
         min_pos_idx = np.argmin(sphere(opt.pos_history[min_cost_idx]))
