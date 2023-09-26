@@ -12,6 +12,7 @@ from pyswarms.backend.handlers import (
     VelocityHandler,
     VelocityStrategy,
 )
+from pyswarms.backend.velocity import SwarmOptions
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
 
 bh_strategies = list(get_args(BoundaryStrategy))
@@ -174,11 +175,11 @@ def test_invert_strategy(
 
 
 def assert_option_strategy(
-    strategy: Dict[str, OptionsStrategy], init_opts: Dict[str, float], exp_opts: Dict[str, float], **kwargs: Any
+    strategy: Dict[str, OptionsStrategy], init_opts: SwarmOptions, exp_opts: Dict[str, float], **kwargs: Any
 ):
     """Test for any strategy for options handler
     strategy : strategy to use
-    init_opts : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1', 'c2', 'w', 'k', 'p'}`
+    init_opts : dict with keys :code:`{'c1', 'c2', 'w'}`
     exp_opts: dict with expected values after strategy with given parameters
     kwargs: arguments to use for given strategy
     """
@@ -186,12 +187,12 @@ def assert_option_strategy(
     oh = OptionsHandler(strategy)
     return_opts = oh(init_opts, **kwargs)
     assert np.allclose(
-        list(return_opts.values()), list(exp_opts.values()), atol=0.001, rtol=0
+        list(return_opts.values()), list(exp_opts.values()), atol=0.001, rtol=0 # type: ignore
     ), "Expected options don't match with the given strategy"
 
 
 def test_option_strategy():
-    init_opts = {"c1": 0.5, "c2": 0.3, "w": 0.9}
+    init_opts = SwarmOptions({"c1": 0.5, "c2": 0.3, "w": 0.9})
     end_opts = {"c2": 0.1, "w": 0.2}  # use default for c1
     strategy: Dict[str, OptionsStrategy] = {"w": "exp_decay", "c1": "lin_variation", "c2": "nonlin_mod"}
     exp_opts = {"c1": 0.4, "c2": 0.1, "w": 0.567}

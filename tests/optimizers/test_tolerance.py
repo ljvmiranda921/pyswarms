@@ -2,15 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import random
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type
+from typing import Any, Callable, List
+from loguru import logger
 
 import numpy as np
 import numpy.typing as npt
 import pytest
+from pyswarms.backend.handlers import InvertVelocityHandler
 
 from pyswarms.backend.topology import Star
-from pyswarms.base.single import SwarmOptimizer
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.base.base import BaseSwarmOptimizer
 from pyswarms.single import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
+from pyswarms.utils.types import SwarmOptions
 
 random.seed(0)
 
@@ -26,12 +30,22 @@ weight = [random.randint(1, number_of_items) for _ in item_range]
 # PSO parameters
 n_particles = 10
 iterations = 1000
-options = {"c1": 2, "c2": 2, "w": 0.7, "k": 3, "p": 2}
-dim = number_of_items
-LB = [0] * dim
-UB = [1] * dim
+dimensions = number_of_items
+LB = [0] * dimensions
+UB = [1] * dimensions
 constraints = (np.array(LB), np.array(UB))
 kwargs = {"value": value, "weight": weight, "capacity": capacity}
+
+
+# Instantiate optimizers
+options = SwarmOptions({"c1": 2, "c2": 2, "w": 0.7})
+velocity_updater = VelocityUpdater(options, (-0.5, 0.5), InvertVelocityHandler(), constraints)
+
+optimizers = [
+    lambda: GlobalBestPSO(n_particles, dimensions, velocity_updater, constraints, "periodic"),
+    lambda: LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater, constraints, "periodic"),
+    lambda: GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater, constraints, "periodic"),
+]
 
 
 def get_particle_obj(X: npt.NDArray[Any], **kwargs: Any):
@@ -60,63 +74,29 @@ def objective_function(X: npt.NDArray[Any], **kwargs: Any):
     return np.array(dist)
 
 
-# Instantiate optimizers
-optimizers = [GlobalBestPSO, LocalBestPSO, GeneralOptimizerPSO]
-parameters = dict(
-    n_particles=n_particles,
-    dimensions=dim,
-    options=options,
-    bounds=constraints,
-    bh_strategy="periodic",
-    velocity_clamp=(-0.5, 0.5),
-    vh_strategy="invert",
-)
-
-
-if TYPE_CHECKING:
-
-    class FixtureRequest:
-        param: Type[SwarmOptimizer]
-
-else:
-    FixtureRequest = Any
-
-
 class TestToleranceOptions:
-    @pytest.fixture(params=optimizers)
-    def optimizer(self, request: FixtureRequest):
-        global parameters
-        if request.param.__name__ == "GeneralOptimizerPSO":
-            return request.param, {**parameters, **{"topology": Star()}}
-        return request.param, parameters
-
-    def test_no_ftol(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_no_ftol(self, optimizer_func: Callable[[], BaseSwarmOptimizer]):
         """Test complete run"""
-        optm, params = optimizer
-        opt = optm(**params)
-        opt.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
-        assert len(opt.cost_history) == iterations
+        optimizer = optimizer_func()
+        optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
+        assert len(optimizer.cost_history) == iterations
 
-    def test_ftol_effect(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_ftol_effect(self, optimizer_func: Callable[[], BaseSwarmOptimizer]):
         """Test early stopping with ftol"""
-        optm, params = optimizer
-        params["ftol"] = 0.01
-        opt = optm(**params)
-        opt.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
-        assert len(opt.cost_history) <= iterations
+        optimizer = optimizer_func()
+        optimizer.ftol = 0.01
+        logger.critical(optimizer.ftol)
+        # logger.critical(optimizer.__dict__)
+        optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
+        assert len(optimizer.cost_history) <= iterations
 
-    def test_ftol_iter_assertion(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
-        """Assert ftol_iter type and value"""
-        with pytest.raises(AssertionError):
-            optm, params = optimizer
-            params["ftol_iter"] = 0
-            optm(**params)
-
-    def test_ftol_iter_effect(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_ftol_iter_effect(self, optimizer_func: Callable[[], BaseSwarmOptimizer]):
         """Test early stopping with ftol and ftol_iter;
         must run for a minimum of ftol_iter iterations"""
-        optm, params = optimizer
-        params["ftol_iter"] = 50
-        opt = optm(**params)
-        opt.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
-        assert len(opt.cost_history) >= opt.ftol_iter
+        optimizer = optimizer_func()
+        optimizer.ftol_iter = 50
+        optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
+        assert len(optimizer.cost_history) >= optimizer.ftol_iter

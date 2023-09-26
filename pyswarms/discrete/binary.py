@@ -53,31 +53,32 @@ R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
 
 import multiprocessing as mp
 from collections import deque
-from typing import Any, Callable, Deque, Dict, Optional, Tuple
+from typing import Any, Callable, Deque, Literal, Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
 from loguru import logger
 from tqdm import trange
+from pyswarms.backend.generators import generate_discrete_swarm, generate_velocity
 
 from pyswarms.backend.handlers import VelocityHandler, VelocityStrategy
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Ring
-from pyswarms.base import DiscreteSwarmOptimizer
-from pyswarms.base.base import ToHistory
-from pyswarms.single.general_optimizer import GeneralOptions
-from pyswarms.utils.types import Clamp, Position
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.base.base import BaseSwarmOptimizer, ToHistory
+from pyswarms.utils.types import Position
 
 
-class BinaryPSO(DiscreteSwarmOptimizer):
+class BinaryPSO(BaseSwarmOptimizer):
     def __init__(
         self,
         n_particles: int,
         dimensions: int,
-        options: GeneralOptions,
+        p: Literal[1,2],
+        k: int,
+        velocity_updater: VelocityUpdater,
         init_pos: Optional[Position] = None,
-        velocity_clamp: Optional[Clamp] = None,
         vh_strategy: VelocityStrategy = "unmodified",
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -91,29 +92,18 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w', 'k', 'p'}`
-            a dictionary containing the parameters for the specific
-            optimization technique
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
-                * k : int
-                    number of neighbors to be considered. Must be a
-                    positive integer less than :code:`n_particles`
-                * p: int {1,2}
-                    the Minkowski p-norm to use. 1 is the
-                    sum-of-absolute values (or L1 distance) while 2 is
-                    the Euclidean (or L2) distance.
+        p: int {1,2}
+            the Minkowski p-norm to use. 1 is the
+            sum-of-absolute values (or L1 distance) while 2 is
+            the Euclidean (or L2) distance.
+        k : int
+            number of neighbors to be considered. Must be a
+            positive integer less than :code:`n_particles`
+        velocity_updater : VelocityUpdater
+            Class for updating the velocity matrix.
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
-        velocity_clamp : tuple, optional
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
         vh_strategy : String
             a strategy for the handling of the velocity of out-of-bounds particles.
             Only the "unmodified" and the "adjust" strategies are allowed.
@@ -125,17 +115,16 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             objective_func(best_pos) is acceptable for convergence.
             Default is :code:`1`
         """
-        # Assign k-neighbors and p-value as attributes
-        self.p = options["p"]
-        self.k = options["k"]
+        self.p = p
+        self.k = k
+        self.binary = True
+
         # Initialize parent class
-        super(BinaryPSO, self).__init__(
+        super().__init__(
             n_particles=n_particles,
             dimensions=dimensions,
-            binary=True,
-            options=options,
+            velocity_updater=velocity_updater,
             init_pos=init_pos,
-            velocity_clamp=velocity_clamp,
             ftol=ftol,
             ftol_iter=ftol_iter,
         )
@@ -152,7 +141,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         iters: int,
         n_processes: Optional[int] = None,
         verbose: bool = True,
-        **kwargs: Dict[str, Any]
+        **kwargs: Any
     ) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 
@@ -181,7 +170,6 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         """
         log_level = "DEBUG" if verbose else "TRACE"
         logger.debug("Obj. func. args: {}".format(kwargs))
-        logger.log(log_level, "Optimize for {} iters with {}".format(iters, self.options))
 
         # Populate memory of the handlers
         self.vh.memory = self.swarm.position
@@ -200,11 +188,11 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             best_cost_yet_found = np.min(self.swarm.best_cost)
 
             # Update gbest from neighborhood
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, p=self.p, k=self.k)
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
 
-            # if verbose:
-            #     # Print to console
-            #     pbar.postfix(best_cost=self.swarm.best_cost)
+            # Print to console
+            if verbose:
+                pbar.set_postfix(best_cost=self.swarm.best_cost) # type: ignore
 
             # Save to history
             hist = ToHistory(
@@ -227,7 +215,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
                     break
 
             # Perform position velocity update
-            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp, self.vh)
+            self.swarm.velocity = self.velocity_updater.compute(self.swarm, iters)
             self.swarm.position = self._compute_position(self.swarm)
 
         # Obtain the final best_cost and the final best_position
@@ -240,7 +228,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
 
         # Close Pool of Processes
         if n_processes is not None:
-            pool.close()
+            pool.close() # type: ignore
 
         return (final_best_cost, final_best_pos)
 
@@ -272,3 +260,10 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             Output sigmoid computation
         """
         return 1 / (1 + np.exp(-x))
+
+    def _init_swarm(self):
+        position = generate_discrete_swarm(
+            self.n_particles, self.dimensions, binary=self.binary, init_pos=self.init_pos
+        )
+        velocity = generate_velocity(self.n_particles, self.dimensions, clamp=self.velocity_updater.clamp)
+        self.swarm = Swarm(position, velocity)

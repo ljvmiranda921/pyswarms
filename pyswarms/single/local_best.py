@@ -64,14 +64,15 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
     Symposium on Micromachine and Human Science, 1995, pp. 39–43.
 """
 
-from typing import Dict, Optional
+from typing import Literal, Optional
 
 import numpy as np
 
-from pyswarms.backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
+from pyswarms.backend.handlers import BoundaryStrategy
 from pyswarms.backend.topology import Ring
-from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
-from pyswarms.utils.types import Bounds, Clamp, Position
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.single.general_optimizer import GeneralOptimizerPSO
+from pyswarms.utils.types import Bounds, Position
 
 
 class LocalBestPSO(GeneralOptimizerPSO):
@@ -79,12 +80,11 @@ class LocalBestPSO(GeneralOptimizerPSO):
         self,
         n_particles: int,
         dimensions: int,
-        options: GeneralOptions,
+        p: Literal[1,2],
+        k: int,
+        velocity_updater: VelocityUpdater,
         bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
         bh_strategy: BoundaryStrategy = "periodic",
-        velocity_clamp: Optional[Clamp] = None,
-        vh_strategy: VelocityStrategy = "unmodified",
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -99,20 +99,21 @@ class LocalBestPSO(GeneralOptimizerPSO):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
+        p: int {1,2}
+            the Minkowski p-norm to use. 1 is the
+            sum-of-absolute values (or L1 distance) while 2 is
+            the Euclidean (or L2) distance.
+        k : int
+            number of neighbors to be considered. Must be a
+            positive integer less than :code:`n_particles`
+        velocity_updater : VelocityUpdater
+            Class for updating the velocity matrix.
         bounds : tuple of numpy.ndarray
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
-        oh_strategy : dict, optional, default=None(constant options)
-            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
-        velocity_clamp : tuple (default is :code:`(0,1)`)
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
-        vh_strategy : str
-            a strategy for the handling of the velocity of out-of-bounds particles.
         center : list, optional
             an array of size :code:`dimensions`
         ftol : float
@@ -122,22 +123,6 @@ class LocalBestPSO(GeneralOptimizerPSO):
             number of iterations over which the relative error in
             objective_func(best_pos) is acceptable for convergence.
             Default is :code:`1`
-        options : dict with keys :code:`{'c1', 'c2', 'w', 'k', 'p'}`
-            a dictionary containing the parameters for the specific
-            optimization technique
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
-                * k : int
-                    number of neighbors to be considered. Must be a
-                    positive integer less than :code:`n_particles`
-                * p: int {1,2}
-                    the Minkowski p-norm to use. 1 is the
-                    sum-of-absolute values (or L1 distance) while 2 is
-                    the Euclidean (or L2) distance.
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
@@ -148,13 +133,10 @@ class LocalBestPSO(GeneralOptimizerPSO):
         super().__init__(
             n_particles,
             dimensions,
-            options,
-            Ring(options["p"], options["k"], static=static),
+            Ring(p, k, static=static),
+            velocity_updater,
             bounds,
-            oh_strategy,
             bh_strategy,
-            velocity_clamp,
-            vh_strategy,
             center,
             ftol,
             ftol_iter,

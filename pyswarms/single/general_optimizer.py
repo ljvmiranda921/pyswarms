@@ -58,45 +58,35 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 
 import multiprocessing as mp
 from collections import deque
-from typing import Any, Callable, Deque, Dict, Literal, Optional, Tuple
+from typing import Any, Callable, Deque, Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
 from loguru import logger
 from tqdm import trange
+from pyswarms.backend.generators import generate_swarm, generate_velocity
 
 from pyswarms.backend.handlers import (
     BoundaryHandler,
     BoundaryStrategy,
-    OptionsHandler,
-    OptionsStrategy,
-    VelocityHandler,
-    VelocityStrategy,
 )
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Topology
-from pyswarms.base import SwarmOptimizer
-from pyswarms.base.base import Options, ToHistory
-from pyswarms.utils.types import Bounds, Clamp, Position
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.base.base import BaseSwarmOptimizer, ToHistory
+from pyswarms.utils.types import Bounds, Position
 
 
-class GeneralOptions(Options):
-    p: Literal[1, 2]
-    k: int
-
-
-class GeneralOptimizerPSO(SwarmOptimizer):
+class GeneralOptimizerPSO(BaseSwarmOptimizer):
     def __init__(
         self,
         n_particles: int,
         dimensions: int,
-        options: GeneralOptions,
         topology: Topology,
+        velocity_updater: VelocityUpdater,
         bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
         bh_strategy: BoundaryStrategy = "periodic",
-        velocity_clamp: Optional[Clamp] = None,
-        vh_strategy: VelocityStrategy = "unmodified",
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -110,33 +100,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1',
-                'c2', 'w', 'k', 'p'}`
-            a dictionary containing the parameters for the specific
-            optimization technique.
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
-                if used with the :code:`Ring`, :code:`VonNeumann` or
-                :code:`Random` topology the additional parameter k must be
-                included
-                * k : int
-                    number of neighbors to be considered. Must be a positive
-                    integer less than :code:`n_particles`
-                if used with the :code:`Ring` topology the additional
-                parameters k and p must be included
-                * p: int {1,2}
-                    the Minkowski p-norm to use. 1 is the sum-of-absolute
-                    values (or L1 distance) while 2 is the Euclidean (or L2)
-                    distance.
-                if used with the :code:`VonNeumann` topology the additional
-                parameters p and r must be included
-                * r: int
-                    the range of the VonNeumann topology.  This is used to
-                    determine the number of neighbours in the topology.
         topology : pyswarms.backend.topology.Topology
             a :code:`Topology` object that defines the topology to use in the
             optimization process. The currently available topologies are:
@@ -153,21 +116,14 @@ class GeneralOptimizerPSO(SwarmOptimizer):
                 Static variants of the topologies remain with the same
                 neighbours over the course of the optimization. Dynamic
                 variants calculate new neighbours every time step.
+        velocity_updater : VelocityUpdater
+            Class for updating the velocity matrix.
         bounds : tuple of numpy.ndarray, optional
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
-        oh_strategy : dict, optional, default=None(constant options)
-            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
-        velocity_clamp : tuple, optional
-            a tuple of size 2 where the first entry is the minimum velocity and
-            the second entry is the maximum velocity. It sets the limits for
-            velocity clamping.
-        vh_strategy : str
-            a strategy for the handling of the velocity of out-of-bounds particles.
-        center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
@@ -180,28 +136,24 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
         """
-        super(GeneralOptimizerPSO, self).__init__(
+        self.center = center
+
+        super().__init__(
             n_particles,
             dimensions=dimensions,
-            options=options,
+            velocity_updater=velocity_updater,
             bounds=bounds,
-            velocity_clamp=velocity_clamp,
             center=center,
             ftol=ftol,
             ftol_iter=ftol_iter,
             init_pos=init_pos,
         )
 
-        if oh_strategy is None:
-            oh_strategy = {}
-
         # Initialize the resettable attributes
         self.reset()
 
         self.top = topology
         self.bh = BoundaryHandler(strategy=bh_strategy)
-        self.vh = VelocityHandler.factory(strategy=vh_strategy)
-        self.oh = OptionsHandler(strategy=oh_strategy)
         self.name = __name__
 
     def optimize(
@@ -237,11 +189,9 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         """
         log_level = "DEBUG" if verbose else "TRACE"
         logger.debug("Obj. func. args: {}".format(kwargs))
-        logger.log(log_level, "Optimize for {} iters with {}".format(iters, self.options))
 
         # Populate memory of the handlers
         self.bh.memory = self.swarm.position
-        self.vh.memory = self.swarm.position
 
         # Setup Pool of processes for parallel evaluation
         pool = None if n_processes is None else mp.Pool(n_processes)
@@ -257,11 +207,11 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             best_cost_yet_found = self.swarm.best_cost
 
             # Update swarm
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, **dict(self.options))
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
 
             # Print to console
-            # if verbose:
-            #     pbar.postfix(best_cost=self.swarm.best_cost)
+            if verbose:
+                pbar.set_postfix(best_cost=self.swarm.best_cost) # type: ignore
 
             hist = ToHistory(
                 best_cost=self.swarm.best_cost,
@@ -275,18 +225,12 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
             delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            if i < self.ftol_iter:
-                ftol_history.append(delta)
-            else:
-                ftol_history.append(delta)
-                if all(ftol_history):
-                    break
-
-            # Perform options update
-            self.swarm.options = self.oh(self.options, iternow=i, itermax=iters)
+            ftol_history.append(delta)
+            if i >= self.ftol_iter and all(ftol_history):
+                break
 
             # Perform velocity and position updates
-            self.swarm.velocity = self.top.compute_velocity(self.swarm, self.velocity_clamp, self.vh, self.bounds)
+            self.swarm.velocity = self.velocity_updater.compute(self.swarm, iters)
             self.swarm.position = self.top.compute_position(self.swarm, self.bounds, self.bh)
 
         # Obtain the final best_cost and the final best_position
@@ -304,3 +248,14 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             pool.close()  # type: ignore
 
         return (final_best_cost, final_best_pos)
+
+    def _init_swarm(self):
+        position = generate_swarm(
+            self.n_particles,
+            self.dimensions,
+            bounds=self.bounds,
+            center=self.center,
+            init_pos=self.init_pos,
+        )
+        velocity = generate_velocity(self.n_particles, self.dimensions, self.velocity_updater.clamp)
+        self.swarm = Swarm(position, velocity)

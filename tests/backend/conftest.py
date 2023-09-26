@@ -7,7 +7,13 @@ import numpy as np
 import pytest
 
 from pyswarms.backend.swarms import Swarm
+from pyswarms.backend.velocity import SwarmOptions
 from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
+
+
+@pytest.fixture
+def options() -> SwarmOptions:
+    return SwarmOptions({"c1": 0.5, "c2": 1, "w": 2})
 
 
 @pytest.fixture
@@ -21,7 +27,6 @@ def swarm():
         pbest_pos=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
         best_cost=1,
         best_pos=np.array([1, 1, 1]),
-        options={"c1": 0.5, "c2": 1, "w": 2},
     )
 
 

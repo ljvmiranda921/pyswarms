@@ -2,56 +2,43 @@
 # -*- coding: utf-8 -*-
 
 import re
-from typing import TYPE_CHECKING, Any, Dict, Tuple, Type
 
 import pytest
+from pyswarms.backend.handlers import VelocityHandler
 
 from pyswarms.backend.topology import Star
-from pyswarms.base.single import SwarmOptimizer
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.base.base import BaseSwarmOptimizer
 from pyswarms.single import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
 from pyswarms.utils.functions import single_obj as fx
+from pyswarms.utils.types import SwarmOptions
 
 # Instantiate optimizers
-optimizers = [GlobalBestPSO, LocalBestPSO, GeneralOptimizerPSO]
-options = {"c1": 2, "c2": 2, "w": 0.7, "k": 3, "p": 2}
-parameters = dict(
-    n_particles=20,
-    dimensions=10,
-    options=options,
-)
+options = SwarmOptions({"c1": 2, "c2": 2, "w": 0.7})
+n_particles = 20
+dimensions = 10
+velocity_updater = VelocityUpdater(options, None, VelocityHandler.factory("unmodified"))
 
-
-if TYPE_CHECKING:
-
-    class FixtureRequest:
-        param: Type[SwarmOptimizer]
-
-else:
-    FixtureRequest = Any
+optimizers = [
+    GlobalBestPSO(n_particles, dimensions, velocity_updater),
+    LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater),
+    GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater)
+]
 
 
 class TestToleranceOptions:
-    @pytest.fixture(params=optimizers)
-    def optimizer(self, request: FixtureRequest):
-        global parameters
-        if request.param.__name__ == "GeneralOptimizerPSO":
-            return request.param, {**parameters, **{"topology": Star()}}
-        return request.param, parameters
-
-    def test_verbose(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]], capsys: pytest.CaptureFixture[str]):
+    @pytest.mark.parametrize("optimizer", optimizers)
+    def test_verbose(self, optimizer: BaseSwarmOptimizer, capsys: pytest.CaptureFixture[str]):
         """Test verbose run"""
-        optm, params = optimizer
-        opt = optm(**params)
-        opt.optimize(fx.sphere, iters=100)
+        optimizer.optimize(fx.sphere, iters=100)
         out = capsys.readouterr().err
         count = len(re.findall(r"pyswarms", out))
         assert count > 0
 
-    def test_silent(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]], capsys: pytest.CaptureFixture[str]):
+    @pytest.mark.parametrize("optimizer", optimizers)
+    def test_silent(self, optimizer: BaseSwarmOptimizer, capsys: pytest.CaptureFixture[str]):
         """Test silent run"""
-        optm, params = optimizer
-        opt = optm(**params)
-        opt.optimize(fx.sphere, iters=100, verbose=False)
+        optimizer.optimize(fx.sphere, iters=100, verbose=False)
         out = capsys.readouterr()
         assert out.err == ""
         assert out.out == ""

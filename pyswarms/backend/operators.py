@@ -15,9 +15,9 @@ from typing import Any, Callable, Optional
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.handlers import BoundaryHandler
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, Position
+from pyswarms.utils.types import Bounds, Position
 
 
 def compute_pbest(swarm: Swarm):
@@ -67,64 +67,6 @@ def compute_pbest(swarm: Swarm):
     new_pbest_cost = np.where(~mask_cost, swarm.pbest_cost, swarm.current_cost)
 
     return (new_pbest_pos, new_pbest_cost)
-
-
-def compute_velocity(swarm: Swarm, clamp: Optional[Clamp], vh: VelocityHandler, bounds: Optional[Bounds] = None):
-    """Update the velocity matrix
-
-    This method updates the velocity matrix using the best and current
-    positions of the swarm. The velocity matrix is computed using the
-    cognitive and social terms of the swarm. The velocity is handled
-    by a :code:`VelocityHandler`.
-
-    A sample usage can be seen with the following:
-
-    .. code-block :: python
-
-        import pyswarms.backend as P
-        from pyswarms.swarms.backend import Swarm, VelocityHandler
-
-        my_swarm = P.create_swarm(n_particles, dimensions)
-        my_vh = VelocityHandler(strategy="invert")
-
-        for i in range(iters):
-            # Inside the for-loop
-            my_swarm.velocity = compute_velocity(my_swarm, clamp, my_vh, bounds)
-
-    Parameters
-    ----------
-    swarm : pyswarms.backend.swarms.Swarm
-        a Swarm instance
-    clamp : tuple of floats, optional
-        a tuple of size 2 where the first entry is the minimum velocity
-        and the second entry is the maximum velocity. It
-        sets the limits for velocity clamping.
-    vh : pyswarms.backend.handlers.VelocityHandler
-        a VelocityHandler object with a specified handling strategy.
-        For further information see :mod:`pyswarms.backend.handlers`.
-    bounds : tuple of numpy.ndarray or list, optional
-        a tuple of size 2 where the first entry is the minimum bound while
-        the second entry is the maximum bound. Each array must be of shape
-        :code:`(dimensions,)`.
-
-    Returns
-    -------
-    numpy.ndarray
-        Updated velocity matrix
-    """
-    # Prepare parameters
-    swarm_size = swarm.position.shape
-    c1 = swarm.options["c1"]
-    c2 = swarm.options["c2"]
-    w = swarm.options["w"]
-    # Compute for cognitive and social terms
-    cognitive = c1 * np.random.uniform(0, 1, swarm_size) * (swarm.pbest_pos - swarm.position)
-    social = c2 * np.random.uniform(0, 1, swarm_size) * (swarm.best_pos - swarm.position)
-    # Compute temp velocity (subject to clamping if possible)
-    temp_velocity = (w * swarm.velocity) + cognitive + social
-    updated_velocity = vh(temp_velocity, clamp, position=swarm.position, bounds=bounds)
-
-    return updated_velocity
 
 
 def compute_position(swarm: Swarm, bounds: Optional[Bounds], bh: BoundaryHandler):

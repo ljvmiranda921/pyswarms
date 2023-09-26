@@ -29,7 +29,7 @@ from typing import Any, Dict, Literal, Optional
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, Velocity
+from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, SwarmOptions, Velocity
 
 
 class HandlerMixin(object):
@@ -513,6 +513,7 @@ class ZeroVelocityHandler(VelocityHandler):
 
 
 OptionsStrategy = Literal["exp_decay", "lin_variation", "random", "nonlin_mod"]
+SwarmOption = Literal["c1", "c2", "w"]
 
 
 # TODO: Ew omg my eyes it's awful, implement a proper pattern here pls (see velocityhandler)
@@ -572,7 +573,7 @@ class OptionsHandler(HandlerMixin):
         self.strategy = strategy
         self.strategies = self._get_all_strategies()
 
-    def __call__(self, start_opts: Dict[str, float], **kwargs: Any):
+    def __call__(self, start_opts: SwarmOptions, **kwargs: Any):
         if not self.strategy:
             return start_opts
 
@@ -584,7 +585,7 @@ class OptionsHandler(HandlerMixin):
 
         return return_opts
 
-    def exp_decay(self, start_opts: Dict[str, float], opt: str, **kwargs: Any) -> float:
+    def exp_decay(self, start_opts: SwarmOptions, opt: SwarmOption, **kwargs: Any) -> float:
         """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
         The velocity is adjusted such that the following equation holds:
 
@@ -628,7 +629,7 @@ class OptionsHandler(HandlerMixin):
 
         return new_val
 
-    def lin_variation(self, start_opts: Dict[str, float], opt: str, **kwargs: Any) -> float:
+    def lin_variation(self, start_opts: SwarmOptions, opt: SwarmOption, **kwargs: Any) -> float:
         """
         Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
 
@@ -655,7 +656,7 @@ class OptionsHandler(HandlerMixin):
 
         return new_val
 
-    def random(self, start_opts: Dict[str, float], opt: str, **kwargs: Any) -> float:
+    def random(self, start_opts: SwarmOptions, opt: SwarmOption, **kwargs: Any) -> float:
         """Random value between :math:`w^{start}` and :math:`w^{end}`
 
         .. math::
@@ -673,7 +674,7 @@ class OptionsHandler(HandlerMixin):
 
         return start + (end - start) * np.random.rand()
 
-    def nonlin_mod(self, start_opts: Dict[str, float], opt: str, **kwargs: Any) -> float:
+    def nonlin_mod(self, start_opts: SwarmOptions, opt: SwarmOption, **kwargs: Any) -> float:
         """Non linear decreasing/increasing with modulation index(n).
         The linear strategy can be made to converge faster without compromising
         on exploration with the use of this index which makes the equation non-linear.

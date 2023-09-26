@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import abc
-from typing import Any, Callable, Tuple, Type
+from abc import ABC, abstractmethod
+from typing import Any, Callable, Tuple
 
 import numpy as np
 import numpy.typing as npt
 import pytest
+from pyswarms.backend.handlers import VelocityHandler
+from pyswarms.backend.velocity import VelocityUpdater
 
-from pyswarms.base.base import BaseSwarmOptimizer, Options
-from pyswarms.single.general_optimizer import GeneralOptions
+from pyswarms.base.base import BaseSwarmOptimizer
 from pyswarms.utils.functions.single_obj import rosenbrock, sphere
+from pyswarms.utils.types import SwarmOptions
 
 
-class ABCTestOptimizer(abc.ABC):
+class ABCTestOptimizer(ABC):
     """Abstract class that defines various tests for high-level optimizers
 
     Whenever an optimizer implementation inherits from ABCTestOptimizer,
@@ -22,27 +24,37 @@ class ABCTestOptimizer(abc.ABC):
     """
 
     @pytest.fixture
-    @abc.abstractmethod
-    def optimizer(self) -> Type[BaseSwarmOptimizer]:
+    @abstractmethod
+    def optimizer(self, velocity_updater: VelocityUpdater) -> BaseSwarmOptimizer:
         """Return an instance of the optimizer"""
         ...
 
     @pytest.fixture
-    @abc.abstractmethod
-    def optimizer_history(self, options: GeneralOptions) -> BaseSwarmOptimizer:
+    def optimizer_history(self, optimizer: BaseSwarmOptimizer) -> BaseSwarmOptimizer:
         """Run the optimizer for 1000 iterations and return its instance"""
-        ...
+        optimizer.optimize(sphere, 1000)
+        return optimizer
 
     @pytest.fixture
-    @abc.abstractmethod
-    def optimizer_reset(self, options: GeneralOptions) -> BaseSwarmOptimizer:
+    def optimizer_reset(self, optimizer: BaseSwarmOptimizer) -> BaseSwarmOptimizer:
         """Reset the optimizer and return its instance"""
-        ...
+        optimizer.optimize(sphere, 10)
+        optimizer.optimize(sphere, 10)
+        optimizer.reset()
+        return optimizer
 
     @pytest.fixture
-    def options(self) -> GeneralOptions:
+    def options(self):
         """Default options dictionary for most PSO use-cases"""
-        return GeneralOptions({"c1": 0.3, "c2": 0.7, "w": 0.9, "k": 2, "p": 2, "r": 1})
+        return {"c1": 0.3, "c2": 0.7, "w": 0.9}
+
+    @pytest.fixture
+    def velocity_updater(self, options: SwarmOptions) -> VelocityUpdater:
+        return VelocityUpdater(
+            options,
+            None,
+            VelocityHandler.factory("unmodified")
+        )
 
     @pytest.fixture
     def obj_with_args(self):
@@ -81,82 +93,64 @@ class ABCTestOptimizer(abc.ABC):
         assert set(optimizer_reset.swarm.best_pos) == set()
 
     @pytest.mark.skip(reason="The Ring topology converges too slowly")
-    def test_ftol_effect(self, options: Options, optimizer: Type[BaseSwarmOptimizer]):
+    def test_ftol_effect(self, optimizer: BaseSwarmOptimizer):
         """Test if setting the ftol breaks the optimization process"""
-        opt = optimizer(10, 2, options=options, ftol=1e-1)
-        opt.optimize(sphere, 2000)
-        assert np.array(opt.cost_history).shape != (2000,)
+        optimizer.ftol = 1e-1
+        optimizer.optimize(sphere, 2000)
+        assert np.array(optimizer.cost_history).shape != (2000,)
 
     def test_parallel_evaluation(
         self,
         obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]],
-        optimizer: Type[BaseSwarmOptimizer],
-        options: Options,
+        optimizer: BaseSwarmOptimizer,
     ):
         """Test if parallelization breaks the optimization process"""
         import multiprocessing
 
-        opt = optimizer(100, 2, options=options)
-        opt.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())
-        assert np.array(opt.cost_history).shape == (2000,)
+        optimizer.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())
+        assert np.array(optimizer.cost_history).shape == (2000,)
 
     def test_obj_with_kwargs(
         self,
         obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]],
-        optimizer: Type[BaseSwarmOptimizer],
-        options: Options,
+        optimizer: BaseSwarmOptimizer,
     ):
         """Test if kwargs are passed properly in objfunc"""
         x_max = 10 * np.ones(2)
         x_min = -1 * x_max
         bounds = (x_min, x_max)
-        opt = optimizer(100, 2, options=options, bounds=bounds)
-        cost, pos = opt.optimize(obj_with_args, 1000, a=1, b=100)
-        assert np.isclose(cost, 0, rtol=1e-03)
-        assert np.isclose(pos[0], 1.0, rtol=1e-03)
-        assert np.isclose(pos[1], 1.0, rtol=1e-03)
+        optimizer.bounds = bounds
+        cost, pos = optimizer.optimize(obj_with_args, 1000, a=1, b=100)
+        assert np.isclose(cost, 0, rtol=1e-03), f"cost (={cost}) should be ~0"
+        assert np.isclose(pos[0], 1.0, rtol=1e-03), f"pos[0] (={pos[0]}) should be ~1.0"
+        assert np.isclose(pos[1], 1.0, rtol=1e-03), f"pos[1] (={pos[1]}) should be ~1.0"
 
     def test_obj_unnecessary_kwargs(
         self,
         obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]],
-        optimizer: Type[BaseSwarmOptimizer],
-        options: Options,
+        optimizer: BaseSwarmOptimizer,
     ):
         """Test if error is raised given unnecessary kwargs"""
-        x_max = 10 * np.ones(2)
-        x_min = -1 * x_max
-        bounds = (x_min, x_max)
-        opt = optimizer(100, 2, options=options, bounds=bounds)
         with pytest.raises(TypeError):
             # kwargs `a` should not be supplied
-            opt.optimize(obj_without_args, 1000, a=1)
+            optimizer.optimize(obj_without_args, 1000, a=1)
 
     def test_obj_missing_kwargs(
         self,
         obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]],
-        optimizer: Type[BaseSwarmOptimizer],
-        options: Options,
+        optimizer: BaseSwarmOptimizer,
     ):
         """Test if error is raised with incomplete kwargs"""
-        x_max = 10 * np.ones(2)
-        x_min = -1 * x_max
-        bounds = (x_min, x_max)
-        opt = optimizer(100, 2, options=options, bounds=bounds)
         with pytest.raises(TypeError):
             # kwargs `b` is missing here
-            opt.optimize(obj_with_args, 1000, a=1)
+            optimizer.optimize(obj_with_args, 1000, a=1)
 
     def test_obj_incorrect_kwargs(
         self,
         obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]],
-        optimizer: Type[BaseSwarmOptimizer],
-        options: Options,
+        optimizer: BaseSwarmOptimizer,
     ):
         """Test if error is raised with wrong kwargs"""
-        x_max = 10 * np.ones(2)
-        x_min = -1 * x_max
-        bounds = (x_min, x_max)
-        opt = optimizer(100, 2, options=options, bounds=bounds)
         with pytest.raises(TypeError):
             # Wrong kwargs
-            opt.optimize(obj_with_args, 1000, c=1, d=100)
+            optimizer.optimize(obj_with_args, 1000, c=1, d=100)

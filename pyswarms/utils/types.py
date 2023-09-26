@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, TypedDict
 
 import numpy as np
 import numpy.typing as npt
@@ -17,3 +17,8 @@ Clamp = ClampArray | ClampList | ClampFloat
 # Particle position and velocity types
 Position = npt.NDArray[np.floating[Any] | np.integer[Any]]
 Velocity = npt.NDArray[np.floating[Any]]
+
+class SwarmOptions(TypedDict):
+    c1: float
+    c2: float
+    w: float

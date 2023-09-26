@@ -56,15 +56,16 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
-from typing import Dict, Optional
+from typing import Optional
 
 import numpy as np
 
 from pyswarms.backend.topology.star import Star
-from pyswarms.single.general_optimizer import GeneralOptimizerPSO, GeneralOptions
-from pyswarms.utils.types import Bounds, Clamp, Position
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.single.general_optimizer import GeneralOptimizerPSO
+from pyswarms.utils.types import Bounds, Position
 
-from ..backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
+from ..backend.handlers import BoundaryStrategy
 
 
 class GlobalBestPSO(GeneralOptimizerPSO):
@@ -72,12 +73,9 @@ class GlobalBestPSO(GeneralOptimizerPSO):
         self,
         n_particles: int,
         dimensions: int,
-        options: GeneralOptions,
+        velocity_updater: VelocityUpdater,
         bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
         bh_strategy: BoundaryStrategy = "periodic",
-        velocity_clamp: Optional[Clamp] = None,
-        vh_strategy: VelocityStrategy = "unmodified",
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -91,27 +89,10 @@ class GlobalBestPSO(GeneralOptimizerPSO):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w'}`
-            a dictionary containing the parameters for the specific
-            optimization technique.
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
-        bounds : tuple of numpy.ndarray, optional
-            a tuple of size 2 where the first entry is the minimum bound while
-            the second entry is the maximum bound. Each array must be of shape
-            :code:`(dimensions,)`.
-        oh_strategy : dict, optional, default=None(constant options)
-            a dict of update strategies for each option.
+        velocity_updater : VelocityUpdater
+            Class for updating the velocity matrix.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
-        velocity_clamp : tuple, optional
-            a tuple of size 2 where the first entry is the minimum velocity and
-            the second entry is the maximum velocity. It sets the limits for
-            velocity clamping.
         vh_strategy : str
             a strategy for the handling of the velocity of out-of-bounds particles.
         center : list (default is :code:`None`)
@@ -130,13 +111,10 @@ class GlobalBestPSO(GeneralOptimizerPSO):
         super().__init__(
             n_particles,
             dimensions,
-            options,
             Star(),
+            velocity_updater,
             bounds,
-            oh_strategy,
             bh_strategy,
-            velocity_clamp,
-            vh_strategy,
             center,
             ftol,
             ftol_iter,

@@ -6,17 +6,17 @@ A Pyramid Network Topology
 This class implements a pyramid topology. In this topology, the particles are connected by N-dimensional simplices.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 import numpy as np
 import numpy.typing as npt
 from scipy.spatial import Delaunay  # type: ignore
 
 from pyswarms.backend import operators as ops
-from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.handlers import BoundaryHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
-from pyswarms.utils.types import Bounds, Clamp, Position
+from pyswarms.utils.types import Bounds, Position
 
 
 class Pyramid(Topology):
@@ -33,7 +33,7 @@ class Pyramid(Topology):
         """
         super(Pyramid, self).__init__(static)
 
-    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
+    def compute_gbest(self, swarm: Swarm):
         """Update the global best using a pyramid neighborhood approach
 
         This topology uses the :code:`Delaunay` class from :code:`scipy`. To
@@ -86,60 +86,6 @@ class Pyramid(Topology):
             best_pos = swarm.pbest_pos[best_neighbor]
 
         return (best_pos, float(best_cost))
-
-    def compute_velocity(
-        self,
-        swarm: Swarm,
-        clamp: Optional[Clamp] = None,
-        vh: Optional[VelocityHandler] = None,
-        bounds: Optional[Bounds] = None,
-    ):
-        """Compute the velocity matrix
-
-        This method updates the velocity matrix using the best and current
-        positions of the swarm. The velocity matrix is computed using the
-        cognitive and social terms of the swarm.
-
-        A sample usage can be seen with the following:
-
-        .. code-block :: python
-
-            import pyswarms.backend as P
-            from pyswarms.backend.swarm import Swarm
-            from pyswarms.backend.handlers import VelocityHandler
-            from pyswarms.backend.topology import Pyramid
-
-            my_swarm = P.create_swarm(n_particles, dimensions)
-            my_topology = Pyramid(static=False)
-            my_vh = VelocityHandler(strategy="zero")
-
-            for i in range(iters):
-                # Inside the for-loop
-                my_swarm.velocity = my_topology.update_velocity(my_swarm, clamp, my_vh,
-                bounds=bounds)
-
-        Parameters
-        ----------
-        swarm : pyswarms.backend.swarms.Swarm
-            a Swarm instance
-        clamp : tuple of floats (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
-        vh : pyswarms.backend.handlers.VelocityHandler, optional
-            a VelocityHandler instance
-        bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum bound while
-            the second entry is the maximum bound. Each array must be of shape
-            :code:`(dimensions,)`.
-
-        Returns
-        -------
-        numpy.ndarray
-            Updated velocity matrix
-        """
-        vh = vh or VelocityHandler.factory("unmodified")
-        return ops.compute_velocity(swarm, clamp, vh, bounds=bounds)
 
     def compute_position(
         self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: BoundaryHandler = BoundaryHandler(strategy="periodic")

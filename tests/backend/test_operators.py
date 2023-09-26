@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import Dict, Optional
+from typing import Optional
 
 import numpy as np
 import pytest
@@ -9,6 +9,7 @@ import pytest
 import pyswarms.backend as P
 from pyswarms.backend.handlers import BoundaryHandler, BoundaryStrategy, VelocityHandler, VelocityStrategy
 from pyswarms.backend.swarms import Swarm
+from pyswarms.backend.velocity import SwarmOptions, VelocityUpdater
 from pyswarms.utils.types import Bounds, Clamp
 
 
@@ -34,31 +35,32 @@ class TestComputeVelocity(object):
     """Test suite for compute_velocity()"""
 
     @pytest.mark.parametrize("clamp", [None, (0, 1), (-1, 1)])
-    def test_return_values(self, swarm: Swarm, clamp: Optional[Clamp]):
+    def test_return_values(self, swarm: Swarm, clamp: Optional[Clamp], options: SwarmOptions):
         """Test if method gives the expected shape and range"""
         vh = VelocityHandler.factory(strategy="unmodified")
-        v = P.compute_velocity(swarm, clamp, vh)
+        vu = VelocityUpdater(options, clamp, vh)
+        v = vu.compute(swarm)
         assert v.shape == swarm.position.shape
         if clamp is not None:
             assert (clamp[0] <= v).all() and (clamp[1] >= v).all()
 
     @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])
     @pytest.mark.parametrize("vh_strat", ["unmodified", "zero", "invert", "adjust"])
-    def test_input_swarm(self, swarm: Swarm, vh_strat: VelocityStrategy):
+    def test_input_swarm(self, swarm: Swarm, vh_strat: VelocityStrategy, options: SwarmOptions):
         """Test if method raises AttributeError with wrong swarm"""
         vh = VelocityHandler.factory(strategy=vh_strat)
+        vu = VelocityUpdater(options, None, vh)
         with pytest.raises(AttributeError):
-            P.compute_velocity(swarm, clamp=(0, 1), vh=vh)
+            vu.compute(swarm)
 
     @pytest.mark.parametrize("options", [{"c1": 0.5, "c2": 0.3}])
     @pytest.mark.parametrize("vh_strat", ["unmodified", "zero", "invert", "adjust"])
-    def test_missing_kwargs(self, swarm: Swarm, options: Dict[str, float], vh_strat: VelocityStrategy):
+    def test_missing_kwargs(self, swarm: Swarm, options: SwarmOptions, vh_strat: VelocityStrategy):
         """Test if method raises KeyError with missing kwargs"""
         vh = VelocityHandler.factory(strategy=vh_strat)
+        vu = VelocityUpdater(options, (0, 1), vh)
         with pytest.raises(KeyError):
-            swarm.options = options
-            clamp = (0, 1)
-            P.compute_velocity(swarm, clamp, vh)
+            vu.compute(swarm, 10)
 
 
 class TestComputePosition(object):

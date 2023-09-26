@@ -9,7 +9,7 @@ as input to most backend cases.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import Any
 
 import numpy as np
 import numpy.typing as npt
@@ -67,8 +67,6 @@ class Swarm:
         number of particles in a swarm.
     dimensions : int
         number of dimensions in a swarm.
-    options : dict
-        various options that govern a swarm's behavior.
     pbest_pos : numpy.ndarray
         personal best positions of each particle of shape :code:`(n_particles, dimensions)`
         Default is `None`
@@ -92,7 +90,6 @@ class Swarm:
     n_particles: int = field(init=False)
     dimensions: int = field(init=False)
     pbest_pos: Position = field(default_factory=lambda: np.array([], dtype=float))
-    options: Dict[str, Any] = field(default_factory=dict)
     best_pos: Position = field(default_factory=lambda: np.array([], dtype=float))
     pbest_cost: Position = field(default_factory=lambda: np.array([], dtype=float))
     best_cost: int | float = np.inf
