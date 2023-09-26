@@ -1,3 +1,4 @@
+from loguru import logger
 import numpy as np
 
 
@@ -34,15 +35,14 @@ class VelocityUpdater:
         :code:`(dimensions,)`.
     """
 
-    def __init__(self, options: SwarmOptions, clamp: Optional[Clamp], vh: VelocityHandler, bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
-        vh_strategy: VelocityStrategy|VelocityHandler = "unmodified",):
+    def __init__(self, options: SwarmOptions, clamp: Optional[Clamp], vh: VelocityStrategy|VelocityHandler = "unmodified", bounds: Optional[Bounds] = None,
+        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None):
         self.options = options
         self.clamp = clamp
         self.bounds = bounds
 
-        if isinstance(vh_strategy, str):
-            self.vh = VelocityHandler.factory(vh_strategy)
+        if isinstance(vh, str):
+            self.vh = VelocityHandler.factory(vh)
         else:
             self.vh = vh
         

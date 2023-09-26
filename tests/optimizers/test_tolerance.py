@@ -7,7 +7,7 @@ from typing import Any, List
 import numpy as np
 import numpy.typing as npt
 import pytest
-from pyswarms.backend.handlers import VelocityHandler
+from pyswarms.backend.handlers import InvertVelocityHandler, VelocityHandler
 
 from pyswarms.backend.topology import Star
 from pyswarms.backend.velocity import VelocityUpdater
@@ -29,7 +29,6 @@ weight = [random.randint(1, number_of_items) for _ in item_range]
 # PSO parameters
 n_particles = 10
 iterations = 1000
-options = {"c1": 2, "c2": 2, "w": 0.7, "k": 3, "p": 2}
 dimensions = number_of_items
 LB = [0] * dimensions
 UB = [1] * dimensions
@@ -41,7 +40,7 @@ kwargs = {"value": value, "weight": weight, "capacity": capacity}
 options = SwarmOptions({"c1": 2, "c2": 2, "w": 0.7})
 n_particles = 10
 iterations = 1000
-velocity_updater = VelocityUpdater(options, (-0.5, 0.5), VelocityHandler.factory("invert"), constraints)
+velocity_updater = VelocityUpdater(options, (-0.5, 0.5), InvertVelocityHandler(), constraints)
 
 optimizers = [
     GlobalBestPSO(n_particles, dimensions, velocity_updater, constraints, "periodic"),
