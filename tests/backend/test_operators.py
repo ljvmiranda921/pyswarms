@@ -38,8 +38,7 @@ class TestComputeVelocity(object):
     @pytest.mark.parametrize("clamp", [None, (0, 1), (-1, 1)])
     def test_return_values(self, swarm: Swarm, clamp: Optional[Clamp], options: SwarmOptions):
         """Test if method gives the expected shape and range"""
-        vh = VelocityHandler.factory(strategy="unmodified")
-        vu = VelocityUpdater(options, clamp, vh)
+        vu = VelocityUpdater(options, clamp, "unmodified")
         v = vu.compute(swarm)
         assert v.shape == swarm.position.shape
         if clamp is not None:
@@ -49,8 +48,7 @@ class TestComputeVelocity(object):
     @pytest.mark.parametrize("vh_strat", ["unmodified", "zero", "invert", "adjust"])
     def test_input_swarm(self, swarm: Swarm, vh_strat: VelocityStrategy, options: SwarmOptions):
         """Test if method raises AttributeError with wrong swarm"""
-        vh = VelocityHandler.factory(strategy=vh_strat)
-        vu = VelocityUpdater(options, None, vh)
+        vu = VelocityUpdater(options, None, "unmodified")
         with pytest.raises(AttributeError):
             vu.compute(swarm)
 
@@ -58,8 +56,7 @@ class TestComputeVelocity(object):
     @pytest.mark.parametrize("vh_strat", ["unmodified", "zero", "invert", "adjust"])
     def test_missing_kwargs(self, swarm: Swarm, options: SwarmOptions, vh_strat: VelocityStrategy):
         """Test if method raises KeyError with missing kwargs"""
-        vh = VelocityHandler.factory(strategy=vh_strat)
-        vu = VelocityUpdater(options, (0, 1), vh)
+        vu = VelocityUpdater(options, (0, 1), "unmodified")
         with pytest.raises(KeyError):
             vu.compute(swarm, 10)
 

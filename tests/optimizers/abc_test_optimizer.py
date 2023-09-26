@@ -125,6 +125,7 @@ class ABCTestOptimizer(ABC):
         x_min = -1 * x_max
         bounds = (x_min, x_max)
         optimizer.position_updater.bounds = bounds
+        optimizer.velocity_updater.bounds = bounds
         cost, pos = optimizer.optimize(obj_with_args, 1000, a=1, b=100)
         assert np.isclose(cost, 0, rtol=1e-03), f"cost (={cost}) should be ~0"
         assert np.isclose(pos[0], 1.0, rtol=1e-03), f"pos[0] (={pos[0]}) should be ~1.0"
