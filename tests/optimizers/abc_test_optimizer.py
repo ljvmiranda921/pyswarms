@@ -30,14 +30,12 @@ class ABCTestOptimizer(ABC):
         ...
 
     @pytest.fixture
-    @abstractmethod
     def optimizer_history(self, optimizer: BaseSwarmOptimizer) -> BaseSwarmOptimizer:
         """Run the optimizer for 1000 iterations and return its instance"""
         optimizer.optimize(sphere, 1000)
         return optimizer
 
     @pytest.fixture
-    @abstractmethod
     def optimizer_reset(self, optimizer: BaseSwarmOptimizer) -> BaseSwarmOptimizer:
         """Reset the optimizer and return its instance"""
         optimizer.optimize(sphere, 10)
