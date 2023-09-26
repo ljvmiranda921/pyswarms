@@ -3,6 +3,7 @@
 
 import random
 from typing import Any, List
+from loguru import logger
 
 import numpy as np
 import numpy.typing as npt
@@ -38,8 +39,6 @@ kwargs = {"value": value, "weight": weight, "capacity": capacity}
 
 # Instantiate optimizers
 options = SwarmOptions({"c1": 2, "c2": 2, "w": 0.7})
-n_particles = 10
-iterations = 1000
 velocity_updater = VelocityUpdater(options, (-0.5, 0.5), InvertVelocityHandler(), constraints)
 
 optimizers = [
@@ -86,6 +85,7 @@ class TestToleranceOptions:
     def test_ftol_effect(self, optimizer: BaseSwarmOptimizer):
         """Test early stopping with ftol"""
         optimizer.ftol = 0.01
+        logger.critical(optimizer.__dict__)
         optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
         assert len(optimizer.cost_history) <= iterations
 
