@@ -353,10 +353,12 @@ VelocityStrategy = Literal["unmodified", "adjust", "invert", "zero"]
 class VelocityHandler(HandlerMixin, ABC):
     memory: Optional[Position] = None
 
+    def __init__(self, clamp: Optional[Clamp] = None, bounds: Optional[Bounds] = None):
+        self.clamp = clamp
+        self.bounds = bounds
+
     @abstractmethod
-    def __call__(
-        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
-    ) -> Velocity:
+    def __call__(self, velocity: Velocity, position: Optional[Position]) -> Velocity:
         """Apply the selected strategy to the velocity-matrix given the bounds
 
         Parameters
@@ -376,15 +378,15 @@ class VelocityHandler(HandlerMixin, ABC):
         """
         ...
 
-    def _apply_clamp(self, velocity: Velocity, clamp: Optional[Clamp]):
+    def _apply_clamp(self, velocity: Velocity):
         """Helper method to apply a clamp to a velocity vector"""
-        if clamp is None:
-            raise ValueError("Clamp must not be None")
-        min_velocity, max_velocity = clamp
+        if self.clamp is None:
+            return velocity
+        min_velocity, max_velocity = self.clamp
         return np.clip(velocity, min_velocity, max_velocity)
 
     @staticmethod
-    def factory(strategy: VelocityStrategy):
+    def factory(strategy: VelocityStrategy, clamp: Optional[Clamp] = None, bounds: Optional[Bounds] = None):
         """A VelocityHandler class
 
         This class offers a way to handle velocities. It contains
@@ -402,32 +404,28 @@ class VelocityHandler(HandlerMixin, ABC):
             Sets the velocity of out-of-bounds particles to zero.
         """
         if strategy == "unmodified":
-            return UnmodifiedVelocityHandler()
+            return UnmodifiedVelocityHandler(clamp, bounds)
         elif strategy == "adjust":
-            return AdjustVelocityHandler()
+            return AdjustVelocityHandler(clamp, bounds)
         elif strategy == "invert":
-            return InvertVelocityHandler()
+            return InvertVelocityHandler(clamp, bounds)
         elif strategy == "zero":
-            return ZeroVelocityHandler()
+            return ZeroVelocityHandler(clamp, bounds)
 
         raise ValueError(f'Strategy {strategy} does not match any of ["unmodified", "adjust", "invert", "zero"]')
 
 
 class UnmodifiedVelocityHandler(VelocityHandler):
     def __call__(
-        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
+        self, velocity: Velocity, position: Optional[Position]
     ) -> Velocity:
         """Leaves the velocity unchanged"""
-        if clamp is None:
-            new_vel = velocity
-        else:
-            new_vel = self._apply_clamp(velocity, clamp)
-        return new_vel
+        return self._apply_clamp(velocity)
 
 
 class AdjustVelocityHandler(VelocityHandler):
     def __call__(
-        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
+        self, velocity: Velocity, position: Optional[Position]
     ):
         r"""Adjust the velocity to the new position
 
@@ -451,19 +449,18 @@ class AdjustVelocityHandler(VelocityHandler):
         else:
             new_vel = position - self.memory
             self.memory = position
-            if clamp is not None:
-                new_vel = self._apply_clamp(new_vel, clamp)
+            new_vel = self._apply_clamp(new_vel)
 
         return new_vel
 
 
 class InvertVelocityHandler(VelocityHandler):
-    def __init__(self, z: float = 0.5):
-        super().__init__()
+    def __init__(self, clamp: Optional[Clamp], bounds: Optional[Bounds], z: float = 0.5):
+        super().__init__(clamp, bounds)
         self.z = z
 
     def __call__(
-        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
+        self, velocity: Velocity, position: Optional[Position]
     ) -> Velocity:
         r"""Invert the velocity if the particle is out of bounds
 
@@ -479,32 +476,31 @@ class InvertVelocityHandler(VelocityHandler):
         if position is None:
             raise ValueError("Position must not be None")
 
-        if bounds is None:
+        if self.bounds is None:
             raise ValueError("Bounds must not be None")
 
-        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
+        lower_than_bound, greater_than_bound = self._out_of_bounds(position, self.bounds)
         new_vel = velocity
         new_vel[lower_than_bound[0]] = (-self.z) * new_vel[lower_than_bound[0]]
         new_vel[greater_than_bound[0]] = (-self.z) * new_vel[greater_than_bound[0]]
 
-        if clamp is not None:
-            new_vel = self._apply_clamp(new_vel, clamp)
+        new_vel = self._apply_clamp(new_vel)
 
         return new_vel
 
 
 class ZeroVelocityHandler(VelocityHandler):
     def __call__(
-        self, velocity: Velocity, clamp: Optional[Clamp], position: Optional[Position], bounds: Optional[Bounds]
+        self, velocity: Velocity, position: Optional[Position]
     ):
         """Set velocity to zero if the particle is out of bounds"""
         if position is None:
             raise ValueError("Position must not be None")
 
-        if bounds is None:
+        if self.bounds is None:
             raise ValueError("Bounds must not be None")
 
-        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
+        lower_than_bound, greater_than_bound = self._out_of_bounds(position, self.bounds)
         new_vel = velocity
         new_vel[lower_than_bound[0]] = np.zeros(velocity.shape[1])
         new_vel[greater_than_bound[0]] = np.zeros(velocity.shape[1])

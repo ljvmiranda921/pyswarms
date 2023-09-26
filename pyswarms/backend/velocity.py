@@ -4,7 +4,7 @@ import numpy as np
 from typing import Dict, Optional
 from pyswarms.backend.handlers import OptionsHandler, OptionsStrategy, VelocityHandler, VelocityStrategy
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, SwarmOptions
+from pyswarms.utils.types import Bounds, Clamp, SwarmOptions, Velocity
 
 
 
@@ -95,6 +95,31 @@ class VelocityUpdater:
         
         # Compute temp velocity (subject to clamping if possible)
         temp_velocity = (options["w"] * swarm.velocity) + cognitive + social
-        updated_velocity = self.vh(temp_velocity, self.clamp, position=swarm.position, bounds=self.bounds)
+        updated_velocity = self.vh(temp_velocity, swarm.position)
 
         return updated_velocity
+    
+    def generate_velocity(self, n_particles: int, dimensions: int) -> Velocity:
+        """Initialize a velocity vector
+
+        Parameters
+        ----------
+        n_particles : int
+            number of particles to be generated in the swarm.
+        dimensions: int
+            number of dimensions to be generated in the swarm.
+        clamp : tuple of floats, optional
+            a tuple of size 2 where the first entry is the minimum velocity
+            and the second entry is the maximum velocity. It
+            sets the limits for velocity clamping. Default is :code:`None`
+
+        Returns
+        -------
+        numpy.ndarray
+            velocity matrix of shape (n_particles, dimensions)
+        """
+        min_velocity, max_velocity = (0, 1) if self.clamp is None else np.array(self.clamp)
+
+        velocity = (max_velocity - min_velocity) * np.random.random_sample(size=(n_particles, dimensions)) + min_velocity
+
+        return velocity
