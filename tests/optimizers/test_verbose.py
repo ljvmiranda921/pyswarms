@@ -4,12 +4,13 @@
 import re
 
 import pytest
-from pyswarms.backend.handlers import VelocityHandler
 
+from pyswarms.backend.handlers import VelocityHandler
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Star
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.base.base import BaseSwarmOptimizer
-from pyswarms.single import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
+from pyswarms.optimizers import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.functions import single_obj as fx
 from pyswarms.utils.types import SwarmOptions
 
@@ -18,11 +19,12 @@ options = SwarmOptions({"c1": 2, "c2": 2, "w": 0.7})
 n_particles = 20
 dimensions = 10
 velocity_updater = VelocityUpdater(options, None, VelocityHandler.factory("unmodified"))
+position_updater = PositionUpdater()
 
 optimizers = [
-    GlobalBestPSO(n_particles, dimensions, velocity_updater),
-    LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater),
-    GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater)
+    GlobalBestPSO(n_particles, dimensions, velocity_updater, position_updater),
+    LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater, position_updater),
+    GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
 ]
 
 

@@ -3,12 +3,12 @@
 
 import operator as op
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Optional, Type
+from typing import Any, Callable, Optional, Type
 
 import numpy.typing as npt
 
-from pyswarms.single.global_best import GlobalBestPSO
-from pyswarms.single.local_best import LocalBestPSO
+from pyswarms.optimizers.global_best import GlobalBestPSO
+from pyswarms.optimizers.local_best import LocalBestPSO
 from pyswarms.utils.types import Bounds, Clamp
 
 

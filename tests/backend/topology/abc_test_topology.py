@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional, Type
 
 import pytest
 
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
 from pyswarms.utils.types import Bounds
@@ -43,17 +44,14 @@ class ABCTestTopology(abc.ABC):
     #     if clamp is not None:
     #         assert (clamp[0] <= v).all() and (clamp[1] >= v).all()
 
-    @pytest.mark.parametrize("static", [True, False])
     @pytest.mark.parametrize(
         "bounds",
         [None, ([-5, -5, -5], [5, 5, 5]), ([-10, -10, -10], [10, 10, 10])],
     )
-    def test_compute_position_return_values(
-        self, topology: Type[Topology], options: Dict[str, Any], swarm: Swarm, bounds: Optional[Bounds], static: bool
-    ):
+    def test_compute_position_return_values(self, swarm: Swarm, bounds: Optional[Bounds]):
         """Test if compute_position() gives the expected shape and range"""
-        topo = topology(static=static, **options)
-        p = topo.compute_position(swarm, bounds)
+        position_updater = PositionUpdater(bounds)
+        p = position_updater.compute(swarm)
         assert p.shape == swarm.velocity.shape
         if bounds is not None:
             assert (bounds[0] <= p).all() and (bounds[1] >= p).all()

@@ -13,13 +13,12 @@ In addition, this class must interface with any class found in the
 """
 
 import abc
-from typing import Any, Optional, Tuple
+from typing import Any, Tuple
 
 from loguru import logger
 
-from pyswarms.backend.handlers import BoundaryHandler
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Position
+from pyswarms.utils.types import Position
 
 
 class Topology(abc.ABC):
@@ -37,10 +36,3 @@ class Topology(abc.ABC):
         """Compute the best particle of the swarm and return the cost and
         position"""
         raise NotImplementedError("Topology::compute_gbest()")
-
-    @abc.abstractmethod
-    def compute_position(
-        self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: BoundaryHandler = BoundaryHandler(strategy="periodic")
-    ) -> Position:
-        """Update the swarm's position-matrix"""
-        raise NotImplementedError("Topology::compute_position()")

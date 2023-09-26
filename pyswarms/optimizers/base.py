@@ -34,9 +34,10 @@ from typing import Any, Callable, List, NamedTuple, Optional, Tuple, TypedDict
 import numpy as np
 import numpy.typing as npt
 
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.utils.types import Bounds, Position, Velocity
+from pyswarms.utils.types import Position, Velocity
 
 
 class Options(TypedDict):
@@ -68,11 +69,10 @@ class BaseSwarmOptimizer(abc.ABC):
         n_particles: int,
         dimensions: int,
         velocity_updater: VelocityUpdater,
-        bounds: Optional[Bounds] = None,
+        position_updater: PositionUpdater,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
-        **kwargs: Any
     ):
         """Initialize the swarm.
 
@@ -105,7 +105,7 @@ class BaseSwarmOptimizer(abc.ABC):
         self.n_particles = n_particles
         self.dimensions = dimensions
         self.velocity_updater = velocity_updater
-        self.bounds = bounds
+        self.position_updater = position_updater
         self.swarm_size = (n_particles, dimensions)
         self.init_pos = init_pos
         self.ftol = ftol

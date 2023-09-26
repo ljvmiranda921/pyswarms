@@ -1,11 +1,10 @@
+from typing import Dict, Optional
+
 import numpy as np
 
-
-from typing import Dict, Optional
 from pyswarms.backend.handlers import OptionsHandler, OptionsStrategy, VelocityHandler, VelocityStrategy
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, SwarmOptions
-
+from pyswarms.utils.types import Bounds, Clamp, SwarmOptions, Velocity
 
 
 class VelocityUpdater:
@@ -34,17 +33,23 @@ class VelocityUpdater:
         :code:`(dimensions,)`.
     """
 
-    def __init__(self, options: SwarmOptions, clamp: Optional[Clamp], vh: VelocityStrategy|VelocityHandler = "unmodified", bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None):
+    def __init__(
+        self,
+        options: SwarmOptions,
+        clamp: Optional[Clamp],
+        vh: VelocityStrategy | VelocityHandler = "unmodified",
+        bounds: Optional[Bounds] = None,
+        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
+    ):
         self.options = options
         self.clamp = clamp
         self.bounds = bounds
 
         if isinstance(vh, str):
-            self.vh = VelocityHandler.factory(vh)
+            self.vh = VelocityHandler.factory(vh, self.clamp, self.bounds)
         else:
             self.vh = vh
-        
+
         if oh_strategy is None:
             oh_strategy = {}
         self.oh = OptionsHandler(oh_strategy)
@@ -88,13 +93,40 @@ class VelocityUpdater:
 
         # Perform options update
         options = self.oh(self.options, iternow=self.iterations, itermax=itermax)
-        
+
         # Compute for cognitive and social terms
         cognitive = options["c1"] * np.random.uniform(0, 1, swarm_size) * (swarm.pbest_pos - swarm.position)
         social = options["c2"] * np.random.uniform(0, 1, swarm_size) * (swarm.best_pos - swarm.position)
-        
+
         # Compute temp velocity (subject to clamping if possible)
         temp_velocity = (options["w"] * swarm.velocity) + cognitive + social
-        updated_velocity = self.vh(temp_velocity, self.clamp, position=swarm.position, bounds=self.bounds)
+        updated_velocity = self.vh(temp_velocity, swarm.position)
 
         return updated_velocity
+
+    def generate_velocity(self, n_particles: int, dimensions: int) -> Velocity:
+        """Initialize a velocity vector
+
+        Parameters
+        ----------
+        n_particles : int
+            number of particles to be generated in the swarm.
+        dimensions: int
+            number of dimensions to be generated in the swarm.
+        clamp : tuple of floats, optional
+            a tuple of size 2 where the first entry is the minimum velocity
+            and the second entry is the maximum velocity. It
+            sets the limits for velocity clamping. Default is :code:`None`
+
+        Returns
+        -------
+        numpy.ndarray
+            velocity matrix of shape (n_particles, dimensions)
+        """
+        min_velocity, max_velocity = (0, 1) if self.clamp is None else np.array(self.clamp)
+
+        velocity = (max_velocity - min_velocity) * np.random.random_sample(
+            size=(n_particles, dimensions)
+        ) + min_velocity
+
+        return velocity

@@ -68,11 +68,11 @@ from typing import Literal, Optional
 
 import numpy as np
 
-from pyswarms.backend.handlers import BoundaryStrategy
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Ring
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.single.general_optimizer import GeneralOptimizerPSO
-from pyswarms.utils.types import Bounds, Position
+from pyswarms.optimizers.general_optimizer import GeneralOptimizerPSO
+from pyswarms.utils.types import Position
 
 
 class LocalBestPSO(GeneralOptimizerPSO):
@@ -80,11 +80,10 @@ class LocalBestPSO(GeneralOptimizerPSO):
         self,
         n_particles: int,
         dimensions: int,
-        p: Literal[1,2],
+        p: Literal[1, 2],
         k: int,
         velocity_updater: VelocityUpdater,
-        bounds: Optional[Bounds] = None,
-        bh_strategy: BoundaryStrategy = "periodic",
+        position_updater: PositionUpdater,
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -135,8 +134,7 @@ class LocalBestPSO(GeneralOptimizerPSO):
             dimensions,
             Ring(p, k, static=static),
             velocity_updater,
-            bounds,
-            bh_strategy,
+            position_updater,
             center,
             ftol,
             ftol_iter,

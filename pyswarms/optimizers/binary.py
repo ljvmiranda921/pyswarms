@@ -59,14 +59,13 @@ import numpy as np
 import numpy.typing as npt
 from loguru import logger
 from tqdm import trange
-from pyswarms.backend.generators import generate_discrete_swarm, generate_velocity
 
-from pyswarms.backend.handlers import VelocityHandler, VelocityStrategy
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Ring
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.base.base import BaseSwarmOptimizer, ToHistory
+from pyswarms.optimizers.base import BaseSwarmOptimizer, ToHistory
 from pyswarms.utils.types import Position
 
 
@@ -75,11 +74,11 @@ class BinaryPSO(BaseSwarmOptimizer):
         self,
         n_particles: int,
         dimensions: int,
-        p: Literal[1,2],
+        p: Literal[1, 2],
         k: int,
         velocity_updater: VelocityUpdater,
+        position_updater: PositionUpdater,
         init_pos: Optional[Position] = None,
-        vh_strategy: VelocityStrategy = "unmodified",
         ftol: float = -np.inf,
         ftol_iter: int = 1,
         **kwargs: Any
@@ -124,6 +123,7 @@ class BinaryPSO(BaseSwarmOptimizer):
             n_particles=n_particles,
             dimensions=dimensions,
             velocity_updater=velocity_updater,
+            position_updater=position_updater,
             init_pos=init_pos,
             ftol=ftol,
             ftol_iter=ftol_iter,
@@ -132,7 +132,6 @@ class BinaryPSO(BaseSwarmOptimizer):
         self.reset()
         # Initialize the topology
         self.top = Ring(self.p, self.k, static=False)
-        self.vh = VelocityHandler.factory(strategy=vh_strategy)
         self.name = __name__
 
     def optimize(
@@ -171,9 +170,6 @@ class BinaryPSO(BaseSwarmOptimizer):
         log_level = "DEBUG" if verbose else "TRACE"
         logger.debug("Obj. func. args: {}".format(kwargs))
 
-        # Populate memory of the handlers
-        self.vh.memory = self.swarm.position
-
         # Setup Pool of processes for parallel evaluation
         pool = None if n_processes is None else mp.Pool(n_processes)
 
@@ -192,7 +188,7 @@ class BinaryPSO(BaseSwarmOptimizer):
 
             # Print to console
             if verbose:
-                pbar.set_postfix(best_cost=self.swarm.best_cost) # type: ignore
+                pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
 
             # Save to history
             hist = ToHistory(
@@ -228,7 +224,7 @@ class BinaryPSO(BaseSwarmOptimizer):
 
         # Close Pool of Processes
         if n_processes is not None:
-            pool.close() # type: ignore
+            pool.close()  # type: ignore
 
         return (final_best_cost, final_best_pos)
 
@@ -262,8 +258,8 @@ class BinaryPSO(BaseSwarmOptimizer):
         return 1 / (1 + np.exp(-x))
 
     def _init_swarm(self):
-        position = generate_discrete_swarm(
-            self.n_particles, self.dimensions, binary=self.binary, init_pos=self.init_pos
+        position = self.position_updater.generate_discrete_position(
+            self.n_particles, self.dimensions, self.binary, self.init_pos
         )
-        velocity = generate_velocity(self.n_particles, self.dimensions, clamp=self.velocity_updater.clamp)
+        velocity = self.velocity_updater.generate_velocity(self.n_particles, self.dimensions)
         self.swarm = Swarm(position, velocity)

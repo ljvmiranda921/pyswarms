@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy.typing as npt
 import pytest
 
-from pyswarms.single.global_best import GlobalBestPSO
+from pyswarms.optimizers.global_best import GlobalBestPSO
 from pyswarms.utils.plotters.formatters import Mesher
 
 # Set $DISPLAY environmental variable

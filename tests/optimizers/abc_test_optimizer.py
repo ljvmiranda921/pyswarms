@@ -7,10 +7,11 @@ from typing import Any, Callable, Tuple
 import numpy as np
 import numpy.typing as npt
 import pytest
-from pyswarms.backend.handlers import VelocityHandler
-from pyswarms.backend.velocity import VelocityUpdater
 
-from pyswarms.base.base import BaseSwarmOptimizer
+from pyswarms.backend.handlers import VelocityHandler
+from pyswarms.backend.position import PositionUpdater
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.functions.single_obj import rosenbrock, sphere
 from pyswarms.utils.types import SwarmOptions
 
@@ -25,7 +26,7 @@ class ABCTestOptimizer(ABC):
 
     @pytest.fixture
     @abstractmethod
-    def optimizer(self, velocity_updater: VelocityUpdater) -> BaseSwarmOptimizer:
+    def optimizer(self, velocity_updater: VelocityUpdater, position_updater: PositionUpdater) -> BaseSwarmOptimizer:
         """Return an instance of the optimizer"""
         ...
 
@@ -49,12 +50,12 @@ class ABCTestOptimizer(ABC):
         return {"c1": 0.3, "c2": 0.7, "w": 0.9}
 
     @pytest.fixture
+    def position_updater(self):
+        return PositionUpdater()
+
+    @pytest.fixture
     def velocity_updater(self, options: SwarmOptions) -> VelocityUpdater:
-        return VelocityUpdater(
-            options,
-            None,
-            VelocityHandler.factory("unmodified")
-        )
+        return VelocityUpdater(options, None, VelocityHandler.factory("unmodified"))
 
     @pytest.fixture
     def obj_with_args(self):
@@ -119,7 +120,13 @@ class ABCTestOptimizer(ABC):
         x_max = 10 * np.ones(2)
         x_min = -1 * x_max
         bounds = (x_min, x_max)
-        optimizer.bounds = bounds
+        optimizer.position_updater.bounds = bounds
+        optimizer.velocity_updater.bounds = bounds
+
+        optimizer.n_particles = 100
+        optimizer.swarm_size = (100, optimizer.dimensions)
+        optimizer.reset()
+
         cost, pos = optimizer.optimize(obj_with_args, 1000, a=1, b=100)
         assert np.isclose(cost, 0, rtol=1e-03), f"cost (={cost}) should be ~0"
         assert np.isclose(pos[0], 1.0, rtol=1e-03), f"pos[0] (={pos[0]}) should be ~1.0"

@@ -3,17 +3,18 @@
 
 import numpy as np
 import pytest
-from pyswarms.backend.velocity import VelocityUpdater
 
-from pyswarms.discrete import BinaryPSO
+from pyswarms.backend.position import PositionUpdater
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.optimizers import BinaryPSO
 from pyswarms.utils.functions.single_obj import sphere
 from tests.optimizers.abc_test_optimizer import ABCTestOptimizer
 
 
 class TestDiscreteOptimizer(ABCTestOptimizer):
     @pytest.fixture
-    def optimizer(self, velocity_updater: VelocityUpdater):
-        return BinaryPSO(10, 2, 2, 2, velocity_updater)
+    def optimizer(self, velocity_updater: VelocityUpdater, position_updater: PositionUpdater):
+        return BinaryPSO(10, 2, 2, 2, velocity_updater, position_updater)
 
     def test_binary_correct_pos(self, optimizer: BinaryPSO):
         """Test to check binary optimiser returns the correct position
