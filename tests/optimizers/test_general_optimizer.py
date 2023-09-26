@@ -12,8 +12,8 @@ from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Pyramid, Random, Ring, Star, VonNeumann
 from pyswarms.backend.topology.base import Topology
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.optimizers import GeneralOptimizerPSO
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.functions.single_obj import sphere
 
 from .abc_test_optimizer import ABCTestOptimizer
