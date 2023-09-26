@@ -13,11 +13,9 @@ import numpy as np
 import numpy.typing as npt
 from scipy.sparse.csgraph import connected_components, dijkstra  # type: ignore
 
-from pyswarms.backend import operators as ops
-from pyswarms.backend.handlers import BoundaryHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
-from pyswarms.utils.types import Bounds, Position
+from pyswarms.utils.types import Position
 
 
 class Random(Topology):
@@ -76,31 +74,6 @@ class Random(Topology):
         best_pos: Position = swarm.pbest_pos[best_neighbor]
 
         return (best_pos, float(best_cost))
-
-    def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: Optional[BoundaryHandler] = None):
-        """Update the position matrix
-
-        This method updates the position matrix given the current position and
-        the velocity. If bounded, it waives updating the position.
-
-        Parameters
-        ----------
-        swarm : pyswarms.backend.swarms.Swarm
-            a Swarm instance
-        bounds : tuple of numpy.ndarray or list, optional
-            a tuple of size 2 where the first entry is the minimum bound while
-            the second entry is the maximum bound. Each array must be of shape
-            :code:`(dimensions,)`.
-        bh : pyswarms.backend.handlers.BoundaryHandler, optional
-            a BoundaryHandler instance
-
-        Returns
-        -------
-        numpy.ndarray
-            New position-matrix
-        """
-        bh = bh or BoundaryHandler(strategy="periodic")
-        return ops.compute_position(swarm, bounds, bh)
 
     def _compute_neighbors(self, swarm: Swarm):
         """Helper method to compute the adjacency matrix of the topology

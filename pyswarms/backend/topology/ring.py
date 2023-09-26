@@ -15,11 +15,9 @@ import numpy as np
 import numpy.typing as npt
 from scipy.spatial import cKDTree  # type: ignore
 
-from pyswarms.backend import operators as ops
-from pyswarms.backend.handlers import BoundaryHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
-from pyswarms.utils.types import Bounds, Position
+from pyswarms.utils.types import Position
 
 
 class Ring(Topology):
@@ -85,28 +83,3 @@ class Ring(Topology):
         best_pos: Position = swarm.pbest_pos[best_neighbor]
 
         return (best_pos, float(best_cost))
-
-    def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: Optional[BoundaryHandler] = None):
-        """Update the position matrix
-
-        This method updates the position matrix given the current position and
-        the velocity. If bounded, it waives updating the position.
-
-        Parameters
-        ----------
-        swarm : pyswarms.backend.swarms.Swarm
-            a Swarm instance
-        bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum bound while
-            the second entry is the maximum bound. Each array must be of shape
-            :code:`(dimensions,)`.
-        bh : pyswarms.backend.handlers.BoundaryHandler
-            a BoundaryHandler instance
-
-        Returns
-        -------
-        numpy.ndarray
-            New position-matrix
-        """
-        bh = bh or BoundaryHandler("periodic")
-        return ops.compute_position(swarm, bounds, bh)
