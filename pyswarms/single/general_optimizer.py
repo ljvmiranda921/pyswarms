@@ -58,7 +58,7 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 
 import multiprocessing as mp
 from collections import deque
-from typing import Any, Callable, Deque, Dict, Literal, Optional, Tuple
+from typing import Any, Callable, Deque, Dict, Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -78,13 +78,8 @@ from pyswarms.backend.operators import compute_objective_function, compute_pbest
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Topology
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.base.base import BaseSwarmOptimizer, Options, ToHistory
+from pyswarms.base.base import BaseSwarmOptimizer, ToHistory
 from pyswarms.utils.types import Bounds, Position
-
-
-class GeneralOptions(Options):
-    p: Literal[1, 2]
-    k: int
 
 
 class GeneralOptimizerPSO(BaseSwarmOptimizer):
