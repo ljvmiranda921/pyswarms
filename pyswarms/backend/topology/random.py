@@ -7,7 +7,7 @@ This class implements a random topology. All particles are connected in a random
 """
 
 import itertools
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -38,7 +38,7 @@ class Random(Topology):
         super(Random, self).__init__(static)
         self.k = k
 
-    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
+    def compute_gbest(self, swarm: Swarm):
         """Update the global best using a random neighborhood approach
 
         This uses random class from :code:`numpy` to give every particle k

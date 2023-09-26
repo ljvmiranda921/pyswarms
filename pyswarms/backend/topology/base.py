@@ -33,7 +33,7 @@ class Topology(abc.ABC):
             logger.debug("Running on `dynamic` topology," "set `static=True` for fixed neighbors.")
 
     @abc.abstractmethod
-    def compute_gbest(self, swarm: Swarm, **kwargs: Any) -> Tuple[Position, float]:
+    def compute_gbest(self, swarm: Swarm) -> Tuple[Position, float]:
         """Compute the best particle of the swarm and return the cost and
         position"""
         raise NotImplementedError("Topology::compute_gbest()")

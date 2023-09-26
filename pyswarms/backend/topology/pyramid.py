@@ -6,7 +6,7 @@ A Pyramid Network Topology
 This class implements a pyramid topology. In this topology, the particles are connected by N-dimensional simplices.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -33,7 +33,7 @@ class Pyramid(Topology):
         """
         super(Pyramid, self).__init__(static)
 
-    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
+    def compute_gbest(self, swarm: Swarm):
         """Update the global best using a pyramid neighborhood approach
 
         This topology uses the :code:`Delaunay` class from :code:`scipy`. To

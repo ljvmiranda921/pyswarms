@@ -45,7 +45,7 @@ class Ring(Topology):
         self.p = p
         self.k = k
 
-    def compute_gbest(self, swarm: Swarm, **kwargs: Any):
+    def compute_gbest(self, swarm: Swarm):
         """Update the global best using a ring-like neighborhood approach
 
         This uses the cKDTree method from :code:`scipy` to obtain the nearest

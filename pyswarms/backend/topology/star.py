@@ -9,7 +9,7 @@ behavior is often found in GlobalBest PSO
 optimizers.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -29,7 +29,7 @@ class Star(Topology):
         # Setting it will not change swarm behavior
         super(Star, self).__init__(static=True)
 
-    def compute_gbest(self, swarm: Swarm, **kwargs: Dict[str, Any]):
+    def compute_gbest(self, swarm: Swarm):
         """Update the global best using a star topology
 
         This method takes the current pbest_pos and pbest_cost, then returns
