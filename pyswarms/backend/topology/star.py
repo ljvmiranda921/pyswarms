@@ -15,10 +15,10 @@ import numpy as np
 import numpy.typing as npt
 
 from pyswarms.backend import operators as ops
-from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.handlers import BoundaryHandler
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
-from pyswarms.utils.types import Bounds, Clamp, Position
+from pyswarms.utils.types import Bounds, Position
 
 
 class Star(Topology):
@@ -72,60 +72,6 @@ class Star(Topology):
             best_cost = swarm.best_cost
 
         return (best_pos, float(best_cost))
-
-    def compute_velocity(
-        self,
-        swarm: Swarm,
-        clamp: Optional[Clamp] = None,
-        vh: Optional[VelocityHandler] = None,
-        bounds: Optional[Bounds] = None,
-    ):
-        """Compute the velocity matrix
-
-        This method updates the velocity matrix using the best and current
-        positions of the swarm. The velocity matrix is computed using the
-        cognitive and social terms of the swarm.
-
-        A sample usage can be seen with the following:
-
-        .. code-block :: python
-
-            import pyswarms.backend as P
-            from pyswarms.backend.swarm import Swarm
-            from pyswarms.backend.handlers import VelocityHandler
-            from pyswarms.backend.topology import Star
-
-            my_swarm = P.create_swarm(n_particles, dimensions)
-            my_topology = Star()
-            my_vh = VelocityHandler(strategy="adjust")
-
-            for i in range(iters):
-                # Inside the for-loop
-                my_swarm.velocity = my_topology.update_velocity(my_swarm, clamp, my_vh,
-                bounds)
-
-        Parameters
-        ----------
-        swarm : pyswarms.backend.swarms.Swarm
-            a Swarm instance
-        clamp : tuple of floats (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
-        vh : pyswarms.backend.handlers.VelocityHandler
-            a VelocityHandler instance
-        bounds : tuple of :code:`np.ndarray` or list (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum bound while
-            the second entry is the maximum bound. Each array must be of shape
-            :code:`(dimensions,)`.
-
-        Returns
-        -------
-        numpy.ndarray
-            Updated velocity matrix
-        """
-        vh = vh or VelocityHandler.factory("unmodified")
-        return ops.compute_velocity(swarm, clamp, vh, bounds=bounds)
 
     def compute_position(self, swarm: Swarm, bounds: Optional[Bounds] = None, bh: Optional[BoundaryHandler] = None):
         """Update the position matrix

@@ -17,9 +17,9 @@ from typing import Any, Optional, Tuple
 
 from loguru import logger
 
-from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
+from pyswarms.backend.handlers import BoundaryHandler
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
+from pyswarms.utils.types import Bounds, Position
 
 
 class Topology(abc.ABC):
@@ -44,14 +44,3 @@ class Topology(abc.ABC):
     ) -> Position:
         """Update the swarm's position-matrix"""
         raise NotImplementedError("Topology::compute_position()")
-
-    @abc.abstractmethod
-    def compute_velocity(
-        self,
-        swarm: Swarm,
-        clamp: Optional[Clamp] = None,
-        vh: Optional[VelocityHandler] = None,
-        bounds: Optional[Bounds] = None,
-    ) -> Velocity:
-        """Update the swarm's velocity-matrix"""
-        raise NotImplementedError("Topology::compute_velocity()")

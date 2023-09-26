@@ -34,8 +34,9 @@ import numpy as np
 
 from pyswarms.backend.generators import generate_discrete_swarm, generate_velocity
 from pyswarms.backend.swarms import Swarm
-from pyswarms.base.base import BaseSwarmOptimizer, Options
-from pyswarms.utils.types import Clamp, Position, Velocity
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.base.base import BaseSwarmOptimizer
+from pyswarms.utils.types import Position, Velocity
 
 
 class DiscreteSwarmOptimizer(BaseSwarmOptimizer):
@@ -50,9 +51,8 @@ class DiscreteSwarmOptimizer(BaseSwarmOptimizer):
         self,
         n_particles: int,
         dimensions: int,
-        options: Options,
+        velocity_updater: VelocityUpdater,
         binary: bool = True,
-        velocity_clamp: Optional[Clamp] = None,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -70,23 +70,12 @@ class DiscreteSwarmOptimizer(BaseSwarmOptimizer):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
+        velocity_updater : VelocityUpdater
+            Class for updating the velocity matrix.
         binary : boolean
             a trigger to generate a binary matrix for the swarm's
             initial positions. When passed with a :code:`False` value,
             random integers from 0 to :code:`dimensions` are generated.
-        options : dict with keys :code:`{'c1', 'c2', 'w'}`
-            a dictionary containing the parameters for the specific
-            optimization technique
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
-        velocity_clamp : tuple, optional
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence. Default is :code:`-np.inf`.
@@ -97,11 +86,11 @@ class DiscreteSwarmOptimizer(BaseSwarmOptimizer):
         """
         # Initialize primary swarm attributes
         self.binary = binary
-        super().__init__(n_particles, dimensions, options, velocity_clamp, init_pos, ftol, ftol_iter)
+        super().__init__(n_particles, dimensions, velocity_updater, init_pos, ftol, ftol_iter)
 
     def _init_swarm(self):
         position = generate_discrete_swarm(
             self.n_particles, self.dimensions, binary=self.binary, init_pos=self.init_pos
         )
-        velocity = generate_velocity(self.n_particles, self.dimensions, clamp=self.velocity_clamp)
-        self.swarm = Swarm(position, velocity, options=dict(self.options))
+        velocity = generate_velocity(self.n_particles, self.dimensions, clamp=self.velocity_updater.clamp)
+        self.swarm = Swarm(position, velocity)

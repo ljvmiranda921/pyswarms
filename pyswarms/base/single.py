@@ -36,8 +36,9 @@ import numpy as np
 
 from pyswarms.backend.generators import generate_swarm, generate_velocity
 from pyswarms.backend.swarms import Swarm
-from pyswarms.base.base import BaseSwarmOptimizer, Options
-from pyswarms.utils.types import Bounds, Clamp, Position
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.base.base import BaseSwarmOptimizer
+from pyswarms.utils.types import Bounds, Position
 
 
 class SwarmOptimizer(BaseSwarmOptimizer):
@@ -45,9 +46,8 @@ class SwarmOptimizer(BaseSwarmOptimizer):
         self,
         n_particles: int,
         dimensions: int,
-        options: Options,
+        velocity_updater: VelocityUpdater,
         bounds: Optional[Bounds] = None,
-        velocity_clamp: Optional[Clamp] = None,
         center: float = 1.0,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -63,23 +63,12 @@ class SwarmOptimizer(BaseSwarmOptimizer):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w'}`
-            a dictionary containing the parameters for the specific
-            optimization technique
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
+        velocity_updater : VelocityUpdater
+            Class for updating the velocity matrix.
         bounds : tuple of numpy.ndarray, optional
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
-        velocity_clamp : tuple, optional
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
         center : list, optional
             an array of size :code:`dimensions`
         ftol : float, optional
@@ -92,7 +81,7 @@ class SwarmOptimizer(BaseSwarmOptimizer):
         """
         self.bounds = bounds
         self.center = center
-        super().__init__(n_particles, dimensions, options, velocity_clamp, init_pos, ftol, ftol_iter)
+        super().__init__(n_particles, dimensions, velocity_updater, init_pos, ftol, ftol_iter)
 
     def _init_swarm(self):
         position = generate_swarm(
@@ -102,5 +91,5 @@ class SwarmOptimizer(BaseSwarmOptimizer):
             center=self.center,
             init_pos=self.init_pos,
         )
-        velocity = generate_velocity(self.n_particles, self.dimensions, clamp=self.velocity_clamp)
-        self.swarm = Swarm(position, velocity, options=dict(self.options))
+        velocity = generate_velocity(self.n_particles, self.dimensions, self.velocity_updater.clamp)
+        self.swarm = Swarm(position, velocity)
