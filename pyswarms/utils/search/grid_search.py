@@ -33,7 +33,6 @@ from __future__ import absolute_import, print_function, with_statement
 import itertools
 from typing import Callable, Optional, Type
 
-from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.single.global_best import GlobalBestPSO
 from pyswarms.single.local_best import LocalBestPSO
 from pyswarms.utils.search.base_search import SearchBase
@@ -49,7 +48,7 @@ class GridSearch(SearchBase):
         optimizer: Type[GlobalBestPSO | LocalBestPSO],
         n_particles: int,
         dimensions: int,
-        options: GeneralOptions,
+        options,
         objective_func: Callable[..., float],
         iters: int,
         bounds: Optional[Bounds] = None,

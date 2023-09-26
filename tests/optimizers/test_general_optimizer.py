@@ -10,8 +10,8 @@ import pytest
 
 from pyswarms.backend.topology import Pyramid, Random, Ring, Star, VonNeumann
 from pyswarms.backend.topology.base import Topology
+from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.single import GeneralOptimizerPSO
-from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.utils.functions.single_obj import sphere
 
 from .abc_test_optimizer import ABCTestOptimizer
@@ -38,35 +38,35 @@ else:
 
 class TestGeneralOptimizer(ABCTestOptimizer):
     @pytest.fixture(params=topologies)
-    def optimizer(self, request: FixtureRequest, options: GeneralOptions):
+    def optimizer(self, request: FixtureRequest, velocity_updater: VelocityUpdater):
         x_max = 10 * np.ones(2)
         x_min = -1 * x_max
         bounds = (x_min, x_max)
         return GeneralOptimizerPSO(
             n_particles=10,
             dimensions=2,
-            options=options,
+            velocity_updater=velocity_updater,
             bounds=bounds,
             topology=request.param,
         )
 
     @pytest.fixture(params=topologies)
-    def optimizer_history(self, request: FixtureRequest, options: GeneralOptions):
+    def optimizer_history(self, request: FixtureRequest, velocity_updater: VelocityUpdater):
         opt = GeneralOptimizerPSO(
             n_particles=10,
             dimensions=2,
-            options=options,
+            velocity_updater=velocity_updater,
             topology=request.param,
         )
         opt.optimize(sphere, 1000)
         return opt
 
     @pytest.fixture(params=topologies)
-    def optimizer_reset(self, request: FixtureRequest, options: GeneralOptions):
+    def optimizer_reset(self, request: FixtureRequest, velocity_updater: VelocityUpdater):
         opt = GeneralOptimizerPSO(
             n_particles=10,
             dimensions=2,
-            options=options,
+            velocity_updater=velocity_updater,
             topology=request.param,
         )
         opt.optimize(sphere, 1000)

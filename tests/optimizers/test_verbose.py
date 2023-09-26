@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Dict, Tuple, Type
 import pytest
 
 from pyswarms.backend.topology import Star
-from pyswarms.base.single import SwarmOptimizer
+from pyswarms.base.base import BaseSwarmOptimizer
 from pyswarms.single import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
 from pyswarms.utils.functions import single_obj as fx
 
@@ -24,7 +24,7 @@ parameters = dict(
 if TYPE_CHECKING:
 
     class FixtureRequest:
-        param: Type[SwarmOptimizer]
+        param: Type[BaseSwarmOptimizer]
 
 else:
     FixtureRequest = Any
@@ -38,7 +38,7 @@ class TestToleranceOptions:
             return request.param, {**parameters, **{"topology": Star()}}
         return request.param, parameters
 
-    def test_verbose(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]], capsys: pytest.CaptureFixture[str]):
+    def test_verbose(self, optimizer: Tuple[Type[BaseSwarmOptimizer], Dict[str, Any]], capsys: pytest.CaptureFixture[str]):
         """Test verbose run"""
         optm, params = optimizer
         opt = optm(**params)
@@ -47,7 +47,7 @@ class TestToleranceOptions:
         count = len(re.findall(r"pyswarms", out))
         assert count > 0
 
-    def test_silent(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]], capsys: pytest.CaptureFixture[str]):
+    def test_silent(self, optimizer: Tuple[Type[BaseSwarmOptimizer], Dict[str, Any]], capsys: pytest.CaptureFixture[str]):
         """Test silent run"""
         optm, params = optimizer
         opt = optm(**params)

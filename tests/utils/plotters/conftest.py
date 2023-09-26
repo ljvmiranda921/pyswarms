@@ -11,8 +11,10 @@ import os
 import matplotlib as mpl
 import numpy as np
 import pytest
+from pyswarms.backend.handlers import VelocityHandler
+from pyswarms.backend.velocity import VelocityUpdater
 
-from pyswarms.single.general_optimizer import GeneralOptions
+from pyswarms.utils.types import SwarmOptions
 
 if os.environ.get("DISPLAY", "") == "":
     mpl.use("Agg")
@@ -25,8 +27,9 @@ from pyswarms.utils.plotters.formatters import Mesher
 @pytest.fixture
 def trained_optimizer():
     """Returns a trained optimizer instance with 100 iterations"""
-    options = GeneralOptions({"c1": 0.5, "c2": 0.3, "w": 0.9, "p": 2, "k": 2})
-    optimizer = GlobalBestPSO(n_particles=10, dimensions=2, options=options)
+    options = SwarmOptions({"c1": 0.5, "c2": 0.3, "w": 0.9})
+    vu = VelocityUpdater(options, None, VelocityHandler.factory("unmodified"))
+    optimizer = GlobalBestPSO(n_particles=10, dimensions=2, velocity_updater=vu)
     optimizer.optimize(sphere, iters=100)
     return optimizer
 

@@ -36,7 +36,6 @@ from typing import Callable, Optional, Type
 
 import numpy as np
 
-from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.single.global_best import GlobalBestPSO
 from pyswarms.single.local_best import LocalBestPSO
 from pyswarms.utils.search.base_search import SearchBase
@@ -67,7 +66,7 @@ class RandomSearch(SearchBase):
         optimizer: Type[GlobalBestPSO | LocalBestPSO],
         n_particles: int,
         dimensions: int,
-        options: GeneralOptions,
+        options,
         objective_func: Callable[..., float],
         iters: int,
         n_selection_iters: int,
@@ -120,15 +119,12 @@ class RandomSearch(SearchBase):
             params[idx] = param_generators[idx](*bounds, size=self.n_selection_iters)
 
         # Return list of dicts of hyperparameter combinations
-        return [
-            GeneralOptions(
-                {
-                    "c1": params["c1"][i],
-                    "c2": params["c2"][i],
-                    "w": params["w"][i],
-                    "k": params["k"][i],
-                    "p": params["p"][i],
-                }
-            )
+        return [{
+                "c1": params["c1"][i],
+                "c2": params["c2"][i],
+                "w": params["w"][i],
+                "k": params["k"][i],
+                "p": params["p"][i],
+            }
             for i in range(self.n_selection_iters)
         ]

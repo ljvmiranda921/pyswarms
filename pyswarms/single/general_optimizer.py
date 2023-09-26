@@ -136,6 +136,9 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
         """
+        self.bounds = bounds
+        self.center = center
+        
         super().__init__(
             n_particles,
             dimensions=dimensions,
@@ -149,8 +152,6 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
 
-        self.bounds = bounds
-        self.center = center
         self.top = topology
         self.bh = BoundaryHandler(strategy=bh_strategy)
         self.name = __name__

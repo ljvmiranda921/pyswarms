@@ -187,7 +187,7 @@ def assert_option_strategy(
     oh = OptionsHandler(strategy)
     return_opts = oh(init_opts, **kwargs)
     assert np.allclose(
-        list(return_opts.values()), list(exp_opts.values()), atol=0.001, rtol=0
+        list(return_opts.values()), list(exp_opts.values()), atol=0.001, rtol=0 # type: ignore
     ), "Expected options don't match with the given strategy"
 
 

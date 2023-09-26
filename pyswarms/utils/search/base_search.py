@@ -7,7 +7,6 @@ from typing import Any, Callable, List, Optional, Type
 
 import numpy.typing as npt
 
-from pyswarms.single.general_optimizer import GeneralOptions
 from pyswarms.single.global_best import GlobalBestPSO
 from pyswarms.single.local_best import LocalBestPSO
 from pyswarms.utils.types import Bounds, Clamp
@@ -31,7 +30,7 @@ class SearchBase(ABC):
         optimizer: Type[GlobalBestPSO | LocalBestPSO],
         n_particles: int,
         dimensions: int,
-        options: GeneralOptions,
+        options,
         objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         bounds: Optional[Bounds] = None,
@@ -91,7 +90,7 @@ class SearchBase(ABC):
         # Invoke assertions
         self.assertions()
 
-    def generate_score(self, options: GeneralOptions):
+    def generate_score(self, options):
         """Generate score for optimizer's performance on objective function
 
         Parameters
@@ -144,5 +143,5 @@ class SearchBase(ABC):
         return self.best_score, self.best_options
 
     @abstractmethod
-    def generate_grid(self) -> List[GeneralOptions]:
+    def generate_grid(self):
         ...

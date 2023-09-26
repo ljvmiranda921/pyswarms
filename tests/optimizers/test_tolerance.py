@@ -9,7 +9,7 @@ import numpy.typing as npt
 import pytest
 
 from pyswarms.backend.topology import Star
-from pyswarms.base.single import SwarmOptimizer
+from pyswarms.base.base import BaseSwarmOptimizer
 from pyswarms.single import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
 
 random.seed(0)
@@ -76,7 +76,7 @@ parameters = dict(
 if TYPE_CHECKING:
 
     class FixtureRequest:
-        param: Type[SwarmOptimizer]
+        param: Type[BaseSwarmOptimizer]
 
 else:
     FixtureRequest = Any
@@ -90,14 +90,14 @@ class TestToleranceOptions:
             return request.param, {**parameters, **{"topology": Star()}}
         return request.param, parameters
 
-    def test_no_ftol(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
+    def test_no_ftol(self, optimizer: Tuple[Type[BaseSwarmOptimizer], Dict[str, Any]]):
         """Test complete run"""
         optm, params = optimizer
         opt = optm(**params)
         opt.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
         assert len(opt.cost_history) == iterations
 
-    def test_ftol_effect(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
+    def test_ftol_effect(self, optimizer: Tuple[Type[BaseSwarmOptimizer], Dict[str, Any]]):
         """Test early stopping with ftol"""
         optm, params = optimizer
         params["ftol"] = 0.01
@@ -105,14 +105,14 @@ class TestToleranceOptions:
         opt.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
         assert len(opt.cost_history) <= iterations
 
-    def test_ftol_iter_assertion(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
+    def test_ftol_iter_assertion(self, optimizer: Tuple[Type[BaseSwarmOptimizer], Dict[str, Any]]):
         """Assert ftol_iter type and value"""
         with pytest.raises(AssertionError):
             optm, params = optimizer
             params["ftol_iter"] = 0
             optm(**params)
 
-    def test_ftol_iter_effect(self, optimizer: Tuple[Type[SwarmOptimizer], Dict[str, Any]]):
+    def test_ftol_iter_effect(self, optimizer: Tuple[Type[BaseSwarmOptimizer], Dict[str, Any]]):
         """Test early stopping with ftol and ftol_iter;
         must run for a minimum of ftol_iter iterations"""
         optm, params = optimizer
