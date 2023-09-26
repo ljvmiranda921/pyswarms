@@ -67,8 +67,6 @@ class Swarm:
         number of particles in a swarm.
     dimensions : int
         number of dimensions in a swarm.
-    options : dict
-        various options that govern a swarm's behavior.
     pbest_pos : numpy.ndarray
         personal best positions of each particle of shape :code:`(n_particles, dimensions)`
         Default is `None`

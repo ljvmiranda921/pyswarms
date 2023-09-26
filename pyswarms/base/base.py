@@ -35,7 +35,8 @@ import numpy as np
 import numpy.typing as npt
 
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Clamp, Position, Velocity
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.utils.types import Position, Velocity
 
 
 class Options(TypedDict):
@@ -66,8 +67,7 @@ class BaseSwarmOptimizer(abc.ABC):
         self,
         n_particles: int,
         dimensions: int,
-        options: Options,
-        velocity_clamp: Optional[Clamp] = None,
+        velocity_updater: VelocityUpdater,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -86,19 +86,8 @@ class BaseSwarmOptimizer(abc.ABC):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w'}`
-            a dictionary containing the parameters for the specific
-            optimization technique
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
-        velocity_clamp : tuple, optional
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
+        velocity_updater : VelocityUpdater
+            Class for updating the velocity matrix.
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence. Default is :code:`-np.inf`.
@@ -110,9 +99,8 @@ class BaseSwarmOptimizer(abc.ABC):
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dimensions = dimensions
-        self.velocity_clamp = velocity_clamp
+        self.velocity_updater = velocity_updater
         self.swarm_size = (n_particles, dimensions)
-        self.options = options
         self.init_pos = init_pos
         self.ftol = ftol
 

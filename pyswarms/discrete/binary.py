@@ -53,7 +53,7 @@ R.C. Eberhart in Particle Swarm Optimization [SMC1997]_.
 
 import multiprocessing as mp
 from collections import deque
-from typing import Any, Callable, Deque, Dict, Optional, Tuple
+from typing import Any, Callable, Deque, Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -152,7 +152,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         iters: int,
         n_processes: Optional[int] = None,
         verbose: bool = True,
-        **kwargs: Dict[str, Any]
+        **kwargs: Any
     ) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 
@@ -200,7 +200,7 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             best_cost_yet_found = np.min(self.swarm.best_cost)
 
             # Update gbest from neighborhood
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, p=self.p, k=self.k)
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
 
             # if verbose:
             #     # Print to console

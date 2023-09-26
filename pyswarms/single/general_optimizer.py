@@ -257,7 +257,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             best_cost_yet_found = self.swarm.best_cost
 
             # Update swarm
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm, **dict(self.options))
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
 
             # Print to console
             # if verbose:
