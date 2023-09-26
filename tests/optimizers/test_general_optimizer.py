@@ -11,6 +11,7 @@ import pytest
 from pyswarms.backend.topology import Pyramid, Random, Ring, Star, VonNeumann
 from pyswarms.backend.topology.base import Topology
 from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.base.base import BaseSwarmOptimizer
 from pyswarms.single import GeneralOptimizerPSO
 from pyswarms.utils.functions.single_obj import sphere
 
@@ -38,7 +39,7 @@ else:
 
 class TestGeneralOptimizer(ABCTestOptimizer):
     @pytest.fixture(params=topologies)
-    def optimizer(self, request: FixtureRequest, velocity_updater: VelocityUpdater):
+    def optimizer(self, request: FixtureRequest, velocity_updater: VelocityUpdater): # type: ignore
         x_max = 10 * np.ones(2)
         x_min = -1 * x_max
         bounds = (x_min, x_max)
@@ -51,7 +52,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         )
 
     @pytest.fixture(params=topologies)
-    def optimizer_history(self, request: FixtureRequest, velocity_updater: VelocityUpdater):
+    def optimizer_history(self, request: FixtureRequest, velocity_updater: VelocityUpdater): # type: ignore
         opt = GeneralOptimizerPSO(
             n_particles=10,
             dimensions=2,
@@ -62,7 +63,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         return opt
 
     @pytest.fixture(params=topologies)
-    def optimizer_reset(self, request: FixtureRequest, velocity_updater: VelocityUpdater):
+    def optimizer_reset(self, request: FixtureRequest, velocity_updater: VelocityUpdater): # type: ignore
         opt = GeneralOptimizerPSO(
             n_particles=10,
             dimensions=2,
@@ -73,7 +74,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         opt.reset()
         return opt
 
-    def test_ftol_effect(self, optimizer: GeneralOptimizerPSO):
+    def test_ftol_effect(self, optimizer: BaseSwarmOptimizer):
         """Test if setting the ftol breaks the optimization process"""
         # Set optimizer tolerance
         optimizer.ftol = 1e-1
@@ -81,7 +82,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         assert np.array(optimizer.cost_history).shape != (2000,)
 
     def test_parallel_evaluation(
-        self, obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+        self, obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]], optimizer: BaseSwarmOptimizer
     ):
         """Test if parallelization breaks the optimization process"""
         import multiprocessing
@@ -91,7 +92,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
 
     @pytest.mark.skip(reason="Some topologies converge too slowly")
     def test_obj_with_kwargs(
-        self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+        self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: BaseSwarmOptimizer
     ):
         """Test if kwargs are passed properly in objfunc"""
         cost, pos = optimizer.optimize(obj_with_args, 1000, a=1, b=100)
@@ -100,7 +101,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         assert np.isclose(pos[1], 1.0, rtol=1e-03)
 
     def test_obj_unnecessary_kwargs(
-        self, obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+        self, obj_without_args: Callable[[npt.NDArray[Any]], npt.NDArray[Any]], optimizer: BaseSwarmOptimizer
     ):
         """Test if error is raised given unnecessary kwargs"""
         with pytest.raises(TypeError):
@@ -108,7 +109,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
             optimizer.optimize(obj_without_args, 1000, a=1)
 
     def test_obj_missing_kwargs(
-        self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+        self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: BaseSwarmOptimizer
     ):
         """Test if error is raised with incomplete kwargs"""
         with pytest.raises(TypeError):
@@ -116,7 +117,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
             optimizer.optimize(obj_with_args, 1000, a=1)
 
     def test_obj_incorrect_kwargs(
-        self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: GeneralOptimizerPSO
+        self, obj_with_args: Callable[[npt.NDArray[Any], int, int], npt.NDArray[Any]], optimizer: BaseSwarmOptimizer
     ):
         """Test if error is raised with wrong kwargs"""
         with pytest.raises(TypeError):

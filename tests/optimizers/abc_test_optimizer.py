@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Tuple, Type
+from typing import Any, Callable, Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -93,11 +93,11 @@ class ABCTestOptimizer(ABC):
         assert set(optimizer_reset.swarm.best_pos) == set()
 
     @pytest.mark.skip(reason="The Ring topology converges too slowly")
-    def test_ftol_effect(self, optimizer: Type[BaseSwarmOptimizer], velocity_updater: VelocityUpdater):
+    def test_ftol_effect(self, optimizer: BaseSwarmOptimizer):
         """Test if setting the ftol breaks the optimization process"""
-        opt = optimizer(10, 2, velocity_updater, ftol=1e-1)
-        opt.optimize(sphere, 2000)
-        assert np.array(opt.cost_history).shape != (2000,)
+        optimizer.ftol = 1e-1
+        optimizer.optimize(sphere, 2000)
+        assert np.array(optimizer.cost_history).shape != (2000,)
 
     def test_parallel_evaluation(
         self,
@@ -116,6 +116,10 @@ class ABCTestOptimizer(ABC):
         optimizer: BaseSwarmOptimizer,
     ):
         """Test if kwargs are passed properly in objfunc"""
+        x_max = 10 * np.ones(2)
+        x_min = -1 * x_max
+        bounds = (x_min, x_max)
+        optimizer.bounds = bounds
         cost, pos = optimizer.optimize(obj_with_args, 1000, a=1, b=100)
         assert np.isclose(cost, 0, rtol=1e-03), f"cost (={cost}) should be ~0"
         assert np.isclose(pos[0], 1.0, rtol=1e-03), f"pos[0] (={pos[0]}) should be ~1.0"

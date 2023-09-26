@@ -136,13 +136,13 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
         """
-        self.bounds = bounds
         self.center = center
 
         super().__init__(
             n_particles,
             dimensions=dimensions,
             velocity_updater=velocity_updater,
+            bounds=bounds,
             center=center,
             ftol=ftol,
             ftol_iter=ftol_iter,

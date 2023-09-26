@@ -36,7 +36,7 @@ import numpy.typing as npt
 
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.utils.types import Position, Velocity
+from pyswarms.utils.types import Bounds, Position, Velocity
 
 
 class Options(TypedDict):
@@ -68,6 +68,7 @@ class BaseSwarmOptimizer(abc.ABC):
         n_particles: int,
         dimensions: int,
         velocity_updater: VelocityUpdater,
+        bounds: Optional[Bounds] = None,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -88,6 +89,10 @@ class BaseSwarmOptimizer(abc.ABC):
             number of dimensions in the space.
         velocity_updater : VelocityUpdater
             Class for updating the velocity matrix.
+        bounds : tuple of numpy.ndarray, optional
+            a tuple of size 2 where the first entry is the minimum bound while
+            the second entry is the maximum bound. Each array must be of shape
+            :code:`(dimensions,)`.
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence. Default is :code:`-np.inf`.
@@ -100,6 +105,7 @@ class BaseSwarmOptimizer(abc.ABC):
         self.n_particles = n_particles
         self.dimensions = dimensions
         self.velocity_updater = velocity_updater
+        self.bounds = bounds
         self.swarm_size = (n_particles, dimensions)
         self.init_pos = init_pos
         self.ftol = ftol
