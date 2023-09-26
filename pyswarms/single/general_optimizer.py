@@ -64,6 +64,7 @@ import numpy as np
 import numpy.typing as npt
 from loguru import logger
 from tqdm import trange
+from pyswarms.backend.generators import generate_swarm, generate_velocity
 
 from pyswarms.backend.handlers import (
     BoundaryHandler,
@@ -74,10 +75,10 @@ from pyswarms.backend.handlers import (
     VelocityStrategy,
 )
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Topology
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.base import SwarmOptimizer
-from pyswarms.base.base import Options, ToHistory
+from pyswarms.base.base import BaseSwarmOptimizer, Options, ToHistory
 from pyswarms.utils.types import Bounds, Position
 
 
@@ -86,7 +87,7 @@ class GeneralOptions(Options):
     k: int
 
 
-class GeneralOptimizerPSO(SwarmOptimizer):
+class GeneralOptimizerPSO(BaseSwarmOptimizer):
     def __init__(
         self,
         n_particles: int,
@@ -168,6 +169,8 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         # Initialize the resettable attributes
         self.reset()
 
+        self.bounds = bounds
+        self.center = center
         self.top = topology
         self.bh = BoundaryHandler(strategy=bh_strategy)
         self.vh = VelocityHandler.factory(strategy=vh_strategy)
@@ -273,3 +276,14 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             pool.close()  # type: ignore
 
         return (final_best_cost, final_best_pos)
+
+    def _init_swarm(self):
+        position = generate_swarm(
+            self.n_particles,
+            self.dimensions,
+            bounds=self.bounds,
+            center=self.center,
+            init_pos=self.init_pos,
+        )
+        velocity = generate_velocity(self.n_particles, self.dimensions, self.velocity_updater.clamp)
+        self.swarm = Swarm(position, velocity)

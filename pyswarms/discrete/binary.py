@@ -59,18 +59,18 @@ import numpy as np
 import numpy.typing as npt
 from loguru import logger
 from tqdm import trange
+from pyswarms.backend.generators import generate_discrete_swarm, generate_velocity
 
 from pyswarms.backend.handlers import VelocityHandler, VelocityStrategy
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Ring
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.base import DiscreteSwarmOptimizer
-from pyswarms.base.base import ToHistory
+from pyswarms.base.base import BaseSwarmOptimizer, ToHistory
 from pyswarms.utils.types import Position
 
 
-class BinaryPSO(DiscreteSwarmOptimizer):
+class BinaryPSO(BaseSwarmOptimizer):
     def __init__(
         self,
         n_particles: int,
@@ -117,13 +117,13 @@ class BinaryPSO(DiscreteSwarmOptimizer):
         """
         self.p = p
         self.k = k
+        self.binary = True
 
         # Initialize parent class
-        super(BinaryPSO, self).__init__(
+        super().__init__(
             n_particles=n_particles,
             dimensions=dimensions,
             velocity_updater=velocity_updater,
-            binary=True,
             init_pos=init_pos,
             ftol=ftol,
             ftol_iter=ftol_iter,
@@ -260,3 +260,10 @@ class BinaryPSO(DiscreteSwarmOptimizer):
             Output sigmoid computation
         """
         return 1 / (1 + np.exp(-x))
+
+    def _init_swarm(self):
+        position = generate_discrete_swarm(
+            self.n_particles, self.dimensions, binary=self.binary, init_pos=self.init_pos
+        )
+        velocity = generate_velocity(self.n_particles, self.dimensions, clamp=self.velocity_updater.clamp)
+        self.swarm = Swarm(position, velocity)
