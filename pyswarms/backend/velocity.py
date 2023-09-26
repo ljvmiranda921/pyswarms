@@ -1,16 +1,11 @@
 import numpy as np
 
 
-from typing import Dict, Optional, TypedDict
+from typing import Dict, Optional
 from pyswarms.backend.handlers import OptionsHandler, OptionsStrategy, VelocityHandler, VelocityStrategy
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp
+from pyswarms.utils.types import Bounds, Clamp, SwarmOptions
 
-
-class SwarmOptions(TypedDict):
-    c1: float
-    c2: float
-    w: float
 
 
 class VelocityUpdater:
@@ -57,7 +52,7 @@ class VelocityUpdater:
 
         self.iterations = 0
 
-    def compute(self, swarm: Swarm, itermax: int):
+    def compute(self, swarm: Swarm, itermax: int = 0):
         """Update the velocity matrix
 
         This method updates the velocity matrix using the best and current

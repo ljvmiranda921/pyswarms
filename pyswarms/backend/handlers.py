@@ -28,9 +28,8 @@ from typing import Any, Dict, Literal, Optional
 
 import numpy as np
 import numpy.typing as npt
-from pyswarms.backend.velocity import SwarmOptions
 
-from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, Velocity
+from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, SwarmOptions, Velocity
 
 
 class HandlerMixin(object):
