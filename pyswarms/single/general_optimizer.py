@@ -138,7 +138,7 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         """
         self.bounds = bounds
         self.center = center
-        
+
         super().__init__(
             n_particles,
             dimensions=dimensions,
@@ -210,8 +210,8 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
 
             # Print to console
-            # if verbose:
-            #     pbar.postfix(best_cost=self.swarm.best_cost)
+            if verbose:
+                pbar.set_postfix(best_cost=self.swarm.best_cost) # type: ignore
 
             hist = ToHistory(
                 best_cost=self.swarm.best_cost,

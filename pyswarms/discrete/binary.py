@@ -190,9 +190,9 @@ class BinaryPSO(BaseSwarmOptimizer):
             # Update gbest from neighborhood
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
 
-            # if verbose:
-            #     # Print to console
-            #     pbar.postfix(best_cost=self.swarm.best_cost)
+            # Print to console
+            if verbose:
+                pbar.set_postfix(best_cost=self.swarm.best_cost) # type: ignore
 
             # Save to history
             hist = ToHistory(
