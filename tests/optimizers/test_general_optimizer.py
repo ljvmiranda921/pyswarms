@@ -69,7 +69,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
             velocity_updater=velocity_updater,
             topology=request.param,
         )
-        opt.optimize(sphere, 1000)
+        opt.optimize(sphere, 10)
         opt.reset()
         return opt
 

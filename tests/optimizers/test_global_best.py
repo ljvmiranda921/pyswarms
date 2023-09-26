@@ -13,21 +13,8 @@ from .abc_test_optimizer import ABCTestOptimizer
 
 class TestGlobalBestOptimizer(ABCTestOptimizer):
     @pytest.fixture
-    def optimizer(self):
-        return GlobalBestPSO
-
-    @pytest.fixture
-    def optimizer_history(self, velocity_updater: VelocityUpdater):
-        opt = GlobalBestPSO(10, 2, velocity_updater)
-        opt.optimize(sphere, 1000)
-        return opt
-
-    @pytest.fixture
-    def optimizer_reset(self, velocity_updater: VelocityUpdater):
-        opt = GlobalBestPSO(10, 2, velocity_updater)
-        opt.optimize(sphere, 10)
-        opt.reset()
-        return opt
+    def optimizer(self, velocity_updater: VelocityUpdater):
+        return GlobalBestPSO(10, 2, velocity_updater)
 
     def test_global_correct_pos(self, velocity_updater: VelocityUpdater):
         """Test to check global optimiser returns the correct position corresponding to the best cost"""

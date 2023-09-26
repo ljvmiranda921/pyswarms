@@ -12,28 +12,14 @@ from tests.optimizers.abc_test_optimizer import ABCTestOptimizer
 
 class TestDiscreteOptimizer(ABCTestOptimizer):
     @pytest.fixture
-    def optimizer(self):
-        return BinaryPSO
+    def optimizer(self, velocity_updater: VelocityUpdater):
+        return BinaryPSO(10, 2, 2, 2, velocity_updater)
 
-    @pytest.fixture
-    def optimizer_history(self, velocity_updater: VelocityUpdater):
-        opt = BinaryPSO(10, 2, 2, 2, velocity_updater)
-        opt.optimize(sphere, 1000)
-        return opt
-
-    @pytest.fixture
-    def optimizer_reset(self, velocity_updater: VelocityUpdater):
-        opt = BinaryPSO(10, 2, 2, 2, velocity_updater)
-        opt.optimize(sphere, 10)
-        opt.reset()
-        return opt
-
-    def test_binary_correct_pos(self, velocity_updater: VelocityUpdater):
+    def test_binary_correct_pos(self, optimizer: BinaryPSO):
         """Test to check binary optimiser returns the correct position
         corresponding to the best cost"""
-        opt = BinaryPSO(10, 2, 2, 2, velocity_updater)
-        _, pos = opt.optimize(sphere, 10)
+        _, pos = optimizer.optimize(sphere, 10)
         # find best pos from history
-        min_cost_idx = np.argmin(opt.cost_history)
-        min_pos_idx = np.argmin(sphere(opt.pos_history[min_cost_idx]))
-        assert np.array_equal(opt.pos_history[min_cost_idx][min_pos_idx], pos)
+        min_cost_idx = np.argmin(optimizer.cost_history)
+        min_pos_idx = np.argmin(sphere(optimizer.pos_history[min_cost_idx]))
+        assert np.array_equal(optimizer.pos_history[min_cost_idx][min_pos_idx], pos)
