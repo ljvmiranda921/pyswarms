@@ -72,8 +72,7 @@ class BaseSwarmOptimizer(abc.ABC):
         position_updater: PositionUpdater,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
-        ftol_iter: int = 1,
-        **kwargs: Any
+        ftol_iter: int = 1
     ):
         """Initialize the swarm.
 

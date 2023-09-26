@@ -8,7 +8,7 @@ from pyswarms.utils.types import Bounds, Position
 
 
 class PositionUpdater:
-    def  __init__(self, bounds: Optional[Bounds], bh: BoundaryHandler|BoundaryStrategy = "periodic"):
+    def  __init__(self, bounds: Optional[Bounds] = None, bh: BoundaryHandler|BoundaryStrategy = "periodic"):
         self.bounds = bounds
 
         if isinstance(bh, str):

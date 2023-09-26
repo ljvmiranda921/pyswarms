@@ -41,7 +41,7 @@ class VelocityUpdater:
         self.bounds = bounds
 
         if isinstance(vh, str):
-            self.vh = VelocityHandler.factory(vh)
+            self.vh = VelocityHandler.factory(vh, self.clamp, self.bounds)
         else:
             self.vh = vh
         
