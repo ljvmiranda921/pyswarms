@@ -64,18 +64,14 @@ import numpy as np
 import numpy.typing as npt
 from loguru import logger
 from tqdm import trange
-from pyswarms.backend.generators import generate_swarm, generate_velocity
 
-from pyswarms.backend.handlers import (
-    BoundaryHandler,
-    BoundaryStrategy,
-)
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Topology
 from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.base.base import BaseSwarmOptimizer, ToHistory
-from pyswarms.utils.types import Bounds, Position
+from pyswarms.utils.types import Position
 
 
 class GeneralOptimizerPSO(BaseSwarmOptimizer):
@@ -85,8 +81,7 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         dimensions: int,
         topology: Topology,
         velocity_updater: VelocityUpdater,
-        bounds: Optional[Bounds] = None,
-        bh_strategy: BoundaryStrategy = "periodic",
+        position_updater: PositionUpdater,
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -142,7 +137,7 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             n_particles,
             dimensions=dimensions,
             velocity_updater=velocity_updater,
-            bounds=bounds,
+            position_updater=position_updater,
             center=center,
             ftol=ftol,
             ftol_iter=ftol_iter,
@@ -153,7 +148,6 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         self.reset()
 
         self.top = topology
-        self.bh = BoundaryHandler(strategy=bh_strategy)
         self.name = __name__
 
     def optimize(
@@ -231,7 +225,7 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
 
             # Perform velocity and position updates
             self.swarm.velocity = self.velocity_updater.compute(self.swarm, iters)
-            self.swarm.position = self.top.compute_position(self.swarm, self.bounds, self.bh)
+            self.swarm.position = self.position_updater.compute(self.swarm)
 
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost
@@ -250,12 +244,11 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         return (final_best_cost, final_best_pos)
 
     def _init_swarm(self):
-        position = generate_swarm(
+        position = self.position_updater.generate_position(
             self.n_particles,
             self.dimensions,
-            bounds=self.bounds,
-            center=self.center,
-            init_pos=self.init_pos,
+            self.center,
+            self.init_pos,
         )
-        velocity = generate_velocity(self.n_particles, self.dimensions, self.velocity_updater.clamp)
+        velocity = self.velocity_updater.generate_velocity(self.n_particles, self.dimensions)
         self.swarm = Swarm(position, velocity)
