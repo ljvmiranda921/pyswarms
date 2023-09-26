@@ -225,12 +225,9 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
             delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            if i < self.ftol_iter:
-                ftol_history.append(delta)
-            else:
-                ftol_history.append(delta)
-                if all(ftol_history):
-                    break
+            ftol_history.append(delta)
+            if i >= self.ftol_iter and all(ftol_history):
+                break
 
             # Perform velocity and position updates
             self.swarm.velocity = self.velocity_updater.compute(self.swarm, iters)

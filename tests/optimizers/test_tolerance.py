@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import random
-from typing import Any, List
+from typing import Any, Callable, List
 from loguru import logger
 
 import numpy as np
@@ -42,9 +42,9 @@ options = SwarmOptions({"c1": 2, "c2": 2, "w": 0.7})
 velocity_updater = VelocityUpdater(options, (-0.5, 0.5), InvertVelocityHandler(), constraints)
 
 optimizers = [
-    GlobalBestPSO(n_particles, dimensions, velocity_updater, constraints, "periodic"),
-    LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater, constraints, "periodic"),
-    GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater, constraints, "periodic"),
+    lambda: GlobalBestPSO(n_particles, dimensions, velocity_updater, constraints, "periodic"),
+    lambda: LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater, constraints, "periodic"),
+    lambda: GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater, constraints, "periodic"),
 ]
 
 
@@ -75,24 +75,28 @@ def objective_function(X: npt.NDArray[Any], **kwargs: Any):
 
 
 class TestToleranceOptions:
-    @pytest.mark.parametrize("optimizer", optimizers)
-    def test_no_ftol(self, optimizer: BaseSwarmOptimizer):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_no_ftol(self, optimizer_func: Callable[[], BaseSwarmOptimizer]):
         """Test complete run"""
+        optimizer = optimizer_func()
         optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
         assert len(optimizer.cost_history) == iterations
 
-    @pytest.mark.parametrize("optimizer", optimizers)
-    def test_ftol_effect(self, optimizer: BaseSwarmOptimizer):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_ftol_effect(self, optimizer_func: Callable[[], BaseSwarmOptimizer]):
         """Test early stopping with ftol"""
+        optimizer = optimizer_func()
         optimizer.ftol = 0.01
-        logger.critical(optimizer.__dict__)
+        logger.critical(optimizer.ftol)
+        # logger.critical(optimizer.__dict__)
         optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
         assert len(optimizer.cost_history) <= iterations
 
-    @pytest.mark.parametrize("optimizer", optimizers)
-    def test_ftol_iter_effect(self, optimizer: BaseSwarmOptimizer):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_ftol_iter_effect(self, optimizer_func: Callable[[], BaseSwarmOptimizer]):
         """Test early stopping with ftol and ftol_iter;
         must run for a minimum of ftol_iter iterations"""
+        optimizer = optimizer_func()
         optimizer.ftol_iter = 50
         optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
         assert len(optimizer.cost_history) >= optimizer.ftol_iter
