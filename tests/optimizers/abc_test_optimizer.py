@@ -7,10 +7,10 @@ from typing import Any, Callable, Tuple
 import numpy as np
 import numpy.typing as npt
 import pytest
+
 from pyswarms.backend.handlers import VelocityHandler
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.velocity import VelocityUpdater
-
 from pyswarms.base.base import BaseSwarmOptimizer
 from pyswarms.utils.functions.single_obj import rosenbrock, sphere
 from pyswarms.utils.types import SwarmOptions
@@ -48,18 +48,14 @@ class ABCTestOptimizer(ABC):
     def options(self):
         """Default options dictionary for most PSO use-cases"""
         return {"c1": 0.3, "c2": 0.7, "w": 0.9}
-    
+
     @pytest.fixture
     def position_updater(self):
         return PositionUpdater()
 
     @pytest.fixture
     def velocity_updater(self, options: SwarmOptions) -> VelocityUpdater:
-        return VelocityUpdater(
-            options,
-            None,
-            VelocityHandler.factory("unmodified")
-        )
+        return VelocityUpdater(options, None, VelocityHandler.factory("unmodified"))
 
     @pytest.fixture
     def obj_with_args(self):

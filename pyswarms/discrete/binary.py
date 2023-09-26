@@ -74,7 +74,7 @@ class BinaryPSO(BaseSwarmOptimizer):
         self,
         n_particles: int,
         dimensions: int,
-        p: Literal[1,2],
+        p: Literal[1, 2],
         k: int,
         velocity_updater: VelocityUpdater,
         position_updater: PositionUpdater,
@@ -188,7 +188,7 @@ class BinaryPSO(BaseSwarmOptimizer):
 
             # Print to console
             if verbose:
-                pbar.set_postfix(best_cost=self.swarm.best_cost) # type: ignore
+                pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
 
             # Save to history
             hist = ToHistory(
@@ -224,7 +224,7 @@ class BinaryPSO(BaseSwarmOptimizer):
 
         # Close Pool of Processes
         if n_processes is not None:
-            pool.close() # type: ignore
+            pool.close()  # type: ignore
 
         return (final_best_cost, final_best_pos)
 

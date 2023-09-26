@@ -119,7 +119,8 @@ class RandomSearch(SearchBase):
             params[idx] = param_generators[idx](*bounds, size=self.n_selection_iters)
 
         # Return list of dicts of hyperparameter combinations
-        return [{
+        return [
+            {
                 "c1": params["c1"][i],
                 "c2": params["c2"][i],
                 "w": params["w"][i],

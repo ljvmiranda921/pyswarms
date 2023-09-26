@@ -416,17 +416,13 @@ class VelocityHandler(HandlerMixin, ABC):
 
 
 class UnmodifiedVelocityHandler(VelocityHandler):
-    def __call__(
-        self, velocity: Velocity, position: Optional[Position]
-    ) -> Velocity:
+    def __call__(self, velocity: Velocity, position: Optional[Position]) -> Velocity:
         """Leaves the velocity unchanged"""
         return self._apply_clamp(velocity)
 
 
 class AdjustVelocityHandler(VelocityHandler):
-    def __call__(
-        self, velocity: Velocity, position: Optional[Position]
-    ):
+    def __call__(self, velocity: Velocity, position: Optional[Position]):
         r"""Adjust the velocity to the new position
 
         The velocity is adjusted such that the following equation holds:
@@ -459,9 +455,7 @@ class InvertVelocityHandler(VelocityHandler):
         super().__init__(clamp, bounds)
         self.z = z
 
-    def __call__(
-        self, velocity: Velocity, position: Optional[Position]
-    ) -> Velocity:
+    def __call__(self, velocity: Velocity, position: Optional[Position]) -> Velocity:
         r"""Invert the velocity if the particle is out of bounds
 
         The velocity is inverted and shrinked. The shrinking is determined by the
@@ -490,9 +484,7 @@ class InvertVelocityHandler(VelocityHandler):
 
 
 class ZeroVelocityHandler(VelocityHandler):
-    def __call__(
-        self, velocity: Velocity, position: Optional[Position]
-    ):
+    def __call__(self, velocity: Velocity, position: Optional[Position]):
         """Set velocity to zero if the particle is out of bounds"""
         if position is None:
             raise ValueError("Position must not be None")

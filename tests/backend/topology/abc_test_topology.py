@@ -5,8 +5,8 @@ import abc
 from typing import Any, Dict, Optional, Type
 
 import pytest
-from pyswarms.backend.position import PositionUpdater
 
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
 from pyswarms.utils.types import Bounds

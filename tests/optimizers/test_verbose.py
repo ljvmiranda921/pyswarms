@@ -4,9 +4,9 @@
 import re
 
 import pytest
+
 from pyswarms.backend.handlers import VelocityHandler
 from pyswarms.backend.position import PositionUpdater
-
 from pyswarms.backend.topology import Star
 from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.base.base import BaseSwarmOptimizer

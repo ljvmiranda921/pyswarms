@@ -3,9 +3,9 @@
 
 import numpy as np
 import pytest
+
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.velocity import VelocityUpdater
-
 from pyswarms.single import LocalBestPSO
 from pyswarms.utils.functions.single_obj import sphere
 
@@ -21,7 +21,7 @@ class TestLocalBestOptimizer(ABCTestOptimizer):
         """Test to check local optimiser returns the correct position corresponding to the best cost"""
         opt = LocalBestPSO(10, 2, 2, 2, velocity_updater, position_updater)
         _, pos = opt.optimize(sphere, iters=5)
-        
+
         # find best pos from history
         min_cost_idx = np.argmin(opt.cost_history)
         min_pos_idx = np.argmin(sphere(opt.pos_history[min_cost_idx]))

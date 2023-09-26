@@ -3,13 +3,13 @@
 
 import random
 from typing import Any, Callable, List
-from loguru import logger
 
 import numpy as np
 import numpy.typing as npt
 import pytest
-from pyswarms.backend.position import PositionUpdater
+from loguru import logger
 
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Star
 from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.base.base import BaseSwarmOptimizer

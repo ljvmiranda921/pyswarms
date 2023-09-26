@@ -1,14 +1,15 @@
-from loguru import logger
-import numpy as np
-
 from typing import Optional
+
+import numpy as np
+from loguru import logger
+
 from pyswarms.backend.handlers import BoundaryHandler, BoundaryStrategy
 from pyswarms.backend.swarms import Swarm
 from pyswarms.utils.types import Bounds, Position
 
 
 class PositionUpdater:
-    def  __init__(self, bounds: Optional[Bounds] = None, bh: BoundaryHandler|BoundaryStrategy = "periodic"):
+    def __init__(self, bounds: Optional[Bounds] = None, bh: BoundaryHandler | BoundaryStrategy = "periodic"):
         self.bounds = bounds
 
         if isinstance(bh, str):
@@ -60,9 +61,9 @@ class PositionUpdater:
         position = temp_position
 
         return position
-    
+
     def generate_position(
-        self, 
+        self,
         n_particles: int,
         dimensions: int,
         center: float | Position = 1.00,
@@ -120,7 +121,6 @@ class PositionUpdater:
 
         return pos
 
-
     def generate_discrete_position(
         self, n_particles: int, dimensions: int, binary: bool = False, init_pos: Optional[Position] = None
     ) -> Position:
@@ -161,7 +161,7 @@ class PositionUpdater:
                 pos = np.random.random_sample(size=(n_particles, dimensions)).argsort(axis=1)
 
         return pos
-    
+
     def _check_init_pos(self, init_pos: Position, n_particles: int, dimensions: int, binary: bool = False):
         if binary and len(np.unique(init_pos)) > 2:
             raise ValueError("User-defined init_pos is not binary!")

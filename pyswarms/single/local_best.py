@@ -80,7 +80,7 @@ class LocalBestPSO(GeneralOptimizerPSO):
         self,
         n_particles: int,
         dimensions: int,
-        p: Literal[1,2],
+        p: Literal[1, 2],
         k: int,
         velocity_updater: VelocityUpdater,
         position_updater: PositionUpdater,

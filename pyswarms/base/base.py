@@ -33,8 +33,8 @@ from typing import Any, Callable, List, NamedTuple, Optional, Tuple, TypedDict
 
 import numpy as np
 import numpy.typing as npt
-from pyswarms.backend.position import PositionUpdater
 
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.utils.types import Position, Velocity
@@ -72,7 +72,7 @@ class BaseSwarmOptimizer(abc.ABC):
         position_updater: PositionUpdater,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
-        ftol_iter: int = 1
+        ftol_iter: int = 1,
     ):
         """Initialize the swarm.
 

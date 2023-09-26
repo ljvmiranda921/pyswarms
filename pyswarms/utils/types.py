@@ -18,6 +18,7 @@ Clamp = ClampArray | ClampList | ClampFloat
 Position = npt.NDArray[np.floating[Any] | np.integer[Any]]
 Velocity = npt.NDArray[np.floating[Any]]
 
+
 class SwarmOptions(TypedDict):
     c1: float
     c2: float

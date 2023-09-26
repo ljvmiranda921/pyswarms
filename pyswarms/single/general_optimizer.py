@@ -201,7 +201,7 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
 
             # Print to console
             if verbose:
-                pbar.set_postfix(best_cost=self.swarm.best_cost) # type: ignore
+                pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
 
             hist = ToHistory(
                 best_cost=self.swarm.best_cost,

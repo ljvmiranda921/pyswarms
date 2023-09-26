@@ -59,8 +59,8 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 from typing import Optional
 
 import numpy as np
-from pyswarms.backend.position import PositionUpdater
 
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology.star import Star
 from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.single.general_optimizer import GeneralOptimizerPSO

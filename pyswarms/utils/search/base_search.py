@@ -3,7 +3,7 @@
 
 import operator as op
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Optional, Type
+from typing import Any, Callable, Optional, Type
 
 import numpy.typing as npt
 

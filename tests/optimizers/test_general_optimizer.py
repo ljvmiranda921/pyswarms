@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Any, Callable
 import numpy as np
 import numpy.typing as npt
 import pytest
-from pyswarms.backend.position import PositionUpdater
 
+from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Pyramid, Random, Ring, Star, VonNeumann
 from pyswarms.backend.topology.base import Topology
 from pyswarms.backend.velocity import VelocityUpdater
@@ -40,7 +40,9 @@ else:
 
 class TestGeneralOptimizer(ABCTestOptimizer):
     @pytest.fixture(params=topologies)
-    def optimizer(self, request: FixtureRequest, velocity_updater: VelocityUpdater, position_updater: PositionUpdater): # type: ignore
+    def optimizer(  # type: ignore
+        self, request: FixtureRequest, velocity_updater: VelocityUpdater, position_updater: PositionUpdater
+    ):
         x_max = 10 * np.ones(2)
         x_min = -1 * x_max
         bounds = (x_min, x_max)
