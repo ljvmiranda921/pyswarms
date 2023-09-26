@@ -20,7 +20,7 @@ from pyswarms.utils.types import SwarmOptions
 if os.environ.get("DISPLAY", "") == "":
     mpl.use("Agg")
 
-from pyswarms.single import GlobalBestPSO
+from pyswarms.optimizers import GlobalBestPSO
 from pyswarms.utils.functions.single_obj import sphere
 from pyswarms.utils.plotters.formatters import Mesher
 

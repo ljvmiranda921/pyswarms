@@ -6,7 +6,7 @@
 import numpy as np
 import pytest
 
-from pyswarms.single import LocalBestPSO
+from pyswarms.optimizers import LocalBestPSO
 from pyswarms.utils.functions.single_obj import sphere
 from pyswarms.utils.search.grid_search import GridSearch
 from pyswarms.utils.search.random_search import RandomSearch

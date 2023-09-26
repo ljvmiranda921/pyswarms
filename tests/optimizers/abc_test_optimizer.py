@@ -11,7 +11,7 @@ import pytest
 from pyswarms.backend.handlers import VelocityHandler
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.base.base import BaseSwarmOptimizer
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.functions.single_obj import rosenbrock, sphere
 from pyswarms.utils.types import SwarmOptions
 

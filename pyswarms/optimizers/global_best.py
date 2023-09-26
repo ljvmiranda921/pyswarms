@@ -63,7 +63,7 @@ import numpy as np
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology.star import Star
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.single.general_optimizer import GeneralOptimizerPSO
+from pyswarms.optimizers.general_optimizer import GeneralOptimizerPSO
 from pyswarms.utils.types import Position
 
 

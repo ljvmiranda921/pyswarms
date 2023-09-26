@@ -36,8 +36,8 @@ from typing import Callable, Optional, Type
 
 import numpy as np
 
-from pyswarms.single.global_best import GlobalBestPSO
-from pyswarms.single.local_best import LocalBestPSO
+from pyswarms.optimizers.global_best import GlobalBestPSO
+from pyswarms.optimizers.local_best import LocalBestPSO
 from pyswarms.utils.search.base_search import SearchBase
 from pyswarms.utils.types import Bounds, Clamp
 

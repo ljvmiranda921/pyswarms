@@ -70,7 +70,7 @@ from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Topology
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.base.base import BaseSwarmOptimizer, ToHistory
+from pyswarms.optimizers.base import BaseSwarmOptimizer, ToHistory
 from pyswarms.utils.types import Position
 
 

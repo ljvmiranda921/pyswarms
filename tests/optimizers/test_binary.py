@@ -6,7 +6,7 @@ import pytest
 
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.discrete import BinaryPSO
+from pyswarms.optimizers import BinaryPSO
 from pyswarms.utils.functions.single_obj import sphere
 from tests.optimizers.abc_test_optimizer import ABCTestOptimizer
 
