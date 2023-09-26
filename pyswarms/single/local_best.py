@@ -64,11 +64,11 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
     Symposium on Micromachine and Human Science, 1995, pp. 39–43.
 """
 
-from typing import Dict, Literal, Optional
+from typing import Literal, Optional
 
 import numpy as np
 
-from pyswarms.backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
+from pyswarms.backend.handlers import BoundaryStrategy
 from pyswarms.backend.topology import Ring
 from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.single.general_optimizer import GeneralOptimizerPSO
@@ -84,9 +84,7 @@ class LocalBestPSO(GeneralOptimizerPSO):
         k: int,
         velocity_updater: VelocityUpdater,
         bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
         bh_strategy: BoundaryStrategy = "periodic",
-        vh_strategy: VelocityStrategy = "unmodified",
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -114,12 +112,8 @@ class LocalBestPSO(GeneralOptimizerPSO):
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
-        oh_strategy : dict, optional, default=None(constant options)
-            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
-        vh_strategy : str
-            a strategy for the handling of the velocity of out-of-bounds particles.
         center : list, optional
             an array of size :code:`dimensions`
         ftol : float
@@ -142,9 +136,7 @@ class LocalBestPSO(GeneralOptimizerPSO):
             Ring(p, k, static=static),
             velocity_updater,
             bounds,
-            oh_strategy,
             bh_strategy,
-            vh_strategy,
             center,
             ftol,
             ftol_iter,

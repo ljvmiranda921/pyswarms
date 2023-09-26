@@ -56,7 +56,7 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
-from typing import Dict, Optional
+from typing import Optional
 
 import numpy as np
 
@@ -65,7 +65,7 @@ from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.single.general_optimizer import GeneralOptimizerPSO
 from pyswarms.utils.types import Bounds, Position
 
-from ..backend.handlers import BoundaryStrategy, OptionsStrategy, VelocityStrategy
+from ..backend.handlers import BoundaryStrategy
 
 
 class GlobalBestPSO(GeneralOptimizerPSO):
@@ -75,9 +75,7 @@ class GlobalBestPSO(GeneralOptimizerPSO):
         dimensions: int,
         velocity_updater: VelocityUpdater,
         bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
         bh_strategy: BoundaryStrategy = "periodic",
-        vh_strategy: VelocityStrategy = "unmodified",
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -93,12 +91,6 @@ class GlobalBestPSO(GeneralOptimizerPSO):
             number of dimensions in the space.
         velocity_updater : VelocityUpdater
             Class for updating the velocity matrix.
-        bounds : tuple of numpy.ndarray, optional
-            a tuple of size 2 where the first entry is the minimum bound while
-            the second entry is the maximum bound. Each array must be of shape
-            :code:`(dimensions,)`.
-        oh_strategy : dict, optional, default=None(constant options)
-            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
         vh_strategy : str
@@ -122,9 +114,7 @@ class GlobalBestPSO(GeneralOptimizerPSO):
             Star(),
             velocity_updater,
             bounds,
-            oh_strategy,
             bh_strategy,
-            vh_strategy,
             center,
             ftol,
             ftol_iter,

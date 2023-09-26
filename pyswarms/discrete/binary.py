@@ -215,7 +215,7 @@ class BinaryPSO(BaseSwarmOptimizer):
                     break
 
             # Perform position velocity update
-            self.swarm.velocity = self.velocity_updater.compute(self.swarm)
+            self.swarm.velocity = self.velocity_updater.compute(self.swarm, iters)
             self.swarm.position = self._compute_position(self.swarm)
 
         # Obtain the final best_cost and the final best_position

@@ -58,7 +58,7 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 
 import multiprocessing as mp
 from collections import deque
-from typing import Any, Callable, Deque, Dict, Optional, Tuple
+from typing import Any, Callable, Deque, Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -69,10 +69,6 @@ from pyswarms.backend.generators import generate_swarm, generate_velocity
 from pyswarms.backend.handlers import (
     BoundaryHandler,
     BoundaryStrategy,
-    OptionsHandler,
-    OptionsStrategy,
-    VelocityHandler,
-    VelocityStrategy,
 )
 from pyswarms.backend.operators import compute_objective_function, compute_pbest
 from pyswarms.backend.swarms import Swarm
@@ -90,9 +86,7 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         topology: Topology,
         velocity_updater: VelocityUpdater,
         bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
         bh_strategy: BoundaryStrategy = "periodic",
-        vh_strategy: VelocityStrategy = "unmodified",
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -128,13 +122,8 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
-        oh_strategy : dict, optional, default=None(constant options)
-            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
-        vh_strategy : str
-            a strategy for the handling of the velocity of out-of-bounds particles.
-        center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
@@ -147,19 +136,15 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
         """
-        super(GeneralOptimizerPSO, self).__init__(
+        super().__init__(
             n_particles,
             dimensions=dimensions,
-            bounds=bounds,
             velocity_updater=velocity_updater,
             center=center,
             ftol=ftol,
             ftol_iter=ftol_iter,
             init_pos=init_pos,
         )
-
-        if oh_strategy is None:
-            oh_strategy = {}
 
         # Initialize the resettable attributes
         self.reset()
@@ -168,8 +153,6 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         self.center = center
         self.top = topology
         self.bh = BoundaryHandler(strategy=bh_strategy)
-        self.vh = VelocityHandler.factory(strategy=vh_strategy)
-        self.oh = OptionsHandler(strategy=oh_strategy)
         self.name = __name__
 
     def optimize(
@@ -208,7 +191,6 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
 
         # Populate memory of the handlers
         self.bh.memory = self.swarm.position
-        self.vh.memory = self.swarm.position
 
         # Setup Pool of processes for parallel evaluation
         pool = None if n_processes is None else mp.Pool(n_processes)
@@ -249,11 +231,8 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
                 if all(ftol_history):
                     break
 
-            # Perform options update
-            self.swarm.options = self.oh(self.options, iternow=i, itermax=iters)
-
             # Perform velocity and position updates
-            self.swarm.velocity = self.velocity_updater.compute(self.swarm)
+            self.swarm.velocity = self.velocity_updater.compute(self.swarm, iters)
             self.swarm.position = self.top.compute_position(self.swarm, self.bounds, self.bh)
 
         # Obtain the final best_cost and the final best_position
