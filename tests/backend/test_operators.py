@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 import pyswarms.backend as P
-from pyswarms.backend.handlers import BoundaryStrategy, VelocityHandler, VelocityStrategy
+from pyswarms.backend.handlers import BoundaryStrategy, VelocityStrategy
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.velocity import SwarmOptions, VelocityUpdater
