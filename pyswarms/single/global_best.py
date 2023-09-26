@@ -59,13 +59,12 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
 from typing import Optional
 
 import numpy as np
+from pyswarms.backend.position import PositionUpdater
 
 from pyswarms.backend.topology.star import Star
 from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.single.general_optimizer import GeneralOptimizerPSO
-from pyswarms.utils.types import Bounds, Position
-
-from ..backend.handlers import BoundaryStrategy
+from pyswarms.utils.types import Position
 
 
 class GlobalBestPSO(GeneralOptimizerPSO):
@@ -74,8 +73,7 @@ class GlobalBestPSO(GeneralOptimizerPSO):
         n_particles: int,
         dimensions: int,
         velocity_updater: VelocityUpdater,
-        bounds: Optional[Bounds] = None,
-        bh_strategy: BoundaryStrategy = "periodic",
+        position_updater: PositionUpdater,
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -113,8 +111,7 @@ class GlobalBestPSO(GeneralOptimizerPSO):
             dimensions,
             Star(),
             velocity_updater,
-            bounds,
-            bh_strategy,
+            position_updater,
             center,
             ftol,
             ftol_iter,

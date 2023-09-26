@@ -170,9 +170,6 @@ class BinaryPSO(BaseSwarmOptimizer):
         log_level = "DEBUG" if verbose else "TRACE"
         logger.debug("Obj. func. args: {}".format(kwargs))
 
-        # Populate memory of the handlers
-        self.vh.memory = self.swarm.position
-
         # Setup Pool of processes for parallel evaluation
         pool = None if n_processes is None else mp.Pool(n_processes)
 
