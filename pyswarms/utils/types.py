@@ -22,9 +22,11 @@ Velocity = npt.NDArray[np.floating[Any]]
 
 # Handlers
 BoundaryStrategy = Literal["nearest", "random", "shrink", "reflective", "intermediate", "periodic"]
+VelocityStrategy = Literal["unmodified", "adjust", "invert", "zero"]
 OptionsStrategy = Literal["exp_decay", "lin_variation", "random", "nonlin_mod"]
 
 SwarmOption = Literal["c1", "c2", "w"]
+
 class SwarmOptions(TypedDict):
     """Used for initialising options handlers. Options can either be constant or varied using OptionsHandlers.
     Valid values are:

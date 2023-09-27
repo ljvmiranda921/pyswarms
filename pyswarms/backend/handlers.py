@@ -23,12 +23,12 @@ PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 import inspect
 import math
 from abc import ABC, abstractmethod
-from typing import Any, Literal, Optional
+from typing import Any, Optional
 
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.utils.types import BoundaryStrategy, Bounds, BoundsArray, Clamp, OptionsStrategy, Position, SwarmOption, Velocity
+from pyswarms.utils.types import BoundaryStrategy, Bounds, BoundsArray, Clamp, OptionsStrategy, Position, SwarmOption, Velocity, VelocityStrategy
 
 
 class HandlerMixin(object):
@@ -341,9 +341,6 @@ class BoundaryHandler(HandlerMixin):
                 bound_d[greater_than_bound],
             )
         return new_pos
-
-
-VelocityStrategy = Literal["unmodified", "adjust", "invert", "zero"]
 
 
 class VelocityHandler(HandlerMixin, ABC):
