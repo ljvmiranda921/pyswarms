@@ -28,7 +28,7 @@ from typing import Any, Optional
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.utils.types import BoundaryStrategy, Bounds, BoundsArray, Clamp, OptionsStrategy, Position, SwarmOption, Velocity, VelocityStrategy
+from pyswarms.utils.types import BoundaryStrategy, Bounds, Clamp, OptionsStrategy, Position, SwarmOption, Velocity, VelocityStrategy
 
 
 class HandlerMixin(object):
@@ -53,10 +53,69 @@ class HandlerMixin(object):
         return {k: v for k, v in inspect.getmembers(self, predicate=inspect.isroutine) if not k.startswith(("__", "_"))}
 
 
-class BoundaryHandler(HandlerMixin):
+class BoundaryHandler(HandlerMixin, ABC):
+    """A BoundaryHandler class
+
+    This class offers a way to handle boundary conditions. It contains
+    methods to repair particle positions outside of the defined boundaries.
+    Following strategies are available for the handling:
+
+    * Nearest:
+        Reposition the particle to the nearest bound.
+    * Random:
+        Reposition the particle randomly in between the bounds.
+    * Shrink:
+        Shrink the velocity of the particle such that it lands on the
+        bounds.
+    * Reflective:
+        Mirror the particle position from outside the bounds to inside the
+        bounds.
+    * Intermediate:
+        Reposition the particle to the midpoint between its current
+        position on the bound surpassing axis and the bound itself.  This
+        only adjusts the axes that surpass the boundaries.
+
+    The BoundaryHandler can be called as a function to use the strategy
+    that is passed at initialization to repair boundary issues. An example
+    for the usage:
+
+    .. code-block :: python
+
+        from pyswarms.backend import operators as op
+        from pyswarms.backend.handlers import BoundaryHandler
+
+        bh = BoundaryHandler(strategy="reflective")
+        ops.compute_position(swarm, bounds, handler=bh)
+
+    By passing the handler, the :func:`compute_position()` function now has
+    the ability to reset the particles by calling the :code:`BoundaryHandler`
+    inside.
+    """
     memory: Optional[Position] = None
 
-    def __init__(self, strategy: BoundaryStrategy):
+    @abstractmethod
+    def __call__(self, position: Position, bounds: Bounds) -> Position:
+        """Apply the selected strategy to the position-matrix given the bounds
+
+        Parameters
+        ----------
+        position : numpy.ndarray
+            The swarm position to be handled
+        bounds : tuple of numpy.ndarray or list
+            a tuple of size 2 where the first entry is the minimum bound while
+            the second entry is the maximum bound. Each array must be of shape
+            :code:`(dimensions,)`
+        kwargs : dict
+
+        Returns
+        -------
+        numpy.ndarray
+            the adjusted positions of the swarm
+        """
+        ...
+
+    @staticmethod
+    def factory(strategy: BoundaryStrategy):
         """A BoundaryHandler class
 
         This class offers a way to handle boundary conditions. It contains
@@ -78,69 +137,44 @@ class BoundaryHandler(HandlerMixin):
             position on the bound surpassing axis and the bound itself.  This
             only adjusts the axes that surpass the boundaries.
 
-        The BoundaryHandler can be called as a function to use the strategy
-        that is passed at initialization to repair boundary issues. An example
-        for the usage:
-
-        .. code-block :: python
-
-            from pyswarms.backend import operators as op
-            from pyswarms.backend.handlers import BoundaryHandler
-
-            bh = BoundaryHandler(strategy="reflective")
-            ops.compute_position(swarm, bounds, handler=bh)
-
-        By passing the handler, the :func:`compute_position()` function now has
-        the ability to reset the particles by calling the :code:`BoundaryHandler`
-        inside.
-
-        Attributes
-        ----------
-        strategy : str
-            The strategy to use. To see all available strategies,
-            call :code:`BoundaryHandler.strategies`
+            Parameters
+            ----------
+            strategy : BoundaryStrategy
         """
-        self.strategy = strategy
-        self.strategies = self._get_all_strategies()
+        if strategy == "intermediate":
+            return IntermediateHandler()
+        elif strategy == "nearest":
+            return NearestHandler()
+        elif strategy == "periodic":
+            return PeriodicHandler()
+        elif strategy == "random":
+            return RandomBoundaryHandler()
+        elif strategy == "reflective":
+            return ReflectiveHandler()
+        elif strategy == "shrink":
+            return ShrinkHandler()
 
-    def __call__(self, position: npt.NDArray[Any], bounds: Bounds, **kwargs: Any):
-        """Apply the selected strategy to the position-matrix given the bounds
+        raise ValueError(f'Strategy {strategy} does not match any of ["nearest", "random", "shrink", "reflective", "intermediate", "periodic"]')
 
-        Parameters
-        ----------
-        position : numpy.ndarray
-            The swarm position to be handled
-        bounds : tuple of numpy.ndarray or list
-            a tuple of size 2 where the first entry is the minimum bound while
-            the second entry is the maximum bound. Each array must be of shape
-            :code:`(dimensions,)`
-        kwargs : dict
+class NearestHandler(BoundaryHandler):
+    r"""Set position to nearest bound
 
-        Returns
-        -------
-        numpy.ndarray
-            the adjusted positions of the swarm
-        """
-        return self.strategies[self.strategy](position, bounds, **kwargs)
+    This method resets particles that exceed the bounds to the nearest
+    available boundary. For every axis on which the coordiantes of the particle
+    surpasses the boundary conditions the coordinate is set to the respective
+    bound that it surpasses.
+    The following equation describes this strategy:
 
-    def nearest(self, position: Position, bounds: BoundsArray):
-        r"""Set position to nearest bound
+    .. math::
 
-        This method resets particles that exceed the bounds to the nearest
-        available boundary. For every axis on which the coordiantes of the particle
-        surpasses the boundary conditions the coordinate is set to the respective
-        bound that it surpasses.
-        The following equation describes this strategy:
+        x_{i, t, d} = \begin{cases}
+                            lb_d & \quad \text{if }x_{i, t, d} < lb_d \\
+                            ub_d & \quad \text{if }x_{i, t, d} > ub_d \\
+                            x_{i, t, d} & \quad \text{otherwise}
+                        \end{cases}
+    """
 
-        .. math::
-
-            x_{i, t, d} = \begin{cases}
-                                lb_d & \quad \text{if }x_{i, t, d} < lb_d \\
-                                ub_d & \quad \text{if }x_{i, t, d} > ub_d \\
-                                x_{i, t, d} & \quad \text{otherwise}
-                          \end{cases}
-
-        """
+    def __call__(self, position: Position, bounds: Bounds):
         lb, ub = bounds
         bool_greater = position > ub
         bool_lower = position < lb
@@ -148,32 +182,34 @@ class BoundaryHandler(HandlerMixin):
         new_pos = np.where(bool_greater, ub, new_pos)
         return new_pos
 
-    def reflective(self, position: Position, bounds: BoundsArray):
-        r"""Reflect the particle at the boundary
+class ReflectiveHandler(BoundaryHandler):
+    r"""Reflect the particle at the boundary
 
-        This method reflects the particles that exceed the bounds at the
-        respective boundary. This means that the amount that the component
-        which is orthogonal to the exceeds the boundary is mirrored at the
-        boundary. The reflection is repeated until the position of the particle
-        is within the boundaries. The following algorithm describes the
-        behaviour of this strategy:
+    This method reflects the particles that exceed the bounds at the
+    respective boundary. This means that the amount that the component
+    which is orthogonal to the exceeds the boundary is mirrored at the
+    boundary. The reflection is repeated until the position of the particle
+    is within the boundaries. The following algorithm describes the
+    behaviour of this strategy:
 
-        .. math::
-            :nowrap:
+    .. math::
+        :nowrap:
 
-            \begin{gather*}
-                \text{while } x_{i, t, d} \not\in \left[lb_d,\,ub_d\right] \\
-                \text{ do the following:}\\
-                \\
-                x_{i, t, d} =   \begin{cases}
-                                    2\cdot lb_d - x_{i, t, d} & \quad \text{if } x_{i,
-                                    t, d} < lb_d \\
-                                    2\cdot ub_d - x_{i, t, d} & \quad \text{if } x_{i,
-                                    t, d} > ub_d \\
-                                    x_{i, t, d} & \quad \text{otherwise}
-                                \end{cases}
-            \end{gather*}
-        """
+        \begin{gather*}
+            \text{while } x_{i, t, d} \not\in \left[lb_d,\,ub_d\right] \\
+            \text{ do the following:}\\
+            \\
+            x_{i, t, d} =   \begin{cases}
+                                2\cdot lb_d - x_{i, t, d} & \quad \text{if } x_{i,
+                                t, d} < lb_d \\
+                                2\cdot ub_d - x_{i, t, d} & \quad \text{if } x_{i,
+                                t, d} > ub_d \\
+                                x_{i, t, d} & \quad \text{otherwise}
+                            \end{cases}
+        \end{gather*}
+    """
+
+    def __call__(self, position: Position, bounds: Bounds):
         lb, ub = bounds
         lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
         new_pos = position
@@ -186,38 +222,39 @@ class BoundaryHandler(HandlerMixin):
 
         return new_pos
 
-    def shrink(self, position: Position, bounds: BoundsArray):
-        r"""Set the particle to the boundary
+class ShrinkHandler(BoundaryHandler):
+    r"""Set the particle to the boundary
 
-        This method resets particles that exceed the bounds to the intersection
-        of its previous velocity and the boundary. This can be imagined as shrinking
-        the previous velocity until the particle is back in the valid search space.
-        Let :math:`\sigma_{i, t, d}` be the :math:`d` th shrinking value of the
-        :math:`i` th particle at the time :math:`t` and :math:`v_{i, t}` the velocity
-        of the :math:`i` th particle at the time :math:`t`. Then the new position is
-        computed by the following equation:
+    This method resets particles that exceed the bounds to the intersection
+    of its previous velocity and the boundary. This can be imagined as shrinking
+    the previous velocity until the particle is back in the valid search space.
+    Let :math:`\sigma_{i, t, d}` be the :math:`d` th shrinking value of the
+    :math:`i` th particle at the time :math:`t` and :math:`v_{i, t}` the velocity
+    of the :math:`i` th particle at the time :math:`t`. Then the new position is
+    computed by the following equation:
 
-        .. math::
-            :nowrap:
+    .. math::
+        :nowrap:
 
-            \begin{gather*}
-            \mathbf{x}_{i, t} = \mathbf{x}_{i, t-1} + \sigma_{i, t} \mathbf{v}_{i, t} \\
-            \\
-            \text{with} \\
-            \\
-            \sigma_{i, t, d} = \begin{cases}
-                                \frac{lb_d-x_{i, t-1, d}}{v_{i, t, d}} & \quad \text{if } x_{i, t, d} < lb_d \\
-                                \frac{ub_d-x_{i, t-1, d}}{v_{i, t, d}} & \quad \text{if } x_{i, t, d} > ub_d \\
-                                1 & \quad \text{otherwise}
-                          \end{cases} \\
-            \\
-            \text{and} \\
-            \\
-            \sigma_{i, t} = \min_{d=1...n} \sigma_{i, t, d}
-            \\
-            \end{gather*}
+        \begin{gather*}
+        \mathbf{x}_{i, t} = \mathbf{x}_{i, t-1} + \sigma_{i, t} \mathbf{v}_{i, t} \\
+        \\
+        \text{with} \\
+        \\
+        \sigma_{i, t, d} = \begin{cases}
+                            \frac{lb_d-x_{i, t-1, d}}{v_{i, t, d}} & \quad \text{if } x_{i, t, d} < lb_d \\
+                            \frac{ub_d-x_{i, t-1, d}}{v_{i, t, d}} & \quad \text{if } x_{i, t, d} > ub_d \\
+                            1 & \quad \text{otherwise}
+                        \end{cases} \\
+        \\
+        \text{and} \\
+        \\
+        \sigma_{i, t} = \min_{d=1...n} \sigma_{i, t, d}
+        \\
+        \end{gather*}
+    """
 
-        """
+    def __call__(self, position: Position, bounds: Bounds):
         if self.memory is None:
             new_pos = position
             self.memory = new_pos
@@ -252,12 +289,14 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         return new_pos
 
-    def random(self, position: Position, bounds: BoundsArray):
-        """Set position to random location
+class RandomBoundaryHandler(BoundaryHandler):
+    """Set position to random location
 
-        This method resets particles that exeed the bounds to a random position
-        inside the boundary conditions.
-        """
+    This method resets particles that exeed the bounds to a random position
+    inside the boundary conditions.
+    """
+
+    def __call__(self, position: Position, bounds: Bounds):
         lb, ub = bounds
         lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
         # Set indices that are greater than bounds
@@ -270,24 +309,25 @@ class BoundaryHandler(HandlerMixin):
         )
         return new_pos
 
-    def intermediate(self, position: Position, bounds: BoundsArray):
-        r"""Set the particle to an intermediate position
+class IntermediateHandler(BoundaryHandler):
+    r"""Set the particle to an intermediate position
 
-        This method resets particles that exceed the bounds to an intermediate
-        position between the boundary and their earlier position. Namely, it changes
-        the coordinate of the out-of-bounds axis to the middle value between the
-        previous position and the boundary of the axis.
-        The following equation describes this strategy:
+    This method resets particles that exceed the bounds to an intermediate
+    position between the boundary and their earlier position. Namely, it changes
+    the coordinate of the out-of-bounds axis to the middle value between the
+    previous position and the boundary of the axis.
+    The following equation describes this strategy:
 
-        .. math::
+    .. math::
 
-            x_{i, t, d} = \begin{cases}
-                                \frac{1}{2} \left (x_{i, t-1, d} + lb_d \right) & \quad \text{if }x_{i, t, d} < lb_d \\
-                                \frac{1}{2} \left (x_{i, t-1, d} + ub_d \right) & \quad \text{if }x_{i, t, d} > ub_d \\
-                                x_{i, t, d} & \quad \text{otherwise}
-                          \end{cases}
+        x_{i, t, d} = \begin{cases}
+                            \frac{1}{2} \left (x_{i, t-1, d} + lb_d \right) & \quad \text{if }x_{i, t, d} < lb_d \\
+                            \frac{1}{2} \left (x_{i, t-1, d} + ub_d \right) & \quad \text{if }x_{i, t, d} > ub_d \\
+                            x_{i, t, d} & \quad \text{otherwise}
+                        \end{cases}
+    """
 
-        """
+    def __call__(self, position: Position, bounds: Bounds):
         if self.memory is None:
             new_pos = position
             self.memory = new_pos
@@ -300,30 +340,32 @@ class BoundaryHandler(HandlerMixin):
             self.memory = new_pos
         return new_pos
 
-    def periodic(self, position: Position, bounds: BoundsArray):
-        r"""Sets the particles a periodic fashion
+class PeriodicHandler(BoundaryHandler):
+    r"""Sets the particles a periodic fashion
 
-        This method resets the particles that exeed the bounds by using the
-        modulo function to cut down the position. This creates a virtual,
-        periodic plane which is tiled with the search space.
-        The following equation describtes this strategy:
+    This method resets the particles that exeed the bounds by using the
+    modulo function to cut down the position. This creates a virtual,
+    periodic plane which is tiled with the search space.
+    The following equation describtes this strategy:
 
-        .. math::
-            :nowrap:
+    .. math::
+        :nowrap:
 
-            \begin{gather*}
-            x_{i, t, d} = \begin{cases}
-                                ub_d - (lb_d - x_{i, t, d}) \mod s_d & \quad \text{if }x_{i, t, d} < lb_d \\
-                                lb_d + (x_{i, t, d} - ub_d) \mod s_d & \quad \text{if }x_{i, t, d} > ub_d \\
-                                x_{i, t, d} & \quad \text{otherwise}
-                          \end{cases}\\
-            \\
-            \text{with}\\
-            \\
-            s_d = |ub_d - lb_d|
-            \end{gather*}
+        \begin{gather*}
+        x_{i, t, d} = \begin{cases}
+                            ub_d - (lb_d - x_{i, t, d}) \mod s_d & \quad \text{if }x_{i, t, d} < lb_d \\
+                            lb_d + (x_{i, t, d} - ub_d) \mod s_d & \quad \text{if }x_{i, t, d} > ub_d \\
+                            x_{i, t, d} & \quad \text{otherwise}
+                        \end{cases}\\
+        \\
+        \text{with}\\
+        \\
+        s_d = |ub_d - lb_d|
+        \end{gather*}
 
-        """
+    """
+
+    def __call__(self, position: Position, bounds: Bounds):
         lb, ub = bounds
         lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
         bound_d = np.tile(np.abs(np.array(ub) - np.array(lb)), (position.shape[0], 1))
