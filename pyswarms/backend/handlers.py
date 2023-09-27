@@ -23,13 +23,12 @@ PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 import inspect
 import math
 from abc import ABC, abstractmethod
-from copy import copy
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Optional
 
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, SwarmOptions, Velocity
+from pyswarms.utils.types import BoundaryStrategy, Bounds, BoundsArray, Clamp, OptionsStrategy, Position, SwarmOption, Velocity, VelocityStrategy
 
 
 class HandlerMixin(object):
@@ -52,9 +51,6 @@ class HandlerMixin(object):
     def _get_all_strategies(self):
         """Helper method to automatically generate a dict of strategies"""
         return {k: v for k, v in inspect.getmembers(self, predicate=inspect.isroutine) if not k.startswith(("__", "_"))}
-
-
-BoundaryStrategy = Literal["nearest", "random", "shrink", "reflective", "intermediate", "periodic"]
 
 
 class BoundaryHandler(HandlerMixin):
@@ -347,13 +343,21 @@ class BoundaryHandler(HandlerMixin):
         return new_pos
 
 
-VelocityStrategy = Literal["unmodified", "adjust", "invert", "zero"]
-
-
 class VelocityHandler(HandlerMixin, ABC):
     memory: Optional[Position] = None
 
     def __init__(self, clamp: Optional[Clamp] = None, bounds: Optional[Bounds] = None):
+        """Initialize the VelocityHandler
+
+        Parameters
+        ----------
+        clamp : Optional[Clamp], optional
+            Minimum and maximum velocity values, by default None
+        bounds : Optional[Bounds], optional
+            a tuple of size 2 where the first entry is the minimum bound while
+            the second entry is the maximum bound. Each array must be of shape
+            :code:`(dimensions,)`, by default None
+        """
         self.clamp = clamp
         self.bounds = bounds
 
@@ -402,6 +406,12 @@ class VelocityHandler(HandlerMixin, ABC):
             Inverts and shrinks the velocity by the factor :code:`-z`.
         * Zero
             Sets the velocity of out-of-bounds particles to zero.
+
+        Parameters
+        ----------
+        strategy : VelocityStrategy
+        clamp : Optional[Clamp], optional
+        bounds : Optional[Bounds], optional
         """
         if strategy == "unmodified":
             return UnmodifiedVelocityHandler(clamp, bounds)
@@ -500,198 +510,233 @@ class ZeroVelocityHandler(VelocityHandler):
         return new_vel
 
 
-OptionsStrategy = Literal["exp_decay", "lin_variation", "random", "nonlin_mod"]
-SwarmOption = Literal["c1", "c2", "w"]
+class OptionsHandler(ABC):
+    """An OptionsHandler class
+
+    This class offers a way to handle options. It contains
+    methods to vary the options at runtime.
+    Following strategies are available for the handling:
+
+    * exp_decay:
+        Decreases the parameter exponentially between limits.
+
+    * lin_variation:
+        Decreases/increases the parameter linearly between limits.
+
+    * random:
+        takes a uniform random value between limits
+
+    * nonlin_mod:
+        Decreases/increases the parameter between limits according to a nonlinear modulation index .
+
+    The OptionsHandler can be called as a function to use the strategy
+    that is passed at initialization to account for time-varying coefficients. An example
+    for the usage:
+
+    .. code-block :: python
+
+        from pyswarms.backend import operators as op
+        from pyswarms.backend.handlers import OptionsHandler
 
 
-# TODO: Ew omg my eyes it's awful, implement a proper pattern here pls (see velocityhandler)
-class OptionsHandler(HandlerMixin):
-    def __init__(self, strategy: Dict[str, OptionsStrategy]):
-        """An OptionsHandler class
+        oh = OptionsHandler(strategy={ "w":"exp_decay", "c1":"nonlin_mod","c2":"lin_variation"})
 
-        This class offers a way to handle options. It contains
-        methods to vary the options at runtime.
-        Following strategies are available for the handling:
+        for i in range(iters):
+            # initial operations for global and local best positions
+            new_options = oh(default_options, iternow=i, itermax=iters, end_opts={"c1":0.5, "c2":2.5, "w":0.4})
+            # more updates using new_options
 
-        * exp_decay:
-            Decreases the parameter exponentially between limits.
+    .. note::
+        As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending
+        options and other arguments for each strategy in all of the handlers on this page.
 
-        * lin_variation:
-            Decreases/increases the parameter linearly between limits.
+    A more comprehensive tutorial is also present `here`_ for interested users.
 
-        * random:
-            takes a uniform random value between limits
-
-        * nonlin_mod:
-            Decreases/increases the parameter between limits according to a nonlinear modulation index .
-
-        The OptionsHandler can be called as a function to use the strategy
-        that is passed at initialization to account for time-varying coefficients. An example
-        for the usage:
-
-        .. code-block :: python
-
-            from pyswarms.backend import operators as op
-            from pyswarms.backend.handlers import OptionsHandler
-
-
-            oh = OptionsHandler(strategy={ "w":"exp_decay", "c1":"nonlin_mod","c2":"lin_variation"})
-
-            for i in range(iters):
-                # initial operations for global and local best positions
-                new_options = oh(default_options, iternow=i, itermax=iters, end_opts={"c1":0.5, "c2":2.5, "w":0.4})
-                # more updates using new_options
-
-        .. note::
-            As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending
-            options and other arguments for each strategy in all of the handlers on this page.
-
-        A more comprehensive tutorial is also present `here`_ for interested users.
-
-        .. _here: https://pyswarms.readthedocs.io/en/latest/examples/tutorials/options_handler.html
+    .. _here: https://pyswarms.readthedocs.io/en/latest/examples/tutorials/options_handler.html
 
 
 
-        Attributes
+    Attributes
+    ----------
+    strategy : str
+        The strategy to use. To see all available strategies,
+        call :code:`OptionsHandler.strategies`
+    """
+    end_value: float
+
+    def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None):
+        """Initialise the OptionsHandler
+
+        Parameters
         ----------
-        strategy : str
-            The strategy to use. To see all available strategies,
-            call :code:`OptionsHandler.strategies`
+        option : SwarmOption
+            Which option this handler will manage. 
+        start_value : float
+            Initial value for the option
+        end_value : Optional[float], optional
+            Final value for the option. If None, it will be computed automatically.
+            Defaults: 
+                :math:`w^{end} = 0.4,
+                c^{end}_{1} = 0.8 * c^{start}_{1},
+                c^{end}_{2} = c^{start}_{2}`
         """
-        self.strategy = strategy
-        self.strategies = self._get_all_strategies()
-
-    def __call__(self, start_opts: SwarmOptions, **kwargs: Any):
-        if not self.strategy:
-            return start_opts
-
-        return_opts = copy(start_opts)
-
-        for opt in start_opts:
-            if opt in self.strategy:
-                return_opts[opt] = self.strategies[self.strategy[opt]](start_opts, opt, **kwargs)
-
-        return return_opts
-
-    def exp_decay(self, start_opts: SwarmOptions, opt: SwarmOption, **kwargs: Any) -> float:
-        """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
-        The velocity is adjusted such that the following equation holds:
-
-        Defaults: :math:`
-            d_{1}=2,
-            d_{2}=7,
-            w^{end} = 0.4,
-            c^{end}_{1} = 0.8 * c^{start}_{1},
-            c^{end}_{2} = c^{start}_{2}`
-
-        .. math::
-                w = (w^{start}-w^{end}-d_{1})exp(\\frac{1}{1+ \\frac{d_{2}.iter}{iter^{max}}})
-
-        Ref: Li, H.-R., & Gao, Y.-L. (2009). Particle Swarm Optimization Algorithm with Exponent
-        Decreasing Inertia Weight and Stochastic Mutation. 2009 Second International Conference
-        on Information and Computing Science. doi:10.1109/icic.2009.24
-
-        """
-        # default values from reference paper
-        if "d1" not in kwargs:
-            d1 = 0.2
+        self.option = option
+        self.start_value = start_value
+        self.set_end_option(end_value)
+    
+    def set_end_option(self, end_value: Optional[float]):
+        if end_value is not None:
+            self.end_value = end_value
+            return
+        
+        if self.option == "c1":
+            self.end_value = 0.8 * self.start_value
+        elif self.option == "c2":
+            self.end_value = self.start_value
         else:
-            d1 = kwargs["d1"]
-        if "d2" not in kwargs:
-            d2 = 7
-        else:
-            d2 = kwargs["d2"]
+            self.end_value = 0.4
 
-        end_opts = {
-            "w": 0.4,
-            "c1": 0.8 * start_opts["c1"],
-            "c2": 1 * start_opts["c2"],
-        }
-        if "end_opts" in kwargs:
-            if opt in kwargs["end_opts"]:
-                end_opts[opt] = kwargs["end_opts"][opt]
-
-        start = start_opts[opt]
-        end = end_opts[opt]
-        new_val = (start - end - d1) * math.exp(1 / (1 + d2 * kwargs["iternow"] / kwargs["itermax"]))
-
-        return new_val
-
-    def lin_variation(self, start_opts: SwarmOptions, opt: SwarmOption, **kwargs: Any) -> float:
+    @abstractmethod
+    def __call__(self, iter: int, iter_max: int) -> float:
         """
-        Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
+        Parameters
+        ----------
+        iter : int
+            Current iteration.
+        iter_max : int
+            Total number of iterations.
 
-        Defaults: :math:`w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
-
-        .. math::
-                w = w^{end}+(w^{start}-w^{end}) \\frac{iter^{max}-iter}{iter^{max}}
-
-        Ref: Xin, Jianbin, Guimin Chen, and Yubao Hai. "A particle swarm optimizer with
-        multi-stage linearly-decreasing inertia weight." 2009 International joint conference
-        on computational sciences and optimization. Vol. 1. IEEE, 2009.
+        Returns
+        -------
+        float
+            Value of the option at the current iteration.
         """
-        end_opts = {
-            "w": 0.4,
-            "c1": 0.8 * start_opts["c1"],
-            "c2": 1 * start_opts["c2"],
-        }
-        if "end_opts" in kwargs:
-            if opt in kwargs["end_opts"]:
-                end_opts[opt] = kwargs["end_opts"][opt]
-        start = start_opts[opt]
-        end = end_opts[opt]
-        new_val = end + (start - end) * (kwargs["itermax"] - kwargs["iternow"]) / kwargs["itermax"]
+        ...
+    
+    @staticmethod
+    def factory(strategy: OptionsStrategy, option: SwarmOption, start_value: float, end_value: Optional[float] = None, **kwargs: Any):
+        if strategy == "exp_decay":
+            return ExpDecayHandler(option, start_value, end_value, **kwargs)
+        elif strategy == "lin_variation":
+            return LinVariationHandler(option, start_value, end_value, **kwargs)
+        elif strategy == "nonlin_mod":
+            return NonlinModHandler(option, start_value, end_value, **kwargs)
+        elif strategy == "random":
+            return RandomHandler(option, start_value, end_value, **kwargs)
 
-        return new_val
+        raise ValueError(f'Strategy {strategy} does not match any of ["exp_decay", "lin_variation", "nonlin_mod", "random"]')
 
-    def random(self, start_opts: SwarmOptions, opt: SwarmOption, **kwargs: Any) -> float:
-        """Random value between :math:`w^{start}` and :math:`w^{end}`
+class ExpDecayHandler(OptionsHandler):
+    """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
+    The velocity is adjusted such that the following equation holds:
 
-        .. math::
-                w = start + (end-start)*rand(0,1)
+    Defaults: :math:`
+        d_{1}=0.2,
+        d_{2}=7,
+        w^{end} = 0.4,
+        c^{end}_{1} = 0.8 * c^{start}_{1},
+        c^{end}_{2} = c^{start}_{2}`
 
-        Ref: R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
-        swarms, in: Congress on Evolutionary Computation, Korea, 2001
+    .. math::
+            w = (w^{start}-w^{end}-d_{1})exp(\\frac{1}{1+ \\frac{d_{2} * iter}{iter_{max}}})
+
+    Ref: Li, H.-R., & Gao, Y.-L. (2009). Particle Swarm Optimization Algorithm with Exponent
+    Decreasing Inertia Weight and Stochastic Mutation. 2009 Second International Conference
+    on Information and Computing Science. doi:10.1109/icic.2009.24
+    """
+
+    def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, d1: float = 0.2, d2: float = 7):
+        """Initialise the ExpDecayHandler
+
+        Parameters
+        ----------
+        option : SwarmOption
+            Which option this handler will manage. 
+        start_value : float
+            Initial value for the option
+        end_value : Optional[float], optional
+            Final value for the option. If None, it will be computed automatically.
+        d1 : float, optional
+            By default 0.2
+        d2 : float, optional
+            By default 7
         """
+        super().__init__(option, start_value, end_value)
+        self.d1 = d1
+        self.d2 = d2
 
-        start = start_opts[opt]
-        if opt in kwargs["end_opts"]:
-            end = kwargs["end_opts"][opt]
-        else:
-            end = start + 1
+    def __call__(self, iter_cur: int, iter_max: int):
+        return (self.start_value - self.end_value - self.d1) * math.exp(1 / (1 + self.d2 * iter_cur / iter_max))
 
-        return start + (end - start) * np.random.rand()
+class LinVariationHandler(OptionsHandler):
+    """
+    Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
 
-    def nonlin_mod(self, start_opts: SwarmOptions, opt: SwarmOption, **kwargs: Any) -> float:
-        """Non linear decreasing/increasing with modulation index(n).
-        The linear strategy can be made to converge faster without compromising
-        on exploration with the use of this index which makes the equation non-linear.
+    Defaults: :math:`w^{end} = 0.4, c^{end}_{1} = 0.8 * c^{start}_{1}, c^{end}_{2} = c^{start}_{2}`
 
-        Defaults: :math:`n=1.2`
+    .. math::
+            w = w^{end}+(w^{start}-w^{end}) \\frac{iter^{max}-iter}{iter^{max}}
 
-        .. math::
-                w = w^{end}+(w^{start}-w^{end}) \\frac{(iter^{max}-iter)^{n}}{(iter^{max})^{n}}
+    Ref: Xin, Jianbin, Guimin Chen, and Yubao Hai. "A particle swarm optimizer with
+    multi-stage linearly-decreasing inertia weight." 2009 International joint conference
+    on computational sciences and optimization. Vol. 1. IEEE, 2009.
+    """
 
-        Ref:  A. Chatterjee, P. Siarry, Nonlinear inertia weight variation for dynamic adaption
-        in particle swarm optimization, Computer and Operations Research 33 (2006)
-        859–871, March 2006
+    def __call__(self, iter_cur: int, iter_max: int):
+        return self.start_value + (self.end_value - self.start_value) * iter_cur / iter_max
+
+class RandomHandler(OptionsHandler):
+    """Random value between :math:`w^{start}` and :math:`w^{end}`
+
+    .. math::
+            w = start + (end-start)*rand(0,1)
+
+    Ref: R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
+    swarms, in: Congress on Evolutionary Computation, Korea, 2001
+    """
+    
+    def set_end_option(self, end_value: Optional[float]):
+        if end_value is not None:
+            self.end_value = end_value
+            return
+        
+        self.end_value = self.start_value + 1
+
+    def __call__(self, iter_cur: int, iter_max: int):
+        return self.start_value + (self.end_value - self.start_value) * np.random.rand()
+
+class NonlinModHandler(OptionsHandler):
+    """Non linear decreasing/increasing with modulation index(n).
+    The linear strategy can be made to converge faster without compromising
+    on exploration with the use of this index which makes the equation non-linear.
+
+    Defaults: :math:`n=1.2`
+
+    .. math::
+            w = w^{end}+(w^{start}-w^{end}) \\frac{(iter^{max}-iter)^{n}}{(iter^{max})^{n}}
+
+    Ref:  A. Chatterjee, P. Siarry, Nonlinear inertia weight variation for dynamic adaption
+    in particle swarm optimization, Computer and Operations Research 33 (2006)
+    859–871, March 2006
+    """
+
+    def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, n: float = 1.2):
+        """Initialise the NonlinModHandler
+
+        Parameters
+        ----------
+        option : SwarmOption
+            Which option this handler will manage. 
+        start_value : float
+            Initial value for the option
+        end_value : Optional[float], optional
+            Final value for the option. If None, it will be computed automatically.
+        n : float > 0, optional
+            Larger values make it converge to end_value quicker, by default 1.2
         """
-        if "n" not in kwargs:
-            n = 1.2
-        else:
-            n = kwargs["n"]
+        super().__init__(option, start_value, end_value)
+        self.n = n
+        assert self.n > 0, "n must be larger than 0"
 
-        end_opts = {
-            "w": 0.4,
-            "c1": 0.8 * start_opts["c1"],
-            "c2": 1 * start_opts["c2"],
-        }
-        if "end_opts" in kwargs:
-            if opt in kwargs["end_opts"]:
-                end_opts[opt] = kwargs["end_opts"][opt]
-
-        start = start_opts[opt]
-        end = end_opts[opt]
-        new_val = end + (start - end) * ((kwargs["itermax"] - kwargs["iternow"]) ** n / kwargs["itermax"] ** n)
-
-        return new_val
+    def __call__(self, iter_cur: int, iter_max: int) -> float:
+        return self.end_value + (self.start_value - self.end_value) * ((iter_max - iter_cur) / iter_max) ** self.n

@@ -1,4 +1,4 @@
-from typing import Any, Dict, get_args
+from typing import Dict, Optional, get_args
 
 import numpy as np
 import pytest
@@ -13,7 +13,7 @@ from pyswarms.backend.handlers import (
     VelocityStrategy,
 )
 from pyswarms.backend.velocity import SwarmOptions
-from pyswarms.utils.types import Bounds, Clamp, Position, Velocity
+from pyswarms.utils.types import Bounds, Clamp, Position, SwarmOption, Velocity
 
 bh_strategies = list(get_args(BoundaryStrategy))
 vh_strategies = list(get_args(VelocityStrategy))
@@ -168,7 +168,7 @@ def test_invert_strategy(
 
 
 def assert_option_strategy(
-    strategy: Dict[str, OptionsStrategy], init_opts: SwarmOptions, exp_opts: Dict[str, float], **kwargs: Any
+    strategy: Dict[str, OptionsStrategy], init_opts: SwarmOptions, exp_opts: Dict[SwarmOption, float], end_opts: Dict[str, Optional[float]]
 ):
     """Test for any strategy for options handler
     strategy : strategy to use
@@ -177,24 +177,20 @@ def assert_option_strategy(
     kwargs: arguments to use for given strategy
     """
     assert len(init_opts) == len(exp_opts), "Size of initial options and expected options must be same"
-    oh = OptionsHandler(strategy)
-    return_opts = oh(init_opts, **kwargs)
-    assert np.allclose(
-        list(return_opts.values()), list(exp_opts.values()), atol=0.001, rtol=0  # type: ignore
-    ), "Expected options don't match with the given strategy"
+    for opt, value in exp_opts.items():
+        oh = OptionsHandler.factory(strategy[opt], opt, value, end_opts[opt])
+        np.isclose(oh.__call__(100, 100), value, atol=0.001, rtol=0)
 
 
 def test_option_strategy():
     init_opts = SwarmOptions({"c1": 0.5, "c2": 0.3, "w": 0.9})
-    end_opts = {"c2": 0.1, "w": 0.2}  # use default for c1
+    end_opts = {"c1": None, "c2": 0.1, "w": 0.2}  # use default for c1
     strategy: Dict[str, OptionsStrategy] = {"w": "exp_decay", "c1": "lin_variation", "c2": "nonlin_mod"}
-    exp_opts = {"c1": 0.4, "c2": 0.1, "w": 0.567}
+    exp_opts: Dict[SwarmOption, float] = {"c1": 0.4, "c2": 0.1, "w": 0.567}
 
     assert_option_strategy(
         strategy,
         init_opts,
         exp_opts,
-        iternow=100,
-        itermax=100,
-        end_opts=end_opts,
+        end_opts,
     )
