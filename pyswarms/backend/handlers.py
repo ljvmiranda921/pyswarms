@@ -28,7 +28,7 @@ from typing import Any, Literal, Optional
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.utils.types import BoundaryStrategy, Bounds, BoundsArray, Clamp, Position, SwarmOption, Velocity
+from pyswarms.utils.types import BoundaryStrategy, Bounds, BoundsArray, Clamp, OptionsStrategy, Position, SwarmOption, Velocity
 
 
 class HandlerMixin(object):
@@ -570,6 +570,19 @@ class OptionsHandler(ABC):
     @abstractmethod
     def __call__(self, iter: int, iter_max: int) -> float:
         ...
+    
+    @staticmethod
+    def factory(strategy: OptionsStrategy, option: SwarmOption, start_value: float, end_value: Optional[float] = None, **kwargs: Any):
+        if strategy == "exp_decay":
+            return ExpDecayHandler(option, start_value, end_value, **kwargs)
+        elif strategy == "lin_variation":
+            return LinVariationHandler(option, start_value, end_value, **kwargs)
+        elif strategy == "nonlin_mod":
+            return NonlinModHandler(option, start_value, end_value, **kwargs)
+        elif strategy == "random":
+            return RandomHandler(option, start_value, end_value, **kwargs)
+
+        raise ValueError(f'Strategy {strategy} does not match any of ["exp_decay", "lin_variation", "nonlin_mod", "random"]')
 
 class ExpDecayHandler(OptionsHandler):
     """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
