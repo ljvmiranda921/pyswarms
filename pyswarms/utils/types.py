@@ -1,9 +1,10 @@
-from typing import Any, List, Literal, Tuple, TypedDict
+from typing import TYPE_CHECKING, Any, List, Literal, Tuple, TypedDict
 
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.backend.handlers import OptionsHandler
+if TYPE_CHECKING:
+    from pyswarms.backend.handlers import OptionsHandler
 
 # Bounds for constrained optimization
 BoundsList = Tuple[List[int], List[int]] | Tuple[List[float], List[float]]
@@ -48,6 +49,6 @@ class SwarmOptions(TypedDict):
     w : float|Tuple[OptionsStrategy, float]|OptionsHandler
         inertia parameter
     """
-    c1: float|Tuple[OptionsStrategy, float]|OptionsHandler
-    c2: float|Tuple[OptionsStrategy, float]|OptionsHandler
-    w: float|Tuple[OptionsStrategy, float]|OptionsHandler
+    c1: float|Tuple[OptionsStrategy, float]|"OptionsHandler"
+    c2: float|Tuple[OptionsStrategy, float]|"OptionsHandler"
+    w: float|Tuple[OptionsStrategy, float]|"OptionsHandler"
