@@ -148,6 +148,19 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
 
         self.top = topology
         self.name = __name__
+    
+    def _setup(self, n_processes: Optional[int], verbose: bool):
+        self.log_level = "DEBUG" if verbose else "TRACE"
+
+        # Setup Pool of processes for parallel evaluation
+        self.pool = None if n_processes is None else mp.Pool(n_processes)
+
+        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
+        self.ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
+    
+    def _teardown(self):
+        if self.pool is not None:
+            self.pool.close()
 
     def optimize(
         self,
@@ -180,19 +193,13 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         tuple
             the global best cost and the global best position.
         """
-        log_level = "DEBUG" if verbose else "TRACE"
+        self._setup(n_processes, verbose)
         logger.debug("Obj. func. args: {}".format(kwargs))
-
-        # Setup Pool of processes for parallel evaluation
-        pool = None if n_processes is None else mp.Pool(n_processes)
-
-        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
 
         pbar = trange(iters, desc=self.name) if verbose else range(iters)
         for i in pbar:
             # Compute cost for current position and personal best
-            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=pool, **kwargs)
+            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=self.pool, **kwargs)
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
             best_cost_yet_found = self.swarm.best_cost
 
@@ -215,27 +222,25 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
             delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            ftol_history.append(delta)
-            if i >= self.ftol_iter and all(ftol_history):
+            self.ftol_history.append(delta)
+            if i >= self.ftol_iter and all(self.ftol_history):
                 break
 
             # Perform velocity and position updates
             self.swarm.velocity = self.velocity_updater.compute(self.swarm, i, iters)
             self.swarm.position = self.position_updater.compute(self.swarm)
-
+        
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
 
         # Write report in log and return final cost and position
         logger.log(
-            log_level,
+            self.log_level,
             "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
         )
 
-        # Close Pool of Processes
-        if n_processes is not None:
-            pool.close()  # type: ignore
+        self._teardown()
 
         return (final_best_cost, final_best_pos)
 

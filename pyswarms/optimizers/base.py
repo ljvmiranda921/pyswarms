@@ -168,12 +168,12 @@ class BaseSwarmOptimizer(abc.ABC):
         NotImplementedError
             When this method is not implemented.
         """
-        raise NotImplementedError("SwarmBase::optimize()")
+        ...
 
     @abc.abstractmethod
     def _init_swarm(self) -> None:
         """Initialise a new swarm object"""
-        raise NotImplementedError("SwarmBase::init_swarm()")
+        ...
 
     def reset(self):
         """Reset the attributes of the optimizer
