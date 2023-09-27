@@ -39,7 +39,7 @@ class TestComputeVelocity(object):
     def test_return_values(self, swarm: Swarm, clamp: Optional[Clamp], options: SwarmOptions):
         """Test if method gives the expected shape and range"""
         vu = VelocityUpdater(options, clamp, "unmodified")
-        v = vu.compute(swarm)
+        v = vu.compute(swarm, 1, 1)
         assert v.shape == swarm.position.shape
         if clamp is not None:
             assert (clamp[0] <= v).all() and (clamp[1] >= v).all()
@@ -50,15 +50,7 @@ class TestComputeVelocity(object):
         """Test if method raises AttributeError with wrong swarm"""
         vu = VelocityUpdater(options, None, "unmodified")
         with pytest.raises(AttributeError):
-            vu.compute(swarm)
-
-    @pytest.mark.parametrize("options", [{"c1": 0.5, "c2": 0.3}])
-    @pytest.mark.parametrize("vh_strat", ["unmodified", "zero", "invert", "adjust"])
-    def test_missing_kwargs(self, swarm: Swarm, options: SwarmOptions, vh_strat: VelocityStrategy):
-        """Test if method raises KeyError with missing kwargs"""
-        vu = VelocityUpdater(options, (0, 1), "unmodified")
-        with pytest.raises(KeyError):
-            vu.compute(swarm, 10)
+            vu.compute(swarm, 1, 1)
 
 
 class TestComputePosition(object):

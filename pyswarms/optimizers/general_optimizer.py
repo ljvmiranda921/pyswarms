@@ -220,7 +220,7 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
                 break
 
             # Perform velocity and position updates
-            self.swarm.velocity = self.velocity_updater.compute(self.swarm, iters)
+            self.swarm.velocity = self.velocity_updater.compute(self.swarm, i, iters)
             self.swarm.position = self.position_updater.compute(self.swarm)
 
         # Obtain the final best_cost and the final best_position

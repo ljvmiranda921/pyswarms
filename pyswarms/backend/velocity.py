@@ -14,11 +14,11 @@ class VelocityUpdater:
     ----------
     options : SwarmOptions
         Dictionary containing the 3 parameters for evolution:
-            * c1 : float
+            * c1 : float|Tuple[OptionsStrategy, float]|OptionsHandler
                 cognitive parameter
-            * c2 : float
+            * c2 : float|Tuple[OptionsStrategy, float]|OptionsHandler
                 social parameter
-            * w : float
+            * w : float|Tuple[OptionsStrategy, float]|OptionsHandler
                 inertia parameter
     clamp : tuple of floats, optional
         a tuple of size 2 where the first entry is the minimum velocity
@@ -53,10 +53,12 @@ class VelocityUpdater:
     def init_options(self, options: SwarmOptions):
         self.options = {
             "c1": self.init_option("c1", options["c1"]),
+            "c2": self.init_option("c2", options["c2"]),
+            "w": self.init_option("w", options["w"]),
         }
 
     def init_option(self, option: SwarmOption, value: float|Tuple[OptionsStrategy, float]|OptionsHandler) -> Callable[[int, int], float]:
-        if isinstance(value, float):
+        if isinstance(value, float|int):
             def get_option(*_: int):
                 return value
             return get_option

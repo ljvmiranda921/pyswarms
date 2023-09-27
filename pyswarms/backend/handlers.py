@@ -738,7 +738,5 @@ class NonlinModHandler(OptionsHandler):
         self.n = n
         assert self.n > 0, "n must be larger than 0"
 
-    def __call__(self, iter_cur: int, iter_max: int):
-        new_val = self.end_value + (self.start_value - self.end_value) * ((iter_max - iter_cur) / iter_max) ** self.n
-
-        return new_val
+    def __call__(self, iter_cur: int, iter_max: int) -> float:
+        return self.end_value + (self.start_value - self.end_value) * ((iter_max - iter_cur) / iter_max) ** self.n
