@@ -13,7 +13,7 @@ class PositionUpdater:
         self.bounds = bounds
 
         if isinstance(bh, str):
-            self.bh = BoundaryHandler(bh)
+            self.bh = BoundaryHandler.factory(bh)
         else:
             self.bh = bh
 

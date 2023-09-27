@@ -41,7 +41,7 @@ def test_out_of_bounds(bounds: Bounds, positions_inbound: Position, positions_ou
 def test_bound_handling(
     bounds: Bounds, positions_inbound: Position, positions_out_of_bound: Position, strategy: BoundaryStrategy
 ):
-    bh = BoundaryHandler(strategy=strategy)
+    bh = BoundaryHandler.factory(strategy)
     # Test if it doesn't handle inbound positions
     inbound_handled = bh(positions_inbound, bounds)
     assert inbound_handled.all() == positions_inbound.all()
