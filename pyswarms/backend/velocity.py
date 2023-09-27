@@ -39,7 +39,6 @@ class VelocityUpdater:
         clamp: Optional[Clamp],
         vh: VelocityStrategy | VelocityHandler = "unmodified",
         bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[Dict[str, OptionsStrategy]] = None,
     ):
         self.options = options
         self.clamp = clamp
@@ -50,13 +49,7 @@ class VelocityUpdater:
         else:
             self.vh = vh
 
-        if oh_strategy is None:
-            oh_strategy = {}
-        self.oh = OptionsHandler(oh_strategy)
-
-        self.iterations = 0
-
-    def compute(self, swarm: Swarm, itermax: int = 0):
+    def compute(self, swarm: Swarm, iter_cur: int, iter_max: int):
         """Update the velocity matrix
 
         This method updates the velocity matrix using the best and current
@@ -92,7 +85,7 @@ class VelocityUpdater:
         swarm_size = swarm.position.shape
 
         # Perform options update
-        options = self.oh(self.options, iternow=self.iterations, itermax=itermax)
+        c1, c2, w = self.get_options(iter_cur, iter_max)
 
         # Compute for cognitive and social terms
         cognitive = options["c1"] * np.random.uniform(0, 1, swarm_size) * (swarm.pbest_pos - swarm.position)
@@ -103,6 +96,9 @@ class VelocityUpdater:
         updated_velocity = self.vh(temp_velocity, swarm.position)
 
         return updated_velocity
+    
+    def get_options(self, iter_cur: int, iter_max: int):
+        ...
 
     def generate_velocity(self, n_particles: int, dimensions: int) -> Velocity:
         """Initialize a velocity vector

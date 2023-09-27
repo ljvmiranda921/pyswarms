@@ -550,10 +550,9 @@ class OptionsHandler(ABC):
     """
     end_value: float
 
-    def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, iters: int = 0):
+    def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None):
         self.option = option
         self.start_value = start_value
-        self.iters = iters
         self.set_end_option(end_value)
     
     def set_end_option(self, end_value: Optional[float]):
@@ -569,7 +568,7 @@ class OptionsHandler(ABC):
             self.end_value = 0.4
 
     @abstractmethod
-    def __call__(self, iter: int) -> float:
+    def __call__(self, iter: int, iter_max: int) -> float:
         ...
 
 class ExpDecayHandler(OptionsHandler):
@@ -591,13 +590,13 @@ class ExpDecayHandler(OptionsHandler):
     on Information and Computing Science. doi:10.1109/icic.2009.24
     """
 
-    def __init__(self, option: SwarmOption, start_value: float, iters: int, d1: float = 0.2, d2: float = 7, end_value: Optional[float] = None):
-        super().__init__(option, start_value, end_value, iters)
+    def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, d1: float = 0.2, d2: float = 7):
+        super().__init__(option, start_value, end_value)
         self.d1 = d1
         self.d2 = d2
 
-    def __call__(self, iter: int):
-        return (self.start_value - self.end_value - self.d1) * math.exp(1 / (1 + self.d2 * iter / self.iters))
+    def __call__(self, iter_cur: int, iter_max: int):
+        return (self.start_value - self.end_value - self.d1) * math.exp(1 / (1 + self.d2 * iter_cur / iter_max))
 
 class LinVariationHandler(OptionsHandler):
     """
@@ -613,8 +612,8 @@ class LinVariationHandler(OptionsHandler):
     on computational sciences and optimization. Vol. 1. IEEE, 2009.
     """
 
-    def __call__(self, iter: int):
-        return self.start_value + (self.end_value - self.start_value) * iter / self.iters
+    def __call__(self, iter_cur: int, iter_max: int):
+        return self.start_value + (self.end_value - self.start_value) * iter_cur / iter_max
 
 class RandomHandler(OptionsHandler):
     """Random value between :math:`w^{start}` and :math:`w^{end}`
@@ -633,7 +632,7 @@ class RandomHandler(OptionsHandler):
         
         self.end_value = self.start_value + 1
 
-    def __call__(self, iter: int):
+    def __call__(self, iter_cur: int, iter_max: int):
         return self.start_value + (self.end_value - self.start_value) * np.random.rand()
 
 class NonlinModHandler(OptionsHandler):
@@ -651,11 +650,11 @@ class NonlinModHandler(OptionsHandler):
     859–871, March 2006
     """
 
-    def __init__(self, option: SwarmOption, start_value: float, iters: int, n: float = 1.2, end_value: Optional[float] = None):
-        super().__init__(option, start_value, end_value, iters)
+    def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, n: float = 1.2):
+        super().__init__(option, start_value, end_value)
         self.n = n
 
-    def __call__(self, iter: int):
-        new_val = self.end_value + (self.start_value - self.end_value) * ((self.iters - iter) / self.iters) ** self.n
+    def __call__(self, iter_cur: int, iter_max: int):
+        new_val = self.end_value + (self.start_value - self.end_value) * ((iter_max - iter_cur) / iter_max) ** self.n
 
         return new_val
