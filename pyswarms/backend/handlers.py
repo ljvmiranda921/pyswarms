@@ -23,13 +23,12 @@ PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 import inspect
 import math
 from abc import ABC, abstractmethod
-from copy import copy
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal, Optional
 
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.utils.types import Bounds, BoundsArray, Clamp, Position, SwarmOptions, Velocity
+from pyswarms.utils.types import BoundaryStrategy, Bounds, BoundsArray, Clamp, Position, SwarmOption, Velocity
 
 
 class HandlerMixin(object):
@@ -52,9 +51,6 @@ class HandlerMixin(object):
     def _get_all_strategies(self):
         """Helper method to automatically generate a dict of strategies"""
         return {k: v for k, v in inspect.getmembers(self, predicate=inspect.isroutine) if not k.startswith(("__", "_"))}
-
-
-BoundaryStrategy = Literal["nearest", "random", "shrink", "reflective", "intermediate", "periodic"]
 
 
 class BoundaryHandler(HandlerMixin):
@@ -500,79 +496,58 @@ class ZeroVelocityHandler(VelocityHandler):
         return new_vel
 
 
-OptionsStrategy = Literal["exp_decay", "lin_variation", "random", "nonlin_mod"]
-SwarmOption = Literal["c1", "c2", "w"]
+class OptionsHandler(ABC):
+    """An OptionsHandler class
+
+    This class offers a way to handle options. It contains
+    methods to vary the options at runtime.
+    Following strategies are available for the handling:
+
+    * exp_decay:
+        Decreases the parameter exponentially between limits.
+
+    * lin_variation:
+        Decreases/increases the parameter linearly between limits.
+
+    * random:
+        takes a uniform random value between limits
+
+    * nonlin_mod:
+        Decreases/increases the parameter between limits according to a nonlinear modulation index .
+
+    The OptionsHandler can be called as a function to use the strategy
+    that is passed at initialization to account for time-varying coefficients. An example
+    for the usage:
+
+    .. code-block :: python
+
+        from pyswarms.backend import operators as op
+        from pyswarms.backend.handlers import OptionsHandler
 
 
-class OptionsHandler(HandlerMixin):
-    def __init__(self, strategy: Dict[str, OptionsStrategy]):
-        """An OptionsHandler class
+        oh = OptionsHandler(strategy={ "w":"exp_decay", "c1":"nonlin_mod","c2":"lin_variation"})
 
-        This class offers a way to handle options. It contains
-        methods to vary the options at runtime.
-        Following strategies are available for the handling:
+        for i in range(iters):
+            # initial operations for global and local best positions
+            new_options = oh(default_options, iternow=i, itermax=iters, end_opts={"c1":0.5, "c2":2.5, "w":0.4})
+            # more updates using new_options
 
-        * exp_decay:
-            Decreases the parameter exponentially between limits.
+    .. note::
+        As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending
+        options and other arguments for each strategy in all of the handlers on this page.
 
-        * lin_variation:
-            Decreases/increases the parameter linearly between limits.
+    A more comprehensive tutorial is also present `here`_ for interested users.
 
-        * random:
-            takes a uniform random value between limits
-
-        * nonlin_mod:
-            Decreases/increases the parameter between limits according to a nonlinear modulation index .
-
-        The OptionsHandler can be called as a function to use the strategy
-        that is passed at initialization to account for time-varying coefficients. An example
-        for the usage:
-
-        .. code-block :: python
-
-            from pyswarms.backend import operators as op
-            from pyswarms.backend.handlers import OptionsHandler
-
-
-            oh = OptionsHandler(strategy={ "w":"exp_decay", "c1":"nonlin_mod","c2":"lin_variation"})
-
-            for i in range(iters):
-                # initial operations for global and local best positions
-                new_options = oh(default_options, iternow=i, itermax=iters, end_opts={"c1":0.5, "c2":2.5, "w":0.4})
-                # more updates using new_options
-
-        .. note::
-            As of pyswarms v1.3.0, you will need to create your own optimization loop to change the default ending
-            options and other arguments for each strategy in all of the handlers on this page.
-
-        A more comprehensive tutorial is also present `here`_ for interested users.
-
-        .. _here: https://pyswarms.readthedocs.io/en/latest/examples/tutorials/options_handler.html
+    .. _here: https://pyswarms.readthedocs.io/en/latest/examples/tutorials/options_handler.html
 
 
 
-        Attributes
-        ----------
-        strategy : str
-            The strategy to use. To see all available strategies,
-            call :code:`OptionsHandler.strategies`
-        """
-        self.strategy = strategy
-        self.strategies = self._get_all_strategies()
-
-    def __call__(self, start_opts: SwarmOptions, **kwargs: Any):
-        if not self.strategy:
-            return start_opts
-
-        return_opts = copy(start_opts)
-
-        for opt in start_opts:
-            if opt in self.strategy:
-                return_opts[opt] = self.strategies[self.strategy[opt]](start_opts, opt, **kwargs)
-
-        return return_opts
-
-class OptionsHandlerBase(ABC):
+    Attributes
+    ----------
+    strategy : str
+        The strategy to use. To see all available strategies,
+        call :code:`OptionsHandler.strategies`
+    """
     end_value: float
 
     def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, iters: int = 0):
@@ -597,7 +572,7 @@ class OptionsHandlerBase(ABC):
     def __call__(self, iter: int) -> float:
         ...
 
-class ExpDecayHandler(OptionsHandlerBase):
+class ExpDecayHandler(OptionsHandler):
     """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
     The velocity is adjusted such that the following equation holds:
 
@@ -624,7 +599,7 @@ class ExpDecayHandler(OptionsHandlerBase):
     def __call__(self, iter: int):
         return (self.start_value - self.end_value - self.d1) * math.exp(1 / (1 + self.d2 * iter / self.iters))
 
-class LinVariationHandler(OptionsHandlerBase):
+class LinVariationHandler(OptionsHandler):
     """
     Linearly decreasing/increasing between :math:`w_{start}` and :math:`w_{end}`
 
@@ -641,7 +616,7 @@ class LinVariationHandler(OptionsHandlerBase):
     def __call__(self, iter: int):
         return self.start_value + (self.end_value - self.start_value) * iter / self.iters
 
-class RandomHandler(OptionsHandlerBase):
+class RandomHandler(OptionsHandler):
     """Random value between :math:`w^{start}` and :math:`w^{end}`
 
     .. math::
@@ -661,7 +636,7 @@ class RandomHandler(OptionsHandlerBase):
     def __call__(self, iter: int):
         return self.start_value + (self.end_value - self.start_value) * np.random.rand()
 
-class NonlinModHandler(OptionsHandlerBase):
+class NonlinModHandler(OptionsHandler):
     """Non linear decreasing/increasing with modulation index(n).
     The linear strategy can be made to converge faster without compromising
     on exploration with the use of this index which makes the equation non-linear.

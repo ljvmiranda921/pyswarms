@@ -2,9 +2,9 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from pyswarms.backend.handlers import OptionsHandler, OptionsStrategy, VelocityHandler, VelocityStrategy
+from pyswarms.backend.handlers import OptionsHandler, VelocityHandler, VelocityStrategy
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, SwarmOptions, Velocity
+from pyswarms.utils.types import Bounds, Clamp, OptionsStrategy, SwarmOptions, Velocity
 
 
 class VelocityUpdater:
