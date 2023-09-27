@@ -350,6 +350,17 @@ class VelocityHandler(HandlerMixin, ABC):
     memory: Optional[Position] = None
 
     def __init__(self, clamp: Optional[Clamp] = None, bounds: Optional[Bounds] = None):
+        """Initialize the VelocityHandler
+
+        Parameters
+        ----------
+        clamp : Optional[Clamp], optional
+            Minimum and maximum velocity values, by default None
+        bounds : Optional[Bounds], optional
+            a tuple of size 2 where the first entry is the minimum bound while
+            the second entry is the maximum bound. Each array must be of shape
+            :code:`(dimensions,)`, by default None
+        """
         self.clamp = clamp
         self.bounds = bounds
 
@@ -398,6 +409,12 @@ class VelocityHandler(HandlerMixin, ABC):
             Inverts and shrinks the velocity by the factor :code:`-z`.
         * Zero
             Sets the velocity of out-of-bounds particles to zero.
+
+        Parameters
+        ----------
+        strategy : VelocityStrategy
+        clamp : Optional[Clamp], optional
+        bounds : Optional[Bounds], optional
         """
         if strategy == "unmodified":
             return UnmodifiedVelocityHandler(clamp, bounds)
@@ -551,6 +568,21 @@ class OptionsHandler(ABC):
     end_value: float
 
     def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None):
+        """Initialise the OptionsHandler
+
+        Parameters
+        ----------
+        option : SwarmOption
+            Which option this handler will manage. 
+        start_value : float
+            Initial value for the option
+        end_value : Optional[float], optional
+            Final value for the option. If None, it will be computed automatically.
+            Defaults: 
+                :math:`w^{end} = 0.4,
+                c^{end}_{1} = 0.8 * c^{start}_{1},
+                c^{end}_{2} = c^{start}_{2}`
+        """
         self.option = option
         self.start_value = start_value
         self.set_end_option(end_value)
@@ -569,6 +601,19 @@ class OptionsHandler(ABC):
 
     @abstractmethod
     def __call__(self, iter: int, iter_max: int) -> float:
+        """
+        Parameters
+        ----------
+        iter : int
+            Current iteration.
+        iter_max : int
+            Total number of iterations.
+
+        Returns
+        -------
+        float
+            Value of the option at the current iteration.
+        """
         ...
     
     @staticmethod
@@ -596,7 +641,7 @@ class ExpDecayHandler(OptionsHandler):
         c^{end}_{2} = c^{start}_{2}`
 
     .. math::
-            w = (w^{start}-w^{end}-d_{1})exp(\\frac{1}{1+ \\frac{d_{2}.iter}{iter^{max}}})
+            w = (w^{start}-w^{end}-d_{1})exp(\\frac{1}{1+ \\frac{d_{2} * iter}{iter_{max}}})
 
     Ref: Li, H.-R., & Gao, Y.-L. (2009). Particle Swarm Optimization Algorithm with Exponent
     Decreasing Inertia Weight and Stochastic Mutation. 2009 Second International Conference
@@ -604,6 +649,21 @@ class ExpDecayHandler(OptionsHandler):
     """
 
     def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, d1: float = 0.2, d2: float = 7):
+        """Initialise the ExpDecayHandler
+
+        Parameters
+        ----------
+        option : SwarmOption
+            Which option this handler will manage. 
+        start_value : float
+            Initial value for the option
+        end_value : Optional[float], optional
+            Final value for the option. If None, it will be computed automatically.
+        d1 : float, optional
+            By default 0.2
+        d2 : float, optional
+            By default 7
+        """
         super().__init__(option, start_value, end_value)
         self.d1 = d1
         self.d2 = d2
@@ -664,8 +724,22 @@ class NonlinModHandler(OptionsHandler):
     """
 
     def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, n: float = 1.2):
+        """Initialise the NonlinModHandler
+
+        Parameters
+        ----------
+        option : SwarmOption
+            Which option this handler will manage. 
+        start_value : float
+            Initial value for the option
+        end_value : Optional[float], optional
+            Final value for the option. If None, it will be computed automatically.
+        n : float > 0, optional
+            Larger values make it converge to end_value quicker, by default 1.2
+        """
         super().__init__(option, start_value, end_value)
         self.n = n
+        assert self.n > 0, "n must be larger than 0"
 
     def __call__(self, iter_cur: int, iter_max: int):
         new_val = self.end_value + (self.start_value - self.end_value) * ((iter_max - iter_cur) / iter_max) ** self.n
