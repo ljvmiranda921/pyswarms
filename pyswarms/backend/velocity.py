@@ -1,10 +1,10 @@
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional, Tuple
 
 import numpy as np
 
 from pyswarms.backend.handlers import OptionsHandler, VelocityHandler, VelocityStrategy
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Clamp, OptionsStrategy, SwarmOptions, Velocity
+from pyswarms.utils.types import Bounds, Clamp, OptionsStrategy, SwarmOption, SwarmOptions, Velocity
 
 
 class VelocityUpdater:
@@ -32,6 +32,7 @@ class VelocityUpdater:
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
     """
+    options: Dict[SwarmOption, Callable[[int, int], float]]
 
     def __init__(
         self,
@@ -40,14 +41,39 @@ class VelocityUpdater:
         vh: VelocityStrategy | VelocityHandler = "unmodified",
         bounds: Optional[Bounds] = None,
     ):
-        self.options = options
         self.clamp = clamp
         self.bounds = bounds
+        self.init_options(options)
 
         if isinstance(vh, str):
             self.vh = VelocityHandler.factory(vh, self.clamp, self.bounds)
         else:
             self.vh = vh
+
+    def init_options(self, options: SwarmOptions):
+        self.options = {
+            "c1": self.init_option("c1", options["c1"]),
+        }
+
+    def init_option(self, option: SwarmOption, value: float|Tuple[OptionsStrategy, float]|OptionsHandler) -> Callable[[int, int], float]:
+        if isinstance(value, float):
+            def get_option(*_: int):
+                return value
+            return get_option
+        elif isinstance(value, tuple):
+            strategy, start_value = value
+            return OptionsHandler.factory(strategy, option, start_value)
+        elif isinstance(value, OptionsHandler):
+            return value
+        
+        raise ValueError(f"Option value should be float, Tuple[OptionsStrategy, float] or OptionsHandler, received {type(value)}")
+    
+    def get_options(self, iter_cur: int, iter_max: int):
+        return (
+            self.options["c1"](iter_cur, iter_max),
+            self.options["c2"](iter_cur, iter_max),
+            self.options["w"](iter_cur, iter_max),
+        )
 
     def compute(self, swarm: Swarm, iter_cur: int, iter_max: int):
         """Update the velocity matrix
@@ -88,17 +114,14 @@ class VelocityUpdater:
         c1, c2, w = self.get_options(iter_cur, iter_max)
 
         # Compute for cognitive and social terms
-        cognitive = options["c1"] * np.random.uniform(0, 1, swarm_size) * (swarm.pbest_pos - swarm.position)
-        social = options["c2"] * np.random.uniform(0, 1, swarm_size) * (swarm.best_pos - swarm.position)
+        cognitive = c1 * np.random.uniform(0, 1, swarm_size) * (swarm.pbest_pos - swarm.position)
+        social = c2 * np.random.uniform(0, 1, swarm_size) * (swarm.best_pos - swarm.position)
 
         # Compute temp velocity (subject to clamping if possible)
-        temp_velocity = (options["w"] * swarm.velocity) + cognitive + social
+        temp_velocity = (w * swarm.velocity) + cognitive + social
         updated_velocity = self.vh(temp_velocity, swarm.position)
 
         return updated_velocity
-    
-    def get_options(self, iter_cur: int, iter_max: int):
-        ...
 
     def generate_velocity(self, n_particles: int, dimensions: int) -> Velocity:
         """Initialize a velocity vector

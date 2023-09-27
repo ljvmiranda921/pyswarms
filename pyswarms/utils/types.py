@@ -26,6 +26,26 @@ OptionsStrategy = Literal["exp_decay", "lin_variation", "random", "nonlin_mod"]
 
 SwarmOption = Literal["c1", "c2", "w"]
 class SwarmOptions(TypedDict):
-    c1: float|OptionsStrategy|OptionsHandler
-    c2: float|OptionsStrategy|OptionsHandler
-    w: float|OptionsStrategy|OptionsHandler
+    """Used for initialising options handlers. Options can either be constant or varied using OptionsHandlers.
+    Valid values are:
+    * float:
+        Use a constant value.
+    * Tuple[OptionsStrategy, float]:
+        Use the default factory with a given strategy and initial value.
+    * OptionsHandler:
+        Use an already initialised OptionsHandler object.
+
+    Valid option strategies are ["exp_decay", "lin_variation", "random", "nonlin_mod"]
+
+    Attributes
+    ----------
+    c1 : float|Tuple[OptionsStrategy, float]|OptionsHandler
+        cognitive parameter
+    c2 : float|Tuple[OptionsStrategy, float]|OptionsHandler
+        social parameter
+    w : float|Tuple[OptionsStrategy, float]|OptionsHandler
+        inertia parameter
+    """
+    c1: float|Tuple[OptionsStrategy, float]|OptionsHandler
+    c2: float|Tuple[OptionsStrategy, float]|OptionsHandler
+    w: float|Tuple[OptionsStrategy, float]|OptionsHandler
