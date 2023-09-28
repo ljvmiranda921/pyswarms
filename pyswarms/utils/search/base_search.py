@@ -3,38 +3,20 @@
 
 import operator as op
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable, List
 
 import numpy.typing as npt
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 
-from pyswarms.optimizers.global_best import GlobalBestPSO
-from pyswarms.optimizers.local_best import LocalBestPSO
-from pyswarms.utils.types import Bounds, Clamp
+from pyswarms.utils.types import SwarmOptions
 
 
 class SearchBase(ABC):
-    def assertions(self):
-        """Assertion method to check :code:`optimizer` input
-
-        Raises
-        ------
-        TypeError
-            When :code:`optimizer` does not have an `'optimize'` attribute.
-        """
-        # Check type of optimizer object
-        if not hasattr(self.optimizer, "optimize"):
-            raise TypeError("Parameter `optimizer` must have an " "`'optimize'` attribute.")
-
     def __init__(
         self,
-        optimizer: Type[GlobalBestPSO | LocalBestPSO],
-        n_particles: int,
-        dimensions: int,
-        options,
+        optimizer: BaseSwarmOptimizer,
         objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
-        bounds: Optional[Bounds] = None,
-        velocity_clamp: Clamp = (0, 1),
     ):
         """Initialize the Search
 
@@ -42,55 +24,17 @@ class SearchBase(ABC):
         ----------
         optimizer: pyswarms.single
             either LocalBestPSO or GlobalBestPSO
-        n_particles : int
-            number of particles in the swarm.
-        dimensions : int
-            number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w', 'k', 'p'}`
-            a dictionary containing the parameters for the specific
-            optimization technique
-
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
-                * k : int
-                    number of neighbors to be considered. Must be a
-                    positive integer less than :code:`n_particles`
-                * p: int {1,2}
-                    the Minkowski p-norm to use. 1 is the
-                    sum-of-absolute values (or L1 distance) while 2 is
-                    the Euclidean (or L2) distance.
-
         objective_func: function
             objective function to be evaluated
         iters: int
             number of iterations
-        bounds : tuple of np.ndarray, optional (default is None)
-            a tuple of size 2 where the first entry is the minimum bound
-            while the second entry is the maximum bound. Each array must
-            be of shape :code:`(dimensions,)`.
-        velocity_clamp : tuple (default is :code:`None`)
-            a tuple of size 2 where the first entry is the minimum velocity
-            and the second entry is the maximum velocity. It
-            sets the limits for velocity clamping.
         """
-
         # Assign attributes
         self.optimizer = optimizer
-        self.n_particles = n_particles
-        self.dims = dimensions
-        self.options = options
-        self.bounds = bounds
-        self.vclamp = velocity_clamp
         self.objective_func = objective_func
         self.iters = iters
-        # Invoke assertions
-        self.assertions()
 
-    def generate_score(self, options):
+    def generate_score(self, options: SwarmOptions):
         """Generate score for optimizer's performance on objective function
 
         Parameters
@@ -99,18 +43,12 @@ class SearchBase(ABC):
         options: dict
             a dict with the following keys: {'c1', 'c2', 'w', 'k', 'p'}
         """
-
-        # Intialize optimizer
-        f = self.optimizer(
-            self.n_particles,
-            self.dims,
-            options,
-            self.bounds,
-            velocity_clamp=self.vclamp,
-        )
+        # Reset the optimizer and update the options
+        self.optimizer.velocity_updater.init_options(options)
+        self.optimizer.reset()
 
         # Return score
-        return f.optimize(self.objective_func, self.iters)[0]
+        return self.optimizer.optimize(self.objective_func, self.iters)[0]
 
     def search(self, maximum: bool = False):
         """Compare optimizer's objective function performance scores
@@ -143,5 +81,5 @@ class SearchBase(ABC):
         return self.best_score, self.best_options
 
     @abstractmethod
-    def generate_grid(self):
+    def generate_grid(self) -> List[SwarmOptions]:
         ...

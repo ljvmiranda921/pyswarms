@@ -60,6 +60,7 @@ class BaseSwarmOptimizer(abc.ABC):
     pos_history: List[Position] = []
     velocity_history: List[Velocity] = []
 
+    # Will be set by the _init_swarm method
     swarm: Swarm
 
     def __init__(
@@ -118,6 +119,11 @@ class BaseSwarmOptimizer(abc.ABC):
         # Initialize resettable attributes
         self.reset()
 
+    @abc.abstractmethod
+    def _init_swarm(self) -> None:
+        """Initialise a new swarm object"""
+        ...
+
     def _populate_history(self):
         """Populate all history lists
 
@@ -137,11 +143,6 @@ class BaseSwarmOptimizer(abc.ABC):
         self.mean_neighbor_history.append(self.swarm.best_cost)
         self.pos_history.append(self.swarm.position)
         self.velocity_history.append(self.swarm.velocity)
-
-    @abc.abstractmethod
-    def _init_swarm(self) -> None:
-        """Initialise a new swarm object"""
-        ...
 
     def optimize(
         self,
