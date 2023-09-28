@@ -30,48 +30,29 @@ the minimum score, yet maximum score can also be evaluated.
 9.504769054771
 """
 
-from __future__ import absolute_import, print_function, with_statement
-
-from typing import Callable, Optional, Type
+from typing import Any, Callable, Dict, Tuple
 
 import numpy as np
+import numpy.typing as npt
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 
-from pyswarms.optimizers.global_best import GlobalBestPSO
-from pyswarms.optimizers.local_best import LocalBestPSO
 from pyswarms.utils.search.base_search import SearchBase
-from pyswarms.utils.types import Bounds, Clamp
+from pyswarms.utils.types import SwarmOption, SwarmOptions
 
+OptionRanges = Dict[SwarmOption, float|Tuple[float, float]]
 
 class RandomSearch(SearchBase):
     """Search of optimal performance on selected objective function
     over combinations of randomly selected hyperparameter values
     within specified bounds for specified number of selection iterations."""
 
-    def assertions(self):
-        """Assertion method to check :code:`n_selection_iters` input
-
-        Raises
-        ------
-        TypeError
-            When :code:`n_selection_iters` is not of type int
-        """
-        super(RandomSearch, self).assertions()
-
-        # Check type of n_selection_iters parameter
-        if not isinstance(self.n_selection_iters, int):
-            raise TypeError("Parameter `n_selection_iters` must be of " "type int")
-
     def __init__(
         self,
-        optimizer: Type[GlobalBestPSO | LocalBestPSO],
-        n_particles: int,
-        dimensions: int,
-        options,
-        objective_func: Callable[..., float],
+        optimizer: BaseSwarmOptimizer,
+        objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         n_selection_iters: int,
-        bounds: Optional[Bounds] = None,
-        velocity_clamp: Clamp = (0, 1),
+        option_ranges: OptionRanges,
     ):
         """Initialize the Search
 
@@ -81,51 +62,22 @@ class RandomSearch(SearchBase):
             number of iterations of random parameter selection
         """
         self.n_selection_iters = n_selection_iters
+        self.option_ranges = {k: v if isinstance(v, tuple) else (v, v) for k, v in option_ranges.items()}
 
         # Assign attributes
-        super(RandomSearch, self).__init__(
+        super().__init__(
             optimizer,
-            n_particles,
-            dimensions,
-            options,
             objective_func,
             iters,
-            bounds=bounds,
-            velocity_clamp=velocity_clamp,
         )
-        # Invoke assertions
-        self.assertions()
 
     def generate_grid(self):
         """Generate the grid of hyperparameter value combinations"""
-
-        options = dict(self.options)
-        params = {}
-
-        # Remove 'p' to hold as a constant in the paramater combinations
-        p = self.options["p"]
-        params["p"] = [p for _ in range(self.n_selection_iters)]
-
-        # Assign generators based on parameter type
-        param_generators = {
-            "c1": np.random.uniform,
-            "c2": np.random.uniform,
-            "w": np.random.uniform,
-            "k": np.random.randint,
-        }
-
-        # Generate random values for hyperparameters 'c1', 'c2', 'w', and 'k'
-        for idx, bounds in options.items():
-            params[idx] = param_generators[idx](*bounds, size=self.n_selection_iters)
-
-        # Return list of dicts of hyperparameter combinations
         return [
-            {
-                "c1": params["c1"][i],
-                "c2": params["c2"][i],
-                "w": params["w"][i],
-                "k": params["k"][i],
-                "p": params["p"][i],
-            }
-            for i in range(self.n_selection_iters)
+            SwarmOptions({
+                "c1": np.random.uniform(*self.option_ranges["c1"]),
+                "c2": np.random.uniform(*self.option_ranges["c2"]),
+                "w": np.random.uniform(*self.option_ranges["w"]),
+            })
+            for _ in range(self.n_selection_iters)
         ]
