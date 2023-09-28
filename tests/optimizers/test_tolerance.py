@@ -80,7 +80,7 @@ class TestToleranceOptions:
     def test_no_ftol(self, optimizer_func: Callable[[], BaseSwarmOptimizer]):
         """Test complete run"""
         optimizer = optimizer_func()
-        optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
+        optimizer.optimize(objective_function, iterations, None, False, **kwargs)
         assert len(optimizer.cost_history) == iterations
 
     @pytest.mark.parametrize("optimizer_func", optimizers)
@@ -90,7 +90,7 @@ class TestToleranceOptions:
         optimizer.ftol = 0.01
         logger.critical(optimizer.ftol)
         # logger.critical(optimizer.__dict__)
-        optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
+        optimizer.optimize(objective_function, iterations, None, False, **kwargs)
         assert len(optimizer.cost_history) <= iterations
 
     @pytest.mark.parametrize("optimizer_func", optimizers)
@@ -99,5 +99,5 @@ class TestToleranceOptions:
         must run for a minimum of ftol_iter iterations"""
         optimizer = optimizer_func()
         optimizer.ftol_iter = 50
-        optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
+        optimizer.optimize(objective_function, iterations, None, False, **kwargs)
         assert len(optimizer.cost_history) >= optimizer.ftol_iter
