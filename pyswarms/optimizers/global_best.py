@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 r"""
-A general Particle Swarm Optimization (general PSO) algorithm.
+A Global-best Particle Swarm Optimization (gbest PSO) algorithm.
 
 It takes a set of candidate solutions, and tries to find the best
-solution using a position-velocity update method. Uses a user specified
-topology.
+solution using a position-velocity update method. Uses a
+star-topology where each particle is attracted to the best
+performing particle.
 
 The position update can be defined as:
 
@@ -19,7 +20,7 @@ is defined as:
 
 .. math::
 
-   v_{ij}(t + 1) = m * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)]
+   v_{ij}(t + 1) = w * v_{ij}(t) + c_{1}r_{1j}(t)[y_{ij}(t) − x_{ij}(t)]
                    + c_{2}r_{2j}(t)[\hat{y}_{j}(t) − x_{ij}(t)]
 
 Here, :math:`c1` and :math:`c2` are the cognitive and social parameters
@@ -34,16 +35,14 @@ An example usage is as follows:
 .. code-block:: python
 
     import pyswarms as ps
-    from pyswarms.backend.topology import Pyramid
     from pyswarms.utils.functions import single_obj as fx
 
-    # Set-up hyperparameters and topology
+    # Set-up hyperparameters
     options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
-    my_topology = Pyramid(static=False)
 
     # Call instance of GlobalBestPSO
-    optimizer = ps.single.GeneralOptimizerPSO(n_particles=10, dimensions=2,
-                                        options=options, topology=my_topology)
+    optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2,
+                                        options=options)
 
     # Perform optimization
     stats = optimizer.optimize(fx.sphere, iters=100)
@@ -60,11 +59,17 @@ from typing import Optional
 
 import numpy as np
 
-from pyswarms.backend.position import PositionUpdater
-from pyswarms.backend.topology.star import Star
-from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.backend.topology import Star
 from pyswarms.optimizers.general_optimizer import GeneralOptimizerPSO
-from pyswarms.utils.types import Position
+from pyswarms.utils.types import (
+    BoundaryStrategy,
+    Bounds,
+    Clamp,
+    OptionsStrategy,
+    Position,
+    SwarmOptions,
+    VelocityStrategy,
+)
 
 
 class GlobalBestPSO(GeneralOptimizerPSO):
@@ -72,14 +77,18 @@ class GlobalBestPSO(GeneralOptimizerPSO):
         self,
         n_particles: int,
         dimensions: int,
-        velocity_updater: VelocityUpdater,
-        position_updater: PositionUpdater,
+        options: SwarmOptions,
+        bounds: Optional[Bounds] = None,
+        oh_strategy: Optional[OptionsStrategy] = None,
+        bh_strategy: BoundaryStrategy = "periodic",
+        velocity_clamp: Optional[Clamp] = None,
+        vh_strategy: VelocityStrategy = "unmodified",
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
         init_pos: Optional[Position] = None,
     ):
-        """Finds the global optimum, same as general optimizer with a star topology
+        """Initialize the swarm
 
         Attributes
         ----------
@@ -87,10 +96,27 @@ class GlobalBestPSO(GeneralOptimizerPSO):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        velocity_updater : VelocityUpdater
-            Class for updating the velocity matrix.
+        options : dict with keys :code:`{'c1', 'c2', 'w'}`
+            a dictionary containing the parameters for the specific
+            optimization technique.
+                * c1 : float
+                    cognitive parameter
+                * c2 : float
+                    social parameter
+                * w : float
+                    inertia parameter
+        bounds : tuple of numpy.ndarray, optional
+            a tuple of size 2 where the first entry is the minimum bound while
+            the second entry is the maximum bound. Each array must be of shape
+            :code:`(dimensions,)`.
+        oh_strategy : dict, optional, default=None(constant options)
+            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
+        velocity_clamp : tuple, optional
+            a tuple of size 2 where the first entry is the minimum velocity and
+            the second entry is the maximum velocity. It sets the limits for
+            velocity clamping.
         vh_strategy : str
             a strategy for the handling of the velocity of out-of-bounds particles.
         center : list (default is :code:`None`)
@@ -109,11 +135,17 @@ class GlobalBestPSO(GeneralOptimizerPSO):
         super().__init__(
             n_particles,
             dimensions,
+            options,
             Star(),
-            velocity_updater,
-            position_updater,
+            bounds,
+            oh_strategy,
+            bh_strategy,
+            velocity_clamp,
+            vh_strategy,
             center,
             ftol,
             ftol_iter,
             init_pos,
         )
+
+        self.name = __name__

@@ -68,11 +68,17 @@ from typing import Literal, Optional
 
 import numpy as np
 
-from pyswarms.backend.position import PositionUpdater
-from pyswarms.backend.topology import Ring
-from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.backend.topology.ring import Ring
 from pyswarms.optimizers.general_optimizer import GeneralOptimizerPSO
-from pyswarms.utils.types import Position
+from pyswarms.utils.types import (
+    BoundaryStrategy,
+    Bounds,
+    Clamp,
+    OptionsStrategy,
+    Position,
+    SwarmOptions,
+    VelocityStrategy,
+)
 
 
 class LocalBestPSO(GeneralOptimizerPSO):
@@ -80,15 +86,18 @@ class LocalBestPSO(GeneralOptimizerPSO):
         self,
         n_particles: int,
         dimensions: int,
-        p: Literal[1, 2],
-        k: int,
-        velocity_updater: VelocityUpdater,
-        position_updater: PositionUpdater,
+        options: SwarmOptions,
+        bounds: Optional[Bounds] = None,
+        oh_strategy: Optional[OptionsStrategy] = None,
+        bh_strategy: BoundaryStrategy = "periodic",
+        velocity_clamp: Optional[Clamp] = None,
+        vh_strategy: VelocityStrategy = "unmodified",
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
         init_pos: Optional[Position] = None,
-        static: bool = False,
+        p: Literal[1, 2] = 2,
+        k: Optional[int] = None,
     ):
         """Initialize the swarm
 
@@ -98,21 +107,20 @@ class LocalBestPSO(GeneralOptimizerPSO):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        p: int {1,2}
-            the Minkowski p-norm to use. 1 is the
-            sum-of-absolute values (or L1 distance) while 2 is
-            the Euclidean (or L2) distance.
-        k : int
-            number of neighbors to be considered. Must be a
-            positive integer less than :code:`n_particles`
-        velocity_updater : VelocityUpdater
-            Class for updating the velocity matrix.
         bounds : tuple of numpy.ndarray
             a tuple of size 2 where the first entry is the minimum bound
             while the second entry is the maximum bound. Each array must
             be of shape :code:`(dimensions,)`.
+        oh_strategy : dict, optional, default=None(constant options)
+            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
+        velocity_clamp : tuple (default is :code:`(0,1)`)
+            a tuple of size 2 where the first entry is the minimum velocity
+            and the second entry is the maximum velocity. It
+            sets the limits for velocity clamping.
+        vh_strategy : str
+            a strategy for the handling of the velocity of out-of-bounds particles.
         center : list, optional
             an array of size :code:`dimensions`
         ftol : float
@@ -122,21 +130,46 @@ class LocalBestPSO(GeneralOptimizerPSO):
             number of iterations over which the relative error in
             objective_func(best_pos) is acceptable for convergence.
             Default is :code:`1`
+        options : dict with keys :code:`{'c1', 'c2', 'w'}`
+            a dictionary containing the parameters for the specific
+            optimization technique
+                * c1 : float
+                    cognitive parameter
+                * c2 : float
+                    social parameter
+                * w : float
+                    inertia parameter
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
         static: bool
             a boolean that decides whether the Ring topology
             used is static or dynamic. Default is `False`
+        k : int, optional
+            number of neighbors to be considered. Must be a
+            positive integer less than :code:`n_particles`. Defaults is n_particles - 1
+        p: int {1,2}, optional
+            the Minkowski p-norm to use. 1 is the
+            sum-of-absolute values (or L1 distance) while 2 is
+            the Euclidean (or L2) distance. Default is 2
         """
+        self.p = p
+        self.k = k or n_particles - 1
+
         super().__init__(
             n_particles,
             dimensions,
-            Ring(p, k, static=static),
-            velocity_updater,
-            position_updater,
+            options,
+            Ring(self.p, self.k),
+            bounds,
+            oh_strategy,
+            bh_strategy,
+            velocity_clamp,
+            vh_strategy,
             center,
             ftol,
             ftol_iter,
             init_pos,
         )
+
+        self.name = __name__

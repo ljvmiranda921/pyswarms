@@ -14,7 +14,7 @@ __author__ = """Lester James V. Miranda"""
 __email__ = "ljvmiranda@gmail.com"
 __version__ = "1.3.0"
 
-from .optimizers import binary, general_optimizer, global_best, local_best
+from .optimizers import binary, global_best, local_best, optimizer
 from .utils.decorators import cost
 
-__all__ = ["global_best", "local_best", "general_optimizer", "binary", "cost"]
+__all__ = ["global_best", "local_best", "optimizer", "binary", "cost"]

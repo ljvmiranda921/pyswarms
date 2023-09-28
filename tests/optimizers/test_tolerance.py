@@ -11,8 +11,9 @@ from loguru import logger
 
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Star
+from pyswarms.backend.topology.ring import Ring
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
+from pyswarms.optimizers import OptimizerPSO
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.types import SwarmOptions
 
@@ -43,9 +44,9 @@ velocity_updater = VelocityUpdater(options, (-0.5, 0.5), "invert", constraints)
 position_updater = PositionUpdater(constraints, "periodic")
 
 optimizers = [
-    lambda: GlobalBestPSO(n_particles, dimensions, velocity_updater, position_updater),
-    lambda: LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater, position_updater),
-    lambda: GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
+    lambda: OptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
+    lambda: OptimizerPSO(n_particles, dimensions, Ring(2, 3), velocity_updater, position_updater),
+    lambda: OptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
 ]
 
 
@@ -80,7 +81,7 @@ class TestToleranceOptions:
     def test_no_ftol(self, optimizer_func: Callable[[], BaseSwarmOptimizer]):
         """Test complete run"""
         optimizer = optimizer_func()
-        optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
+        optimizer.optimize(objective_function, iterations, None, False, **kwargs)
         assert len(optimizer.cost_history) == iterations
 
     @pytest.mark.parametrize("optimizer_func", optimizers)
@@ -90,7 +91,7 @@ class TestToleranceOptions:
         optimizer.ftol = 0.01
         logger.critical(optimizer.ftol)
         # logger.critical(optimizer.__dict__)
-        optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
+        optimizer.optimize(objective_function, iterations, None, False, **kwargs)
         assert len(optimizer.cost_history) <= iterations
 
     @pytest.mark.parametrize("optimizer_func", optimizers)
@@ -99,5 +100,5 @@ class TestToleranceOptions:
         must run for a minimum of ftol_iter iterations"""
         optimizer = optimizer_func()
         optimizer.ftol_iter = 50
-        optimizer.optimize(objective_function, iters=iterations, n_processes=None, **kwargs)
+        optimizer.optimize(objective_function, iterations, None, False, **kwargs)
         assert len(optimizer.cost_history) >= optimizer.ftol_iter

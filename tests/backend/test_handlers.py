@@ -168,7 +168,10 @@ def test_invert_strategy(
 
 
 def assert_option_strategy(
-    strategy: Dict[str, OptionsStrategy], init_opts: SwarmOptions, exp_opts: Dict[SwarmOption, float], end_opts: Dict[str, Optional[float]]
+    strategy: Dict[str, OptionsStrategy],
+    init_opts: SwarmOptions,
+    exp_opts: Dict[SwarmOption, float],
+    end_opts: Dict[str, Optional[float]],
 ):
     """Test for any strategy for options handler
     strategy : strategy to use

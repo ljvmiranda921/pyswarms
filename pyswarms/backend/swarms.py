@@ -101,3 +101,39 @@ class Swarm:
 
         if not self.pbest_pos.size:
             self.pbest_pos = self.position
+
+    def compute_pbest(self):
+        """Update the personal best score of a swarm instance
+
+        You can use this method to update your personal best positions.
+
+        .. code-block:: python
+
+            import pyswarms.backend as P
+            from pyswarms.backend.swarms import Swarm
+
+            my_swarm = P.create_swarm(n_particles, dimensions)
+
+            # Inside the for-loop...
+            for i in range(iters):
+                # It updates the swarm internally
+                my_swarm.pbest_pos, my_swarm.pbest_cost = P.update_pbest(my_swarm)
+
+        It updates your :code:`current_pbest` with the personal bests acquired by
+        comparing the (1) cost of the current positions and the (2) personal
+        bests your swarm has attained.
+
+        If the cost of the current position is less than the cost of the personal
+        best, then the current position replaces the previous personal best
+        position.
+        """
+        # Infer dimensions from positions
+        dimensions = self.dimensions
+
+        # Create a 1-D and 2-D mask based from comparisons
+        mask_cost = self.current_cost < self.pbest_cost
+        mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
+
+        # Apply masks
+        self.pbest_pos = np.where(~mask_pos, self.pbest_pos, self.position)
+        self.pbest_cost = np.where(~mask_cost, self.pbest_cost, self.current_cost)

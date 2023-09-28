@@ -6,7 +6,6 @@ from typing import Optional
 import numpy as np
 import pytest
 
-import pyswarms.backend as P
 from pyswarms.backend.handlers import BoundaryStrategy, VelocityStrategy
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
@@ -21,15 +20,9 @@ class TestComputePbest(object):
         """Test if method gives the expected return values"""
         expected_cost = np.array([1, 2, 2])
         expected_pos = np.array([[1, 2, 3], [4, 5, 6], [1, 1, 1]])
-        pos, cost = P.compute_pbest(swarm)
-        assert (pos == expected_pos).all()
-        assert (cost == expected_cost).all()
-
-    @pytest.mark.parametrize("swarm", [0, (1, 2, 3)])
-    def test_input_swarm(self, swarm: Swarm):
-        """Test if method raises AttributeError with wrong swarm"""
-        with pytest.raises(AttributeError):
-            P.compute_pbest(swarm)
+        swarm.compute_pbest()
+        assert (swarm.pbest_pos == expected_pos).all()
+        assert (swarm.pbest_cost == expected_cost).all()
 
 
 class TestComputeVelocity(object):

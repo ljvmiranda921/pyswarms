@@ -14,7 +14,7 @@ from tests.optimizers.abc_test_optimizer import ABCTestOptimizer
 class TestDiscreteOptimizer(ABCTestOptimizer):
     @pytest.fixture
     def optimizer(self, velocity_updater: VelocityUpdater, position_updater: PositionUpdater):
-        return BinaryPSO(10, 2, 2, 2, velocity_updater, position_updater)
+        return BinaryPSO(10, 2, 2, 2, velocity_updater)
 
     def test_binary_correct_pos(self, optimizer: BinaryPSO):
         """Test to check binary optimiser returns the correct position

@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import re
+from typing import Callable
 
 import pytest
 
 from pyswarms.backend.handlers import VelocityHandler
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Star
+from pyswarms.backend.topology.ring import Ring
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers import GeneralOptimizerPSO, GlobalBestPSO, LocalBestPSO
+from pyswarms.optimizers import OptimizerPSO
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.functions import single_obj as fx
 from pyswarms.utils.types import SwarmOptions
@@ -22,24 +24,26 @@ velocity_updater = VelocityUpdater(options, None, VelocityHandler.factory("unmod
 position_updater = PositionUpdater()
 
 optimizers = [
-    GlobalBestPSO(n_particles, dimensions, velocity_updater, position_updater),
-    LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater, position_updater),
-    GeneralOptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
+    lambda: OptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
+    lambda: OptimizerPSO(n_particles, dimensions, Ring(2, 3), velocity_updater, position_updater),
+    lambda: OptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
 ]
 
 
 class TestToleranceOptions:
-    @pytest.mark.parametrize("optimizer", optimizers)
-    def test_verbose(self, optimizer: BaseSwarmOptimizer, capsys: pytest.CaptureFixture[str]):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_verbose(self, optimizer_func: Callable[[], BaseSwarmOptimizer], capsys: pytest.CaptureFixture[str]):
         """Test verbose run"""
+        optimizer = optimizer_func()
         optimizer.optimize(fx.sphere, iters=100)
         out = capsys.readouterr().err
         count = len(re.findall(r"pyswarms", out))
         assert count > 0
 
-    @pytest.mark.parametrize("optimizer", optimizers)
-    def test_silent(self, optimizer: BaseSwarmOptimizer, capsys: pytest.CaptureFixture[str]):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_silent(self, optimizer_func: Callable[[], BaseSwarmOptimizer], capsys: pytest.CaptureFixture[str]):
         """Test silent run"""
+        optimizer = optimizer_func()
         optimizer.optimize(fx.sphere, iters=100, verbose=False)
         out = capsys.readouterr()
         assert out.err == ""

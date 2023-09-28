@@ -55,38 +55,26 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Proceedings of the IEEE International Joint Conference on Neural
     Networks, 1995, pp. 1942-1948.
 """
-
 from typing import Optional
 
 import numpy as np
 
 from pyswarms.backend.position import PositionUpdater
+from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Topology
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers.optimizer import OptimizerPSO
-from pyswarms.utils.types import (
-    BoundaryStrategy,
-    Bounds,
-    Clamp,
-    OptionsStrategy,
-    Position,
-    SwarmOptions,
-    VelocityStrategy,
-)
+from pyswarms.optimizers.base import BaseSwarmOptimizer
+from pyswarms.utils.types import Position
 
 
-class GeneralOptimizerPSO(OptimizerPSO):
+class OptimizerPSO(BaseSwarmOptimizer):
     def __init__(
         self,
         n_particles: int,
         dimensions: int,
-        options: SwarmOptions,
         topology: Topology,
-        bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[OptionsStrategy] = None,
-        bh_strategy: BoundaryStrategy = "periodic",
-        velocity_clamp: Optional[Clamp] = None,
-        vh_strategy: VelocityStrategy = "unmodified",
+        velocity_updater: VelocityUpdater,
+        position_updater: PositionUpdater,
         center: float = 1.00,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -100,33 +88,6 @@ class GeneralOptimizerPSO(OptimizerPSO):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1',
-                'c2', 'w', 'k', 'p'}`
-            a dictionary containing the parameters for the specific
-            optimization technique.
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
-                if used with the :code:`Ring`, :code:`VonNeumann` or
-                :code:`Random` topology the additional parameter k must be
-                included
-                * k : int
-                    number of neighbors to be considered. Must be a positive
-                    integer less than :code:`n_particles`
-                if used with the :code:`Ring` topology the additional
-                parameters k and p must be included
-                * p: int {1,2}
-                    the Minkowski p-norm to use. 1 is the sum-of-absolute
-                    values (or L1 distance) while 2 is the Euclidean (or L2)
-                    distance.
-                if used with the :code:`VonNeumann` topology the additional
-                parameters p and r must be included
-                * r: int
-                    the range of the VonNeumann topology.  This is used to
-                    determine the number of neighbours in the topology.
         topology : pyswarms.backend.topology.Topology
             a :code:`Topology` object that defines the topology to use in the
             optimization process. The currently available topologies are:
@@ -143,21 +104,16 @@ class GeneralOptimizerPSO(OptimizerPSO):
                 Static variants of the topologies remain with the same
                 neighbours over the course of the optimization. Dynamic
                 variants calculate new neighbours every time step.
+        velocity_updater : VelocityUpdater
+            Class for updating the velocity matrix.
+        position_updater : PositionUpdater
+            Class for updating the position matrix.
         bounds : tuple of numpy.ndarray, optional
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
-        oh_strategy : dict, optional, default=None(constant options)
-            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
-        velocity_clamp : tuple, optional
-            a tuple of size 2 where the first entry is the minimum velocity and
-            the second entry is the maximum velocity. It sets the limits for
-            velocity clamping.
-        vh_strategy : str
-            a strategy for the handling of the velocity of out-of-bounds particles.
-        center : list (default is :code:`None`)
             an array of size :code:`dimensions`
         ftol : float
             relative error in objective_func(best_pos) acceptable for
@@ -170,15 +126,27 @@ class GeneralOptimizerPSO(OptimizerPSO):
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
         """
+        self.center = center
+
         super().__init__(
             n_particles,
             dimensions,
             topology,
-            VelocityUpdater(options, velocity_clamp, vh_strategy, bounds),
-            PositionUpdater(bounds, bh_strategy),
-            center,
+            velocity_updater,
+            position_updater,
+            init_pos,
             ftol,
             ftol_iter,
-            init_pos,
         )
+
         self.name = __name__
+
+    def _init_swarm(self):
+        position = self.position_updater.generate_position(
+            self.n_particles,
+            self.dimensions,
+            self.center,
+            self.init_pos,
+        )
+        velocity = self.velocity_updater.generate_velocity(self.n_particles, self.dimensions)
+        self.swarm = Swarm(position, velocity)
