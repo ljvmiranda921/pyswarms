@@ -28,15 +28,17 @@ yield the minimum score, yet maximum score can also be evaluated.
 1
 """
 
-from __future__ import absolute_import, print_function, with_statement
+import numpy.typing as npt
 
 import itertools
-from typing import Callable, Optional, Type
+from typing import Any, Callable, Dict, List, Tuple
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 
-from pyswarms.optimizers.global_best import GlobalBestPSO
-from pyswarms.optimizers.local_best import LocalBestPSO
 from pyswarms.utils.search.base_search import SearchBase
-from pyswarms.utils.types import Bounds, Clamp
+from pyswarms.utils.types import SwarmOption, SwarmOptions
+
+
+OptionsGrid = Dict[SwarmOption, float|List[float]]
 
 
 class GridSearch(SearchBase):
@@ -45,41 +47,35 @@ class GridSearch(SearchBase):
 
     def __init__(
         self,
-        optimizer: Type[GlobalBestPSO | LocalBestPSO],
-        n_particles: int,
-        dimensions: int,
-        options,
-        objective_func: Callable[..., float],
+        optimizer: BaseSwarmOptimizer,
+        objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
-        bounds: Optional[Bounds] = None,
-        velocity_clamp: Clamp = (0, 1),
+        options_grid: OptionsGrid,
     ):
-        """Initialize the Search"""
+        """Initialize the Search
 
-        # Assign attributes
+        Attributes
+        ----------
+        optimizer : pyswarms.single
+            either LocalBestPSO or GlobalBestPSO
+        objective_func : function
+            objective function to be evaluated
+        iters : int
+            number of iterations
+        options_grid : OptionsGrid
+            A float or list of floats for each of the options c1, c2, w
+        """
         super(GridSearch, self).__init__(
             optimizer,
-            n_particles,
-            dimensions,
-            options,
             objective_func,
             iters,
-            bounds=bounds,
-            velocity_clamp=velocity_clamp,
         )
-        # invoke assertions
-        self.assertions()
+
+        self.options_grid = {k: v if isinstance(v, list) else [v] for k, v in options_grid.items()}
 
     def generate_grid(self):
         """Generate the grid of all hyperparameter value combinations"""
+        params = list(self.options_grid.keys())
+        list_of_products: List[Tuple[float, ...]] = list(itertools.product(*self.options_grid.values()))
 
-        # Extract keys and values from options dictionary
-        params = self.options.keys()
-        items = [x if isinstance(x, list) else [x] for x in list(zip(*self.options.items()))[1]]
-
-        # Create list of cartesian products of hyperparameter values
-        # from options
-        list_of_products = list(itertools.product(*items))
-
-        # Return list of dicts for all hyperparameter value combinations
-        return [dict(zip(*[params, list(x)])) for x in list_of_products]
+        return [SwarmOptions(dict(zip(params, x))) for x in list_of_products] # type: ignore
