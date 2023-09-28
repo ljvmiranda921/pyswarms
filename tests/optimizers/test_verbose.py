@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+from typing import Callable
 
 import pytest
 
@@ -30,17 +31,19 @@ optimizers = [
 
 
 class TestToleranceOptions:
-    @pytest.mark.parametrize("optimizer", optimizers)
-    def test_verbose(self, optimizer: BaseSwarmOptimizer, capsys: pytest.CaptureFixture[str]):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_verbose(self, optimizer_func: Callable[[], BaseSwarmOptimizer], capsys: pytest.CaptureFixture[str]):
         """Test verbose run"""
+        optimizer = optimizer_func()
         optimizer.optimize(fx.sphere, iters=100)
         out = capsys.readouterr().err
         count = len(re.findall(r"pyswarms", out))
         assert count > 0
 
-    @pytest.mark.parametrize("optimizer", optimizers)
-    def test_silent(self, optimizer: BaseSwarmOptimizer, capsys: pytest.CaptureFixture[str]):
+    @pytest.mark.parametrize("optimizer_func", optimizers)
+    def test_silent(self, optimizer_func: Callable[[], BaseSwarmOptimizer], capsys: pytest.CaptureFixture[str]):
         """Test silent run"""
+        optimizer = optimizer_func()
         optimizer.optimize(fx.sphere, iters=100, verbose=False)
         out = capsys.readouterr()
         assert out.err == ""
