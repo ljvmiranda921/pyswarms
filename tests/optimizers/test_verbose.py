@@ -9,7 +9,7 @@ from pyswarms.backend.handlers import VelocityHandler
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Star
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers import OptimizerPSO, GlobalBestPSO, LocalBestPSO
+from pyswarms.optimizers import GlobalBestPSO, LocalBestPSO, OptimizerPSO
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.functions import single_obj as fx
 from pyswarms.utils.types import SwarmOptions

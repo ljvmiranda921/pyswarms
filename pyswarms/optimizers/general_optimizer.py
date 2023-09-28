@@ -61,12 +61,18 @@ from typing import Optional
 import numpy as np
 
 from pyswarms.backend.position import PositionUpdater
-from pyswarms.backend.velocity import VelocityUpdater
-
-from pyswarms.optimizers.optimizer import OptimizerPSO
-
 from pyswarms.backend.topology import Topology
-from pyswarms.utils.types import BoundaryStrategy, Bounds, Clamp, OptionsStrategy, Position, SwarmOptions, VelocityStrategy
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.optimizers.optimizer import OptimizerPSO
+from pyswarms.utils.types import (
+    BoundaryStrategy,
+    Bounds,
+    Clamp,
+    OptionsStrategy,
+    Position,
+    SwarmOptions,
+    VelocityStrategy,
+)
 
 
 class GeneralOptimizerPSO(OptimizerPSO):
@@ -78,13 +84,13 @@ class GeneralOptimizerPSO(OptimizerPSO):
         topology: Topology,
         bounds: Optional[Bounds] = None,
         oh_strategy: Optional[OptionsStrategy] = None,
-        bh_strategy: BoundaryStrategy="periodic",
+        bh_strategy: BoundaryStrategy = "periodic",
         velocity_clamp: Optional[Clamp] = None,
         vh_strategy: VelocityStrategy = "unmodified",
-        center: float=1.00,
-        ftol: float=-np.inf,
-        ftol_iter: int=1,
-        init_pos: Optional[Position]=None,
+        center: float = 1.00,
+        ftol: float = -np.inf,
+        ftol_iter: int = 1,
+        init_pos: Optional[Position] = None,
     ):
         """Initialize the swarm
 
@@ -173,6 +179,6 @@ class GeneralOptimizerPSO(OptimizerPSO):
             center,
             ftol,
             ftol_iter,
-            init_pos
+            init_pos,
         )
         self.name = __name__

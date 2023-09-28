@@ -67,10 +67,18 @@ J. Kennedy and R.C. Eberhart in Particle Swarm Optimization
 from typing import Literal, Optional
 
 import numpy as np
-from pyswarms.backend.topology.ring import Ring
 
+from pyswarms.backend.topology.ring import Ring
 from pyswarms.optimizers.general_optimizer import GeneralOptimizerPSO
-from pyswarms.utils.types import BoundaryStrategy, Bounds, Clamp, OptionsStrategy, Position, SwarmOptions, VelocityStrategy
+from pyswarms.utils.types import (
+    BoundaryStrategy,
+    Bounds,
+    Clamp,
+    OptionsStrategy,
+    Position,
+    SwarmOptions,
+    VelocityStrategy,
+)
 
 
 class LocalBestPSO(GeneralOptimizerPSO):
@@ -81,14 +89,14 @@ class LocalBestPSO(GeneralOptimizerPSO):
         options: SwarmOptions,
         bounds: Optional[Bounds] = None,
         oh_strategy: Optional[OptionsStrategy] = None,
-        bh_strategy: BoundaryStrategy="periodic",
+        bh_strategy: BoundaryStrategy = "periodic",
         velocity_clamp: Optional[Clamp] = None,
         vh_strategy: VelocityStrategy = "unmodified",
-        center: float=1.00,
-        ftol: float=-np.inf,
-        ftol_iter: int=1,
-        init_pos: Optional[Position]=None,
-        p: Literal[1,2] = 2,
+        center: float = 1.00,
+        ftol: float = -np.inf,
+        ftol_iter: int = 1,
+        init_pos: Optional[Position] = None,
+        p: Literal[1, 2] = 2,
         k: Optional[int] = None,
     ):
         """Initialize the swarm
