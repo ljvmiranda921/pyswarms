@@ -28,7 +28,16 @@ from typing import Any, Optional
 import numpy as np
 import numpy.typing as npt
 
-from pyswarms.utils.types import BoundaryStrategy, Bounds, Clamp, OptionsStrategy, Position, SwarmOption, Velocity, VelocityStrategy
+from pyswarms.utils.types import (
+    BoundaryStrategy,
+    Bounds,
+    Clamp,
+    OptionsStrategy,
+    Position,
+    SwarmOption,
+    Velocity,
+    VelocityStrategy,
+)
 
 
 class HandlerMixin(object):
@@ -91,6 +100,7 @@ class BoundaryHandler(HandlerMixin, ABC):
     the ability to reset the particles by calling the :code:`BoundaryHandler`
     inside.
     """
+
     memory: Optional[Position] = None
 
     @abstractmethod
@@ -154,7 +164,11 @@ class BoundaryHandler(HandlerMixin, ABC):
         elif strategy == "shrink":
             return ShrinkHandler()
 
-        raise ValueError(f'Strategy {strategy} does not match any of ["nearest", "random", "shrink", "reflective", "intermediate", "periodic"]')
+        raise ValueError(
+            f"""Strategy {strategy} does not match any of
+            ["nearest", "random", "shrink", "reflective", "intermediate", "periodic"]"""
+        )
+
 
 class NearestHandler(BoundaryHandler):
     r"""Set position to nearest bound
@@ -181,6 +195,7 @@ class NearestHandler(BoundaryHandler):
         new_pos = np.where(bool_lower, lb, position)
         new_pos = np.where(bool_greater, ub, new_pos)
         return new_pos
+
 
 class ReflectiveHandler(BoundaryHandler):
     r"""Reflect the particle at the boundary
@@ -221,6 +236,7 @@ class ReflectiveHandler(BoundaryHandler):
             lower_than_bound, greater_than_bound = self._out_of_bounds(new_pos, bounds)
 
         return new_pos
+
 
 class ShrinkHandler(BoundaryHandler):
     r"""Set the particle to the boundary
@@ -289,6 +305,7 @@ class ShrinkHandler(BoundaryHandler):
             self.memory = new_pos
         return new_pos
 
+
 class RandomBoundaryHandler(BoundaryHandler):
     """Set position to random location
 
@@ -308,6 +325,7 @@ class RandomBoundaryHandler(BoundaryHandler):
             [np.array([u - l for u, l in zip(ub, lb)]) * np.random.random_sample((position.shape[1],)) + lb]
         )
         return new_pos
+
 
 class IntermediateHandler(BoundaryHandler):
     r"""Set the particle to an intermediate position
@@ -339,6 +357,7 @@ class IntermediateHandler(BoundaryHandler):
             new_pos[greater_than_bound] = 0.5 * (self.memory[greater_than_bound] + ub[greater_than_bound[1]])
             self.memory = new_pos
         return new_pos
+
 
 class PeriodicHandler(BoundaryHandler):
     r"""Sets the particles a periodic fashion
@@ -604,6 +623,7 @@ class OptionsHandler(ABC):
         The strategy to use. To see all available strategies,
         call :code:`OptionsHandler.strategies`
     """
+
     end_value: float
 
     def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None):
@@ -612,12 +632,12 @@ class OptionsHandler(ABC):
         Parameters
         ----------
         option : SwarmOption
-            Which option this handler will manage. 
+            Which option this handler will manage.
         start_value : float
             Initial value for the option
         end_value : Optional[float], optional
             Final value for the option. If None, it will be computed automatically.
-            Defaults: 
+            Defaults:
                 :math:`w^{end} = 0.4,
                 c^{end}_{1} = 0.8 * c^{start}_{1},
                 c^{end}_{2} = c^{start}_{2}`
@@ -625,12 +645,12 @@ class OptionsHandler(ABC):
         self.option = option
         self.start_value = start_value
         self.set_end_option(end_value)
-    
+
     def set_end_option(self, end_value: Optional[float]):
         if end_value is not None:
             self.end_value = end_value
             return
-        
+
         if self.option == "c1":
             self.end_value = 0.8 * self.start_value
         elif self.option == "c2":
@@ -654,9 +674,15 @@ class OptionsHandler(ABC):
             Value of the option at the current iteration.
         """
         ...
-    
+
     @staticmethod
-    def factory(strategy: OptionsStrategy, option: SwarmOption, start_value: float, end_value: Optional[float] = None, **kwargs: Any):
+    def factory(
+        strategy: OptionsStrategy,
+        option: SwarmOption,
+        start_value: float,
+        end_value: Optional[float] = None,
+        **kwargs: Any,
+    ):
         if strategy == "exp_decay":
             return ExpDecayHandler(option, start_value, end_value, **kwargs)
         elif strategy == "lin_variation":
@@ -666,7 +692,10 @@ class OptionsHandler(ABC):
         elif strategy == "random":
             return RandomHandler(option, start_value, end_value, **kwargs)
 
-        raise ValueError(f'Strategy {strategy} does not match any of ["exp_decay", "lin_variation", "nonlin_mod", "random"]')
+        raise ValueError(
+            f'Strategy {strategy} does not match any of ["exp_decay", "lin_variation", "nonlin_mod", "random"]'
+        )
+
 
 class ExpDecayHandler(OptionsHandler):
     """Exponentially decreasing between :math:`w_{start}` and :math:`w_{end}`
@@ -687,13 +716,15 @@ class ExpDecayHandler(OptionsHandler):
     on Information and Computing Science. doi:10.1109/icic.2009.24
     """
 
-    def __init__(self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, d1: float = 0.2, d2: float = 7):
+    def __init__(
+        self, option: SwarmOption, start_value: float, end_value: Optional[float] = None, d1: float = 0.2, d2: float = 7
+    ):
         """Initialise the ExpDecayHandler
 
         Parameters
         ----------
         option : SwarmOption
-            Which option this handler will manage. 
+            Which option this handler will manage.
         start_value : float
             Initial value for the option
         end_value : Optional[float], optional
@@ -709,6 +740,7 @@ class ExpDecayHandler(OptionsHandler):
 
     def __call__(self, iter_cur: int, iter_max: int):
         return (self.start_value - self.end_value - self.d1) * math.exp(1 / (1 + self.d2 * iter_cur / iter_max))
+
 
 class LinVariationHandler(OptionsHandler):
     """
@@ -727,6 +759,7 @@ class LinVariationHandler(OptionsHandler):
     def __call__(self, iter_cur: int, iter_max: int):
         return self.start_value + (self.end_value - self.start_value) * iter_cur / iter_max
 
+
 class RandomHandler(OptionsHandler):
     """Random value between :math:`w^{start}` and :math:`w^{end}`
 
@@ -736,16 +769,17 @@ class RandomHandler(OptionsHandler):
     Ref: R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
     swarms, in: Congress on Evolutionary Computation, Korea, 2001
     """
-    
+
     def set_end_option(self, end_value: Optional[float]):
         if end_value is not None:
             self.end_value = end_value
             return
-        
+
         self.end_value = self.start_value + 1
 
     def __call__(self, iter_cur: int, iter_max: int):
         return self.start_value + (self.end_value - self.start_value) * np.random.rand()
+
 
 class NonlinModHandler(OptionsHandler):
     """Non linear decreasing/increasing with modulation index(n).
@@ -768,7 +802,7 @@ class NonlinModHandler(OptionsHandler):
         Parameters
         ----------
         option : SwarmOption
-            Which option this handler will manage. 
+            Which option this handler will manage.
         start_value : float
             Initial value for the option
         end_value : Optional[float], optional

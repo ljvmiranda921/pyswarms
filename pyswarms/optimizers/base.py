@@ -29,14 +29,13 @@ See Also
 """
 
 import abc
-from typing import Any, Callable, Deque, List, Optional, Tuple, TypedDict
-
 import multiprocessing as mp
 from collections import deque
-from loguru import logger
+from typing import Any, Callable, Deque, List, Optional, Tuple, TypedDict
 
 import numpy as np
 import numpy.typing as npt
+from loguru import logger
 from tqdm import trange
 
 from pyswarms.backend.operators import compute_objective_function
@@ -182,7 +181,7 @@ class BaseSwarmOptimizer(abc.ABC):
         for i in self.pbar:
             if not self._step(i, objective_func, iters, **kwargs):
                 break
-        
+
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost
         final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
@@ -228,7 +227,7 @@ class BaseSwarmOptimizer(abc.ABC):
         self.velocity_history = []
 
         self._init_swarm()
-    
+
     def _setup(self, n_processes: Optional[int], verbose: bool):
         self.log_level = "DEBUG" if verbose else "TRACE"
 
@@ -237,47 +236,42 @@ class BaseSwarmOptimizer(abc.ABC):
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         self.ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
-    
+
     def _teardown(self):
         if self.pool is not None:
             self.pool.close()
-    
-    def _step(self, i: int,
-        objective_func: Callable[..., npt.NDArray[Any]],
-        iters: int,
-        **kwargs: Any) -> bool:
-            # Compute cost for current position and personal best
-            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=self.pool, **kwargs)
-            self.swarm.compute_pbest()
-            best_cost_yet_found = self.swarm.best_cost
 
-            # Update swarm
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
-            
-            self._populate_history()
+    def _step(self, i: int, objective_func: Callable[..., npt.NDArray[Any]], iters: int, **kwargs: Any) -> bool:
+        # Compute cost for current position and personal best
+        self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=self.pool, **kwargs)
+        self.swarm.compute_pbest()
+        best_cost_yet_found = self.swarm.best_cost
 
-            # Verify stop criteria based on the relative acceptable cost ftol
-            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            self.ftol_history.append(delta)
-            if i >= self.ftol_iter and all(self.ftol_history):
-                return False
+        # Update swarm
+        self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
 
-            # Print to console
-            pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
+        self._populate_history()
 
-            # Perform velocity and position updates
-            self.swarm.velocity = self._compute_velocity(i, iters)
-            self.swarm.position = self._compute_position(i, iters)
+        # Verify stop criteria based on the relative acceptable cost ftol
+        relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
+        delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
+        self.ftol_history.append(delta)
+        if i >= self.ftol_iter and all(self.ftol_history):
+            return False
 
-            return True
+        # Print to console
+        self.pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
+
+        # Perform velocity and position updates
+        self.swarm.velocity = self._compute_velocity(i, iters)
+        self.swarm.position = self._compute_position(i, iters)
+
+        return True
 
     def _compute_position(self, iter_cur: int, iter_max: int):
-        """Update the position matrix of the swarm
-        """
+        """Update the position matrix of the swarm"""
         return self.position_updater.compute(self.swarm)
 
     def _compute_velocity(self, iter_cur: int, iter_max: int):
-        """Update the velocity matrix of the swarm
-        """
+        """Update the velocity matrix of the swarm"""
         return self.velocity_updater.compute(self.swarm, iter_cur, iter_max)

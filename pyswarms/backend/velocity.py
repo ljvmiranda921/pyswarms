@@ -32,6 +32,7 @@ class VelocityUpdater:
         the second entry is the maximum bound. Each array must be of shape
         :code:`(dimensions,)`.
     """
+
     options: Dict[SwarmOption, Callable[[int, int], float]]
 
     def __init__(
@@ -57,19 +58,25 @@ class VelocityUpdater:
             "w": self.init_option("w", options["w"]),
         }
 
-    def init_option(self, option: SwarmOption, value: float|Tuple[OptionsStrategy, float]|OptionsHandler) -> Callable[[int, int], float]:
-        if isinstance(value, float|int):
+    def init_option(
+        self, option: SwarmOption, value: float | Tuple[OptionsStrategy, float] | OptionsHandler
+    ) -> Callable[[int, int], float]:
+        if isinstance(value, float | int):
+
             def get_option(*_: int):
                 return value
+
             return get_option
         elif isinstance(value, tuple):
             strategy, start_value = value
             return OptionsHandler.factory(strategy, option, start_value)
         elif isinstance(value, OptionsHandler):
             return value
-        
-        raise ValueError(f"Option value should be float, Tuple[OptionsStrategy, float] or OptionsHandler, received {type(value)}")
-    
+
+        raise ValueError(
+            f"Option value should be float, Tuple[OptionsStrategy, float] or OptionsHandler, received {type(value)}"
+        )
+
     def get_options(self, iter_cur: int, iter_max: int):
         return (
             self.options["c1"](iter_cur, iter_max),

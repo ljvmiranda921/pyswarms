@@ -102,7 +102,6 @@ class Swarm:
         if not self.pbest_pos.size:
             self.pbest_pos = self.position
 
-
     def compute_pbest(self):
         """Update the personal best score of a swarm instance
 
@@ -130,11 +129,11 @@ class Swarm:
         """
         # Infer dimensions from positions
         dimensions = self.dimensions
-        
+
         # Create a 1-D and 2-D mask based from comparisons
         mask_cost = self.current_cost < self.pbest_cost
         mask_pos = np.repeat(mask_cost[:, np.newaxis], dimensions, axis=1)
-        
+
         # Apply masks
         self.pbest_pos = np.where(~mask_pos, self.pbest_pos, self.position)
         self.pbest_cost = np.where(~mask_cost, self.pbest_cost, self.current_cost)
