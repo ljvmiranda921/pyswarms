@@ -65,7 +65,7 @@ import numpy.typing as npt
 from loguru import logger
 from tqdm import trange
 
-from pyswarms.backend.operators import compute_objective_function, compute_pbest
+from pyswarms.backend.operators import compute_objective_function
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Topology
@@ -196,19 +196,15 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         self._setup(n_processes, verbose)
         logger.debug("Obj. func. args: {}".format(kwargs))
 
-        pbar = trange(iters, desc=self.name) if verbose else range(iters)
+        pbar = trange(iters, desc=self.name, disable=not verbose)
         for i in pbar:
             # Compute cost for current position and personal best
             self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=self.pool, **kwargs)
-            self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(self.swarm)
+            self.swarm.compute_pbest()
             best_cost_yet_found = self.swarm.best_cost
 
             # Update swarm
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
-
-            # Print to console
-            if verbose:
-                pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
             
             self._populate_history()
 
@@ -218,6 +214,9 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             self.ftol_history.append(delta)
             if i >= self.ftol_iter and all(self.ftol_history):
                 break
+
+            # Print to console
+            pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
 
             # Perform velocity and position updates
             self.swarm.velocity = self.velocity_updater.compute(self.swarm, i, iters)
