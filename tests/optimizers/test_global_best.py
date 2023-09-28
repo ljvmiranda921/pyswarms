@@ -13,7 +13,7 @@ from .abc_test_optimizer import ABCTestOptimizer
 
 class TestGlobalBestOptimizer(ABCTestOptimizer):
     @pytest.fixture
-    def optimizer(self, options: SwarmOptions): # type: ignore
+    def optimizer(self, options: SwarmOptions):  # type: ignore
         return GlobalBestPSO(10, 2, options)
 
     def test_global_correct_pos(self, options: SwarmOptions):

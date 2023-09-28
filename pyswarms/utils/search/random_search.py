@@ -34,12 +34,13 @@ from typing import Any, Callable, Dict, Tuple
 
 import numpy as np
 import numpy.typing as npt
-from pyswarms.optimizers.base import BaseSwarmOptimizer
 
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.search.base_search import SearchBase
 from pyswarms.utils.types import SwarmOption, SwarmOptions
 
-OptionRanges = Dict[SwarmOption, float|Tuple[float, float]]
+OptionRanges = Dict[SwarmOption, float | Tuple[float, float]]
+
 
 class RandomSearch(SearchBase):
     """Search of optimal performance on selected objective function
@@ -74,10 +75,12 @@ class RandomSearch(SearchBase):
     def generate_grid(self):
         """Generate the grid of hyperparameter value combinations"""
         return [
-            SwarmOptions({
-                "c1": np.random.uniform(*self.option_ranges["c1"]),
-                "c2": np.random.uniform(*self.option_ranges["c2"]),
-                "w": np.random.uniform(*self.option_ranges["w"]),
-            })
+            SwarmOptions(
+                {
+                    "c1": np.random.uniform(*self.option_ranges["c1"]),
+                    "c2": np.random.uniform(*self.option_ranges["c2"]),
+                    "w": np.random.uniform(*self.option_ranges["w"]),
+                }
+            )
             for _ in range(self.n_selection_iters)
         ]

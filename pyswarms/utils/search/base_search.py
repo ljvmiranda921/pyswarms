@@ -6,8 +6,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, List
 
 import numpy.typing as npt
-from pyswarms.optimizers.base import BaseSwarmOptimizer
 
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.types import SwarmOptions
 
 
