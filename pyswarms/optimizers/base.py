@@ -29,13 +29,20 @@ See Also
 """
 
 import abc
-from typing import Any, Callable, List, Optional, Tuple, TypedDict
+from typing import Any, Callable, Deque, List, Optional, Tuple, TypedDict
+
+import multiprocessing as mp
+from collections import deque
+from loguru import logger
 
 import numpy as np
 import numpy.typing as npt
+from tqdm import trange
 
+from pyswarms.backend.operators import compute_objective_function
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
+from pyswarms.backend.topology.base import Topology
 from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.utils.types import Position, Velocity
 
@@ -60,6 +67,7 @@ class BaseSwarmOptimizer(abc.ABC):
         self,
         n_particles: int,
         dimensions: int,
+        topology: Topology,
         velocity_updater: VelocityUpdater,
         position_updater: PositionUpdater,
         init_pos: Optional[Position] = None,
@@ -96,6 +104,7 @@ class BaseSwarmOptimizer(abc.ABC):
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dimensions = dimensions
+        self.top = topology
         self.velocity_updater = velocity_updater
         self.position_updater = position_updater
         self.swarm_size = (n_particles, dimensions)
@@ -105,6 +114,7 @@ class BaseSwarmOptimizer(abc.ABC):
         assert ftol_iter > 0 and isinstance(ftol_iter, int), "ftol_iter expects an integer value greater than 0"
 
         self.ftol_iter = ftol_iter
+        self.name = __name__
 
         # Initialize resettable attributes
         self.reset()
@@ -129,20 +139,23 @@ class BaseSwarmOptimizer(abc.ABC):
         self.pos_history.append(self.swarm.position)
         self.velocity_history.append(self.swarm.velocity)
 
-
     @abc.abstractmethod
+    def _init_swarm(self) -> None:
+        """Initialise a new swarm object"""
+        ...
+
     def optimize(
         self,
         objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         n_processes: Optional[int] = None,
+        verbose: bool = True,
         **kwargs: Any
     ) -> Tuple[float, Position]:
         """Optimize the swarm for a number of iterations
 
         Performs the optimization to evaluate the objective
-        function :code:`objective_func` for a number of iterations
-        :code:`iter.`
+        function :code:`f` for a number of iterations :code:`iter.`
 
         Parameters
         ----------
@@ -151,22 +164,38 @@ class BaseSwarmOptimizer(abc.ABC):
         iters : int
             number of iterations
         n_processes : int
-            number of processes to use for parallel particle evaluation
-            Default is None with no parallelization
+            number of processes to use for parallel particle evaluation (default: None = no parallelization)
+        verbose : bool
+            enable or disable the logs and progress bar (default: True = enable logs)
         kwargs : dict
-            arguments for objective function
+            arguments for the objective function
 
-        Raises
-        ------
-        NotImplementedError
-            When this method is not implemented.
+        Returns
+        -------
+        tuple
+            the global best cost and the global best position.
         """
-        ...
+        self._setup(n_processes, verbose)
+        logger.debug("Obj. func. args: {}".format(kwargs))
 
-    @abc.abstractmethod
-    def _init_swarm(self) -> None:
-        """Initialise a new swarm object"""
-        ...
+        self.pbar = trange(iters, desc=self.name, disable=not verbose)
+        for i in self.pbar:
+            if not self._step(i, objective_func, iters, **kwargs):
+                break
+        
+        # Obtain the final best_cost and the final best_position
+        final_best_cost = self.swarm.best_cost
+        final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
+
+        # Write report in log and return final cost and position
+        logger.log(
+            self.log_level,
+            "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
+        )
+
+        self._teardown()
+
+        return (final_best_cost, final_best_pos)
 
     def reset(self):
         """Reset the attributes of the optimizer
@@ -199,3 +228,46 @@ class BaseSwarmOptimizer(abc.ABC):
         self.velocity_history = []
 
         self._init_swarm()
+    
+    def _setup(self, n_processes: Optional[int], verbose: bool):
+        self.log_level = "DEBUG" if verbose else "TRACE"
+
+        # Setup Pool of processes for parallel evaluation
+        self.pool = None if n_processes is None else mp.Pool(n_processes)
+
+        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
+        self.ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
+    
+    def _teardown(self):
+        if self.pool is not None:
+            self.pool.close()
+    
+    def _step(self, i: int,
+        objective_func: Callable[..., npt.NDArray[Any]],
+        iters: int,
+        **kwargs: Any) -> bool:
+            # Compute cost for current position and personal best
+            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=self.pool, **kwargs)
+            self.swarm.compute_pbest()
+            best_cost_yet_found = self.swarm.best_cost
+
+            # Update swarm
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
+            
+            self._populate_history()
+
+            # Verify stop criteria based on the relative acceptable cost ftol
+            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
+            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
+            self.ftol_history.append(delta)
+            if i >= self.ftol_iter and all(self.ftol_history):
+                return False
+
+            # Print to console
+            pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
+
+            # Perform velocity and position updates
+            self.swarm.velocity = self.velocity_updater.compute(self.swarm, i, iters)
+            self.swarm.position = self.position_updater.compute(self.swarm)
+
+            return True

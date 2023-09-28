@@ -55,17 +55,10 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Proceedings of the IEEE International Joint Conference on Neural
     Networks, 1995, pp. 1942-1948.
 """
-
-import multiprocessing as mp
-from collections import deque
-from typing import Any, Callable, Deque, Optional, Tuple
+from typing import Optional
 
 import numpy as np
-import numpy.typing as npt
-from loguru import logger
-from tqdm import trange
 
-from pyswarms.backend.operators import compute_objective_function
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Topology
@@ -134,118 +127,18 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             :code:`None` if you wish to generate the particles randomly.
         """
         self.center = center
+        self.name = __name__
 
         super().__init__(
             n_particles,
             dimensions,
+            topology,
             velocity_updater,
             position_updater,
             init_pos,
             ftol,
             ftol_iter,
         )
-
-        # Initialize the resettable attributes
-        self.reset()
-
-        self.top = topology
-        self.name = __name__
-    
-    def _setup(self, n_processes: Optional[int], verbose: bool):
-        self.log_level = "DEBUG" if verbose else "TRACE"
-
-        # Setup Pool of processes for parallel evaluation
-        self.pool = None if n_processes is None else mp.Pool(n_processes)
-
-        self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
-        self.ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
-    
-    def _teardown(self):
-        if self.pool is not None:
-            self.pool.close()
-    
-    def _step(self, i: int,
-        objective_func: Callable[..., npt.NDArray[Any]],
-        iters: int,
-        **kwargs: Any) -> bool:
-            # Compute cost for current position and personal best
-            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=self.pool, **kwargs)
-            self.swarm.compute_pbest()
-            best_cost_yet_found = self.swarm.best_cost
-
-            # Update swarm
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
-            
-            self._populate_history()
-
-            # Verify stop criteria based on the relative acceptable cost ftol
-            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            self.ftol_history.append(delta)
-            if i >= self.ftol_iter and all(self.ftol_history):
-                return False
-
-            # Print to console
-            pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
-
-            # Perform velocity and position updates
-            self.swarm.velocity = self.velocity_updater.compute(self.swarm, i, iters)
-            self.swarm.position = self.position_updater.compute(self.swarm)
-
-            return True
-
-    def optimize(
-        self,
-        objective_func: Callable[..., npt.NDArray[Any]],
-        iters: int,
-        n_processes: Optional[int] = None,
-        verbose: bool = True,
-        **kwargs: Any
-    ) -> Tuple[float, Position]:
-        """Optimize the swarm for a number of iterations
-
-        Performs the optimization to evaluate the objective
-        function :code:`f` for a number of iterations :code:`iter.`
-
-        Parameters
-        ----------
-        objective_func : callable
-            objective function to be evaluated
-        iters : int
-            number of iterations
-        n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
-        verbose : bool
-            enable or disable the logs and progress bar (default: True = enable logs)
-        kwargs : dict
-            arguments for the objective function
-
-        Returns
-        -------
-        tuple
-            the global best cost and the global best position.
-        """
-        self._setup(n_processes, verbose)
-        logger.debug("Obj. func. args: {}".format(kwargs))
-
-        self.pbar = trange(iters, desc=self.name, disable=not verbose)
-        for i in self.pbar:
-            if not self._step(i, objective_func, iters, **kwargs):
-                break
-        
-        # Obtain the final best_cost and the final best_position
-        final_best_cost = self.swarm.best_cost
-        final_best_pos = self.swarm.pbest_pos[self.swarm.pbest_cost.argmin()].copy()
-
-        # Write report in log and return final cost and position
-        logger.log(
-            self.log_level,
-            "Optimization finished | best cost: {}, best pos: {}".format(final_best_cost, final_best_pos),
-        )
-
-        self._teardown()
-
-        return (final_best_cost, final_best_pos)
 
     def _init_swarm(self):
         position = self.position_updater.generate_position(
