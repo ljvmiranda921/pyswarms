@@ -127,7 +127,6 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             :code:`None` if you wish to generate the particles randomly.
         """
         self.center = center
-        self.name = __name__
 
         super().__init__(
             n_particles,
@@ -139,6 +138,8 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             ftol,
             ftol_iter,
         )
+
+        self.name = __name__
 
     def _init_swarm(self):
         position = self.position_updater.generate_position(
