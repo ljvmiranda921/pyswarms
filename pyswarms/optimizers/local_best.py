@@ -71,11 +71,11 @@ import numpy as np
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Ring
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers.general_optimizer import GeneralOptimizerPSO
+from pyswarms.optimizers.optimizer import OptimizerPSO
 from pyswarms.utils.types import Position
 
 
-class LocalBestPSO(GeneralOptimizerPSO):
+class LocalBestPSO(OptimizerPSO):
     def __init__(
         self,
         n_particles: int,

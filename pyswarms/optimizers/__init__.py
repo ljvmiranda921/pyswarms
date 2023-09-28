@@ -5,8 +5,8 @@ swarm classes to implement variants of particle swarm optimization.
 
 from .base import BaseSwarmOptimizer
 from .binary import BinaryPSO
-from .general_optimizer import GeneralOptimizerPSO
+from .optimizer import OptimizerPSO
 from .global_best import GlobalBestPSO
 from .local_best import LocalBestPSO
 
-__all__ = ["BaseSwarmOptimizer", "BinaryPSO", "GeneralOptimizerPSO", "GlobalBestPSO", "LocalBestPSO"]
+__all__ = ["BaseSwarmOptimizer", "BinaryPSO", "OptimizerPSO", "GlobalBestPSO", "LocalBestPSO"]

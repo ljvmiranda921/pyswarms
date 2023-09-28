@@ -12,7 +12,7 @@ from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Pyramid, Random, Ring, Star, VonNeumann
 from pyswarms.backend.topology.base import Topology
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers import GeneralOptimizerPSO
+from pyswarms.optimizers import OptimizerPSO
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.functions.single_obj import sphere
 
@@ -48,7 +48,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         bounds = (x_min, x_max)
         position_updater.bounds = bounds
         velocity_updater.bounds = bounds
-        return GeneralOptimizerPSO(
+        return OptimizerPSO(
             10,
             2,
             request.param,
@@ -106,7 +106,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
             # Wrong kwargs
             optimizer.optimize(obj_with_args, 1000, c=1, d=100)
 
-    def test_general_correct_pos(self, optimizer: GeneralOptimizerPSO):
+    def test_general_correct_pos(self, optimizer: OptimizerPSO):
         """Test to check general optimiser returns the correct position corresponding to the best cost"""
         _, pos = optimizer.optimize(sphere, iters=5)
         # find best pos from history
@@ -114,7 +114,7 @@ class TestGeneralOptimizer(ABCTestOptimizer):
         min_pos_idx = np.argmin(sphere(optimizer.pos_history[min_cost_idx]))
         assert np.array_equal(optimizer.pos_history[min_cost_idx][min_pos_idx], pos)
 
-    def test_ftol_iter_effect(self, optimizer: GeneralOptimizerPSO):
+    def test_ftol_iter_effect(self, optimizer: OptimizerPSO):
         """Test if setting the ftol breaks the optimization process after the set number of iterations"""
         # Set optimizer tolerance
         optimizer.ftol = 1e-1

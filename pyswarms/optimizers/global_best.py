@@ -63,11 +63,11 @@ import numpy as np
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology.star import Star
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers.general_optimizer import GeneralOptimizerPSO
+from pyswarms.optimizers.optimizer import OptimizerPSO
 from pyswarms.utils.types import Position
 
 
-class GlobalBestPSO(GeneralOptimizerPSO):
+class GlobalBestPSO(OptimizerPSO):
     def __init__(
         self,
         n_particles: int,

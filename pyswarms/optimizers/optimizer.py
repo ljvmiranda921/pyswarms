@@ -67,7 +67,7 @@ from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.types import Position
 
 
-class GeneralOptimizerPSO(BaseSwarmOptimizer):
+class OptimizerPSO(BaseSwarmOptimizer):
     def __init__(
         self,
         n_particles: int,
