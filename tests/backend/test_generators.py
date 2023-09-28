@@ -30,7 +30,7 @@ class TestGenerateSwarm(object):
 
     def test_out_of_bounds(self):
         """Test if method raises ValueError when initialized with the wrong value"""
-        bounds = ([1, 1, 1], [5, 5, 5])
+        bounds = ((1, 1, 1), (5, 5, 5))
         init_pos = np.array([[-2, 3, 3], [6, 8, 1]])
         position_updater = PositionUpdater(bounds)
         with pytest.raises(ValueError):

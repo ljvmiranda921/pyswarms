@@ -4,7 +4,6 @@
 """Fixtures for tests"""
 
 from typing import Dict, List, Tuple
-import numpy as np
 import pytest
 
 from pyswarms.optimizers import LocalBestPSO
@@ -70,7 +69,7 @@ def random_unbounded():
 @pytest.fixture
 def random_bounded():
     """Returns a RandomSearch instance with bounds"""
-    bounds = (np.array([-5, -5]), np.array([5, 5]))
+    bounds = (-5, 5)
     options: Dict[SwarmOption, float|Tuple[float, float]] = {
         "c1": (1, 5),
         "c2": (6, 10),

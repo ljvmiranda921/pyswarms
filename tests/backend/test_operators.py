@@ -66,6 +66,6 @@ class TestComputePosition(object):
     @pytest.mark.parametrize("bh_strat", ["nearest", "random", "shrink", "intermediate"])
     def test_input_swarm(self, swarm: Swarm, bh_strat: BoundaryStrategy):
         """Test if method raises AttributeError with wrong swarm"""
-        position_updater = PositionUpdater(([-5, -5], [5, 5]), bh_strat)
+        position_updater = PositionUpdater(((-5, -5), (5, 5)), bh_strat)
         with pytest.raises(AttributeError):
             position_updater.compute(swarm)
