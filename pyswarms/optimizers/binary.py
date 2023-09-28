@@ -72,7 +72,6 @@ class BinaryPSO(BaseSwarmOptimizer):
         p: Literal[1, 2],
         k: int,
         velocity_updater: VelocityUpdater,
-        position_updater: PositionUpdater,
         init_pos: Optional[Position] = None,
         ftol: float = -np.inf,
         ftol_iter: int = 1,
@@ -98,9 +97,6 @@ class BinaryPSO(BaseSwarmOptimizer):
         init_pos : numpy.ndarray, optional
             option to explicitly set the particles' initial positions. Set to
             :code:`None` if you wish to generate the particles randomly.
-        vh_strategy : String
-            a strategy for the handling of the velocity of out-of-bounds particles.
-            Only the "unmodified" and the "adjust" strategies are allowed.
         ftol : float
             relative error in objective_func(best_pos) acceptable for
             convergence
@@ -119,7 +115,7 @@ class BinaryPSO(BaseSwarmOptimizer):
             dimensions,
             Ring(self.p, self.k, static=False),
             velocity_updater,
-            position_updater,
+            PositionUpdater(),
             init_pos,
             ftol,
             ftol_iter,
@@ -134,7 +130,7 @@ class BinaryPSO(BaseSwarmOptimizer):
         velocity = self.velocity_updater.generate_velocity(self.n_particles, self.dimensions)
         self.swarm = Swarm(position, velocity)
 
-    def _compute_position(self):
+    def _compute_position(self, iter_cur: int, iter_max: int):
         """Update the position matrix of the swarm
 
         This computes the next position in a binary swarm. It compares the
