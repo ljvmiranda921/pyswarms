@@ -29,7 +29,7 @@ See Also
 """
 
 import abc
-from typing import Any, Callable, List, NamedTuple, Optional, Tuple, TypedDict
+from typing import Any, Callable, List, Optional, Tuple, TypedDict
 
 import numpy as np
 import numpy.typing as npt
@@ -44,14 +44,6 @@ class Options(TypedDict):
     c1: float
     c2: float
     w: float
-
-
-class ToHistory(NamedTuple):
-    best_cost: float
-    mean_pbest_cost: float
-    mean_neighbor_cost: float
-    position: Position
-    velocity: Velocity
 
 
 class BaseSwarmOptimizer(abc.ABC):
@@ -117,7 +109,7 @@ class BaseSwarmOptimizer(abc.ABC):
         # Initialize resettable attributes
         self.reset()
 
-    def _populate_history(self, hist: ToHistory):
+    def _populate_history(self):
         """Populate all history lists
 
         The :code:`cost_history`, :code:`mean_pbest_history`, and
@@ -131,11 +123,12 @@ class BaseSwarmOptimizer(abc.ABC):
         hist : collections.namedtuple
             Must be of the same type as self.ToHistory
         """
-        self.cost_history.append(hist.best_cost)
-        self.mean_pbest_history.append(hist.mean_pbest_cost)
-        self.mean_neighbor_history.append(hist.mean_neighbor_cost)
-        self.pos_history.append(hist.position)
-        self.velocity_history.append(hist.velocity)
+        self.cost_history.append(self.swarm.best_cost)
+        self.mean_pbest_history.append(float(np.mean(self.swarm.pbest_cost)))
+        self.mean_neighbor_history.append(self.swarm.best_cost)
+        self.pos_history.append(self.swarm.position)
+        self.velocity_history.append(self.swarm.velocity)
+
 
     @abc.abstractmethod
     def optimize(

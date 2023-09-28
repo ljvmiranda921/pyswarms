@@ -70,7 +70,7 @@ from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology import Topology
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers.base import BaseSwarmOptimizer, ToHistory
+from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.types import Position
 
 
@@ -209,15 +209,8 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
             # Print to console
             if verbose:
                 pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
-
-            hist = ToHistory(
-                best_cost=self.swarm.best_cost,
-                mean_pbest_cost=float(np.mean(self.swarm.pbest_cost)),
-                mean_neighbor_cost=self.swarm.best_cost,
-                position=self.swarm.position,
-                velocity=self.swarm.velocity,
-            )
-            self._populate_history(hist)
+            
+            self._populate_history()
 
             # Verify stop criteria based on the relative acceptable cost ftol
             relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
