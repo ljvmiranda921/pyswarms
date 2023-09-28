@@ -113,6 +113,8 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
                 variants calculate new neighbours every time step.
         velocity_updater : VelocityUpdater
             Class for updating the velocity matrix.
+        position_updater : PositionUpdater
+            Class for updating the position matrix.
         bounds : tuple of numpy.ndarray, optional
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
@@ -161,6 +163,36 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
     def _teardown(self):
         if self.pool is not None:
             self.pool.close()
+    
+    def _step(self, i: int,
+        objective_func: Callable[..., npt.NDArray[Any]],
+        iters: int,
+        **kwargs: Any) -> bool:
+            # Compute cost for current position and personal best
+            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=self.pool, **kwargs)
+            self.swarm.compute_pbest()
+            best_cost_yet_found = self.swarm.best_cost
+
+            # Update swarm
+            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
+            
+            self._populate_history()
+
+            # Verify stop criteria based on the relative acceptable cost ftol
+            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
+            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
+            self.ftol_history.append(delta)
+            if i >= self.ftol_iter and all(self.ftol_history):
+                return False
+
+            # Print to console
+            pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
+
+            # Perform velocity and position updates
+            self.swarm.velocity = self.velocity_updater.compute(self.swarm, i, iters)
+            self.swarm.position = self.position_updater.compute(self.swarm)
+
+            return True
 
     def optimize(
         self,
@@ -196,31 +228,10 @@ class GeneralOptimizerPSO(BaseSwarmOptimizer):
         self._setup(n_processes, verbose)
         logger.debug("Obj. func. args: {}".format(kwargs))
 
-        pbar = trange(iters, desc=self.name, disable=not verbose)
-        for i in pbar:
-            # Compute cost for current position and personal best
-            self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=self.pool, **kwargs)
-            self.swarm.compute_pbest()
-            best_cost_yet_found = self.swarm.best_cost
-
-            # Update swarm
-            self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
-            
-            self._populate_history()
-
-            # Verify stop criteria based on the relative acceptable cost ftol
-            relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
-            delta = np.abs(self.swarm.best_cost - best_cost_yet_found) < relative_measure
-            self.ftol_history.append(delta)
-            if i >= self.ftol_iter and all(self.ftol_history):
+        self.pbar = trange(iters, desc=self.name, disable=not verbose)
+        for i in self.pbar:
+            if not self._step(i, objective_func, iters, **kwargs):
                 break
-
-            # Print to console
-            pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
-
-            # Perform velocity and position updates
-            self.swarm.velocity = self.velocity_updater.compute(self.swarm, i, iters)
-            self.swarm.position = self.position_updater.compute(self.swarm)
         
         # Obtain the final best_cost and the final best_position
         final_best_cost = self.swarm.best_cost
