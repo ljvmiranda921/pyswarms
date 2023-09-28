@@ -56,10 +56,8 @@ R.C. Eberhart in Particle Swarm Optimization [IJCNN1995]_.
     Networks, 1995, pp. 1942-1948.
 """
 
-# Import standard library
 from typing import Optional
 
-# Import modules
 import numpy as np
 
 from pyswarms.backend.position import PositionUpdater
