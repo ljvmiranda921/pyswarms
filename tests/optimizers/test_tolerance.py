@@ -11,8 +11,9 @@ from loguru import logger
 
 from pyswarms.backend.position import PositionUpdater
 from pyswarms.backend.topology import Star
+from pyswarms.backend.topology.ring import Ring
 from pyswarms.backend.velocity import VelocityUpdater
-from pyswarms.optimizers import GlobalBestPSO, LocalBestPSO, OptimizerPSO
+from pyswarms.optimizers import OptimizerPSO
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.types import SwarmOptions
 
@@ -43,8 +44,8 @@ velocity_updater = VelocityUpdater(options, (-0.5, 0.5), "invert", constraints)
 position_updater = PositionUpdater(constraints, "periodic")
 
 optimizers = [
-    lambda: GlobalBestPSO(n_particles, dimensions, velocity_updater, position_updater),
-    lambda: LocalBestPSO(n_particles, dimensions, 2, 3, velocity_updater, position_updater),
+    lambda: OptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
+    lambda: OptimizerPSO(n_particles, dimensions, Ring(2, 3), velocity_updater, position_updater),
     lambda: OptimizerPSO(n_particles, dimensions, Star(), velocity_updater, position_updater),
 ]
 
