@@ -267,7 +267,17 @@ class BaseSwarmOptimizer(abc.ABC):
             pbar.set_postfix(best_cost=self.swarm.best_cost)  # type: ignore
 
             # Perform velocity and position updates
-            self.swarm.velocity = self.velocity_updater.compute(self.swarm, i, iters)
-            self.swarm.position = self.position_updater.compute(self.swarm)
+            self.swarm.velocity = self._compute_velocity(i, iters)
+            self.swarm.position = self._compute_position(i, iters)
 
             return True
+
+    def _compute_position(self, iter_cur: int, iter_max: int):
+        """Update the position matrix of the swarm
+        """
+        return self.position_updater.compute(self.swarm)
+
+    def _compute_velocity(self, iter_cur: int, iter_max: int):
+        """Update the velocity matrix of the swarm
+        """
+        return self.velocity_updater.compute(self.swarm, iter_cur, iter_max)
