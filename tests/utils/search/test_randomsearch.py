@@ -23,12 +23,12 @@ def test_generate_grid_combinations(random_bounded: RandomSearch):
     assert len(grid) == expected
 
 
-@pytest.mark.parametrize("options", ["c1", "c2", "w"])
-def test_generate_grid_parameter_mapping(random_bounded: RandomSearch, options: str):
+@pytest.mark.parametrize("option", ["c1", "c2", "w"])
+def test_generate_grid_parameter_mapping(random_bounded: RandomSearch, option: str):
     """Test that generated values are correctly mapped to each parameter and
     are within the specified bounds"""
     grid = random_bounded.generate_grid()
-    values: List[float] = [x[options] for x in grid]
+    values: List[float] = [x[0][option] for x in grid]
     for val in values:
-        assert val >= random_bounded.option_ranges[options][0]
-        assert val <= random_bounded.option_ranges[options][1]
+        assert val >= random_bounded.option_ranges[option][0]
+        assert val <= random_bounded.option_ranges[option][1]
