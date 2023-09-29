@@ -30,10 +30,11 @@ the minimum score, yet maximum score can also be evaluated.
 9.504769054771
 """
 
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Callable, Dict, Optional, Tuple, TypeVar
 
 import numpy as np
 import numpy.typing as npt
+from pyswarms.backend.topology.base import Topology
 
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.search.base_search import SearchBase
@@ -41,11 +42,14 @@ from pyswarms.utils.types import SwarmOption, SwarmOptions
 
 OptionRanges = Dict[SwarmOption, float | Tuple[float, float]]
 
+T = TypeVar("T")
 
 class RandomSearch(SearchBase):
     """Search of optimal performance on selected objective function
     over combinations of randomly selected hyperparameter values
-    within specified bounds for specified number of selection iterations."""
+    within specified bounds for specified number of selection iterations.
+    """
+    topologies: Tuple[Topology, ...]
 
     def __init__(
         self,
@@ -54,6 +58,7 @@ class RandomSearch(SearchBase):
         iters: int,
         n_selection_iters: int,
         option_ranges: OptionRanges,
+        topologies: Optional[Tuple[Topology, ...]] = None
     ):
         """Initialize the Search
 
@@ -62,25 +67,33 @@ class RandomSearch(SearchBase):
         n_selection_iters: int
             number of iterations of random parameter selection
         """
-        self.n_selection_iters = n_selection_iters
-        self.option_ranges = {k: v if isinstance(v, tuple) else (v, v) for k, v in option_ranges.items()}
-
-        # Assign attributes
         super().__init__(
             optimizer,
             objective_func,
             iters,
         )
 
+        self.n_selection_iters = n_selection_iters
+        self.option_ranges = {k: v if isinstance(v, tuple) else (v, v) for k, v in option_ranges.items()}
+        self.topologies = topologies if topologies is not None else (self.optimizer.topology,)
+
     def generate_grid(self):
         """Generate the grid of hyperparameter value combinations"""
+
         return [
-            SwarmOptions(
-                {
-                    "c1": np.random.uniform(*self.option_ranges["c1"]),
-                    "c2": np.random.uniform(*self.option_ranges["c2"]),
-                    "w": np.random.uniform(*self.option_ranges["w"]),
-                }
+            (
+                SwarmOptions(
+                    {
+                        "c1": np.random.uniform(*self.option_ranges["c1"]),
+                        "c2": np.random.uniform(*self.option_ranges["c2"]),
+                        "w": np.random.uniform(*self.option_ranges["w"]),
+                    }
+                ), self._pick_item(self.topologies)
             )
             for _ in range(self.n_selection_iters)
         ]
+
+    # Wrap randint because of typing
+    def _pick_item(self, items: Tuple[T,...]) -> T:
+        i: int = np.random.randint(len(items))  # type: ignore
+        return items[i]

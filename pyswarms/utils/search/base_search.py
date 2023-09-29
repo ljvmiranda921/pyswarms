@@ -2,10 +2,11 @@
 """Base class for hyperparameter optimization search functions"""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Tuple
 
 import numpy as np
 import numpy.typing as npt
+from pyswarms.backend.topology.base import Topology
 
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.types import SwarmOptions
@@ -39,7 +40,7 @@ class SearchBase(ABC):
         self.objective_func = objective_func
         self.iters = iters
 
-    def generate_score(self, options: SwarmOptions):
+    def _generate_score(self, options: SwarmOptions, topology: Topology):
         """Generate score for optimizer's performance on objective function
 
         Parameters
@@ -50,6 +51,7 @@ class SearchBase(ABC):
         """
         # Reset the optimizer and update the options
         self.optimizer.velocity_updater.init_options(options)
+        self.optimizer.topology = topology
         self.optimizer.reset()
 
         # Return score
@@ -72,8 +74,8 @@ class SearchBase(ABC):
 
         # Calculate scores for all hyperparameter combinations
         self.best_score = np.inf
-        for options in grid:
-            score = self.generate_score(options) * (-1 if maximum else 1)
+        for options, topology in grid:
+            score = self._generate_score(options, topology) * (-1 if maximum else 1)
             if score < self.best_score:
                 self.best_options = options
                 self.best_score = score
@@ -81,5 +83,5 @@ class SearchBase(ABC):
         return self.best_score * (-1 if maximum else 1), self.best_options
 
     @abstractmethod
-    def generate_grid(self) -> Iterable[SwarmOptions]:
+    def generate_grid(self) -> Iterable[Tuple[SwarmOptions, Topology]]:
         ...

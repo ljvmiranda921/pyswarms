@@ -29,9 +29,10 @@ yield the minimum score, yet maximum score can also be evaluated.
 """
 
 import itertools
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy.typing as npt
+from pyswarms.backend.topology.base import Topology
 
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.search.base_search import SearchBase
@@ -42,7 +43,9 @@ OptionsGrid = Dict[SwarmOption, float | List[float]]
 
 class GridSearch(SearchBase):
     """Exhaustive search of optimal performance on selected objective function
-    over all combinations of specified hyperparameter values."""
+    over all combinations of specified hyperparameter values.
+    """
+    topologies: Tuple[Topology, ...]
 
     def __init__(
         self,
@@ -50,6 +53,7 @@ class GridSearch(SearchBase):
         objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         options_grid: OptionsGrid,
+        topologies: Optional[Tuple[Topology, ...]] = None
     ):
         """Initialize the Search
 
@@ -63,6 +67,8 @@ class GridSearch(SearchBase):
             number of iterations
         options_grid : OptionsGrid
             A float or list of floats for each of the options c1, c2, w
+        topologies : Tuple[Topology, ...], optional
+            A list of topologies to test out
         """
         super(GridSearch, self).__init__(
             optimizer,
@@ -71,9 +77,15 @@ class GridSearch(SearchBase):
         )
 
         self.options_grid = {k: v if isinstance(v, list) else [v] for k, v in options_grid.items()}
+        self.topologies = topologies if topologies is not None else (self.optimizer.topology,)
 
     def generate_grid(self):
         """Generate the grid of all hyperparameter value combinations"""
         params = list(self.options_grid.keys())
         list_of_products = itertools.product(*self.options_grid.values())
-        return (SwarmOptions(dict(zip(params, x))) for x in list_of_products)  # type: ignore
+        return (
+            (
+                SwarmOptions(dict(zip(params, x))),  # type: ignore
+                topology
+            ) for x in list_of_products for topology in self.topologies
+        )
