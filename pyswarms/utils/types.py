@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from pyswarms.backend.handlers import OptionsHandler
 
 # Bounds for constrained optimization
-Bound = int|float|Tuple[int|float, ...]|npt.NDArray[Any]
+Bound = int | float | Tuple[int | float, ...] | npt.NDArray[Any]
 Bounds = Tuple[Bound, Bound]
 
 # Velocity clamps

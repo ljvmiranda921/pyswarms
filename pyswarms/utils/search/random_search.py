@@ -34,8 +34,8 @@ from typing import Any, Callable, Dict, Optional, Tuple, TypeVar
 
 import numpy as np
 import numpy.typing as npt
-from pyswarms.backend.topology.base import Topology
 
+from pyswarms.backend.topology.base import Topology
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.search.base_search import SearchBase
 from pyswarms.utils.types import SwarmOption, SwarmOptions
@@ -44,11 +44,13 @@ OptionRanges = Dict[SwarmOption, float | Tuple[float, float]]
 
 T = TypeVar("T")
 
+
 class RandomSearch(SearchBase):
     """Search of optimal performance on selected objective function
     over combinations of randomly selected hyperparameter values
     within specified bounds for specified number of selection iterations.
     """
+
     topologies: Tuple[Topology, ...]
 
     def __init__(
@@ -58,7 +60,7 @@ class RandomSearch(SearchBase):
         iters: int,
         n_selection_iters: int,
         option_ranges: OptionRanges,
-        topologies: Optional[Tuple[Topology, ...]] = None
+        topologies: Optional[Tuple[Topology, ...]] = None,
     ):
         """Initialize the Search
 
@@ -88,12 +90,13 @@ class RandomSearch(SearchBase):
                         "c2": np.random.uniform(*self.option_ranges["c2"]),
                         "w": np.random.uniform(*self.option_ranges["w"]),
                     }
-                ), self._pick_item(self.topologies)
+                ),
+                self._pick_item(self.topologies),
             )
             for _ in range(self.n_selection_iters)
         )
 
     # Wrap randint because of typing
-    def _pick_item(self, items: Tuple[T,...]) -> T:
+    def _pick_item(self, items: Tuple[T, ...]) -> T:
         i: int = np.random.randint(len(items))  # type: ignore
         return items[i]

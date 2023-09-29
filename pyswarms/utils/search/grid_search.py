@@ -32,8 +32,8 @@ import itertools
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy.typing as npt
-from pyswarms.backend.topology.base import Topology
 
+from pyswarms.backend.topology.base import Topology
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.search.base_search import SearchBase
 from pyswarms.utils.types import SwarmOption, SwarmOptions
@@ -45,6 +45,7 @@ class GridSearch(SearchBase):
     """Exhaustive search of optimal performance on selected objective function
     over all combinations of specified hyperparameter values.
     """
+
     topologies: Tuple[Topology, ...]
 
     def __init__(
@@ -53,7 +54,7 @@ class GridSearch(SearchBase):
         objective_func: Callable[..., npt.NDArray[Any]],
         iters: int,
         options_grid: OptionsGrid,
-        topologies: Optional[Tuple[Topology, ...]] = None
+        topologies: Optional[Tuple[Topology, ...]] = None,
     ):
         """Initialize the Search
 
@@ -84,8 +85,7 @@ class GridSearch(SearchBase):
         params = list(self.options_grid.keys())
         list_of_products = itertools.product(*self.options_grid.values())
         return (
-            (
-                SwarmOptions(dict(zip(params, x))),  # type: ignore
-                topology
-            ) for x in list_of_products for topology in self.topologies
+            (SwarmOptions(dict(zip(params, x))), topology)  # type: ignore
+            for x in list_of_products
+            for topology in self.topologies
         )

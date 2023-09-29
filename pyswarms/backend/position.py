@@ -114,12 +114,12 @@ class PositionUpdater:
         return pos
 
     def _check_bound(self, bound: Bound, dim: int):
-        if isinstance(bound, tuple|list|np.ndarray):
+        if isinstance(bound, tuple | list | np.ndarray):
             bound = np.array(bound)
             assert bound.ndim == 1, f"Bound must be shape ({dim},) but got {bound.shape}"
             assert bound.shape[0] == dim, f"Bound must be shape ({dim},) but got {bound.shape}"
             bound = bound[None, :]
-        
+
         return bound
 
     def generate_discrete_position(

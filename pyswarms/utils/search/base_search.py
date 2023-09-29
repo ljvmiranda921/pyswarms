@@ -6,8 +6,8 @@ from typing import Any, Callable, Iterable, Tuple
 
 import numpy as np
 import numpy.typing as npt
-from pyswarms.backend.topology.base import Topology
 
+from pyswarms.backend.topology.base import Topology
 from pyswarms.optimizers.base import BaseSwarmOptimizer
 from pyswarms.utils.types import SwarmOptions
 
