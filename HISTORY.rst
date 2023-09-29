@@ -241,3 +241,25 @@ documentation, multiple fixes, and updated build dependencies.
 .. _@IanBoyanZhang: https://github.com/IanBoyanZhang
 .. _@craymichael: https://github.com/craymichael
 .. _@ndngo: https://github.com/ndngo
+
+2.0.0 (2020-10-xx)
+------------------
+
+Complete overhaul of the codebase
+
+- Update to python 3.10
+- Add type annotations everywhere
+- Refactor optimizers, extract main loop logic into multiple functions in single base class
+- Refactor handlers into separate classes with factories
+- Create VelocityUpdater class with full responsibility for particle velocities
+- Create PositionUpdater class with full responsibility for particle positions
+- Use poetry for dependency management
+- Use loguru for logging
+
+Bugs fixed:
+- Fix incorrect dynamic warning in topology class
+- Allow Tuple[float,float] for position and velocity bounds - `#512`_
+- Fix inhomogenous arrays in topologies - `#516`_
+
+.. _#512: https://github.com/ljvmiranda921/pyswarms/issues/512
+.. _#516: https://github.com/ljvmiranda921/pyswarms/issues/516

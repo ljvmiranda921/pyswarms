@@ -8,7 +8,6 @@ This class implements a Von Neumann topology.
 
 from typing import Literal
 
-from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.ring import Ring
 
 
@@ -33,29 +32,7 @@ class VonNeumann(Ring):
         # static = None is just an artifact to make the API consistent
         # Setting it will not change swarm behavior
         k = self.delannoy(dimensions, r)
-        super(VonNeumann, self).__init__(p, k)
-
-    def compute_gbest(self, swarm: Swarm):
-        """Updates the global best using a neighborhood approach
-
-        The Von Neumann topology inherits from the Ring topology and uses
-        the same approach to calculate the global best. The number of
-        neighbors is determined by the dimension and the range. This
-        topology is always a :code:`static` topology.
-
-        Parameters
-        ----------
-        swarm : pyswarms.backend.swarms.Swarm
-            a Swarm instance
-
-        Returns
-        -------
-        numpy.ndarray
-            Best position of shape :code:`(n_dimensions, )`
-        float
-            Best cost
-        """
-        return super(VonNeumann, self).compute_gbest(swarm)
+        super().__init__(p, k)
 
     @staticmethod
     def delannoy(d: int, r: int) -> int:

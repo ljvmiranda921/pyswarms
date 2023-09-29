@@ -35,4 +35,4 @@ class Topology(abc.ABC):
     def compute_gbest(self, swarm: Swarm) -> Tuple[Position, float]:
         """Compute the best particle of the swarm and return the cost and
         position"""
-        raise NotImplementedError("Topology::compute_gbest()")
+        ...
