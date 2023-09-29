@@ -20,7 +20,7 @@ def test_generate_grid_combinations(random_bounded: RandomSearch):
     parameter selection iterations specficied"""
     expected = 100
     grid = random_bounded.generate_grid()
-    assert len(grid) == expected
+    assert len(list(grid)) == expected
 
 
 @pytest.mark.parametrize("option", ["c1", "c2", "w"])

@@ -5,6 +5,7 @@
 
 from typing import Dict, List, Tuple
 import pytest
+from pyswarms.backend.topology.ring import Ring
 
 from pyswarms.optimizers import LocalBestPSO
 from pyswarms.utils.functions.single_obj import sphere
@@ -20,26 +21,24 @@ def grid():
         "c1": [1, 2, 3],
         "c2": [1, 2, 3],
         "w": [0.9, 0.7, 0.4],
-        # "k": [5, 10, 15],
-        # "p": [1],
     }
     
     return GridSearch(
         LocalBestPSO(40, 20, {"c1": 1, "c2": 1, "w": 1}),
         sphere,
         10,
-        options
+        options,
+        tuple(Ring(1, k) for k in [5, 10, 15]),
     )
 
 
 @pytest.fixture
 def grid_mini():
     """Returns a GridSearch instance with a smaller search-space"""
-    # options = {"c1": [1, 2], "c2": 6, "k": 5, "w": 0.9, "p": 0}
     options: Dict[SwarmOption, float|List[float]] = {"c1": [1., 2.], "c2": 6., "w": 0.9}
     
     return GridSearch(
-        LocalBestPSO(40, 20, {"c1": 1, "c2": 1, "w": 1}),
+        LocalBestPSO(40, 20, {"c1": 1, "c2": 1, "w": 1}, p=1, k=5),
         sphere,
         10,
         options
@@ -53,8 +52,6 @@ def random_unbounded():
         "c1": (1, 5),
         "c2": (6, 10),
         "w": (0.4, 0.9),
-        # "k": (11, 15),
-        # "p": 1,
     }
     
     return RandomSearch(
@@ -62,7 +59,8 @@ def random_unbounded():
         sphere,
         10,
         100,
-        options
+        options,
+        tuple((Ring(1, k) for k in [11, 15])),
     )
 
 
@@ -74,8 +72,6 @@ def random_bounded():
         "c1": (1, 5),
         "c2": (6, 10),
         "w": (0.4, 0.9),
-        # "k": [11, 15],
-        # "p": 1,
     }
     
     return RandomSearch(
@@ -83,5 +79,6 @@ def random_bounded():
         sphere,
         10,
         100,
-        options
+        options,
+        tuple(Ring(1, k) for k in [11, 15]),
     )

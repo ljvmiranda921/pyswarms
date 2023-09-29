@@ -80,7 +80,7 @@ class RandomSearch(SearchBase):
     def generate_grid(self):
         """Generate the grid of hyperparameter value combinations"""
 
-        return [
+        return (
             (
                 SwarmOptions(
                     {
@@ -91,7 +91,7 @@ class RandomSearch(SearchBase):
                 ), self._pick_item(self.topologies)
             )
             for _ in range(self.n_selection_iters)
-        ]
+        )
 
     # Wrap randint because of typing
     def _pick_item(self, items: Tuple[T,...]) -> T:
