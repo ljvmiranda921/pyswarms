@@ -14,7 +14,7 @@ from pyswarms.utils.types import Bounds, Clamp, Position
 class TestGenerateSwarm(object):
     """Test suite for generate_swarm() method"""
 
-    @pytest.mark.parametrize("bounds", [None, ([2, 2, 2], [5, 5, 5]), ([-1, -1, 0], [2, 2, 5])])
+    @pytest.mark.parametrize("bounds", [None, (2, 5), ([2, 2, 2], [5, 5, 5]), ([-1, -1, 0], [2, 2, 5])])
     @pytest.mark.parametrize("center", [1, [3, 3, 3], [0.2, 0.2, 0.1]])
     def test_return_values(self, bounds: Optional[Bounds], center: float | Position):
         """Test if method returns expected values"""
@@ -30,7 +30,7 @@ class TestGenerateSwarm(object):
 
     def test_out_of_bounds(self):
         """Test if method raises ValueError when initialized with the wrong value"""
-        bounds = ([1, 1, 1], [5, 5, 5])
+        bounds = ((1, 1, 1), (5, 5, 5))
         init_pos = np.array([[-2, 3, 3], [6, 8, 1]])
         position_updater = PositionUpdater(bounds)
         with pytest.raises(ValueError):
@@ -47,7 +47,7 @@ class TestGenerateSwarm(object):
     def test_bounds_wrong_size(self, bounds: Bounds):
         """Test if method raises ValueError when bounds is of wrong shape"""
         position_updater = PositionUpdater(bounds)
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, AssertionError)):
             position_updater.generate_position(n_particles=2, dimensions=3)
 
 

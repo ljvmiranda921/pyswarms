@@ -1,11 +1,10 @@
 from typing import Optional
 
 import numpy as np
-from loguru import logger
 
 from pyswarms.backend.handlers import BoundaryHandler, BoundaryStrategy
 from pyswarms.backend.swarms import Swarm
-from pyswarms.utils.types import Bounds, Position
+from pyswarms.utils.types import Bound, Bounds, Position
 
 
 class PositionUpdater:
@@ -98,28 +97,30 @@ class PositionUpdater:
         TypeError
             When the argument passed to bounds is not an iterable.
         """
-        if self.bounds is not None:
-            if init_pos is not None:
+        if init_pos is not None:
+            if self.bounds is not None:
                 if not (np.all(self.bounds[0] <= init_pos) and np.all(init_pos <= self.bounds[1])):
                     raise ValueError("User-defined init_pos is out of bounds.")
-                pos = self._check_init_pos(init_pos, n_particles, dimensions)
-            else:
-                try:
-                    lb, ub = self.bounds
-                    min_bounds = np.repeat(np.array(lb)[np.newaxis, :], n_particles, axis=0)
-                    max_bounds = np.repeat(np.array(ub)[np.newaxis, :], n_particles, axis=0)
-                    pos = center * np.random.uniform(low=min_bounds, high=max_bounds, size=(n_particles, dimensions))
-                except ValueError as e:
-                    msg = "Bounds and/or init_pos should be of size ({},)"
-                    logger.error(msg.format(dimensions))
-                    raise e
+            pos = self._check_init_pos(init_pos, n_particles, dimensions)
         else:
-            if init_pos is not None:
-                pos = self._check_init_pos(init_pos, n_particles, dimensions)
+            if self.bounds is not None:
+                lb, ub = self.bounds
+                min_bounds = self._check_bound(lb, dimensions)
+                max_bounds = self._check_bound(ub, dimensions)
+                pos = center * np.random.uniform(low=min_bounds, high=max_bounds, size=(n_particles, dimensions))
             else:
                 pos = center * np.random.uniform(low=0.0, high=1.0, size=(n_particles, dimensions))
 
         return pos
+
+    def _check_bound(self, bound: Bound, dim: int):
+        if isinstance(bound, tuple|list|np.ndarray):
+            bound = np.array(bound)
+            assert bound.ndim == 1, f"Bound must be shape ({dim},) but got {bound.shape}"
+            assert bound.shape[0] == dim, f"Bound must be shape ({dim},) but got {bound.shape}"
+            bound = bound[None, :]
+        
+        return bound
 
     def generate_discrete_position(
         self, n_particles: int, dimensions: int, binary: bool = False, init_pos: Optional[Position] = None

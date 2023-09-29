@@ -60,6 +60,7 @@ class BaseSwarmOptimizer(abc.ABC):
     pos_history: List[Position] = []
     velocity_history: List[Velocity] = []
 
+    # Will be set by the _init_swarm method
     swarm: Swarm
 
     def __init__(
@@ -103,7 +104,7 @@ class BaseSwarmOptimizer(abc.ABC):
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dimensions = dimensions
-        self.top = topology
+        self.topology = topology
         self.velocity_updater = velocity_updater
         self.position_updater = position_updater
         self.swarm_size = (n_particles, dimensions)
@@ -117,6 +118,11 @@ class BaseSwarmOptimizer(abc.ABC):
 
         # Initialize resettable attributes
         self.reset()
+
+    @abc.abstractmethod
+    def _init_swarm(self) -> None:
+        """Initialise a new swarm object"""
+        ...
 
     def _populate_history(self):
         """Populate all history lists
@@ -138,11 +144,6 @@ class BaseSwarmOptimizer(abc.ABC):
         self.pos_history.append(self.swarm.position)
         self.velocity_history.append(self.swarm.velocity)
 
-    @abc.abstractmethod
-    def _init_swarm(self) -> None:
-        """Initialise a new swarm object"""
-        ...
-
     def optimize(
         self,
         objective_func: Callable[..., npt.NDArray[Any]],
@@ -163,7 +164,8 @@ class BaseSwarmOptimizer(abc.ABC):
         iters : int
             number of iterations
         n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
+            number of processes to use for parallel particle evaluation
+            (default: None = no parallelization)
         verbose : bool
             enable or disable the logs and progress bar (default: True = enable logs)
         kwargs : dict
@@ -248,7 +250,7 @@ class BaseSwarmOptimizer(abc.ABC):
         best_cost_yet_found = self.swarm.best_cost
 
         # Update swarm
-        self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
+        self.swarm.best_pos, self.swarm.best_cost = self.topology.compute_gbest(self.swarm)
 
         self._populate_history()
 

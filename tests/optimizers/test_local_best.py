@@ -14,7 +14,7 @@ from .abc_test_optimizer import ABCTestOptimizer
 
 class TestLocalBestOptimizer(ABCTestOptimizer):
     @pytest.fixture
-    def optimizer(self, options: SwarmOptions): # type: ignore
+    def optimizer(self, options: SwarmOptions):  # type: ignore
         return LocalBestPSO(10, 2, options, p=2, k=2)
 
     def test_local_correct_pos(self, optimizer: BinaryPSO):
