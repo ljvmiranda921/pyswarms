@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Base class for hyperparameter optimization search functions"""
 
-import operator as op
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List
+from typing import Any, Callable, Iterable
 
+import numpy as np
 import numpy.typing as npt
 
 from pyswarms.optimizers.base import BaseSwarmOptimizer
@@ -12,6 +12,9 @@ from pyswarms.utils.types import SwarmOptions
 
 
 class SearchBase(ABC):
+    best_score: float
+    best_options: SwarmOptions
+
     def __init__(
         self,
         optimizer: BaseSwarmOptimizer,
@@ -22,12 +25,14 @@ class SearchBase(ABC):
 
         Attributes
         ----------
-        optimizer: pyswarms.single
-            either LocalBestPSO or GlobalBestPSO
+        optimizer: BaseSwarmOptimizer
+            optimizer instance to tune
         objective_func: function
             objective function to be evaluated
         iters: int
             number of iterations
+        topologies: Tuple[Topology], optional
+            Additional topologies to evaluate
         """
         # Assign attributes
         self.optimizer = optimizer
@@ -41,7 +46,7 @@ class SearchBase(ABC):
         ----------
 
         options: dict
-            a dict with the following keys: {'c1', 'c2', 'w', 'k', 'p'}
+            a dict with the following keys: {'c1', 'c2', 'w'}
         """
         # Reset the optimizer and update the options
         self.optimizer.velocity_updater.init_options(options)
@@ -62,24 +67,19 @@ class SearchBase(ABC):
             objective function. If set to True, will return the maximum value
             for the objective function.
         """
-
         # Generate the grid of all hyperparameter value combinations
         grid = self.generate_grid()
 
         # Calculate scores for all hyperparameter combinations
-        scores = [self.generate_score(i) for i in grid]
+        self.best_score = np.inf
+        for options in grid:
+            score = self.generate_score(options) * (-1 if maximum else 1)
+            if score < self.best_score:
+                self.best_options = options
+                self.best_score = score
 
-        # Default behavior
-        idx, self.best_score = min(enumerate(scores), key=op.itemgetter(1))
-
-        # Catches the maximum bool flag
-        if maximum:
-            idx, self.best_score = max(enumerate(scores), key=op.itemgetter(1))
-
-        # Return optimum hyperparameter value property from grid using index
-        self.best_options = op.itemgetter(idx)(grid)
-        return self.best_score, self.best_options
+        return self.best_score * (-1 if maximum else 1), self.best_options
 
     @abstractmethod
-    def generate_grid(self) -> List[SwarmOptions]:
+    def generate_grid(self) -> Iterable[SwarmOptions]:
         ...

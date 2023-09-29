@@ -29,7 +29,7 @@ yield the minimum score, yet maximum score can also be evaluated.
 """
 
 import itertools
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List
 
 import numpy.typing as npt
 
@@ -75,6 +75,5 @@ class GridSearch(SearchBase):
     def generate_grid(self):
         """Generate the grid of all hyperparameter value combinations"""
         params = list(self.options_grid.keys())
-        list_of_products: List[Tuple[float, ...]] = list(itertools.product(*self.options_grid.values()))
-
-        return [SwarmOptions(dict(zip(params, x))) for x in list_of_products]  # type: ignore
+        list_of_products = itertools.product(*self.options_grid.values())
+        return (SwarmOptions(dict(zip(params, x))) for x in list_of_products)  # type: ignore

@@ -104,7 +104,7 @@ class BaseSwarmOptimizer(abc.ABC):
         # Initialize primary swarm attributes
         self.n_particles = n_particles
         self.dimensions = dimensions
-        self.top = topology
+        self.topology = topology
         self.velocity_updater = velocity_updater
         self.position_updater = position_updater
         self.swarm_size = (n_particles, dimensions)
@@ -164,7 +164,8 @@ class BaseSwarmOptimizer(abc.ABC):
         iters : int
             number of iterations
         n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
+            number of processes to use for parallel particle evaluation
+            (default: None = no parallelization)
         verbose : bool
             enable or disable the logs and progress bar (default: True = enable logs)
         kwargs : dict
@@ -249,7 +250,7 @@ class BaseSwarmOptimizer(abc.ABC):
         best_cost_yet_found = self.swarm.best_cost
 
         # Update swarm
-        self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
+        self.swarm.best_pos, self.swarm.best_cost = self.topology.compute_gbest(self.swarm)
 
         self._populate_history()
 
