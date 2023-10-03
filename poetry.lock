@@ -1913,6 +1913,23 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
+name = "pytest-timer"
+version = "0.0.11"
+description = "A timer plugin for pytest"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytest-timer-0.0.11.tar.gz", hash = "sha256:440f3e6536cb68fd06617485f0b199414abab4a116de59065b08f7c7262f5c91"},
+]
+
+[package.dependencies]
+pytest = "*"
+
+[package.extras]
+colorama = ["colorama"]
+termcolor = ["termcolor"]
+
+[[package]]
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
@@ -2846,4 +2863,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "0cb68995369cd5b4db97309a0cd4c934f9a17dcc18db53789450615c488024fd"
+content-hash = "025453cf13637ee930e686893b5886f6058eb813f3ad405e6d79c92861ea6156"

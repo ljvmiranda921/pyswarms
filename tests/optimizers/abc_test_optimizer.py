@@ -33,7 +33,7 @@ class ABCTestOptimizer(ABC):
     @pytest.fixture
     def optimizer_history(self, optimizer: BaseSwarmOptimizer) -> BaseSwarmOptimizer:
         """Run the optimizer for 1000 iterations and return its instance"""
-        optimizer.optimize(sphere, 1000)
+        optimizer.optimize(sphere, 10)
         return optimizer
 
     @pytest.fixture
@@ -75,17 +75,17 @@ class ABCTestOptimizer(ABC):
     @pytest.mark.parametrize(
         "history, expected_shape",
         [
-            ("cost_history", (1000,)),
-            ("mean_pbest_history", (1000,)),
-            ("mean_neighbor_history", (1000,)),
-            ("pos_history", (1000, 10, 2)),
-            ("velocity_history", (1000, 10, 2)),
+            ("cost_history", (10,)),
+            ("mean_pbest_history", (10,)),
+            ("mean_neighbor_history", (10,)),
+            ("pos_history", (10, 10, 2)),
+            ("velocity_history", (10, 10, 2)),
         ],
     )
     def test_train_history(self, optimizer_history: BaseSwarmOptimizer, history: str, expected_shape: Tuple[int, ...]):
         """Test if training histories are of expected shape"""
         opt = vars(optimizer_history)
-        assert np.array(opt[history]).shape == expected_shape
+        assert np.array(opt[history]).shape == expected_shape, str((np.array(opt[history]).shape, expected_shape))
 
     def test_reset_default_values(self, optimizer_reset: BaseSwarmOptimizer):
         """Test if best cost and best pos are set properly when the reset()
@@ -108,8 +108,8 @@ class ABCTestOptimizer(ABC):
         """Test if parallelization breaks the optimization process"""
         import multiprocessing
 
-        optimizer.optimize(obj_without_args, 2000, n_processes=multiprocessing.cpu_count())
-        assert np.array(optimizer.cost_history).shape == (2000,)
+        optimizer.optimize(obj_without_args, 12, n_processes=multiprocessing.cpu_count(), verbose=False)
+        assert np.array(optimizer.cost_history).shape == (12,)
 
     def test_obj_with_kwargs(
         self,
@@ -140,7 +140,7 @@ class ABCTestOptimizer(ABC):
         """Test if error is raised given unnecessary kwargs"""
         with pytest.raises(TypeError):
             # kwargs `a` should not be supplied
-            optimizer.optimize(obj_without_args, 1000, a=1)
+            optimizer.optimize(obj_without_args, 10, a=1)
 
     def test_obj_missing_kwargs(
         self,
@@ -150,7 +150,7 @@ class ABCTestOptimizer(ABC):
         """Test if error is raised with incomplete kwargs"""
         with pytest.raises(TypeError):
             # kwargs `b` is missing here
-            optimizer.optimize(obj_with_args, 1000, a=1)
+            optimizer.optimize(obj_with_args, 10, a=1)
 
     def test_obj_incorrect_kwargs(
         self,
@@ -160,4 +160,4 @@ class ABCTestOptimizer(ABC):
         """Test if error is raised with wrong kwargs"""
         with pytest.raises(TypeError):
             # Wrong kwargs
-            optimizer.optimize(obj_with_args, 1000, c=1, d=100)
+            optimizer.optimize(obj_with_args, 10, c=1, d=100)

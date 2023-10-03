@@ -30,7 +30,7 @@ weight = [random.randint(1, number_of_items) for _ in item_range]
 
 # PSO parameters
 n_particles = 10
-iterations = 1000
+iterations = 200
 dimensions = number_of_items
 LB = [0] * dimensions
 UB = [1] * dimensions

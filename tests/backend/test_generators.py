@@ -39,15 +39,14 @@ class TestGenerateSwarm(object):
     @pytest.mark.parametrize("bounds", [0.1])
     def test_bounds_wrong_type(self, bounds: Bounds):
         """Test if method raises TypeError when bounds is not an array"""
-        position_updater = PositionUpdater(bounds)
         with pytest.raises(TypeError):
-            position_updater.generate_position(n_particles=2, dimensions=3)
+            PositionUpdater(bounds)
 
     @pytest.mark.parametrize("bounds", [(1, 1, 1), ([1, 1, 1]), ([1, 1, 1], [2, 2])])
     def test_bounds_wrong_size(self, bounds: Bounds):
         """Test if method raises ValueError when bounds is of wrong shape"""
-        position_updater = PositionUpdater(bounds)
         with pytest.raises((ValueError, AssertionError)):
+            position_updater = PositionUpdater(bounds)
             position_updater.generate_position(n_particles=2, dimensions=3)
 
 
