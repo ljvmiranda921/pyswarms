@@ -8,13 +8,20 @@ from pyswarms.utils.types import Bound, Bounds, Position
 
 
 class PositionUpdater:
+    bh: Optional[BoundaryHandler] = None
+
     def __init__(self, bounds: Optional[Bounds] = None, bh: BoundaryHandler | BoundaryStrategy = "periodic"):
         self.bounds = bounds
 
+        if self.bounds is None:
+            return
+
         if isinstance(bh, str):
-            self.bh = BoundaryHandler.factory(bh)
+            self.bh = BoundaryHandler.factory(bh, self.bounds)
         else:
             self.bh = bh
+            bh.set_bounds(self.bounds)
+
 
     def compute(self, swarm: Swarm):
         """Update the position matrix
@@ -54,8 +61,8 @@ class PositionUpdater:
         """
         temp_position: Position = swarm.position.copy() + swarm.velocity
 
-        if self.bounds is not None:
-            temp_position = self.bh(temp_position, self.bounds)
+        if self.bh is not None:
+            temp_position = self.bh(temp_position)
 
         position = temp_position
 
@@ -114,6 +121,9 @@ class PositionUpdater:
         return pos
 
     def _check_bound(self, bound: Bound, dim: int):
+        """Check if a bound is vector or scalar. In case of a vector, check dimensions and 
+        add a new a axis to support further manipulations.
+        """
         if isinstance(bound, tuple | list | np.ndarray):
             bound = np.array(bound)
             assert bound.ndim == 1, f"Bound must be shape ({dim},) but got {bound.shape}"

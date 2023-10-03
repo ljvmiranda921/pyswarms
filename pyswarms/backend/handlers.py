@@ -20,7 +20,6 @@ The algorithms in the :class:`BoundaryHandler` and :class:`VelocityHandler` clas
 PhD thesis, Friedrich-Alexander Universität Erlangen-Nürnberg, 2010.
 """
 
-import inspect
 import math
 from abc import ABC, abstractmethod
 from typing import Any, Optional
@@ -39,30 +38,23 @@ from pyswarms.utils.types import (
     VelocityStrategy,
 )
 
+class HasBounds:
+    def __init__(self, bounds: Bounds):
+        self.set_bounds(bounds)
 
-class HandlerMixin(object):
-    """A HandlerMixing class
+    def set_bounds(self, bounds: Bounds):
+        self.bounds = bounds
+        self.lb, self.ub = np.array(bounds[0]), np.array(bounds[1])
+        self.width = self.ub - self.lb
 
-    This class offers some basic functionality for the Handlers.
-    """
-
-    def _out_of_bounds(self, position: npt.NDArray[Any], bounds: Bounds):
+    def _out_of_bounds(self, position: npt.NDArray[Any]):
         """Helper method to find indices of out-of-bound positions
 
         This method finds the indices of the particles that are out-of-bound.
         """
-        lb, ub = bounds
-        greater_than_bound = np.nonzero(position > ub)
-        lower_than_bound = np.nonzero(position < lb)
+        return position < self.lb | position > self.ub
 
-        return (lower_than_bound, greater_than_bound)
-
-    def _get_all_strategies(self):
-        """Helper method to automatically generate a dict of strategies"""
-        return {k: v for k, v in inspect.getmembers(self, predicate=inspect.isroutine) if not k.startswith(("__", "_"))}
-
-
-class BoundaryHandler(HandlerMixin, ABC):
+class BoundaryHandler(ABC, HasBounds):
     """A BoundaryHandler class
 
     This class offers a way to handle boundary conditions. It contains
@@ -104,7 +96,7 @@ class BoundaryHandler(HandlerMixin, ABC):
     memory: Optional[Position] = None
 
     @abstractmethod
-    def __call__(self, position: Position, bounds: Bounds) -> Position:
+    def __call__(self, position: Position) -> Position:
         """Apply the selected strategy to the position-matrix given the bounds
 
         Parameters
@@ -125,7 +117,7 @@ class BoundaryHandler(HandlerMixin, ABC):
         ...
 
     @staticmethod
-    def factory(strategy: BoundaryStrategy):
+    def factory(strategy: BoundaryStrategy, bounds: Bounds):
         """A BoundaryHandler class
 
         This class offers a way to handle boundary conditions. It contains
@@ -152,17 +144,17 @@ class BoundaryHandler(HandlerMixin, ABC):
             strategy : BoundaryStrategy
         """
         if strategy == "intermediate":
-            return IntermediateHandler()
+            return IntermediateHandler(bounds)
         elif strategy == "nearest":
-            return NearestHandler()
+            return NearestHandler(bounds)
         elif strategy == "periodic":
-            return PeriodicHandler()
+            return PeriodicHandler(bounds)
         elif strategy == "random":
-            return RandomBoundaryHandler()
+            return RandomBoundaryHandler(bounds)
         elif strategy == "reflective":
-            return ReflectiveHandler()
+            return ReflectiveHandler(bounds)
         elif strategy == "shrink":
-            return ShrinkHandler()
+            return ShrinkHandler(bounds)
 
         raise ValueError(
             f"""Strategy {strategy} does not match any of
@@ -188,13 +180,8 @@ class NearestHandler(BoundaryHandler):
                         \end{cases}
     """
 
-    def __call__(self, position: Position, bounds: Bounds):
-        lb, ub = bounds
-        bool_greater = position > ub
-        bool_lower = position < lb
-        new_pos = np.where(bool_lower, lb, position)
-        new_pos = np.where(bool_greater, ub, new_pos)
-        return new_pos
+    def __call__(self, position: Position):
+        return np.clip(position, self.lb, self.ub)
 
 
 class ReflectiveHandler(BoundaryHandler):
@@ -224,18 +211,12 @@ class ReflectiveHandler(BoundaryHandler):
         \end{gather*}
     """
 
-    def __call__(self, position: Position, bounds: Bounds):
-        lb, ub = bounds
-        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
-        new_pos = position
-        while lower_than_bound[0].size != 0 or greater_than_bound[0].size != 0:
-            if lower_than_bound[0].size > 0:
-                new_pos[lower_than_bound] = 2 * lb[lower_than_bound[1]] - new_pos[lower_than_bound]
-            if greater_than_bound[0].size > 0:
-                new_pos[greater_than_bound] = 2 * ub[greater_than_bound[1]] - new_pos[greater_than_bound]
-            lower_than_bound, greater_than_bound = self._out_of_bounds(new_pos, bounds)
+    def __call__(self, position: Position) -> Position:
+        normalized = (position - self.lb)
+        strides = ((normalized / self.width).astype(np.int32) + 1) // 2 * 2
+        corr = normalized - self.width * strides
 
-        return new_pos
+        return self.lb + np.abs(corr) # type: ignore
 
 
 class ShrinkHandler(BoundaryHandler):
@@ -270,40 +251,21 @@ class ShrinkHandler(BoundaryHandler):
         \end{gather*}
     """
 
-    def __call__(self, position: Position, bounds: Bounds):
+    def __call__(self, position: Position):
         if self.memory is None:
             new_pos = position
             self.memory = new_pos
-        else:
-            lb, ub = bounds
-            lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
-            velocity = position - self.memory
-            # Create a coefficient matrix
-            sigma = np.tile(1.0, position.shape)
-            sigma[lower_than_bound] = (lb[lower_than_bound[1]] - self.memory[lower_than_bound]) / velocity[
-                lower_than_bound
-            ]
-            sigma[greater_than_bound] = (ub[greater_than_bound[1]] - self.memory[greater_than_bound]) / velocity[
-                greater_than_bound
-            ]
-            min_sigma = np.amin(sigma, axis=1)
-            new_pos = position
-            new_pos[lower_than_bound[0]] = (
-                self.memory[lower_than_bound[0]]
-                + np.multiply(
-                    min_sigma[lower_than_bound[0]],
-                    velocity[lower_than_bound[0]].T,
-                ).T
-            )
-            new_pos[greater_than_bound[0]] = (
-                self.memory[greater_than_bound[0]]
-                + np.multiply(
-                    min_sigma[greater_than_bound[0]],
-                    velocity[greater_than_bound[0]].T,
-                ).T
-            )
-            self.memory = new_pos
-        return new_pos
+            return new_pos
+
+        scaled_pos = (position - self.lb) / self.width - 0.5
+        velocity = (position - self.memory)
+        corr = 1 - (np.abs(scaled_pos) - 0.5) / np.abs(velocity / self.width)
+        factors = np.min(corr, axis=1)
+        oob = factors < 1
+        position[oob] = self.memory[oob] + velocity[oob] * factors[oob,None]
+        
+        self.memory = position.copy()
+        return position
 
 
 class RandomBoundaryHandler(BoundaryHandler):
@@ -313,17 +275,11 @@ class RandomBoundaryHandler(BoundaryHandler):
     inside the boundary conditions.
     """
 
-    def __call__(self, position: Position, bounds: Bounds):
-        lb, ub = bounds
-        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
-        # Set indices that are greater than bounds
+    def __call__(self, position: Position):
+        oob = self._out_of_bounds(position)
         new_pos = position
-        new_pos[greater_than_bound[0]] = np.array(
-            [np.array([u - l for u, l in zip(ub, lb)]) * np.random.random_sample((position.shape[1],)) + lb]
-        )
-        new_pos[lower_than_bound[0]] = np.array(
-            [np.array([u - l for u, l in zip(ub, lb)]) * np.random.random_sample((position.shape[1],)) + lb]
-        )
+        cols = np.any(oob, axis=1)
+        new_pos[cols] = np.random.rand(cols.sum(), *position.shape[1:]) * self.width[None,:] + self.lb
         return new_pos
 
 
@@ -345,18 +301,20 @@ class IntermediateHandler(BoundaryHandler):
                         \end{cases}
     """
 
-    def __call__(self, position: Position, bounds: Bounds):
+    def __call__(self, position: Position):
         if self.memory is None:
             new_pos = position
             self.memory = new_pos
-        else:
-            lb, ub = bounds
-            lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
-            new_pos = position
-            new_pos[lower_than_bound] = 0.5 * (self.memory[lower_than_bound] + lb[lower_than_bound[1]])
-            new_pos[greater_than_bound] = 0.5 * (self.memory[greater_than_bound] + ub[greater_than_bound[1]])
-            self.memory = new_pos
-        return new_pos
+            return new_pos
+
+        scaled_pos = (position - self.lb) / self.width - 0.5
+        velocity = (position - self.memory)
+        corr = 1 - (np.abs(scaled_pos) - 0.5) / np.abs(velocity / self.width)
+        oob = corr < 1
+        position[oob] = self.memory[oob] + 0.5 * velocity[oob] * corr[oob]
+        
+        self.memory = position.copy()
+        return position
 
 
 class PeriodicHandler(BoundaryHandler):
@@ -384,27 +342,11 @@ class PeriodicHandler(BoundaryHandler):
 
     """
 
-    def __call__(self, position: Position, bounds: Bounds):
-        lb, ub = bounds
-        lower_than_bound, greater_than_bound = self._out_of_bounds(position, bounds)
-        bound_d = np.tile(np.abs(np.array(ub) - np.array(lb)), (position.shape[0], 1))
-        ub = np.tile(ub, (position.shape[0], 1))
-        lb = np.tile(lb, (position.shape[0], 1))
-        new_pos = position
-        if lower_than_bound[0].size != 0 and lower_than_bound[1].size != 0:
-            new_pos[lower_than_bound] = ub[lower_than_bound] - np.mod(
-                (lb[lower_than_bound] - new_pos[lower_than_bound]),
-                bound_d[lower_than_bound],
-            )
-        if greater_than_bound[0].size != 0 and greater_than_bound[1].size != 0:
-            new_pos[greater_than_bound] = lb[greater_than_bound] + np.mod(
-                (new_pos[greater_than_bound] - ub[greater_than_bound]),
-                bound_d[greater_than_bound],
-            )
-        return new_pos
+    def __call__(self, position: Position):
+        return self.lb + (position - self.lb) % self.width
 
 
-class VelocityHandler(HandlerMixin, ABC):
+class VelocityHandler(ABC):
     memory: Optional[Position] = None
 
     def __init__(self, clamp: Optional[Clamp] = None, bounds: Optional[Bounds] = None):
@@ -479,8 +421,10 @@ class VelocityHandler(HandlerMixin, ABC):
         elif strategy == "adjust":
             return AdjustVelocityHandler(clamp, bounds)
         elif strategy == "invert":
+            assert bounds is not None, "The 'invert' strategy requires position bounds"
             return InvertVelocityHandler(clamp, bounds)
         elif strategy == "zero":
+            assert bounds is not None, "The 'zero' strategy requires position bounds"
             return ZeroVelocityHandler(clamp, bounds)
 
         raise ValueError(f'Strategy {strategy} does not match any of ["unmodified", "adjust", "invert", "zero"]')
@@ -521,9 +465,10 @@ class AdjustVelocityHandler(VelocityHandler):
         return new_vel
 
 
-class InvertVelocityHandler(VelocityHandler):
-    def __init__(self, clamp: Optional[Clamp] = None, bounds: Optional[Bounds] = None, z: float = 0.5):
-        super().__init__(clamp, bounds)
+class InvertVelocityHandler(VelocityHandler, HasBounds):
+    def __init__(self, clamp: Optional[Clamp], bounds: Bounds, z: float = 0.5):
+        VelocityHandler.__init__(self, clamp, bounds)
+        HasBounds.__init__(self, bounds)
         self.z = z
 
     def __call__(self, velocity: Velocity, position: Optional[Position]) -> Velocity:
@@ -541,34 +486,29 @@ class InvertVelocityHandler(VelocityHandler):
         if position is None:
             raise ValueError("Position must not be None")
 
-        if self.bounds is None:
-            raise ValueError("Bounds must not be None")
-
-        lower_than_bound, greater_than_bound = self._out_of_bounds(position, self.bounds)
+        oob = np.any(self._out_of_bounds(position), axis=1)
         new_vel = velocity
-        new_vel[lower_than_bound[0]] = (-self.z) * new_vel[lower_than_bound[0]]
-        new_vel[greater_than_bound[0]] = (-self.z) * new_vel[greater_than_bound[0]]
+        new_vel[oob] = -self.z * new_vel[oob]
 
         new_vel = self._apply_clamp(new_vel)
 
         return new_vel
 
 
-class ZeroVelocityHandler(VelocityHandler):
+class ZeroVelocityHandler(VelocityHandler, HasBounds):
+    def __init__(self, clamp: Optional[Clamp], bounds: Bounds):
+        VelocityHandler.__init__(self, clamp, bounds)
+        HasBounds.__init__(self, bounds)
+
     def __call__(self, velocity: Velocity, position: Optional[Position]):
         """Set velocity to zero if the particle is out of bounds"""
         if position is None:
             raise ValueError("Position must not be None")
 
-        if self.bounds is None:
-            raise ValueError("Bounds must not be None")
+        oob = np.any(self._out_of_bounds(position), axis=1)
+        velocity[oob] = 0
 
-        lower_than_bound, greater_than_bound = self._out_of_bounds(position, self.bounds)
-        new_vel = velocity
-        new_vel[lower_than_bound[0]] = np.zeros(velocity.shape[1])
-        new_vel[greater_than_bound[0]] = np.zeros(velocity.shape[1])
-
-        return new_vel
+        return velocity
 
 
 class OptionsHandler(ABC):
