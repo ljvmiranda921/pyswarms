@@ -60,10 +60,8 @@ def test_mesh_hidden_function_shape(mesher: Mesher):
 
 def test_parallel_mesh(mesher: Mesher):
     """Test if parallelization breaks the optimization process"""
-    import multiprocessing
-
     xx, yy, zz = _mesh(mesher)
-    xx_p, yy_p, zz_p = _mesh(mesher, n_processes=multiprocessing.cpu_count())
+    xx_p, yy_p, zz_p = _mesh(mesher, n_processes=2)
     assert xx.shape == yy.shape == zz.shape == xx_p.shape == yy_p.shape == zz_p.shape == (20, 20)
 
 

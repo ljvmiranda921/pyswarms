@@ -106,9 +106,7 @@ class ABCTestOptimizer(ABC):
         optimizer: BaseSwarmOptimizer,
     ):
         """Test if parallelization breaks the optimization process"""
-        import multiprocessing
-
-        optimizer.optimize(obj_without_args, 12, n_processes=multiprocessing.cpu_count(), verbose=False)
+        optimizer.optimize(obj_without_args, 12, n_processes=2, verbose=False)
         assert np.array(optimizer.cost_history).shape == (12,)
 
     def test_obj_with_kwargs(
