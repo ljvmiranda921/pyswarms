@@ -1,3 +1,10 @@
+"""
+Class for handling velocities during optimization. This involves
+    - Generating initial swarm velocities
+    - Updating swarm velocities
+    - Calling the velocity handler
+"""
+
 from typing import Callable, Dict, Optional, Tuple
 
 import numpy as np
@@ -42,6 +49,25 @@ class VelocityUpdater:
         vh: VelocityStrategy | VelocityHandler = "unmodified",
         bounds: Optional[Bounds] = None,
     ):
+        """
+        Parameters
+        ----------
+        options : SwarmOptions
+            a dictionary containing the parameters for the specific
+            optimization technique.
+                * c1 : float
+                    cognitive parameter
+                * c2 : float
+                    social parameter
+                * w : float
+                    inertia parameter
+        clamp : Optional[Clamp]
+            Range of velocities to clamp to
+        vh : VelocityStrategy | VelocityHandler, optional
+            Strategy for handling out-of-bounds velocities, by default "unmodified"
+        bounds : Optional[Bounds], optional
+            Position bounds, by default None
+        """
         self.clamp = clamp
         self.bounds = bounds
         self.init_options(options)
@@ -61,6 +87,26 @@ class VelocityUpdater:
     def init_option(
         self, option: SwarmOption, value: float | Tuple[OptionsStrategy, float] | OptionsHandler
     ) -> Callable[[int, int], float]:
+        """Validate a swarm option
+
+        Parameters
+        ----------
+        option : SwarmOption
+            Which swarm option this class handles
+        value : float | Tuple[OptionsStrategy, float] | OptionsHandler
+            The option can have a constant value or be varied using an OptionsHandler instance.
+
+        Returns
+        -------
+        Callable[[int, int], float]
+            A function that takes 2 integers, the current number of iterations and
+            the total number of iterations, and returns the value of the option at that point.
+
+        Raises
+        ------
+        ValueError
+            If the option is the incorrect type.
+        """
         if isinstance(value, float | int):
 
             def get_option(*_: int):
@@ -77,7 +123,7 @@ class VelocityUpdater:
             f"Option value should be float, Tuple[OptionsStrategy, float] or OptionsHandler, received {type(value)}"
         )
 
-    def get_options(self, iter_cur: int, iter_max: int):
+    def _get_options(self, iter_cur: int, iter_max: int):
         return (
             self.options["c1"](iter_cur, iter_max),
             self.options["c2"](iter_cur, iter_max),
@@ -120,7 +166,7 @@ class VelocityUpdater:
         swarm_size = swarm.position.shape
 
         # Perform options update
-        c1, c2, w = self.get_options(iter_cur, iter_max)
+        c1, c2, w = self._get_options(iter_cur, iter_max)
 
         # Compute for cognitive and social terms
         cognitive = c1 * np.random.uniform(0, 1, swarm_size) * (swarm.pbest_pos - swarm.position)

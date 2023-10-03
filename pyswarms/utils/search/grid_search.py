@@ -6,19 +6,33 @@ Compares the relative performance of hyperparameter value combinations in
 optimizing a specified objective function.
 
 For each hyperparameter, user can provide either a single value or a list
-of possible values. The cartesian products of these hyperparameters are taken
-to produce a grid of all possible combinations. These combinations are then
-tested to produce a list of objective function scores. The search method
-default returns the minimum objective function score and hyperparameters that
-yield the minimum score, yet maximum score can also be evaluated.
+of possible values. A list of topologies to check can also be supplied. The
+cartesian products of these hyperparameters are taken to produce a grid of
+all possible combinations. These combinations are then tested to produce a
+list of objective function scores. The search method default returns the
+minimum objective function score and hyperparameters that yield the minimum
+score, yet maximum score can also be evaluated.
 
->>> options = {'c1': [1, 2, 3],
+>>> options_grid = {'c1': [1, 2, 3],
                'c2': [1, 2, 3],
-               'w' : [2, 3, 5],
-               'k' : [5, 10, 15],
-               'p' : 1}
->>> g = GridSearch(LocalBestPSO, n_particles=40, dimensions=20,
-                   options=options, objective_func=sphere, iters=10)
+               'w' : [2, 3, 5]}
+>>> topologies = (Ring(p=1, k=4),
+                  Ring(p=2, k=5),
+                  Random(k=6))
+The optimizer requires an options argument itself which is a shortcoming of
+this architecture, to be solved in the future.
+>>> optimizer = LocalBestPSO(
+    n_particles=40,
+    dimensions=20,
+    options={'c1': 1, 'c2': 1, 'w': 1},
+)
+>>> g = GridSearch(
+    optimizer,
+    objective_func=sphere,
+    iters=10,
+    options_grid=options_grid,
+    topologies=topologies,
+)
 >>> best_score, best_options = g.search()
 >>> best_score
 0.498641604188

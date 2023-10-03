@@ -31,7 +31,7 @@ See Also
 import abc
 import multiprocessing as mp
 from collections import deque
-from typing import Any, Callable, Deque, List, Optional, Tuple, TypedDict
+from typing import Any, Callable, Deque, List, Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -44,12 +44,6 @@ from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.topology.base import Topology
 from pyswarms.backend.velocity import VelocityUpdater
 from pyswarms.utils.types import Position, Velocity
-
-
-class Options(TypedDict):
-    c1: float
-    c2: float
-    w: float
 
 
 class BaseSwarmOptimizer(abc.ABC):
@@ -231,6 +225,8 @@ class BaseSwarmOptimizer(abc.ABC):
         self._init_swarm()
 
     def _setup(self, n_processes: Optional[int], verbose: bool):
+        """Prepare for the optimization loop, doing any necessary setup.
+        """
         self.log_level = "DEBUG" if verbose else "TRACE"
 
         # Setup Pool of processes for parallel evaluation
@@ -240,10 +236,15 @@ class BaseSwarmOptimizer(abc.ABC):
         self.ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
 
     def _teardown(self):
+        """Prepare for the optimization loop, doing any necessary setup.
+        """
         if self.pool is not None:
             self.pool.close()
 
     def _step(self, i: int, objective_func: Callable[..., npt.NDArray[Any]], iters: int, **kwargs: Any) -> bool:
+        """Contains all the required logic for a step in the optimization loop.
+        Will typically not require modification, except in specific instances.
+        """
         # Compute cost for current position and personal best
         self.swarm.current_cost = compute_objective_function(self.swarm, objective_func, pool=self.pool, **kwargs)
         self.swarm.compute_pbest()

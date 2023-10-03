@@ -1,3 +1,10 @@
+"""
+Class for handling positions during optimization. This involves
+    - Generating initial swarm positions
+    - Updating swarm positions
+    - Calling the boundary handler
+"""
+
 from typing import Optional
 
 import numpy as np
@@ -11,6 +18,14 @@ class PositionUpdater:
     bh: Optional[BoundaryHandler] = None
 
     def __init__(self, bounds: Optional[Bounds] = None, bh: BoundaryHandler | BoundaryStrategy = "periodic"):
+        """
+        Parameters
+        ----------
+        bounds : Optional[Bounds], optional
+            Position bounds, by default None
+        bh : BoundaryHandler | BoundaryStrategy, optional
+            A BoundaryHandler instance or a strategy, by default "periodic"
+        """
         self.bounds = bounds
 
         if self.bounds is None:
@@ -174,6 +189,8 @@ class PositionUpdater:
         return pos
 
     def _check_init_pos(self, init_pos: Position, n_particles: int, dimensions: int, binary: bool = False):
+        """Checks the shape and contents of the initial position.
+        """
         if binary and len(np.unique(init_pos)) > 2:
             raise ValueError("User-defined init_pos is not binary!")
 

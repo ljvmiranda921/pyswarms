@@ -29,7 +29,7 @@ update rule is now decided upon by the following case expression:
 
 .. math::
 
-   X_{ij}(t+1) = \left\{\begin{array}{lr}
+    X_{ij}(t+1) = \left\{\begin{array}{lr}
         0, & \text{if } \text{rand() } \geq S(v_{ij}(t+1))\\
         1, & \text{if } \text{rand() } < S(v_{ij}(t+1))
         \end{array}\right\}
@@ -38,7 +38,7 @@ Where the function :math:`S(x)` is the sigmoid function defined as:
 
 .. math::
 
-   S(x) = \dfrac{1}{1 + e^{-x}}
+    S(x) = \dfrac{1}{1 + e^{-x}}
 
 This enables the algorithm to output binary positions rather than
 a stream of continuous values as seen in global-best or local-best PSO.
@@ -124,6 +124,8 @@ class BinaryPSO(BaseSwarmOptimizer):
         self.name = __name__
 
     def _init_swarm(self):
+        """Initialize the swarm by generating positions and velocities.
+        """
         position = self.position_updater.generate_discrete_position(
             self.n_particles, self.dimensions, self.binary, self.init_pos
         )
@@ -131,7 +133,7 @@ class BinaryPSO(BaseSwarmOptimizer):
         self.swarm = Swarm(position, velocity)
 
     def _compute_position(self, iter_cur: int, iter_max: int):
-        """Update the position matrix of the swarm
+        """Update the position matrix of the swarm.
 
         This computes the next position in a binary swarm. It compares the
         sigmoid output of the velocity-matrix and compares it with a randomly
@@ -140,7 +142,7 @@ class BinaryPSO(BaseSwarmOptimizer):
         return (np.random.random_sample(size=self.swarm.dimensions) < self._sigmoid(self.swarm.velocity)) * 1
 
     def _sigmoid(self, x: npt.NDArray[Any]):
-        """Helper method for the sigmoid function
+        """Helper method for the sigmoid function.
 
         Parameters
         ----------

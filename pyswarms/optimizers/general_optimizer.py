@@ -68,7 +68,6 @@ from pyswarms.utils.types import (
     BoundaryStrategy,
     Bounds,
     Clamp,
-    OptionsStrategy,
     Position,
     SwarmOptions,
     VelocityStrategy,
@@ -83,7 +82,6 @@ class GeneralOptimizerPSO(OptimizerPSO):
         options: SwarmOptions,
         topology: Topology,
         bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[OptionsStrategy] = None,
         bh_strategy: BoundaryStrategy = "periodic",
         velocity_clamp: Optional[Clamp] = None,
         vh_strategy: VelocityStrategy = "unmodified",
@@ -100,35 +98,18 @@ class GeneralOptimizerPSO(OptimizerPSO):
             number of particles in the swarm.
         dimensions : int
             number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1',
-                'c2', 'w', 'k', 'p'}`
-            a dictionary containing the parameters for the specific
-            optimization technique.
-                * c1 : float
+        options : dict with keys :code:`{'c1', 'c2', 'w'}`
+            A dictionary containing the parameters for the specific
+            optimization technique. This can be a constant, OptionsStrategy
+            or an OptionsHandler.
+                * c1 : float|Tuple[OptionsStrategy, float]|OptionsHandler
                     cognitive parameter
-                * c2 : float
+                * c2 : float|Tuple[OptionsStrategy, float]|OptionsHandler
                     social parameter
-                * w : float
+                * w : float|Tuple[OptionsStrategy, float]|OptionsHandler
                     inertia parameter
-                if used with the :code:`Ring`, :code:`VonNeumann` or
-                :code:`Random` topology the additional parameter k must be
-                included
-                * k : int
-                    number of neighbors to be considered. Must be a positive
-                    integer less than :code:`n_particles`
-                if used with the :code:`Ring` topology the additional
-                parameters k and p must be included
-                * p: int {1,2}
-                    the Minkowski p-norm to use. 1 is the sum-of-absolute
-                    values (or L1 distance) while 2 is the Euclidean (or L2)
-                    distance.
-                if used with the :code:`VonNeumann` topology the additional
-                parameters p and r must be included
-                * r: int
-                    the range of the VonNeumann topology.  This is used to
-                    determine the number of neighbours in the topology.
         topology : pyswarms.backend.topology.Topology
-            a :code:`Topology` object that defines the topology to use in the
+            A :code:`Topology` object that defines the topology to use in the
             optimization process. The currently available topologies are:
                 * Star
                     All particles are connected
@@ -147,8 +128,6 @@ class GeneralOptimizerPSO(OptimizerPSO):
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
-        oh_strategy : dict, optional, default=None(constant options)
-            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
         velocity_clamp : tuple, optional

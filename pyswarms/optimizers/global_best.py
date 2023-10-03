@@ -65,7 +65,6 @@ from pyswarms.utils.types import (
     BoundaryStrategy,
     Bounds,
     Clamp,
-    OptionsStrategy,
     Position,
     SwarmOptions,
     VelocityStrategy,
@@ -79,7 +78,6 @@ class GlobalBestPSO(GeneralOptimizerPSO):
         dimensions: int,
         options: SwarmOptions,
         bounds: Optional[Bounds] = None,
-        oh_strategy: Optional[OptionsStrategy] = None,
         bh_strategy: BoundaryStrategy = "periodic",
         velocity_clamp: Optional[Clamp] = None,
         vh_strategy: VelocityStrategy = "unmodified",
@@ -97,20 +95,19 @@ class GlobalBestPSO(GeneralOptimizerPSO):
         dimensions : int
             number of dimensions in the space.
         options : dict with keys :code:`{'c1', 'c2', 'w'}`
-            a dictionary containing the parameters for the specific
-            optimization technique.
-                * c1 : float
+            A dictionary containing the parameters for the specific
+            optimization technique. This can be a constant, OptionsStrategy
+            or an OptionsHandler.
+                * c1 : float|Tuple[OptionsStrategy, float]|OptionsHandler
                     cognitive parameter
-                * c2 : float
+                * c2 : float|Tuple[OptionsStrategy, float]|OptionsHandler
                     social parameter
-                * w : float
+                * w : float|Tuple[OptionsStrategy, float]|OptionsHandler
                     inertia parameter
         bounds : tuple of numpy.ndarray, optional
             a tuple of size 2 where the first entry is the minimum bound while
             the second entry is the maximum bound. Each array must be of shape
             :code:`(dimensions,)`.
-        oh_strategy : dict, optional, default=None(constant options)
-            a dict of update strategies for each option.
         bh_strategy : str
             a strategy for the handling of out-of-bounds particles.
         velocity_clamp : tuple, optional
@@ -138,7 +135,6 @@ class GlobalBestPSO(GeneralOptimizerPSO):
             options,
             Star(),
             bounds,
-            oh_strategy,
             bh_strategy,
             velocity_clamp,
             vh_strategy,
