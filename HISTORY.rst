@@ -242,7 +242,7 @@ documentation, multiple fixes, and updated build dependencies.
 .. _@craymichael: https://github.com/craymichael
 .. _@ndngo: https://github.com/ndngo
 
-2.0.0 (2020-10-xx)
+2.0.0 (2020-10-02)
 ------------------
 
 Complete overhaul of the codebase

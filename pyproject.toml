@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyswarms"
-version = "2.0.0alpha"
+version = "2.0.0"
 description = "A Python-based Particle Swarm Optimization (PSO) library."
 authors = [
   "Lester James V. Miranda <ljvmiranda@gmail.com>",
