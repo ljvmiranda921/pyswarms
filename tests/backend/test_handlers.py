@@ -6,7 +6,6 @@ import pytest
 from pyswarms.backend.handlers import (
     BoundaryHandler,
     BoundaryStrategy,
-    HandlerMixin,
     OptionsHandler,
     OptionsStrategy,
     VelocityHandler,
@@ -21,33 +20,34 @@ oh_strategies = list(get_args(OptionsStrategy))
 
 
 def test_out_of_bounds(bounds: Bounds, positions_inbound: Position, positions_out_of_bound: Position):
-    hm = HandlerMixin()
-    out_of_bounds = hm._out_of_bounds
-    idx_inbound = out_of_bounds(positions_inbound, bounds)
-    idx_out_of_bounds = out_of_bounds(positions_out_of_bound, bounds)
+    bh = BoundaryHandler.factory("periodic", bounds)
+    idx_in_bound = bh._out_of_bounds(positions_inbound)
+    idx_out_of_bounds = bh._out_of_bounds(positions_out_of_bound)
 
-    print(bh_strategies)
-    expected_idx = (
-        (np.array([2, 3, 5]), np.array([1, 2, 0])),
-        (np.array([0, 1, 2, 3, 4, 5]), np.array([0, 1, 1, 2, 1, 0])),
-    )
-    assert np.ravel(idx_inbound[0]).size == 0
-    assert np.ravel(idx_inbound[1]).size == 0
-    assert np.ravel(idx_out_of_bounds[0]).all() == np.ravel(expected_idx[0]).all()
-    assert np.ravel(idx_out_of_bounds[1]).all() == np.ravel(expected_idx[1]).all()
+    expected_idx = np.array([
+        [True, False, False],
+        [False, True, False],
+        [True, True, False],
+        [False, False, True],
+        [False, True, False],
+        [True, False, True],
+    ])
+
+    assert idx_in_bound.sum() == 0
+    assert np.all(idx_out_of_bounds == expected_idx)
 
 
 @pytest.mark.parametrize("strategy", bh_strategies)
 def test_bound_handling(
     bounds: Bounds, positions_inbound: Position, positions_out_of_bound: Position, strategy: BoundaryStrategy
 ):
-    bh = BoundaryHandler.factory(strategy)
+    bh = BoundaryHandler.factory(strategy, bounds)
     # Test if it doesn't handle inbound positions
-    inbound_handled = bh(positions_inbound, bounds)
+    inbound_handled = bh(positions_inbound)
     assert inbound_handled.all() == positions_inbound.all()
 
     # Test if all particles are handled to a position inside the boundaries
-    outbound_handled = bh(positions_out_of_bound, bounds)
+    outbound_handled = bh(positions_out_of_bound)
     lower_than_bound = outbound_handled >= bounds[0]
     greater_than_bound = outbound_handled <= bounds[1]
     assert lower_than_bound.all()

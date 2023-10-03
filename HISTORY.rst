@@ -258,6 +258,7 @@ Complete overhaul of the codebase
 
 Bugs fixed:
 - Fix incorrect dynamic warning in topology class
+- The `random` boundary strategy would set all out of bounds particles to the same position
 - Allow Tuple[float,float] for position and velocity bounds - `#512`_
 - Fix inhomogenous arrays in topologies - `#516`_
 

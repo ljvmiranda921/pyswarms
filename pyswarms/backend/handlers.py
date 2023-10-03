@@ -52,7 +52,7 @@ class HasBounds:
 
         This method finds the indices of the particles that are out-of-bound.
         """
-        return position < self.lb | position > self.ub
+        return (position < self.lb) | (position > self.ub)
 
 class BoundaryHandler(ABC, HasBounds):
     """A BoundaryHandler class
