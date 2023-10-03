@@ -248,20 +248,26 @@ documentation, multiple fixes, and updated build dependencies.
 Complete overhaul of the codebase
 
 - Update to python 3.10
+- Replace setup.py with pyproject.toml
 - Add type annotations everywhere
 - Refactor optimizers, extract main loop logic into multiple functions in single base class
+- Replace attrs lib with dataclasses
 - Refactor handlers into separate classes with factories
+- Re-implement boundaray handlers to be more efficient
+- Make boundaries support scalar values
 - Create VelocityUpdater class with full responsibility for particle velocities
 - Create PositionUpdater class with full responsibility for particle positions
 - Use poetry for dependency management
 - Use loguru for logging
 - Considerably speed up the tests
+- Make GridSearch and RandomSearch more flexible by allowing for multiple topologies in a search
 
 Bugs fixed:
 - Fix incorrect dynamic warning in topology class
 - The `random` boundary strategy would set all out of bounds particles to the same position
 - Allow Tuple[float,float] for position and velocity bounds - `#512`_
 - Fix inhomogenous arrays in topologies - `#516`_
+- Make all tests pass
 
 .. _#512: https://github.com/ljvmiranda921/pyswarms/issues/512
 .. _#516: https://github.com/ljvmiranda921/pyswarms/issues/516
