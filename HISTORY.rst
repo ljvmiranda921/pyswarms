@@ -255,6 +255,7 @@ Complete overhaul of the codebase
 - Create PositionUpdater class with full responsibility for particle positions
 - Use poetry for dependency management
 - Use loguru for logging
+- Considerably speed up the tests
 
 Bugs fixed:
 - Fix incorrect dynamic warning in topology class
