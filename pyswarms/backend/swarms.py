@@ -96,7 +96,6 @@ class Swarm(object):
     )
     pbest_cost = attrib(
         type=np.ndarray,
-        default=np.array([]),
         validator=instance_of(np.ndarray),
     )
     best_cost = attrib(
@@ -119,3 +118,7 @@ class Swarm(object):
     @pbest_pos.default
     def pbest_pos_default(self):
         return self.position
+    
+    @pbest_cost.default
+    def pbest_cost_default(self):
+        return np.full(shape=(self.position.shape[0],), fill_value=np.inf)
