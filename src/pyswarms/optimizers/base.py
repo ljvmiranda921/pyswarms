@@ -170,10 +170,9 @@ class BaseSwarmOptimizer(abc.ABC):
         tuple
             the global best cost and the global best position.
         """
-        self._setup(n_processes, verbose)
+        self._setup(n_processes, verbose, iters)
         logger.debug("Obj. func. args: {}".format(kwargs))
 
-        self.pbar = trange(iters, desc=self.name, disable=not verbose)
         for i in self.pbar:
             if not self._step(i, objective_func, iters, **kwargs):
                 break
@@ -224,7 +223,7 @@ class BaseSwarmOptimizer(abc.ABC):
 
         self._init_swarm()
 
-    def _setup(self, n_processes: Optional[int], verbose: bool):
+    def _setup(self, n_processes: Optional[int], verbose: bool, iters: int):
         """Prepare for the optimization loop, doing any necessary setup.
         """
         self.log_level = "DEBUG" if verbose else "TRACE"
@@ -234,6 +233,8 @@ class BaseSwarmOptimizer(abc.ABC):
 
         self.swarm.pbest_cost = np.full(self.swarm_size[0], np.inf)
         self.ftol_history: Deque[bool] = deque(maxlen=self.ftol_iter)
+
+        self.pbar = trange(iters, desc=self.name, disable=not verbose)
 
     def _teardown(self):
         """Prepare for the optimization loop, doing any necessary setup.
