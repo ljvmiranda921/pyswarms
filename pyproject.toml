@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
+packages = [{include = "sklearn_pso"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
