@@ -70,3 +70,4 @@ target/
 
 # Vagrant folder
 .vagrant
+.venv

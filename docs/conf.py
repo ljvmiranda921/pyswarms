@@ -13,11 +13,9 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-# Import standard library
 import os
 import sys
 
-# Import from pyswarms
 import pyswarms
 
 # If extensions (or modules to document with autodoc) are in another

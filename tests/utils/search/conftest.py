@@ -3,95 +3,78 @@
 
 """Fixtures for tests"""
 
-# Import modules
-import numpy as np
+from typing import Dict, List, Tuple
+
 import pytest
 
-# Import from pyswarms
-from pyswarms.single import LocalBestPSO
+from pyswarms.backend.topology.ring import Ring
+from pyswarms.optimizers import LocalBestPSO
 from pyswarms.utils.functions.single_obj import sphere
-
-# Import from package
 from pyswarms.utils.search.grid_search import GridSearch
 from pyswarms.utils.search.random_search import RandomSearch
+from pyswarms.utils.types import SwarmOption
 
 
 @pytest.fixture
 def grid():
     """Returns a GridSearch instance"""
-    options = {
+    options: Dict[SwarmOption, float | List[float]] = {
         "c1": [1, 2, 3],
         "c2": [1, 2, 3],
-        "k": [5, 10, 15],
         "w": [0.9, 0.7, 0.4],
-        "p": [1],
     }
+
     return GridSearch(
-        LocalBestPSO,
-        n_particles=40,
-        dimensions=20,
-        options=options,
-        objective_func=sphere,
-        iters=10,
-        bounds=None,
+        LocalBestPSO(40, 20, {"c1": 1, "c2": 1, "w": 1}),
+        sphere,
+        10,
+        options,
+        tuple(Ring(1, k) for k in [5, 10, 15]),
     )
 
 
 @pytest.fixture
 def grid_mini():
     """Returns a GridSearch instance with a smaller search-space"""
-    options = {"c1": [1, 2], "c2": 6, "k": 5, "w": 0.9, "p": 0}
-    return GridSearch(
-        LocalBestPSO,
-        n_particles=40,
-        dimensions=20,
-        options=options,
-        objective_func=sphere,
-        iters=10,
-        bounds=None,
-    )
+    options: Dict[SwarmOption, float | List[float]] = {"c1": [1.0, 2.0], "c2": 6.0, "w": 0.9}
+
+    return GridSearch(LocalBestPSO(40, 20, {"c1": 1, "c2": 1, "w": 1}, p=1, k=5), sphere, 10, options)
 
 
 @pytest.fixture
 def random_unbounded():
     """Returns a RandomSearch instance without bounds"""
-    options = {
-        "c1": [1, 5],
-        "c2": [6, 10],
-        "k": [11, 15],
-        "w": [0.4, 0.9],
-        "p": 1,
+    options: Dict[SwarmOption, float | Tuple[float, float]] = {
+        "c1": (1, 5),
+        "c2": (6, 10),
+        "w": (0.4, 0.9),
     }
+
     return RandomSearch(
-        LocalBestPSO,
-        n_particles=40,
-        dimensions=20,
-        options=options,
-        objective_func=sphere,
-        iters=10,
-        n_selection_iters=100,
-        bounds=None,
+        LocalBestPSO(40, 20, {"c1": 1, "c2": 1, "w": 1}),
+        sphere,
+        10,
+        100,
+        options,
+        tuple((Ring(1, k) for k in [11, 15])),
     )
 
 
 @pytest.fixture
 def random_bounded():
     """Returns a RandomSearch instance with bounds"""
-    bounds = (np.array([-5, -5]), np.array([5, 5]))
-    options = {
-        "c1": [1, 5],
-        "c2": [6, 10],
-        "k": [11, 15],
-        "w": [0.4, 0.9],
-        "p": 1,
+    bounds = (-5, 5)
+    options: Dict[SwarmOption, float | Tuple[float, float]] = {
+        "c1": (1, 5),
+        "c2": (6, 10),
+        "w": (0.4, 0.9),
     }
+
     return RandomSearch(
-        LocalBestPSO,
-        n_particles=40,
-        dimensions=20,
-        options=options,
-        objective_func=sphere,
-        iters=10,
-        n_selection_iters=100,
-        bounds=bounds,
+        LocalBestPSO(40, 20, {"c1": 1, "c2": 1, "w": 1}, bounds=bounds),
+        sphere,
+        10,
+        100,
+        options,
+        tuple(Ring(1, k) for k in [11, 15]),
     )

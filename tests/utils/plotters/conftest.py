@@ -6,19 +6,22 @@
 isort:skip_file
 """
 
-# Import standard library
 import os
 
-# Import modules
 import matplotlib as mpl
 import numpy as np
 import pytest
+from pyswarms.backend.handlers import VelocityHandler
+from pyswarms.backend.position import PositionUpdater
+from pyswarms.backend.topology.star import Star
+from pyswarms.backend.velocity import VelocityUpdater
+from pyswarms.optimizers.optimizer import OptimizerPSO
+
+from pyswarms.utils.types import SwarmOptions
 
 if os.environ.get("DISPLAY", "") == "":
     mpl.use("Agg")
 
-# Import from pyswarms
-from pyswarms.single import GlobalBestPSO
 from pyswarms.utils.functions.single_obj import sphere
 from pyswarms.utils.plotters.formatters import Mesher
 
@@ -26,8 +29,10 @@ from pyswarms.utils.plotters.formatters import Mesher
 @pytest.fixture
 def trained_optimizer():
     """Returns a trained optimizer instance with 100 iterations"""
-    options = {"c1": 0.5, "c2": 0.3, "w": 0.9}
-    optimizer = GlobalBestPSO(n_particles=10, dimensions=2, options=options)
+    options = SwarmOptions({"c1": 0.5, "c2": 0.3, "w": 0.9})
+    vu = VelocityUpdater(options, None, VelocityHandler.factory("unmodified"))
+    pu = PositionUpdater()
+    optimizer = OptimizerPSO(10, 2, Star(), vu, pu)
     optimizer.optimize(sphere, iters=100)
     return optimizer
 

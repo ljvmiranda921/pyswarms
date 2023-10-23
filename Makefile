@@ -52,16 +52,18 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 
 lint: ## check style with flake8
+	isort pyswarms tests
+	black pyswarms tests
 	flake8 pyswarms tests
 
 test: ## run tests quickly with the default Python
-	python setup.py test
+	pytest --cov=pyswarms  --timer-top-n=10 tests
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source pyswarms setup.py test
+	coverage run --source pyswarms tests
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
