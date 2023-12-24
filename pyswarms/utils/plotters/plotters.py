@@ -139,6 +139,26 @@ def plot_cost_history(
         return ax
 
 
+def _check_pos_history(pos_history):
+    """Check the dimension of the position history before plotting
+
+    Parameters
+    ----------
+    pos_history : numpy.ndarray or list
+        Position history of the swarm with shape
+        :code:`(iteration, n_particles, dimensions)`
+
+    Returns
+    -------
+    None
+    """
+    if np.array(pos_history).shape[1] > 2:
+        print(
+            """Warning! This method is suited for plotting a 2-dimensional position history.
+            Other dimensions beyond the first two will not be plotted."""
+        )
+
+
 def plot_contour(
     pos_history,
     canvas=None,
@@ -187,6 +207,7 @@ def plot_contour(
         The drawn animation that can be saved to mp4 or other
         third-party tools
     """
+    _check_pos_history(pos_history)
 
     try:
         # If no Designer class supplied, use defaults
@@ -324,6 +345,8 @@ def plot_surface(
         The drawn animation that can be saved to mp4 or other
         third-party tools
     """
+    _check_pos_history(pos_history)
+
     try:
         # If no Designer class supplied, use defaults
         if designer is None:
