@@ -42,7 +42,7 @@ interaction with swarm optimizations. Check out more features below!
 Launching pad
 -------------
 
-* If you don't know what Particle Swarm Optimization is, read up this short `Introduction <http://pyswarms.readthedocs.io/en/latest/intro.html>`_! Then, if you plan to use PySwarms in your project, check the `Installation guide <https://pyswarms.readthedocs.io/en/latest/installation.html>`_ and `use-case examples <https://pyswarms.readthedocs.io/en/latest/examples/usecases.html>`_.
+* If you don't know what Particle Swarm Optimization is, read up this short `Introduction <http://pyswarms.readthedocs.io/en/latest/intro.html>`_! Then, if you plan to use PySwarms in your project, check the `Installation guide <https://pyswarms.readthedocs.io/en/latest/installation.html>`_ and `use-case examples <https://pyswarms.readthedocs.io/en/latest/usecases.html>`_.
 
 * If you are a researcher in the field of swarm intelligence, and would like to include your technique in our list of optimizers, check our `contributing <https://pyswarms.readthedocs.io/en/latest/contributing.html>`_ page to see how to implement your optimizer using the current base classes in the library.
 
