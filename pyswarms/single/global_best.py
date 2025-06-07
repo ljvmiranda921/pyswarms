@@ -80,6 +80,7 @@ class GlobalBestPSO(SwarmOptimizer):
         options,
         bounds=None,
         oh_strategy=None,
+        oh=None,
         bh_strategy="periodic",
         velocity_clamp=None,
         vh_strategy="unmodified",
@@ -155,7 +156,18 @@ class GlobalBestPSO(SwarmOptimizer):
         self.top = Star()
         self.bh = BoundaryHandler(strategy=bh_strategy)
         self.vh = VelocityHandler(strategy=vh_strategy)
-        self.oh = OptionsHandler(strategy=oh_strategy)
+
+        if oh is not None:
+            if not isinstance(oh, OptionsHandler):
+                raise TypeError(
+                    "OptionsHandler must be an instance of OptionsHandler class."
+                )
+            else:
+                self.oh = oh
+        else:
+            # If no OptionsHandler is provided, create a new one with the strategy
+            self.oh = OptionsHandler(strategy=oh_strategy)
+
         self.name = __name__
 
     def optimize(
@@ -170,8 +182,6 @@ class GlobalBestPSO(SwarmOptimizer):
         ----------
         objective_func : callable
             objective function to be evaluated
-        iters : int
-            number of iterations
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
         verbose : bool
@@ -261,6 +271,6 @@ class GlobalBestPSO(SwarmOptimizer):
             lvl=log_level,
         )
         # Close Pool of Processes
-        if n_processes is not None:
+        if pool is not None:
             pool.close()
         return (final_best_cost, final_best_pos)
