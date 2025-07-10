@@ -341,12 +341,12 @@ def plot_surface(
         # If ax is default, then create new plot. Set-up the figure, the
         # axis, and the plot element that we want to animate
         if canvas is None:
-            fig, ax = plt.subplots(1, 1, figsize=designer.figsize)
+            fig, ax = plt.subplots(1, 1, figsize=designer.figsize, subplot_kw={"projection":"3d"})
         else:
             fig, ax = canvas
 
         # Initialize 3D-axis
-        ax = Axes3D(fig)
+        # ax = Axes3D(fig)
 
         n_iters = len(pos_history)
 
