@@ -547,7 +547,7 @@ class VelocityHandler(HandlerMixin):
 
 
 class OptionsHandler(HandlerMixin):
-    def __init__(self, strategy):
+    def __init__(self, strategy, end_opts=None):
         """An OptionsHandler class
 
         This class offers a way to handle options. It contains
@@ -600,6 +600,17 @@ class OptionsHandler(HandlerMixin):
             call :code:`OptionsHandler.strategies`
         """
         self.strategy = strategy
+        if end_opts is None:
+            end_opts = {}
+
+        if isinstance(end_opts, dict):
+            self.end_opts = end_opts
+        else:
+            raise TypeError(
+                "end_opts must be a dictionary, got {}".format(
+                    type(end_opts).__name__
+                )
+            )
         self.strategies = self._get_all_strategies()
         self.rep = Reporter(logger=logging.getLogger(__name__))
 
@@ -653,11 +664,14 @@ class OptionsHandler(HandlerMixin):
                 "c1": 0.8 * start_opts["c1"],
                 "c2": 1 * start_opts["c2"],
             }
-            if "end_opts" in kwargs:
-                if opt in kwargs["end_opts"]:
-                    end_opts[opt] = kwargs["end_opts"][opt]
-            start = start_opts[opt]
             end = end_opts[opt]
+            if opt in self.end_opts:
+                end = self.end_opts[opt]
+            elif "end_opts" in kwargs: # legacy support
+                if opt in kwargs["end_opts"]:
+                    end = kwargs["end_opts"][opt]           
+
+            start = start_opts[opt]
             new_val = (start - end - d1) * math.exp(
                 1 / (1 + d2 * kwargs["iternow"] / kwargs["itermax"])
             )
@@ -687,11 +701,16 @@ class OptionsHandler(HandlerMixin):
                 "c1": 0.8 * start_opts["c1"],
                 "c2": 1 * start_opts["c2"],
             }
-            if "end_opts" in kwargs:
-                if opt in kwargs["end_opts"]:
-                    end_opts[opt] = kwargs["end_opts"][opt]
-            start = start_opts[opt]
             end = end_opts[opt]
+
+            if opt in self.end_opts:
+                end = self.end_opts[opt]
+            elif "end_opts" in kwargs: # legacy support
+                # if end_opts is passed as a kwarg, use it
+                if opt in kwargs["end_opts"]:
+                    end = kwargs["end_opts"][opt]
+  
+            start = start_opts[opt]
             new_val = (
                 end
                 + (start - end)
@@ -713,12 +732,15 @@ class OptionsHandler(HandlerMixin):
         Ref: R.C. Eberhart, Y.H. Shi, Tracking and optimizing dynamic systems with particle
         swarms, in: Congress on Evolutionary Computation, Korea, 2001
         """
-        
         start = start_opts[opt]
-        if opt in kwargs["end_opts"]:
-            end = kwargs["end_opts"][opt]
-        else:
-            end = start + 1
+        end = start + 1
+
+        if opt in self.end_opts:
+            end = self.end_opts[opt]
+        elif "end_opts" in kwargs: # legacy support
+            if opt in kwargs["end_opts"]:
+                end = kwargs["end_opts"][opt]
+        
         return start + (end - start) * np.random.rand()
 
     def nonlin_mod(self, start_opts, opt, **kwargs):
@@ -747,12 +769,16 @@ class OptionsHandler(HandlerMixin):
                 "c1": 0.8 * start_opts["c1"],
                 "c2": 1 * start_opts["c2"],
             }
-            if "end_opts" in kwargs:
+            end = end_opts[opt]
+
+            if opt in self.end_opts:
+                end = self.end_opts[opt]
+            elif "end_opts" in kwargs: # legacy support
                 if opt in kwargs["end_opts"]:
-                    end_opts[opt] = kwargs["end_opts"][opt]
+                    end = kwargs["end_opts"][opt]
+                
 
             start = start_opts[opt]
-            end = end_opts[opt]
             new_val = end + (start - end) * (
                 (kwargs["itermax"] - kwargs["iternow"]) ** n
                 / kwargs["itermax"] ** n

@@ -207,7 +207,11 @@ def compute_position(swarm, bounds, bh):
         )
         raise
     else:
-        return position
+        nextgen_position = position
+        if swarm.current_gen < swarm.max_generations-1:
+            swarm.history[swarm.current_gen+1, :, : ] = nextgen_position
+            swarm.current_gen = swarm.current_gen + 1
+        return nextgen_position
 
 
 def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
@@ -225,8 +229,8 @@ def compute_objective_function(swarm, objective_func, pool=None, **kwargs):
         a Swarm instance
     objective_func : function
         objective function to be evaluated
-    pool: multiprocessing.Pool
-        multiprocessing.Pool to be used for parallel particle evaluation
+    pool: multiprocess.Pool
+        multiprocess.Pool to be used for parallel particle evaluation
     kwargs : dict
         arguments for the objective function
 

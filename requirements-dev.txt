@@ -58,7 +58,7 @@ pytest-cov==2.10.1
 pytest==6.1.2
 python-dateutil==2.7.5
 pytz==2018.9
-pyyaml==3.13
+pyyaml==6.0
 pyzmq==18.0.1
 requests==2.21.0
 scikit-learn==0.21.1
@@ -81,6 +81,7 @@ virtualenv==16.3.0
 wcwidth==0.1.7
 webencodings==0.5.1
 wheel==0.31.1
+multiprocess==0.70.14
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

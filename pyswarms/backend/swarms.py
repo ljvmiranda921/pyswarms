@@ -84,9 +84,14 @@ class Swarm(object):
     # Required attributes
     position = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
     velocity = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
+    max_generations = attrib(type=int, validator=instance_of(int))
     # With defaults
     n_particles = attrib(type=int, validator=instance_of(int))
     dimensions = attrib(type=int, validator=instance_of(int))
+    Gnum_of_best = attrib(type=int, default=0, validator=instance_of(int))
+    idx_of_best = attrib(type=int, default=0, validator=instance_of(int))
+    current_gen = attrib(type=int,  default=0, validator=instance_of(int))
+    history = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
     options = attrib(type=dict, default={}, validator=instance_of(dict))
     pbest_pos = attrib(type=np.ndarray, validator=instance_of(np.ndarray))
     best_pos = attrib(
@@ -96,7 +101,6 @@ class Swarm(object):
     )
     pbest_cost = attrib(
         type=np.ndarray,
-        default=np.array([]),
         validator=instance_of(np.ndarray),
     )
     best_cost = attrib(
@@ -119,3 +123,13 @@ class Swarm(object):
     @pbest_pos.default
     def pbest_pos_default(self):
         return self.position
+    
+    @pbest_cost.default
+    def pbest_cost_default(self):
+        return np.full(shape=(self.position.shape[0],), fill_value=np.inf)
+    
+    @history.default
+    def history_default(self):
+        first_gen_pos = self.position[np.newaxis, :]
+        fill_rest_with_NaN = np.full(shape=(self.max_generations-1,self.n_particles,self.dimensions), fill_value=np.nan)
+        return np.concatenate((first_gen_pos, fill_rest_with_NaN), axis=0)

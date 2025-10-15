@@ -85,11 +85,11 @@ class ABCTestOptimizer(abc.ABC):
 
     def test_parallel_evaluation(self, obj_without_args, optimizer, options):
         """Test if parallelization breaks the optimization process"""
-        import multiprocessing
+        import multiprocess
 
         opt = optimizer(100, 2, options=options)
         opt.optimize(
-            obj_without_args, 2000, n_processes=multiprocessing.cpu_count()
+            obj_without_args, 2000, n_processes=multiprocess.cpu_count()
         )
         assert np.array(opt.cost_history).shape == (2000,)
 

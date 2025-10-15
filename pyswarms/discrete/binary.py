@@ -56,7 +56,7 @@ import logging
 
 # Import modules
 import numpy as np
-import multiprocessing as mp
+import multiprocess as mp
 
 from collections import deque
 

@@ -59,13 +59,31 @@ def generate_swarm(
     """
     try:
         if (init_pos is not None) and (bounds is None):
-            pos = init_pos
+            pos = center * np.random.uniform(
+                low=0.0, high=1.0, size=(n_particles-len(init_pos), dimensions)
+            )
+            pos = np.concatenate((init_pos, pos))
         elif (init_pos is not None) and (bounds is not None):
             if not (
                 np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])
             ):
                 raise ValueError("User-defined init_pos is out of bounds.")
-            pos = init_pos
+            
+            # this generates the rest of the swarm 
+            # by randomly sampling within the bounds 
+            # for the rest of the particles that do not have a given initial position
+            lb, ub = bounds
+            min_bounds = np.repeat(
+                np.array(lb)[np.newaxis, :], n_particles-len(init_pos), axis=0
+            )
+            max_bounds = np.repeat(
+                np.array(ub)[np.newaxis, :], n_particles-len(init_pos), axis=0
+            )
+            pos = center * np.random.uniform(
+                low=min_bounds, high=max_bounds, size=(n_particles-len(init_pos), dimensions)
+            )
+
+            pos = np.concatenate((init_pos, pos))
         elif (init_pos is None) and (bounds is None):
             pos = center * np.random.uniform(
                 low=0.0, high=1.0, size=(n_particles, dimensions)
@@ -187,6 +205,7 @@ def generate_velocity(n_particles, dimensions, clamp=None):
 def create_swarm(
     n_particles,
     dimensions,
+    max_generations,
     discrete=False,
     binary=False,
     options={},
@@ -242,4 +261,4 @@ def create_swarm(
         )
 
     velocity = generate_velocity(n_particles, dimensions, clamp=clamp)
-    return Swarm(position, velocity, options=options)
+    return Swarm(position, velocity, max_generations ,options=options)
