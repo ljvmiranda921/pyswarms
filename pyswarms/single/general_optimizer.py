@@ -77,10 +77,12 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         self,
         n_particles,
         dimensions,
+        max_generations,
         options,
         topology,
         bounds=None,
         oh_strategy=None,
+        oh=None,
         bh_strategy="periodic",
         velocity_clamp=None,
         vh_strategy="unmodified",
@@ -170,6 +172,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         super(GeneralOptimizerPSO, self).__init__(
             n_particles,
             dimensions=dimensions,
+            max_generations=max_generations,  # Not used in this class
             options=options,
             bounds=bounds,
             velocity_clamp=velocity_clamp,
@@ -191,11 +194,20 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             self.top = topology
         self.bh = BoundaryHandler(strategy=bh_strategy)
         self.vh = VelocityHandler(strategy=vh_strategy)
-        self.oh = OptionsHandler(strategy=oh_strategy)
+        if oh is not None:
+            if not isinstance(oh, OptionsHandler):
+                raise TypeError(
+                    "OptionsHandler must be an instance of OptionsHandler class."
+                )
+            else:
+                self.oh = oh
+        else:
+            # If no OptionsHandler is provided, create a new one with the strategy
+            self.oh = OptionsHandler(strategy=oh_strategy)
         self.name = __name__
 
     def optimize(
-        self, objective_func, iters, n_processes=None, verbose=True, **kwargs
+        self, objective_func, n_processes=None, verbose=True, **kwargs
     ):
         """Optimize the swarm for a number of iterations
 
@@ -206,8 +218,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
         ----------
         objective_func : callable
             objective function to be evaluated
-        iters : int
-            number of iterations
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
         verbose : bool
@@ -225,7 +235,7 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             log_level = logging.INFO
         else:
             log_level = logging.NOTSET
-
+        iters = self.max_generations
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),
@@ -299,6 +309,6 @@ class GeneralOptimizerPSO(SwarmOptimizer):
             lvl=log_level,
         )
         # Close Pool of Processes
-        if n_processes is not None:
+        if pool is not None:
             pool.close()
         return (final_best_cost, final_best_pos)

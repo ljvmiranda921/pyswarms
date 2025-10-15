@@ -207,7 +207,11 @@ def compute_position(swarm, bounds, bh):
         )
         raise
     else:
-        return position
+        nextgen_position = position
+        if swarm.current_gen < swarm.max_generations-1:
+            swarm.history[swarm.current_gen+1, :, : ] = nextgen_position
+            swarm.current_gen = swarm.current_gen + 1
+        return nextgen_position
 
 
 def compute_objective_function(swarm, objective_func, pool=None, **kwargs):

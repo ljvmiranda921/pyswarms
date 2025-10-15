@@ -68,6 +68,9 @@ class Star(Topology):
                 # and assign it to be the best_pos
                 best_pos = swarm.pbest_pos[np.argmin(swarm.pbest_cost)]
                 best_cost = np.min(swarm.pbest_cost)
+                swarm.Gnum_of_best = swarm.current_gen+1
+                idx_of_best = np.argmin(swarm.pbest_cost)+1
+                swarm.idx_of_best = idx_of_best
             else:
                 # Just get the previous best_pos and best_cost
                 best_pos, best_cost = swarm.best_pos, swarm.best_cost

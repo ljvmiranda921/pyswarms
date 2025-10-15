@@ -76,9 +76,11 @@ class GlobalBestPSO(SwarmOptimizer):
         self,
         n_particles,
         dimensions,
+        max_generations,
         options,
         bounds=None,
         oh_strategy=None,
+        oh=None,
         bh_strategy="periodic",
         velocity_clamp=None,
         vh_strategy="unmodified",
@@ -134,6 +136,7 @@ class GlobalBestPSO(SwarmOptimizer):
         super(GlobalBestPSO, self).__init__(
             n_particles=n_particles,
             dimensions=dimensions,
+            max_generations=max_generations,
             options=options,
             bounds=bounds,
             velocity_clamp=velocity_clamp,
@@ -153,11 +156,22 @@ class GlobalBestPSO(SwarmOptimizer):
         self.top = Star()
         self.bh = BoundaryHandler(strategy=bh_strategy)
         self.vh = VelocityHandler(strategy=vh_strategy)
-        self.oh = OptionsHandler(strategy=oh_strategy)
+
+        if oh is not None:
+            if not isinstance(oh, OptionsHandler):
+                raise TypeError(
+                    "OptionsHandler must be an instance of OptionsHandler class."
+                )
+            else:
+                self.oh = oh
+        else:
+            # If no OptionsHandler is provided, create a new one with the strategy
+            self.oh = OptionsHandler(strategy=oh_strategy)
+
         self.name = __name__
 
     def optimize(
-        self, objective_func, iters, n_processes=None, verbose=True, **kwargs
+        self, objective_func, n_processes=None, verbose=True, **kwargs
     ):
         """Optimize the swarm for a number of iterations
 
@@ -168,8 +182,6 @@ class GlobalBestPSO(SwarmOptimizer):
         ----------
         objective_func : callable
             objective function to be evaluated
-        iters : int
-            number of iterations
         n_processes : int
             number of processes to use for parallel particle evaluation (default: None = no parallelization)
         verbose : bool
@@ -188,7 +200,7 @@ class GlobalBestPSO(SwarmOptimizer):
             log_level = logging.INFO
         else:
             log_level = logging.NOTSET
-
+        iters = self.max_generations
         self.rep.log("Obj. func. args: {}".format(kwargs), lvl=logging.DEBUG)
         self.rep.log(
             "Optimize for {} iters with {}".format(iters, self.options),
@@ -213,7 +225,7 @@ class GlobalBestPSO(SwarmOptimizer):
             self.swarm.best_pos, self.swarm.best_cost = self.top.compute_gbest(self.swarm)
             # fmt: on
             if verbose:
-                self.rep.hook(best_cost=self.swarm.best_cost)
+                self.rep.hook(best_cost=self.swarm.best_cost,best_particle=(self.swarm.Gnum_of_best,self.swarm.idx_of_best))
             # Save to history
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
@@ -253,12 +265,12 @@ class GlobalBestPSO(SwarmOptimizer):
         ].copy()
         # Write report in log and return final cost and position
         self.rep.log(
-            "Optimization finished | best cost: {}, best pos: {}".format(
-                final_best_cost, final_best_pos
+            "Optimization finished | best cost: {}, at Gen: {}, Particle: {} with optimum values: {}".format(
+                final_best_cost, self.swarm.Gnum_of_best, self.swarm.idx_of_best, final_best_pos
             ),
             lvl=log_level,
         )
         # Close Pool of Processes
-        if n_processes is not None:
+        if pool is not None:
             pool.close()
         return (final_best_cost, final_best_pos)

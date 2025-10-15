@@ -14,7 +14,7 @@ if os.environ.get("DISPLAY", "") == "":
     mpl.use("Agg")
 
 from matplotlib.animation import FuncAnimation
-from matplotlib.axes._subplots import SubplotBase
+from matplotlib.axes import SubplotBase
 
 # Import from pyswarms
 from pyswarms.utils.plotters import (
