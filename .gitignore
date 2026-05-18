@@ -71,3 +71,7 @@ target/
 # Vagrant folder
 .vagrant
 .venv/
+
+.venv/
+pytest_baseline*.txt
+pip_freeze.txt
