@@ -100,7 +100,7 @@ def test_hypersphere_samples_inside_radius(spso_options, bounds):
     assert np.all(distances <= radii + 1e-12)
 
 
-def test_absorbing_bounds_clip_position_and_zero_velocity(spso_options, bounds):
+def test_absorbing_bounds(spso_options, bounds):
     optimizer = SPSO2011(
         n_particles=3,
         dimensions=2,
