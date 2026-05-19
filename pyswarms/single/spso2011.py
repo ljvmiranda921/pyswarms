@@ -1,10 +1,27 @@
 # -*- coding: utf-8 -*-
 
 r"""
-SPSO-2011 optimizer.
+Standard Particle Swarm Optimisation 2011 (SPSO-2011).
 
-This module contains an implementation skeleton for Standard Particle
-Swarm Optimisation 2011.
+This module implements the SPSO-2011 single-objective optimizer. The
+algorithm differs from the classic global-best and local-best PSO
+variants by using an adaptive random topology and a rotationally
+invariant update based on sampling inside hyperspheres.
+
+The standard parameter values used in the SPSO-2011 reference setup are:
+
+.. code-block:: python
+
+    options = {
+        "w": 1 / (2 * np.log(2)),
+        "c1": 0.5 + np.log(2),
+        "c2": 0.5 + np.log(2),
+        "k": 3,
+    }
+
+The SPSO-2011 paper empirically recommends using 40 particles. The
+``n_particles`` argument remains explicit for consistency with the
+PySwarms optimizer API.
 """
 
 import logging
@@ -22,11 +39,49 @@ LOGGER = logging.getLogger(__name__)
 
 
 class SPSO2011(SwarmOptimizer):
-    """Standard Particle Swarm Optimisation 2011.
+    """Standard Particle Swarm Optimisation 2011 optimizer.
 
-    This optimizer is intended to implement SPSO-2011 with adaptive
+    This optimizer implements the SPSO-2011 update rule with adaptive
     random informant topology, rotationally invariant hyperspherical
     sampling, and absorbing-wall boundary handling.
+
+    Parameters
+    ----------
+    n_particles : int
+        Number of particles in the swarm. The SPSO-2011 reference setup
+        recommends 40 particles.
+    dimensions : int
+        Number of dimensions in the search space.
+    options : dict
+        Dictionary containing SPSO-2011 parameters with keys
+        ``{'w', 'c1', 'c2', 'k'}``.
+            * ``w`` : float
+                Inertia weight. The standard value is ``1 / (2 * ln(2))``.
+            * ``c1`` : float
+                Cognitive acceleration coefficient. The standard value is
+                ``0.5 + ln(2)``.
+            * ``c2`` : float
+                Social acceleration coefficient. The standard value is
+                ``0.5 + ln(2)``.
+            * ``k`` : int
+                Number of particles informed by each particle in the
+                adaptive random topology. The standard value is ``3``.
+    bounds : tuple of numpy.ndarray, optional
+        Lower and upper search-space bounds. Faithful SPSO-2011
+        initialization and absorbing-wall handling require explicit bounds.
+    velocity_clamp : tuple, optional
+        Velocity clamp passed to the base PySwarms swarm initializer.
+    center : list or float, optional
+        Center used by the base PySwarms swarm initializer.
+    ftol : float, optional
+        Relative error in objective value acceptable for convergence.
+    ftol_iter : int, optional
+        Number of consecutive iterations over which ``ftol`` is checked.
+    init_pos : numpy.ndarray, optional
+        Initial swarm positions.
+    seed : int, optional
+        Random seed used for reproducible initialization and SPSO-2011
+        stochastic operations.
     """
 
     def __init__(
@@ -134,7 +189,15 @@ class SPSO2011(SwarmOptimizer):
         return best_pos, best_cost
 
     def _sample_hypersphere(self, centers, radii):
-        """Sample points uniformly inside hyperspheres.
+        """Sample points uniformly inside SPSO-2011 hyperspheres.
+
+        For each particle, SPSO-2011 samples a point inside the ball
+        centered at the gravity center G_i with radius ||G_i - X_i||.
+        The implementation draws a normally distributed random direction,
+        normalizes it to unit length, and multiplies it by
+        U**(1 / dimensions), where U is uniformly distributed in [0, 1].
+        The radial correction is required for uniform sampling by volume
+        inside a D-dimensional ball.
 
         Parameters
         ----------
@@ -142,6 +205,11 @@ class SPSO2011(SwarmOptimizer):
             Hypersphere centers with shape (n_particles, dimensions).
         radii : numpy.ndarray
             Hypersphere radii with shape (n_particles,).
+
+        Returns
+        -------
+        numpy.ndarray
+            Sampled points with shape (n_particles, dimensions).
         """
         directions = self.rng.normal(size=centers.shape)
         norms = np.linalg.norm(directions, axis=1, keepdims=True)
@@ -158,7 +226,13 @@ class SPSO2011(SwarmOptimizer):
         return centers + directions * radii[:, np.newaxis] * scales
 
     def _compute_velocity(self, neighbor_best_pos):
-        """Compute the SPSO-2011 rotationally invariant velocity update."""
+        """Compute the SPSO-2011 rotationally invariant velocity update.
+
+        The update forms personal and neighborhood attractors, computes
+        their gravity center with the current position, samples a random
+        point inside the corresponding hypersphere, and then applies the
+        SPSO-2011 velocity rule.
+        """
         position = self.swarm.position
         pbest_pos = self.swarm.pbest_pos
         velocity = self.swarm.velocity
@@ -171,7 +245,9 @@ class SPSO2011(SwarmOptimizer):
         u2 = self.rng.random(position.shape)
 
         personal_attractor = position + c1 * u1 * (pbest_pos - position)
-        neighbor_attractor = position + c2 * u2 * (neighbor_best_pos - position)
+        neighbor_attractor = position + c2 * u2 * (
+            neighbor_best_pos - position
+        )
         gravity_center = (
             position + personal_attractor + neighbor_attractor
         ) / 3.0
@@ -181,7 +257,12 @@ class SPSO2011(SwarmOptimizer):
         return w * velocity + hypersphere_point - position
 
     def _apply_absorbing_bounds(self):
-        """Apply SPSO-2011 absorbing-wall boundary handling."""
+        """Apply SPSO-2011 absorbing-wall boundary handling.
+
+        Coordinates outside the search-space bounds are clipped to the
+        reached boundary. The corresponding velocity components are reset
+        to zero, so the wall absorbs motion in the violated coordinate.
+        """
         if self.bounds is None:
             return
 
@@ -240,7 +321,11 @@ class SPSO2011(SwarmOptimizer):
         ftol_history = deque(maxlen=self.ftol_iter)
 
         try:
-            for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
+            if verbose:
+                iterator = self.rep.pbar(iters, self.name)
+            else:
+                iterator = range(iters)
+            for i in iterator:
                 self.swarm.current_cost = compute_objective_function(
                     self.swarm, objective_func, pool=pool, **kwargs
                 )
@@ -249,11 +334,18 @@ class SPSO2011(SwarmOptimizer):
                 )
 
                 best_cost_yet_found = self.swarm.best_cost
-                neighbor_best_pos, neighbor_best_cost = self._compute_neighbor_best()
+                (
+                    neighbor_best_pos,
+                    neighbor_best_cost,
+                ) = self._compute_neighbor_best()
 
                 best_particle = self.swarm.pbest_cost.argmin()
-                self.swarm.best_pos = self.swarm.pbest_pos[best_particle].copy()
-                self.swarm.best_cost = self.swarm.pbest_cost[best_particle].copy()
+                self.swarm.best_pos = self.swarm.pbest_pos[
+                    best_particle
+                ].copy()
+                self.swarm.best_cost = self.swarm.pbest_cost[
+                    best_particle
+                ].copy()
 
                 if self.swarm.best_cost >= best_cost_yet_found:
                     self._generate_informants()
@@ -270,7 +362,9 @@ class SPSO2011(SwarmOptimizer):
                 )
                 self._populate_history(hist)
 
-                relative_measure = self.ftol * (1 + np.abs(best_cost_yet_found))
+                relative_measure = self.ftol * (
+                    1 + np.abs(best_cost_yet_found)
+                )
                 delta = (
                     np.abs(self.swarm.best_cost - best_cost_yet_found)
                     < relative_measure
@@ -283,7 +377,9 @@ class SPSO2011(SwarmOptimizer):
                         break
 
                 self.swarm.velocity = self._compute_velocity(neighbor_best_pos)
-                self.swarm.position = self.swarm.position + self.swarm.velocity
+                self.swarm.position = (
+                    self.swarm.position + self.swarm.velocity
+                )
                 self._apply_absorbing_bounds()
         finally:
             if n_processes is not None:
