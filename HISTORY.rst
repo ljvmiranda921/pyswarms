@@ -2,6 +2,12 @@
 History
 =======
 
+Unreleased
+----------
+
+* **NEW:** Added :code:`SPSO2011`, a Standard Particle Swarm Optimisation 2011 optimizer with adaptive random informant topology, rotationally invariant hypersphere sampling, and absorbing-wall boundary handling.
+
+
 0.1.0 (2017-07-12)
 ------------------
 
@@ -215,7 +221,7 @@ documentation, multiple fixes, and updated build dependencies.
 
 - **NEW**: Updated API documentation - `#344`_
 - **NEW**: Relaxed dependencies when installing pyswarms - `#345`_
-- **NEW**: We're now using Azure Pipelines for our builds! - `#327`_ 
+- **NEW**: We're now using Azure Pipelines for our builds! - `#327`_
 - **NEW**: Add notebook for electric circuits  - `#288`_ . Thank you `@miguelcocruz`_ !
 - **NEW**: Parallel particle evaluation - `#312`_ . Thahnk you once more `@danielcorreia96`_ !
 - **FIX**: Fix optimise methods returning incorrect best_pos - `#322`_ . Thank you `@ichbinjakes`_ !

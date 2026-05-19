@@ -17,5 +17,6 @@ objective function that can be optimized in a continuous space.
 from .global_best import GlobalBestPSO
 from .local_best import LocalBestPSO
 from .general_optimizer import GeneralOptimizerPSO
+from .spso2011 import SPSO2011
 
-__all__ = ["GlobalBestPSO", "LocalBestPSO", "GeneralOptimizerPSO"]
+__all__ = ["GlobalBestPSO", "LocalBestPSO", "GeneralOptimizerPSO", "SPSO2011"]

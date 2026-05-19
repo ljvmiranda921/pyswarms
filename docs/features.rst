@@ -9,7 +9,7 @@ Single-Objective Optimizers
 These are standard optimization techniques for finding the optima of a single
 objective function.
 
-Continuous 
+Continuous
 ~~~~~~~~~~
 
 Single-objective optimization where the search-space is continuous. Perfect
@@ -19,9 +19,11 @@ for optimizing various common functions.
 
 * :mod:`pyswarms.single.local_best` - classic local-best Particle Swarm Optimization algorithm with a ring-topology. Every particle compares itself only with its nearest-neighbours as computed by a distance metric.
 
+* :mod:`pyswarms.single.spso2011` - Standard Particle Swarm Optimisation 2011 implementation with adaptive random informant topology, rotationally invariant hypersphere sampling, and absorbing-wall boundary handling. The reference setup recommends 40 particles with ``k=3``, ``c1=c2=0.5+ln(2)``, and ``w=1/(2*ln(2))``.
+
 * :mod:`pyswarms.single.general_optimizer` - alterable but still classic Particle Swarm Optimization algorithm with a custom topology. Every topology in the :mod:`pyswarms.backend` module can be passed as an argument.
 
-Discrete 
+Discrete
 ~~~~~~~~
 
 Single-objective optimization where the search-space is discrete. Useful for
