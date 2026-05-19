@@ -42,6 +42,8 @@ class SPSO2011(SwarmOptimizer):
         init_pos=None,
         seed=None,
     ):
+        if seed is not None:
+            np.random.seed(seed)
         super(SPSO2011, self).__init__(
             n_particles=n_particles,
             dimensions=dimensions,
@@ -95,9 +97,9 @@ class SPSO2011(SwarmOptimizer):
         """Generate the SPSO-2011 adaptive random informant topology.
 
         The convention is: informants[i, j] is True when particle j informs
-        particle i (the row-oriented interpretation of the rule is convenient for computing).
-        Each particle informs itself, and each particle randomly informs k particles.
-        Duplicate choices are allowed by the standard,
+        particle i. Thus, row i contains the informants used to update
+        particle i. Each particle informs itself, and each particle randomly
+        informs k particles. Duplicate choices are allowed by the standard,
         but the boolean matrix naturally stores each link once.
         """
         k = self.options["k"]
@@ -188,8 +190,9 @@ class SPSO2011(SwarmOptimizer):
         above_bounds = self.swarm.position > upper_bound
         out_of_bounds = below_bounds | above_bounds
 
-        self.swarm.position = np.minimum(
-            np.maximum(self.swarm.position, lower_bound),
+        self.swarm.position = np.clip(
+            self.swarm.position,
+            lower_bound,
             upper_bound,
         )
         self.swarm.velocity[out_of_bounds] = 0.0
